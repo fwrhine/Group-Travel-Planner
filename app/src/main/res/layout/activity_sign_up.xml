@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    tools:context=".SignUpActivity"
+    android:orientation="horizontal"
+    android:layout_gravity="center_horizontal"
+    android:background="@color/background_color">
+
+    <LinearLayout
+        android:id="@+id/iconHome"
+        android:paddingTop="50dp"
+        android:paddingBottom="50dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:src="@drawable/ic_add_location_black_24dp" />
+
+    </LinearLayout>
+    
+    <!-- Overview category -->
+    <RelativeLayout
+        android:id="@+id/signup_input"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_below="@+id/iconHome">
+
+        <!-- Full name fields -->
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/signup_fullname"
+            android:layout_width="wrap_content"
+            android:layout_height="70dp"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:orientation="vertical"
+            app:errorEnabled="true">
+
+            <EditText
+                android:id="@+id/edit_fullname"
+                style="@style/EditorFieldStyle"
+                android:drawableLeft="@drawable/ic_tag_faces_black_24dp"
+                android:hint="Full Name"
+                android:inputType="text"
+                android:theme="@style/EditorLineStyle" />
+        </android.support.design.widget.TextInputLayout>
+
+        <!-- Username fields -->
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/signup_username"
+            android:layout_width="wrap_content"
+            android:layout_height="70dp"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/signup_fullname"
+            android:gravity="center"
+            android:orientation="vertical"
+            app:errorEnabled="true">
+
+            <EditText
+                android:id="@+id/edit_username"
+                style="@style/EditorFieldStyle"
+                android:drawableLeft="@drawable/ic_person_outline_black_24dp"
+                android:hint="Username"
+                android:inputType="text"
+                android:theme="@style/EditorLineStyle" />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <!-- Input fields -->
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/signup_email"
+            android:layout_width="wrap_content"
+            android:layout_height="70dp"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:layout_below="@+id/signup_username">
+
+            <!-- Email field -->
+            <EditText
+                android:id="@+id/edit_email"
+                android:hint="Email"
+                android:inputType="text"
+                android:drawableLeft="@drawable/ic_email_black_24dp"
+                android:theme="@style/EditorLineStyle"
+                style="@style/EditorFieldStyle" />
+        </android.support.design.widget.TextInputLayout>
+
+        <!-- Input fields -->
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/signup_password"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:layout_below="@+id/signup_email">
+
+            <!-- Password field -->
+            <EditText
+                android:id="@+id/edit_password"
+                android:hint="Password"
+                android:inputType="textPassword"
+                android:drawableLeft="@drawable/ic_vpn_key_black_24dp"
+                android:theme="@style/EditorLineStyle"
+                style="@style/EditorFieldStyle" />
+        </android.support.design.widget.TextInputLayout>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/signup_button"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="20dp"
+        android:gravity="center"
+        android:layout_below="@+id/signup_input">
+
+        <Button
+            android:id="@+id/buttonSignup"
+            android:layout_width="150dp"
+            android:layout_height="50dp"
+            android:backgroundTint="@color/colorAccent2"
+            android:text="Sign-up"
+            android:fontFamily="sans-serif-light"
+            android:textAppearance="?android:textAppearanceMedium"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="25dp"
+        android:gravity="center"
+        android:layout_below="@+id/signup_button">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Already have an account? Sign in"
+            style="@style/CategoryStyle" />/>
+    </LinearLayout>
+</RelativeLayout>
