@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "ppl2018.db";
@@ -48,10 +49,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
 //        db.execSQL("SELECT setval('user_id_seq', (SELECT max(user_id) FROM users))");
 
-        String query = "SELECT EXISTS(SELECT * FROM " + TABLE_NAME + " WHERE username = " + username +
-                " OR ) email = " + email;
+//        Log.d("username", username);
+//        Log.d("email",  email);
+
+        String query = "SELECT * FROM " + TABLE_NAME + " WHERE username = \"" + username +
+                "\" OR email = \"" + email + "\"";
+        Log.d("QUERY", query);
         Cursor cursor = db.rawQuery(query, null);
-        if(cursor.getCount() <= 0) {
+        Log.d("STATE", cursor.getCount() + "");
+        if(cursor.getCount() > 0) {
             cursor.close();
             return 2;
         }

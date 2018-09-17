@@ -1,5 +1,6 @@
 package com.example.vasun.grouptravelplanner;
 
+import android.content.Intent;
 import android.provider.ContactsContract;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -7,12 +8,14 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class SignUpActivity extends AppCompatActivity {
     DatabaseHelper myDb;
     EditText edit_fullname, edit_username, edit_email, edit_password;
     TextInputLayout signup_fullname, signup_username;
+    TextView toLoginPage;
     Button buttonSignup;
 
     @Override
@@ -28,7 +31,11 @@ public class SignUpActivity extends AppCompatActivity {
         edit_username = (EditText) findViewById(R.id.edit_username);
         edit_email = (EditText) findViewById(R.id.edit_email);
         edit_password = (EditText) findViewById(R.id.edit_password);
+
         buttonSignup = (Button) findViewById(R.id.buttonSignup);
+
+        toLoginPage = (TextView) findViewById(R.id.toLoginPage);
+
         createNewUser();
     }
 
@@ -41,7 +48,7 @@ public class SignUpActivity extends AppCompatActivity {
 //                            onSignupFailed();
                             return;
                         }
-                        buttonSignup.setEnabled(false);
+//                        buttonSignup.setEnabled(false);
 
                         int isCreated = myDb.insertData(edit_fullname.getText().toString(),
                                 edit_username.getText().toString(),
@@ -51,16 +58,26 @@ public class SignUpActivity extends AppCompatActivity {
                         if (isCreated == 2) {
                             Toast.makeText(SignUpActivity.this, "Username or email is already taken",
                                     Toast.LENGTH_LONG).show();
+                            return;
                         } else if (isCreated == 1) {
                             Toast.makeText(SignUpActivity.this, "Sign-up success!",
                                     Toast.LENGTH_LONG).show();
+                            return;
                         } else if (isCreated == 0) {
                             Toast.makeText(SignUpActivity.this, "Sign-up failed",
                                     Toast.LENGTH_LONG).show();
+                            return;
                         }
                     }
                 }
         );
+
+        toLoginPage.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                Intent intent = new Intent(SignUpActivity.this, LoginActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     public void onSignupFailed() {

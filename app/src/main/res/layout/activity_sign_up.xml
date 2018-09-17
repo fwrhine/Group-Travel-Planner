@@ -141,6 +141,7 @@
         android:layout_below="@+id/signup_button">
 
         <TextView
+            android:id="@+id/toLoginPage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Already have an account? Sign in"
