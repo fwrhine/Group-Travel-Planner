@@ -66,7 +66,6 @@ public class SignUpActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sign_up);
         myDb = new DatabaseHelper(this);
         ButterKnife.bind(this);
-
     }
 
     public boolean validate() {

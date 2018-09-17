@@ -6,26 +6,21 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
 public class LoginActivity extends AppCompatActivity {
 
-    TextView toSignUpPage;
+    @OnClick (R.id.toSignUpPage) void renderSignUp() {
+        Intent intent = new Intent(LoginActivity.this, SignUpActivity.class);
+        startActivity(intent);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        toSignUpPage = (TextView) findViewById(R.id.toSignUpPage);
-        renderSignUpPage();
-
-    }
-
-    public void renderSignUpPage() {
-        toSignUpPage.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v){
-                Intent intent = new Intent(LoginActivity.this, SignUpActivity.class);
-                startActivity(intent);
-            }
-        });
+        ButterKnife.bind(this);
     }
 }
