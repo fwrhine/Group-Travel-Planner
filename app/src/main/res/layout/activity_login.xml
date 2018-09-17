@@ -1,11 +1,98 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="match_parent"
-    android:background="@color/background_color"
-    tools:context=".LoginActivity">
+    tools:context=".SignUpActivity"
+    android:orientation="horizontal"
+    android:layout_gravity="center_horizontal"
+    android:background="@color/background_color">
+
+    <LinearLayout
+        android:id="@+id/iconHome"
+        android:paddingTop="50dp"
+        android:paddingBottom="50dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:src="@drawable/ic_location_on_white_24dp" />
+
+    </LinearLayout>
+
+    <!-- Overview category -->
+    <RelativeLayout
+        android:id="@+id/signup_input"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_below="@+id/iconHome">
+
+        <!-- Username fields -->
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/signup_username"
+            android:layout_width="wrap_content"
+            android:layout_height="70dp"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:orientation="vertical"
+            app:errorEnabled="true">
+
+            <EditText
+                android:id="@+id/edit_username"
+                style="@style/EditorFieldStyle"
+                android:drawableLeft="@drawable/ic_person_outline_black_24dp"
+                android:hint="Username"
+                android:inputType="text"
+                android:theme="@style/EditorLineStyle" />
+
+        </android.support.design.widget.TextInputLayout>
+
+
+        <!-- Input fields -->
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/signup_password"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:layout_below="@+id/signup_username">
+
+            <!-- Password field -->
+            <EditText
+                android:id="@+id/edit_password"
+                android:hint="Password"
+                android:inputType="textPassword"
+                android:drawableLeft="@drawable/ic_vpn_key_black_24dp"
+                android:theme="@style/EditorLineStyle"
+                style="@style/EditorFieldStyle" />
+        </android.support.design.widget.TextInputLayout>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/signup_button"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="20dp"
+        android:gravity="center"
+        android:layout_below="@+id/signup_input">
+
+        <Button
+            android:id="@+id/buttonSignup"
+            android:layout_width="150dp"
+            android:layout_height="50dp"
+            android:backgroundTint="@color/colorAccent2"
+            android:text="Sign-in"
+            android:fontFamily="sans-serif-light"
+            android:textAppearance="?android:textAppearanceMedium"/>
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -18,8 +105,7 @@
             android:id="@+id/toSignUpPage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Haven't registered yet? Sign-up here"
-            style="@style/CategoryStyle" />/>
+            android:text="Don't have an account? Sign up"
+            style="@style/CategoryStyle" />
     </LinearLayout>
-
 </RelativeLayout>
