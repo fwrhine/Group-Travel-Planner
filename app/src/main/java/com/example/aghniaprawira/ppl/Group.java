@@ -6,6 +6,9 @@ public class Group {
     byte[] group_image;
 
     //constructor
+    public Group() {
+    }
+    
     public Group(String group_name, byte[] group_image) {
         this.group_name = group_name;
         this.group_image = group_image;

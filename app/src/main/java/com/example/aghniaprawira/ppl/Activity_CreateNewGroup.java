@@ -28,6 +28,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Activity_CreateNewGroup extends AppCompatActivity {
     private static final String TAG = "Activity_CreateNewGroup";
@@ -38,6 +39,7 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
     private ImageView imageView;
     private ListView listViewUser;
     private Toolbar toolbar;
+    private ArrayList<Long> user_ids;
     final int REQUEST_CODE_GALLERY = 999;
 
     @Override
@@ -64,11 +66,12 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
         btnCreate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String newGroup = editText.getText().toString();
-                byte[] groupImage = imageViewToByte(imageView);
+                String group_name = editText.getText().toString();
+                byte[] group_image = imageViewToByte(imageView);
+                Group newGroup = new Group(group_name, group_image);
 
                 if (editText.length() != 0) {
-                    InsertNewGroup(newGroup, groupImage);
+                    CreateGroup(newGroup, user_ids);
 
                     //empty name and image input
                     editText.setText("");
@@ -83,7 +86,8 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
         listViewUser.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             @Override
             public void onItemClick(AdapterView<?> adapter, View v, int position, long id){
-
+                //Todo: add to user_ids
+                user_ids.add();
             }
         });
 
@@ -94,12 +98,7 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
         Log.d(TAG, "populateUserListView: Displaying data in the ListView.");
 
         //get data and append to list
-        Cursor data = databaseHelper.getDataUser();
-        ArrayList<String> listData = new ArrayList<>();
-        while (data.moveToNext()) {
-            //get value from col1 and add to arraylist
-            listData.add(data.getString(1));
-        }
+        List<User> users = DatabaseHelper.getAllUsers();
 
         //create the list adapter and set the adapter
         ListAdapter adapter = new ArrayAdapter<>(this, android.R.layout.simple_expandable_list_item_1, listData);
@@ -120,10 +119,10 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
     }
 
     //Todo: insert data to database, if success, open group chat
-    public void InsertNewGroup(String name, byte[] image) {
-        boolean insertData = databaseHelper.addData(name, image);
+    public void CreateGroup(Group group, ArrayList<Long> user_ids) {
+        long createGroup = databaseHelper.createGroup(group, user_ids);
 
-        if (insertData) {
+        if (createGroup != -1) {
             toastMessage("New group!");
             Intent myIntent = new Intent(Activity_CreateNewGroup.this, Activity_InGroup.class);
             Activity_CreateNewGroup.this.startActivity(myIntent);
@@ -183,5 +182,6 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
         btnCreate = findViewById(R.id.btnCreate);
         btnChoose = findViewById(R.id.btnChoose);
         databaseHelper = new DatabaseHelper(this);
+        user_ids = new ArrayList<>();
     }
 }

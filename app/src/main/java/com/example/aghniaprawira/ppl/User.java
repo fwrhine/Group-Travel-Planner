@@ -5,6 +5,9 @@ public class User {
     String user_name;
 
     //constructor
+    public User() {
+    }
+
     public User(String user_name) {
         this.user_name = user_name;
     }
