@@ -1,13 +1,16 @@
 package com.example.vasun.grouptravelplanner;
 
+import android.content.Context;
 import android.content.Intent;
 import android.provider.ContactsContract;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,6 +20,8 @@ public class SignUpActivity extends AppCompatActivity {
     TextInputLayout signup_fullname, signup_username;
     TextView toLoginPage;
     Button buttonSignup;
+    RelativeLayout signupLayout;
+    InputMethodManager imm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +40,8 @@ public class SignUpActivity extends AppCompatActivity {
         buttonSignup = (Button) findViewById(R.id.buttonSignup);
 
         toLoginPage = (TextView) findViewById(R.id.toLoginPage);
+
+        signupLayout = (RelativeLayout) findViewById(R.id.signup_layout);
 
         createNewUser();
     }
@@ -78,6 +85,16 @@ public class SignUpActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        signupLayout.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                    }
+                }
+        );
     }
 
     public void onSignupFailed() {
