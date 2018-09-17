@@ -9,6 +9,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -45,10 +46,9 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        init();
-
         setContentView(R.layout.activity_new_group);
         setSupportActionBar(toolbar);
+        init();
 
         //Todo: choose image button: on click, ask permission to read gallery
         btnChoose.setOnClickListener(new View.OnClickListener() {
@@ -87,7 +87,7 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapter, View v, int position, long id){
                 //Todo: add to user_ids
-                user_ids.add();
+//                user_ids.add();
             }
         });
 
@@ -98,10 +98,15 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
         Log.d(TAG, "populateUserListView: Displaying data in the ListView.");
 
         //get data and append to list
-        List<User> users = DatabaseHelper.getAllUsers();
+        List<User> users = databaseHelper.getAllUsers();
+        List<String> user_names = new ArrayList<>();
+
+        for (User user: users) {
+            user_names.add(user.getUser_name());
+        }
 
         //create the list adapter and set the adapter
-        ListAdapter adapter = new ArrayAdapter<>(this, android.R.layout.simple_expandable_list_item_1, listData);
+        ListAdapter adapter = new ArrayAdapter<>(this, android.R.layout.simple_expandable_list_item_1, user_names);
         listViewUser.setAdapter(adapter);
     }
 

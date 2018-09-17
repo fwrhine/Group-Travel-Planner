@@ -20,10 +20,9 @@ public class Activity_InGroup extends AppCompatActivity implements NavigationVie
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        init();
-
         setContentView(R.layout.activity_main);
         setSupportActionBar(toolbar);
+        init();
 
         navigationView.setNavigationItemSelectedListener(this);
         drawer.addDrawerListener(toggle);

@@ -22,9 +22,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "contactsManager";
 
     //table names
-    private static final String TABLE_GROUP = "group";
-    private static final String TABLE_USER = "user";
-    private static final String TABLE_GROUP_USER = "group_user";
+    private static final String TABLE_GROUP = "group_table";
+    private static final String TABLE_USER = "user_table";
+    private static final String TABLE_GROUP_USER = "group_user_table";
 
     //GROUP Table - column names
     private static final String KEY_GROUP_NAME = "name";
@@ -44,7 +44,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + " TEXT," + KEY_GROUP_IMAGE + " LONGBLOB)";
 
     //USER table create statement
-    private static final String CREATE_TABLE_USER = "CREATE TABLE" + TABLE_USER
+    private static final String CREATE_TABLE_USER = "CREATE TABLE " + TABLE_USER
             + " (ID INTEGER PRIMARY KEY AUTOINCREMENT, " + KEY_USER_NAME + " TEXT)";
 
     //GROUP_USER table create statement
@@ -71,8 +71,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_GROUP);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USER);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_GROUP_USER);
-        db.execSQL("DROP TABLE IF EXISTS group_table");
-        db.execSQL("DROP TABLE IF EXISTS user_table");
 
         // create new tables
         onCreate(db);
@@ -111,6 +109,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
 
+        Log.d("apapun", c.getCount() + ".");
+
         // looping through all rows and adding to list
         if (c.moveToFirst()) {
             do {
@@ -129,7 +129,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     /*
      * Get all users
      * */
-    public static List<User> getAllUsers() {
+    public List<User> getAllUsers() {
         List<User> users = new ArrayList<User>();
         String selectQuery = "SELECT * FROM " + TABLE_USER;
 

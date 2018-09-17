@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
@@ -15,22 +16,22 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Activity_GroupList extends AppCompatActivity {
     private static final String TAG = "ListGroupActivity";
 
     DatabaseHelper databaseHelper;
-    private ListView listViewGroup;
+    private RecyclerView recyclerViewGroup;
     private FloatingActionButton fab;
     private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        init();
-
         setContentView(R.layout.activity_group_list);
         setSupportActionBar(toolbar);
+        init();
 
         //FAB: when clicked, open create new group interface
         fab.setOnClickListener(new View.OnClickListener() {
@@ -42,14 +43,7 @@ public class Activity_GroupList extends AppCompatActivity {
             }
         });
 
-        //groups on list view: when clicked, open group chat
-        listViewGroup.setOnItemClickListener(new AdapterView.OnItemClickListener(){
-            @Override
-            public void onItemClick(AdapterView<?> adapter, View v, int position, long id){
-                Intent intent = new Intent(Activity_GroupList.this, Activity_InGroup.class);
-                startActivity(intent);
-            }
-        });
+        recyclerViewGroup.setHasFixedSize(true);
 
         populateGroupListView();
 
@@ -60,22 +54,25 @@ public class Activity_GroupList extends AppCompatActivity {
         Log.d(TAG, "populateGroupListView: Displaying list of groups in the ListView.");
 
         //get data and append to list
-        Cursor data = databaseHelper.getDataGroup();
-        ArrayList<String> listData = new ArrayList<>();
-        while (data.moveToNext()) {
-            //get value from col1 and add to arraylist
-            listData.add(data.getString(1));
+        List<Group> groups = databaseHelper.getAllGroups();
+        List<String> group_names = new ArrayList<>();
+
+        for (Group group: groups) {
+            group_names.add(group.getGroup_name());
         }
 
-        //create the list adapter and set the adapter
-        ListAdapter adapter = new ArrayAdapter<>(this, android.R.layout.simple_expandable_list_item_1, listData);
+//        CustomList listAdapter = new CustomList(this, groups);
+        ListAdapter adapter = new ArrayAdapter<>(this, android.R.layout.simple_expandable_list_item_1, group_names);
         listViewGroup.setAdapter(adapter);
+//        listViewGroup=(ListView)findViewById(R.id.listViewGroup);
+//        listViewGroup.setAdapter(listAdapter);
     }
 
     private void init() {
         toolbar = findViewById(R.id.toolbar);
-        listViewGroup = findViewById(R.id.listViewGroup);
+        recyclerViewGroup = (RecyclerView)findViewById(R.id.rv);
         databaseHelper = new DatabaseHelper(this);
+        fab = findViewById(R.id.fab);
     }
 
 }

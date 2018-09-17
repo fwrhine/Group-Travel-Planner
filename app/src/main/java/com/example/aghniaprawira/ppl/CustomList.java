@@ -13,12 +13,14 @@ import android.widget.TextView;
 import com.example.aghniaprawira.ppl.Group;
 import com.example.aghniaprawira.ppl.R;
 
+import java.util.List;
+
 public class CustomList extends ArrayAdapter<String> {
 
     private final Activity context;
-    private final Group[] groups;
+    private final List<Group> groups;
 
-    public CustomList(Activity context, Group[] groups) {
+    public CustomList(Activity context, List<Group> groups) {
         super(context, R.layout.row);
         this.context = context;
         this.groups = groups;
@@ -33,10 +35,10 @@ public class CustomList extends ArrayAdapter<String> {
         ImageView imageView = (ImageView) rowView.findViewById(R.id.img);
 
         //set text
-        txtTitle.setText(groups[position].getGroup_name());
+        txtTitle.setText(groups.get(position).getGroup_name());
 
         //set image
-        byte[] byteArray = groups[position].getGroup_image();
+        byte[] byteArray = groups.get(position).getGroup_image();
         Bitmap bmp = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
         imageView.setImageBitmap(bmp);
 
