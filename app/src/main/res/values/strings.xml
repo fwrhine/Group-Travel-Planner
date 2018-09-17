@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">GroupTravelPlanner</string>
-    <color name="background_color">#88CB40</color>
+    <string name="to_sign_in_page_dialog">Already have an account? <b>Sign in</b></string>
 </resources>

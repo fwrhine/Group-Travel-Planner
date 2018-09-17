@@ -88,8 +88,8 @@
             <EditText
                 android:id="@+id/edit_email"
                 android:hint="Email"
-                android:inputType="text"
-                android:drawableLeft="@drawable/ic_email_black_24dp"
+                android:inputType="textEmailAddress"
+                android:drawableStart="@drawable/ic_email_black_24dp"
                 android:theme="@style/EditorLineStyle"
                 style="@style/EditorFieldStyle" />
         </android.support.design.widget.TextInputLayout>
@@ -109,7 +109,7 @@
                 android:id="@+id/edit_password"
                 android:hint="Password"
                 android:inputType="textPassword"
-                android:drawableLeft="@drawable/ic_vpn_key_black_24dp"
+                android:drawableStart="@drawable/ic_vpn_key_black_24dp"
                 android:theme="@style/EditorLineStyle"
                 style="@style/EditorFieldStyle" />
         </android.support.design.widget.TextInputLayout>
@@ -144,7 +144,7 @@
             android:id="@+id/toLoginPage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Already have an account? Sign in"
+            android:text="@string/to_sign_in_page_dialog"
             style="@style/CategoryStyle" />/>
     </LinearLayout>
 </RelativeLayout>
