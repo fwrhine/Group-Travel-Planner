@@ -16,7 +16,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String LOG = "DatabaseHelper";
 
     //database Version
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 7;
 
     //database name
     private static final String DATABASE_NAME = "contactsManager";
@@ -58,7 +58,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-
         //create required tables
         db.execSQL(CREATE_TABLE_GROUP);
         db.execSQL(CREATE_TABLE_USER);
@@ -109,12 +108,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
 
-        Log.d("apapun", c.getCount() + ".");
-
         // looping through all rows and adding to list
         if (c.moveToFirst()) {
             do {
                 Group group = new Group();
+                Log.d("apapun", (c.getBlob(c.getColumnIndex(KEY_GROUP_IMAGE))) + ".");
                 group.setGroup_name((c.getString(c.getColumnIndex(KEY_GROUP_NAME))));
                 group.setGroup_image(c.getBlob(c.getColumnIndex(KEY_GROUP_IMAGE)));
 

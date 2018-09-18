@@ -6,10 +6,10 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -113,12 +113,13 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
     //convert image view to byte array
     public static byte[] imageViewToByte(ImageView image) {
         try {
-            Bitmap bitmap = ((BitmapDrawable)image.getDrawable()).getBitmap();
+            Bitmap bitmap = getBitmapFromDrawable(image.getDrawable());
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
             byte[] byteArray = stream.toByteArray();
             return byteArray;
         } catch (ClassCastException e) {
+            e.printStackTrace();
             return new byte[0];
         }
     }
@@ -188,5 +189,14 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
         btnChoose = findViewById(R.id.btnChoose);
         databaseHelper = new DatabaseHelper(this);
         user_ids = new ArrayList<>();
+    }
+
+    @NonNull
+    private static Bitmap getBitmapFromDrawable(@NonNull Drawable drawable) {
+        final Bitmap bmp = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        final Canvas canvas = new Canvas(bmp);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+        return bmp;
     }
 }
