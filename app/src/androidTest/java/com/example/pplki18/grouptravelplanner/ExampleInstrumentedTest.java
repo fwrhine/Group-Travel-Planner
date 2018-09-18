@@ -1,4 +1,4 @@
-package com.example.vasun.grouptravelplanner;
+package com.example.pplki18.grouptravelplanner;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
