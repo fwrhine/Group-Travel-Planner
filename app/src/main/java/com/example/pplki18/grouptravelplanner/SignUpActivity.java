@@ -1,68 +1,89 @@
 package com.example.pplki18.grouptravelplanner;
 
-import android.content.Context;
 import android.content.Intent;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
+import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
 
 public class SignUpActivity extends AppCompatActivity {
     DatabaseHelper myDb;
-    InputMethodManager imm;
-
-    @BindView(R.id.edit_fullname) EditText edit_fullname;
-    @BindView(R.id.edit_username) EditText edit_username;
-    @BindView(R.id.edit_email) EditText edit_email;
-    @BindView(R.id.edit_password) EditText edit_password;
-
-    @BindView(R.id.toLoginPage) TextView toLoginPage;
-
-    @OnClick(R.id.buttonSignup) void createUser() {
-        if (!validate()) {
-            return;
-        }
-
-        int isCreated = myDb.insertData(edit_fullname.getText().toString(),
-                edit_username.getText().toString(),
-                edit_email.getText().toString(),
-                edit_password.getText().toString());
-
-        if (isCreated == 2) {
-            Toast.makeText(SignUpActivity.this, "Username or email is already taken",
-                    Toast.LENGTH_LONG).show();
-        } else if (isCreated == 1) {
-            Toast.makeText(SignUpActivity.this, "Sign-up success!",
-                    Toast.LENGTH_LONG).show();
-        } else if (isCreated == 0) {
-            Toast.makeText(SignUpActivity.this, "Sign-up failed",
-                    Toast.LENGTH_LONG).show();
-        }
-    }
-
-    @OnClick(R.id.toLoginPage) void renderLoginPage() {
-        Intent intent = new Intent(SignUpActivity.this, LoginActivity.class);
-        startActivity(intent);
-    }
-
-    @OnClick(R.id.signup_layout) void hideKeyboard(View view) {
-        imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-    }
+    EditText edit_fullname, edit_username, edit_email, edit_password;
+    TextInputLayout signup_fullname, signup_username;
+    TextView toLoginPage;
+    Button buttonSignup;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
         myDb = new DatabaseHelper(this);
-        ButterKnife.bind(this);
+
+        signup_fullname = (TextInputLayout) findViewById(R.id.signup_fullname);
+        signup_username = (TextInputLayout) findViewById(R.id.signup_username);
+
+        edit_fullname = (EditText) findViewById(R.id.edit_fullname);
+        edit_username = (EditText) findViewById(R.id.edit_username);
+        edit_email = (EditText) findViewById(R.id.edit_email);
+        edit_password = (EditText) findViewById(R.id.edit_password);
+
+        buttonSignup = (Button) findViewById(R.id.buttonSignup);
+
+        toLoginPage = (TextView) findViewById(R.id.toLoginPage);
+
+        createNewUser();
+    }
+
+    public void createNewUser() {
+        buttonSignup.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (!validate()) {
+//                            onSignupFailed();
+                            return;
+                        }
+//                        buttonSignup.setEnabled(false);
+
+                        int isCreated = myDb.insertData(edit_fullname.getText().toString(),
+                                edit_username.getText().toString(),
+                                edit_email.getText().toString(),
+                                edit_password.getText().toString());
+
+                        if (isCreated == 2) {
+                            Toast.makeText(SignUpActivity.this, "Username or email is already taken",
+                                    Toast.LENGTH_LONG).show();
+                            return;
+                        } else if (isCreated == 1) {
+                            Toast.makeText(SignUpActivity.this, "Sign-up success!",
+                                    Toast.LENGTH_LONG).show();
+                            return;
+                        } else if (isCreated == 0) {
+                            Toast.makeText(SignUpActivity.this, "Sign-up failed",
+                                    Toast.LENGTH_LONG).show();
+                            return;
+                        }
+                    }
+                }
+        );
+
+        toLoginPage.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                Intent intent = new Intent(SignUpActivity.this, LoginActivity.class);
+                startActivity(intent);
+            }
+        });
+    }
+
+    public void onSignupFailed() {
+        Toast.makeText(getBaseContext(), "Sign-up Failed", Toast.LENGTH_LONG).show();
+        buttonSignup.setEnabled(true);
     }
 
     public boolean validate() {
@@ -96,8 +117,7 @@ public class SignUpActivity extends AppCompatActivity {
             Toast.makeText(SignUpActivity.this, "Password must consists of 5 to 15 " +
                             "alphanumeric characters",
                     Toast.LENGTH_LONG).show();
-            valid = false;
-            edit_password.setError(null);
+            valid = false;edit_password.setError(null);
         }
 
         return valid;
