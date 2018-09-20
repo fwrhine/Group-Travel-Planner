@@ -8,6 +8,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 import com.example.pplki18.grouptravelplanner.data.UserContract.UserEntry;
 import com.example.pplki18.grouptravelplanner.data.GroupContract.GroupEntry;
+import com.example.pplki18.grouptravelplanner.data.UserGroupContract.UserGroupEntry;
+import com.example.pplki18.grouptravelplanner.data.FriendsContract.FriendsEntry;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
@@ -47,9 +49,29 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + GroupEntry.COL_GROUP_NAME + " TEXT NOT NULL, "
                 + GroupEntry.COL_GROUP_IMAGE + " LONGBLOB);";
 
+        String SQL_CREATE_IN_GROUP_REL = "CREATE TABLE " + UserGroupEntry.TABLE_NAME + " ("
+                + UserGroupEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + UserGroupEntry.COL_GROUP_ID + " INTEGER, "
+                + UserGroupEntry.COL_USER_ID + " INTEGER, "
+                + "FOREIGN KEY(" + UserGroupEntry.COL_USER_ID + ")"
+                + " REFERENCES " + UserEntry.TABLE_NAME + "(" + UserEntry._ID + "), "
+                + "FOREIGN KEY(" + UserGroupEntry.COL_GROUP_ID + ") "
+                + " REFERENCES " + GroupEntry.TABLE_NAME + "(" + GroupEntry._ID + "));";
+
+        String SQL_CREATE_FRIENDS_REL = "CREATE TABLE " + FriendsEntry.TABLE_NAME + " ("
+                + FriendsEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + FriendsEntry.COL_USER_ID + " INTEGER, "
+                + FriendsEntry.COL_FRIEND_ID + " INTEGER, "
+                + "FOREIGN KEY(" + FriendsEntry.COL_USER_ID + ")"
+                + " REFERENCES " + UserEntry.TABLE_NAME + "(" + UserEntry._ID + "), "
+                + "FOREIGN KEY(" + FriendsEntry.COL_USER_ID + ")"
+                + " REFERENCES " + UserEntry.TABLE_NAME + "(" + UserEntry._ID + "));";
+
         // Execute the SQL statement
         db.execSQL(SQL_CREATE_USER_TABLE);
         db.execSQL(SQL_CREATE_GROUP_TABLE);
+        db.execSQL(SQL_CREATE_IN_GROUP_REL);
+        db.execSQL(SQL_CREATE_FRIENDS_REL);
     }
 
     @Override
