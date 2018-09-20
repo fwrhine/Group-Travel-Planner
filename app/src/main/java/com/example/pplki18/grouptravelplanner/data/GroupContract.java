@@ -4,10 +4,16 @@ import android.provider.BaseColumns;
 
 public class GroupContract {
 
+    // To prevent someone from accidentally instantiating the contract class,
+    // give it an empty constructor.
     private GroupContract(){}
 
+    /**
+     * Inner class that defines constant values for the group table.
+     */
     public static final class GroupEntry implements BaseColumns{
 
+        /** Name of database table for user-friend relation */
         public static final String TABLE_NAME = "groups";
 
         public static final String _ID = BaseColumns._ID;
