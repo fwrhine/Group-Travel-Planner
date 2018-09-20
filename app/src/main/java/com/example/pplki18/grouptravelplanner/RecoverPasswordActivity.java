@@ -1,5 +1,6 @@
 package com.example.pplki18.grouptravelplanner;
 
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -73,6 +74,10 @@ public class RecoverPasswordActivity extends AppCompatActivity {
 
             Toast.makeText(RecoverPasswordActivity.this, "Password changed!.",
                     Toast.LENGTH_SHORT).show();
+
+            Intent i = new Intent(RecoverPasswordActivity.this, LoginActivity.class);
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(i);
         }
         else {
             Toast.makeText(RecoverPasswordActivity.this, "Password doesn't match!",
