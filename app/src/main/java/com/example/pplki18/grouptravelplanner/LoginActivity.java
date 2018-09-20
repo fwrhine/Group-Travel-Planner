@@ -59,6 +59,8 @@ public class LoginActivity extends AppCompatActivity {
             //On click function
             public void onClick(View view) {
                 if(validateLogin()) {
+
+                    // Saves the login information to the session
                     sessionManager.createLoginSession(getUsernameFromEditText(), email);
                     Log.d("SIGN-IN", sessionManager.isLoggedIn()+".");
                     Toast.makeText(LoginActivity.this, "Sign-in success!",
@@ -78,6 +80,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void renderSignUpPage() {
+        // Add listener to the SignUp TextView
         toSignUpPage.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 intent = new Intent(LoginActivity.this, SignUpActivity.class);
@@ -87,6 +90,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void renderForgotPasswordPage() {
+        // Add listener to the ForgotPassword TextView
         toForgotPasswordPage.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 intent = new Intent(LoginActivity.this, ForgotPasswordActivity.class);
