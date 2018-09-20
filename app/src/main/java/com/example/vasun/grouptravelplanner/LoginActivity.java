@@ -12,11 +12,15 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.vasun.grouptravelplanner.data.DatabaseHelper;
+import com.example.vasun.grouptravelplanner.data.UserContract.UserEntry;
+
 public class LoginActivity extends AppCompatActivity {
     DatabaseHelper myDb;
     EditText edit_username, edit_password;
     Button buttonLogin;
     TextView toSignUpPage;
+    TextView toForgotPasswordPage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,9 +30,11 @@ public class LoginActivity extends AppCompatActivity {
         edit_username = (EditText) findViewById(R.id.edit_username);
         edit_password = (EditText) findViewById(R.id.edit_password);
         toSignUpPage = (TextView) findViewById(R.id.toSignUpPage);
+        toForgotPasswordPage = (TextView) findViewById(R.id.toForgotPasswordPage);
         buttonLogin = (Button) findViewById(R.id.buttonSignup);
 
         renderSignUpPage();
+        renderForgotPasswordPage();
 
         buttonLogin.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -44,9 +50,6 @@ public class LoginActivity extends AppCompatActivity {
                             Toast.LENGTH_SHORT).show();
                     Log.v("ERROR","WRONG INPUT");
                 }
-                //Create the intent to start another activity
-                //Intent intent = new Intent(view.getContext(), AnotherActivity.class);
-                //startActivity(intent);
             }
         });
 
@@ -56,6 +59,15 @@ public class LoginActivity extends AppCompatActivity {
         toSignUpPage.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 Intent intent = new Intent(LoginActivity.this, SignUpActivity.class);
+                startActivity(intent);
+            }
+        });
+    }
+
+    public void renderForgotPasswordPage() {
+        toForgotPasswordPage.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                Intent intent = new Intent(LoginActivity.this, ForgotPasswordActivity.class);
                 startActivity(intent);
             }
         });
@@ -73,10 +85,11 @@ public class LoginActivity extends AppCompatActivity {
         //Create and/or open a database to read from it
         SQLiteDatabase db = myDb.getReadableDatabase();
 
-        String query = "SELECT * FROM " + myDb.TABLE_NAME + " WHERE "
-                + myDb.COL_2 + "=?" + " AND "
-                + myDb.COL_3 + "=?";
+        String query = "SELECT * FROM " + UserEntry.TABLE_NAME + " WHERE "
+                + UserEntry.COL_USERNAME + "=?" + " AND "
+                + UserEntry.COL_PASSWORD + "=?";
         String[] selectionArgs = new String[]{username,password};
+
         Cursor cursor = db.rawQuery(query, selectionArgs);
 
         if(cursor.getCount() == 1){
