@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
+
 public class SearchBarActivity extends AppCompatActivity {
 
     DatabaseHelper dbhelper;

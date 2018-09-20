@@ -6,6 +6,9 @@ import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
 
+import com.example.pplki18.grouptravelplanner.R;
+import com.example.pplki18.grouptravelplanner.SignUpActivity;
+
 public class SplashScreenActivity extends AppCompatActivity {
 
     private int SLEEP_TIMER = 2;
