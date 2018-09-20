@@ -32,7 +32,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        // Create Strings that contains the SQL statement to create the tables
+        /** Create Strings that contains the SQL statement to create the tables */
+        // String to create a table for users
         String SQL_CREATE_USER_TABLE = "CREATE TABLE " + UserEntry.TABLE_NAME + " ("
                 + UserEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + UserEntry.COL_FULLNAME + " TEXT NOT NULL, "
@@ -44,11 +45,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + UserEntry.COL_PICTURE + " LONGBLOB, "
                 + UserEntry.COL_STATUS + " INTEGER NOT NULL DEFAULT 0);";
 
+        // String to create a table for groups
         String SQL_CREATE_GROUP_TABLE = "CREATE TABLE " + GroupEntry.TABLE_NAME + " ("
                 + GroupEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + GroupEntry.COL_GROUP_NAME + " TEXT NOT NULL, "
                 + GroupEntry.COL_GROUP_IMAGE + " LONGBLOB);";
 
+        // String to create a table for user-group relation
         String SQL_CREATE_IN_GROUP_REL = "CREATE TABLE " + UserGroupEntry.TABLE_NAME + " ("
                 + UserGroupEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + UserGroupEntry.COL_GROUP_ID + " INTEGER, "
@@ -58,6 +61,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + "FOREIGN KEY(" + UserGroupEntry.COL_GROUP_ID + ") "
                 + " REFERENCES " + GroupEntry.TABLE_NAME + "(" + GroupEntry._ID + "));";
 
+        // String to create a table for user-user relation
         String SQL_CREATE_FRIENDS_REL = "CREATE TABLE " + FriendsEntry.TABLE_NAME + " ("
                 + FriendsEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + FriendsEntry.COL_USER_ID + " INTEGER, "
@@ -67,7 +71,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + "FOREIGN KEY(" + FriendsEntry.COL_USER_ID + ")"
                 + " REFERENCES " + UserEntry.TABLE_NAME + "(" + UserEntry._ID + "));";
 
-        // Execute the SQL statement
+        // Execute the SQL statements
         db.execSQL(SQL_CREATE_USER_TABLE);
         db.execSQL(SQL_CREATE_GROUP_TABLE);
         db.execSQL(SQL_CREATE_IN_GROUP_REL);
