@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.vasun.grouptravelplanner">
+    package="com.example.pplki18.grouptravelplanner">
 
     <supports-screens
         android:largeScreens="true"

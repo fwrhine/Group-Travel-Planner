@@ -1,4 +1,4 @@
-package com.example.vasun.grouptravelplanner;
+package com.example.pplki18.grouptravelplanner;
 
 import android.content.Intent;
 import android.database.Cursor;
@@ -12,8 +12,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.vasun.grouptravelplanner.data.DatabaseHelper;
-import com.example.vasun.grouptravelplanner.data.UserContract.UserEntry;
+import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
+import com.example.pplki18.grouptravelplanner.data.UserContract.UserEntry;
 
 public class LoginActivity extends AppCompatActivity {
     DatabaseHelper myDb;

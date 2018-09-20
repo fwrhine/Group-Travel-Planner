@@ -1,4 +1,4 @@
-package com.example.vasun.grouptravelplanner;
+package com.example.pplki18.grouptravelplanner;
 
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
@@ -8,7 +8,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.vasun.grouptravelplanner.data.DatabaseHelper;
+import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
+import com.example.pplki18.grouptravelplanner.data.UserContract.UserEntry;
 
 public class RecoverPasswordActivity extends AppCompatActivity {
     DatabaseHelper myDb;
@@ -64,9 +65,9 @@ public class RecoverPasswordActivity extends AppCompatActivity {
             //Create and/or open a database to read from it
             SQLiteDatabase db = myDb.getReadableDatabase();
 
-            String query = "UPDATE " + myDb.TABLE_NAME
-                    + " SET " + myDb.COL_3 + " =\"" + newPassword + "\""
-                    + " WHERE " + myDb.COL_4 + " =\"" + email + "\"";
+            String query = "UPDATE " + UserEntry.TABLE_NAME
+                    + " SET " + UserEntry.COL_PASSWORD + " =\"" + newPassword + "\""
+                    + " WHERE " + UserEntry.COL_EMAIL + " =\"" + email + "\"";
 
             db.execSQL(query);
 

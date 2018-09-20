@@ -1,4 +1,4 @@
-package com.example.vasun.grouptravelplanner.data;
+package com.example.pplki18.grouptravelplanner.data;
 
 import android.provider.BaseColumns;
 

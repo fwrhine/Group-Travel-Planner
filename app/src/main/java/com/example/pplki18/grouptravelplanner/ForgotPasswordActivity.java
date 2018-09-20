@@ -1,4 +1,4 @@
-package com.example.vasun.grouptravelplanner;
+package com.example.pplki18.grouptravelplanner;
 
 import android.content.Intent;
 import android.database.Cursor;
@@ -10,7 +10,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.vasun.grouptravelplanner.data.DatabaseHelper;
+import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
+import com.example.pplki18.grouptravelplanner.data.UserContract.UserEntry;
 
 public class ForgotPasswordActivity extends AppCompatActivity {
     DatabaseHelper myDb;
@@ -51,8 +52,8 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         //Create and/or open a database to read from it
         SQLiteDatabase db = myDb.getReadableDatabase();
 
-        String query = "SELECT * FROM " + myDb.TABLE_NAME + " WHERE "
-                + myDb.COL_4 + "=?";
+        String query = "SELECT * FROM " + UserEntry.TABLE_NAME + " WHERE "
+                + UserEntry.COL_EMAIL + "=?";
 
         String[] selectionArgs = new String[]{email};
 

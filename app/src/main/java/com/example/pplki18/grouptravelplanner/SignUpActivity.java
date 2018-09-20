@@ -1,4 +1,4 @@
-package com.example.vasun.grouptravelplanner;
+package com.example.pplki18.grouptravelplanner;
 
 import android.content.Intent;
 import android.support.design.widget.TextInputLayout;
@@ -10,7 +10,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.vasun.grouptravelplanner.data.DatabaseHelper;
+import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
 
 public class SignUpActivity extends AppCompatActivity {
     DatabaseHelper myDb;

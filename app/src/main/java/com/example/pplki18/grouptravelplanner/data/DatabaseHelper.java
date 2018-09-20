@@ -1,4 +1,4 @@
-package com.example.vasun.grouptravelplanner.data;
+package com.example.pplki18.grouptravelplanner.data;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -6,8 +6,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-import com.example.vasun.grouptravelplanner.data.UserContract.UserEntry;
-import com.example.vasun.grouptravelplanner.data.GroupContract.GroupEntry;
+import com.example.pplki18.grouptravelplanner.data.UserContract.UserEntry;
+import com.example.pplki18.grouptravelplanner.data.GroupContract.GroupEntry;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
