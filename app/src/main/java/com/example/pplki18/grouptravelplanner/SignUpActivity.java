@@ -19,6 +19,8 @@ public class SignUpActivity extends AppCompatActivity {
     TextView toLoginPage;
     Button buttonSignup;
 
+    Intent intent;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,6 +65,9 @@ public class SignUpActivity extends AppCompatActivity {
                         } else if (isCreated == 1) {
                             Toast.makeText(SignUpActivity.this, "Sign-up success!",
                                     Toast.LENGTH_LONG).show();
+                            intent = new Intent(SignUpActivity.this, LoginActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(intent);
                             return;
                         } else if (isCreated == 0) {
                             Toast.makeText(SignUpActivity.this, "Sign-up failed",
@@ -75,7 +80,7 @@ public class SignUpActivity extends AppCompatActivity {
 
         toLoginPage.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                Intent intent = new Intent(SignUpActivity.this, LoginActivity.class);
+                intent = new Intent(SignUpActivity.this, LoginActivity.class);
                 startActivity(intent);
             }
         });
