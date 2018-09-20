@@ -9,6 +9,11 @@ import com.example.pplki18.grouptravelplanner.LoginActivity;
 
 import java.util.HashMap;
 
+/**
+ * Class that stores and loads session data
+ * for other activities that needs a quick reference
+ * of the user's information (e.g. username, isLoggedIn).
+ */
 public class SessionManager {
 
     // Shared Preferences
