@@ -70,6 +70,12 @@ public class LoginActivity extends AppCompatActivity {
 
         // Checks whether the user exists
         if(cursor.getCount() == 1){
+            if(cursor !=null && cursor.moveToFirst()) {
+                do {
+                    email = cursor.getString(cursor.getColumnIndex("email"));
+                    Log.d("EMAIL", email);
+                } while (cursor.moveToNext());
+            }
             return true;
         }
         return false;
@@ -139,36 +145,6 @@ public class LoginActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-    }
-
-    public boolean validateLogin() {
-        String username = getUsernameFromEditText();
-        String password = getPasswordFromEditText();
-
-        // To access our database, we instantiate our subclass of SQLiteOpenHelper
-        // and pass the context, which is the current activity
-        myDb = new DatabaseHelper(this);
-
-        //Create and/or open a database to read from it
-        SQLiteDatabase db = myDb.getReadableDatabase();
-
-        String query = "SELECT * FROM " + UserEntry.TABLE_NAME + " WHERE "
-                + UserEntry.COL_USERNAME + "=?" + " AND "
-                + UserEntry.COL_PASSWORD + "=?";
-        String[] selectionArgs = new String[]{username,password};
-
-        Cursor cursor = db.rawQuery(query, selectionArgs);
-
-        if(cursor.getCount() == 1){
-            if(cursor !=null && cursor.moveToFirst()) {
-                do {
-                    email = cursor.getString(cursor.getColumnIndex("email"));
-                    Log.d("EMAIL", email);
-                } while (cursor.moveToNext());
-            }
-            return true;
-        }
-        return false;
     }
 
     public String getUsernameFromEditText(){
