@@ -112,7 +112,10 @@ public class LoginActivity extends AppCompatActivity {
                     // Send success message to the user
                     Toast.makeText(LoginActivity.this, "Sign-in success!",
                             Toast.LENGTH_SHORT).show();
+
+                    // Redirect to ProfileActivity and forget the previous activities
                     intent = new Intent(LoginActivity.this, UserProfileActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
                     Log.d("SIGN-IN", "SUCCESS");
                 }

@@ -8,8 +8,10 @@ import android.view.WindowManager;
 
 import com.example.pplki18.grouptravelplanner.R;
 import com.example.pplki18.grouptravelplanner.SignUpActivity;
+import com.example.pplki18.grouptravelplanner.utils.SessionManager;
 
 public class SplashScreenActivity extends AppCompatActivity {
+    SessionManager sessionManager;
 
     private int SLEEP_TIMER = 2;
     @Override
@@ -20,6 +22,10 @@ public class SplashScreenActivity extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         setContentView(R.layout.activity_splash_screen);
+
+        // Initialize session manager, because we're gonna check whether the user is logged in or not.
+        sessionManager = new SessionManager(getApplicationContext());
+
 //        getSupportActionBar().hide();
         LogoLauncher logoLauncher = new LogoLauncher();
         logoLauncher.start();
@@ -34,7 +40,9 @@ public class SplashScreenActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
 
-            Intent intent = new Intent(SplashScreenActivity.this, LoginActivity.class);
+            sessionManager.checkLogin();
+
+            Intent intent = new Intent(SplashScreenActivity.this, UserProfileActivity.class);
             startActivity(intent);
             SplashScreenActivity.this.finish();
         }
