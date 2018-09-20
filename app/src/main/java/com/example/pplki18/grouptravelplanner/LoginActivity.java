@@ -25,6 +25,7 @@ public class LoginActivity extends AppCompatActivity {
     TextView toForgotPasswordPage;
 
     Intent intent;
+    String email;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,10 +49,12 @@ public class LoginActivity extends AppCompatActivity {
             //On click function
             public void onClick(View view) {
                 if(validateLogin()) {
-                    sessionManager.createLoginSession(getUsernameFromEditText());
+                    sessionManager.createLoginSession(getUsernameFromEditText(), email);
                     Log.d("SIGN-IN", sessionManager.isLoggedIn()+".");
                     Toast.makeText(LoginActivity.this, "Sign-in success!",
                             Toast.LENGTH_SHORT).show();
+                    intent = new Intent(LoginActivity.this, UserProfileActivity.class);
+                    startActivity(intent);
                     Log.d("SIGN-IN", "SUCCESS");
                 }
                 else {
@@ -102,6 +105,12 @@ public class LoginActivity extends AppCompatActivity {
         Cursor cursor = db.rawQuery(query, selectionArgs);
 
         if(cursor.getCount() == 1){
+            if(cursor !=null && cursor.moveToFirst()) {
+                do {
+                    email = cursor.getString(cursor.getColumnIndex("email"));
+                    Log.d("EMAIL", email);
+                } while (cursor.moveToNext());
+            }
             return true;
         }
         return false;

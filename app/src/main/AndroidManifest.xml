@@ -25,7 +25,8 @@
         <activity android:name=".SignUpActivity" />
         <activity android:name=".LoginActivity" />
         <activity android:name=".ForgotPasswordActivity" />
-        <activity android:name=".RecoverPasswordActivity"></activity>
+        <activity android:name=".RecoverPasswordActivity"/>
+        <activity android:name=".UserProfileActivity"/>
 
         <meta-data
             android:name="preloaded_fonts"
