@@ -1,5 +1,6 @@
 package com.example.pplki18.grouptravelplanner;
 
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -7,8 +8,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,6 +27,10 @@ public class LoginActivity extends AppCompatActivity {
     TextView toSignUpPage;
     TextView toForgotPasswordPage;
 
+    RelativeLayout loginLayout;
+
+    InputMethodManager imm;
+
     Intent intent;
     String email;
 
@@ -38,11 +45,14 @@ public class LoginActivity extends AppCompatActivity {
         toForgotPasswordPage = (TextView) findViewById(R.id.toForgotPasswordPage);
         buttonLogin = (Button) findViewById(R.id.buttonSignup);
 
+        loginLayout = (RelativeLayout) findViewById(R.id.login_layout);
+
         // Initialize session manager, because we're gonna change the login status
         sessionManager = new SessionManager(getApplicationContext());
 
         renderSignUpPage();
         renderForgotPasswordPage();
+        hideKeyboard(loginLayout);
 
         buttonLogin.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -85,7 +95,6 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-
     public boolean validateLogin() {
         String username = getUsernameFromEditText();
         String password = getPasswordFromEditText();
@@ -122,5 +131,17 @@ public class LoginActivity extends AppCompatActivity {
 
     public String getPasswordFromEditText(){
         return edit_password.getText().toString();
+    }
+
+    public void hideKeyboard(View view) {
+        view.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                    }
+                }
+        );
     }
 }
