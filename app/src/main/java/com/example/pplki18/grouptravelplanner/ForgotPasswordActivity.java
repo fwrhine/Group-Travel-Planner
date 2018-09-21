@@ -51,8 +51,10 @@ public class ForgotPasswordActivity extends AppCompatActivity {
 
         // Checks whether the user exists
         if(cursor.getCount() == 1){
+            cursor.close();
             return true;
         }
+        cursor.close();
         return false;
     }
 
