@@ -40,11 +40,16 @@ public class SplashScreenActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
 
-            sessionManager.checkLogin();
-
-            Intent intent = new Intent(SplashScreenActivity.this, UserProfileActivity.class);
-            startActivity(intent);
-            SplashScreenActivity.this.finish();
+            if(!sessionManager.isLoggedIn()){
+                // Redirect to Login Activity if the user is not logged in
+                sessionManager.goToLogin();
+            }
+            else {
+                // Redirect to Profile Activity if the user is logged in
+                Intent intent = new Intent(SplashScreenActivity.this, UserProfileActivity.class);
+                startActivity(intent);
+                SplashScreenActivity.this.finish();
+            }
         }
     }
 }
