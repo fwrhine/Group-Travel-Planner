@@ -32,8 +32,6 @@ public class UserProfileActivity extends AppCompatActivity {
         username_label = (TextView) findViewById(R.id.username_label);
         email_label = (TextView) findViewById(R.id.email_label);
 
-        session.checkLogin();
-
         // get user data from session
         HashMap<String, String> user = session.getUserDetails();
 
