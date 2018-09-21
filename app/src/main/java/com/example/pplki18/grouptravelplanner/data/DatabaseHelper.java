@@ -55,7 +55,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String SQL_CREATE_GROUP_TABLE = "CREATE TABLE " + GroupEntry.TABLE_NAME + " ("
                 + GroupEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + GroupEntry.COL_GROUP_NAME + " TEXT NOT NULL, "
-                + GroupEntry.COL_GROUP_IMAGE + " LONGBLOB);";
+                + GroupEntry.COL_GROUP_IMAGE + " LONGBLOB, "
+                + GroupEntry.COL_GROUP_CREATOR + " INTEGER NOT NULL, "
+                + "FOREIGN KEY(" + GroupEntry.COL_GROUP_CREATOR + ")"
+                + " REFERENCES " + UserEntry.TABLE_NAME + "(" + UserEntry._ID + "));`12`";
 
         // String to create a table for user-group relation
         String SQL_CREATE_IN_GROUP_REL = "CREATE TABLE " + UserGroupEntry.TABLE_NAME + " ("
@@ -108,6 +111,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             cursor.close();
             return 2;
         }
+        cursor.close();
 
         ContentValues contentValues = new ContentValues();
         contentValues.put(UserEntry.COL_FULLNAME, fullname);
