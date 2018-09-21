@@ -27,13 +27,10 @@ public class SearchCursorAdapter extends CursorAdapter {
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         // Find fields to populate in inflated template
-        TextView tvName = (TextView) view.findViewById(R.id.name);
         TextView tvUsername = (TextView) view.findViewById(R.id.username);
         // Extract properties from cursor
-        String name = cursor.getString(cursor.getColumnIndexOrThrow("fullname"));
         String username = cursor.getString(cursor.getColumnIndexOrThrow("username"));
         // Populate fields with extracted properties
-        tvName.setText(name);
         tvUsername.setText(String.valueOf(username));
     }
 }
