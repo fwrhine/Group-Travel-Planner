@@ -5,6 +5,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
@@ -18,19 +20,27 @@ public class UserProfileActivity extends AppCompatActivity {
     DatabaseHelper myDb;
 
     TextView fullname_label, username_label, email_label;
-    String fullname_s, username_s, email_s;
+    Button buttonLogout;
 
+    String fullname_s, username_s, email_s;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_profile);
 
+        init();
+
+    }
+
+    public void init() {
         session = new SessionManager(getApplicationContext());
 
         fullname_label = (TextView) findViewById(R.id.fullname_label);
         username_label = (TextView) findViewById(R.id.username_label);
         email_label = (TextView) findViewById(R.id.email_label);
+
+        buttonLogout = (Button) findViewById(R.id.buttonLogout);
 
         // get user data from session
         HashMap<String, String> user = session.getUserDetails();
@@ -67,6 +77,14 @@ public class UserProfileActivity extends AppCompatActivity {
         username_label.setText(username_s);
         email_label.setText(email_s);
 
+        buttonLogout.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        session.logoutUser();
+                    }
+                }
+        );
     }
 
 }
