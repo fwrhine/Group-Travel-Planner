@@ -81,6 +81,7 @@
     </RelativeLayout>
 
     <LinearLayout
+        android:id="@+id/dataLayout"
         android:layout_marginLeft="15dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -222,4 +223,16 @@
 
         </RelativeLayout>
     </LinearLayout>
+    
+    <Button
+        android:id="@+id/buttonLogout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/dataLayout"
+        android:drawableStart="@drawable/ic_exit_to_app_black_24dp"
+        android:layout_centerHorizontal="true"
+        android:backgroundTint="@color/background_color2"
+        android:layout_marginTop="30dp"
+        android:text="Logout"
+        />
 </RelativeLayout>
