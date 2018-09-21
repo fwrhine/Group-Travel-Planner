@@ -41,6 +41,9 @@ public class SessionManager {
     // Email address (make variable public to access from outside)
     public static final String KEY_EMAIL = "email";
 
+    // Gender
+    public static final String KEY_GENDER = "gender";
+
     // Trip status
     public static final String IS_ON_TRIP = "isOnTrip";
 
@@ -54,7 +57,7 @@ public class SessionManager {
     /**
      * Create login session
      * */
-    public void createLoginSession(String name, String email){
+    public void createLoginSession(String name, String email, String gender){
         // Storing login value as TRUE
         editor.putBoolean(IS_LOGIN, true);
 
@@ -63,6 +66,9 @@ public class SessionManager {
 
         // Storing email in pref
         editor.putString(KEY_EMAIL, email);
+
+        //Storing gender in pref
+        editor.putString(KEY_GENDER, gender);
 
         // commit changes
         editor.commit();
@@ -102,6 +108,9 @@ public class SessionManager {
 
         // user email id
         user.put(KEY_EMAIL, pref.getString(KEY_EMAIL, null));
+
+        // user gender
+        user.put(KEY_GENDER, pref.getString(KEY_GENDER, null));
 
         // user trip status (TYPE IS STRING)
         user.put(IS_ON_TRIP, pref.getString(IS_ON_TRIP, null));

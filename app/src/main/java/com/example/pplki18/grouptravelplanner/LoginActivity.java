@@ -33,6 +33,7 @@ public class LoginActivity extends AppCompatActivity {
 
     Intent intent;
     String email;
+    String gender;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,7 +74,9 @@ public class LoginActivity extends AppCompatActivity {
             if(cursor !=null && cursor.moveToFirst()) {
                 do {
                     email = cursor.getString(cursor.getColumnIndex("email"));
-                    Log.d("EMAIL", email);
+                    gender = cursor.getInt(cursor.getColumnIndex("gender")) + "";
+                    Log.d("EMAIL", "AWDAW");
+                    Log.d("GENDER", gender +"");
                 } while (cursor.moveToNext());
             }
             return true;
@@ -106,7 +109,7 @@ public class LoginActivity extends AppCompatActivity {
                 if(validateLogin()) {
 
                     // Saves the login information to the session
-                    sessionManager.createLoginSession(getUsernameFromEditText(), email);
+                    sessionManager.createLoginSession(getUsernameFromEditText(), email, gender);
                     Log.d("SIGN-IN", sessionManager.isLoggedIn()+".");
 
                     // Send success message to the user
@@ -127,7 +130,6 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         });
-
     }
 
     public void renderSignUpPage() {

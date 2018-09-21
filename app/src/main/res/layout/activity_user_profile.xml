@@ -11,21 +11,21 @@
     <RelativeLayout
         android:id="@+id/topLayout"
         android:layout_width="match_parent"
-        android:layout_height="35dp"
+        android:layout_height="40dp"
         android:orientation="horizontal">
 
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:src="@drawable/ic_navigate_before_black_24dp"
-            android:backgroundTint="@color/colorWhite"/>
+            android:backgroundTint="@color/colorWhite"
+            android:src="@drawable/ic_navigate_before_black_24dp" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:gravity="center"
             android:text="Edit Profile"
-            android:textSize="20dp"
-            android:gravity="center"/>
+            android:textSize="20dp" />
 
     </RelativeLayout>
 
@@ -54,29 +54,39 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignEnd="@+id/profile_image"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="78dp"
+            android:layout_centerVertical="true"
             android:backgroundTint="@color/colorWhite"
             android:clickable="true"
             android:src="@drawable/ic_photo_camera_black_24dp"
             app:fabSize="mini" />
 
-        <TextView
+        <EditText
             android:id="@+id/fullname_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
-            android:layout_marginBottom="41dp"
+            android:layout_marginBottom="32dp"
             android:text="My Name"
-            android:textSize="20dp" />
+            android:textSize="20dp"
+            android:textStyle="normal" />
 
         <ImageButton
+            android:id="@+id/buttonCheckFullname"
+            android:layout_width="wrap_content"
+            android:layout_height="55dp"
+            android:layout_alignTop="@+id/fullname_label"
+            android:layout_toEndOf="@+id/fullname_label"
+            android:backgroundTint="@color/background_color2"
+            android:src="@drawable/ic_check_black_24dp" />
+
+        <ImageButton
+            android:id="@+id/buttonEditFullname"
             android:layout_width="wrap_content"
             android:layout_height="29dp"
-            android:layout_below="@+id/fullname_label"
+            android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="-41dp"
+            android:layout_marginBottom="11dp"
             android:backgroundTint="@color/background_color2"
             android:src="@drawable/ic_mode_edit_black_24dp" />
 
@@ -193,11 +203,11 @@
                 android:layout_height="wrap_content"
                 android:text="GENDER"
                 android:textStyle="bold"/>
-            <TextView
+            <Spinner
                 android:id="@+id/gender_label"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="set my gender"
+                android:text="Not Specified"
                 android:layout_below="@+id/gender"/>
             <View
                 android:layout_width="match_parent"
