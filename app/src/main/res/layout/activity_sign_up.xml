@@ -22,7 +22,7 @@
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="150dp"
-            android:src="@drawable/ic_add_location_black_24dp" />
+            android:src="@drawable/ic_location_on_white_24dp" />
 
     </LinearLayout>
     
@@ -144,7 +144,7 @@
         <TextView
             android:id="@+id/toLoginPage"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="25dp"
             android:text="@string/to_sign_in_page_dialog"
             style="@style/CategoryStyle" />/>
     </LinearLayout>

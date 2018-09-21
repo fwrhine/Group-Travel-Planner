@@ -49,6 +49,7 @@ public class SignUpActivity extends AppCompatActivity {
         signUpLayout = (RelativeLayout) findViewById(R.id.signup_layout);
 
         createNewUser();
+        renderLoginPage();
         hideKeyboard(signUpLayout);
     }
 
@@ -84,6 +85,18 @@ public class SignUpActivity extends AppCompatActivity {
         );
     }
 
+    public void renderLoginPage() {
+        // Add listener to the Login TextView
+        toLoginPage.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                intent = new Intent(SignUpActivity.this, LoginActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+                SignUpActivity.this.finish();
+            }
+        });
+    }
+
     public void hideKeyboard(View view) {
         view.setOnClickListener(
                 new View.OnClickListener() {
@@ -94,11 +107,6 @@ public class SignUpActivity extends AppCompatActivity {
                     }
                 }
         );
-    }
-
-    public void onSignupFailed() {
-        Toast.makeText(getBaseContext(), "Sign-up Failed", Toast.LENGTH_LONG).show();
-        buttonSignup.setEnabled(true);
     }
 
     public boolean validate() {

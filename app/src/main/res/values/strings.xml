@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">GroupTravelPlanner</string>
-    <string name="to_sign_in_page_dialog">Already have an account? <b>Sign in</b></string>
+    <string name="to_sign_in_page_dialog">Already have an account? <b>Sign-in</b></string>
+    <string name="to_sign_up_page_dialog">Don\'t have an account? <b>Sign-up</b></string>
 </resources>
