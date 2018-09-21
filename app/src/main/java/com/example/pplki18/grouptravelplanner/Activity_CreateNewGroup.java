@@ -1,10 +1,14 @@
 package com.example.pplki18.grouptravelplanner;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -22,6 +26,7 @@ import android.widget.Toast;
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,7 +39,7 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
     private ImageView imageView;
     private ListView listViewUser;
     private Toolbar toolbar;
-    private ArrayList<Long> user_ids;
+    private ArrayList<Long> user_ids;private int GALLERY = 1, CAMERA = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,12 +49,12 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
         init();
 
         //Todo: choose image button: on click, ask permission to read gallery
-//        btnChoose.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                showPictureDialog();
-//            }
-//        });
+        btnChoose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showPictureDialog();
+            }
+        });
 
         //Todo: create new group button: on click, insert data to database
         btnCreate.setOnClickListener(new View.OnClickListener() {
@@ -61,6 +66,8 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
 
                 if (editText.length() != 0) {
                     CreateGroup(newGroup, user_ids);
+                    Intent myIntent = new Intent(Activity_CreateNewGroup.this, Activity_InGroup.class);
+                    Activity_CreateNewGroup.this.startActivity(myIntent);
 
                     //empty name and image input
                     editText.setText("");
@@ -103,70 +110,66 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
 
     ////////////////////////////////////////////////////// choose image ////////////////////////////////////////////////////////
 
-//    private void showPictureDialog(){
-//        AlertDialog.Builder pictureDialog = new AlertDialog.Builder(this);
-//        pictureDialog.setTitle("Select Action");
-//        String[] pictureDialogItems = {
-//                "Select photo from gallery",
-//                "Capture photo from camera" };
-//        pictureDialog.setItems(pictureDialogItems,
-//                new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        switch (which) {
-//                            case 0:
-//                                choosePhotoFromGallary();
-//                                break;
-//                            case 1:
-//                                takePhotoFromCamera();
-//                                break;
-//                        }
-//                    }
-//                });
-//        pictureDialog.show();
-//    }
+    private void showPictureDialog(){
+        AlertDialog.Builder pictureDialog = new AlertDialog.Builder(this);
+        pictureDialog.setTitle("Select Action");
+        String[] pictureDialogItems = {
+                "Select photo from gallery",
+                "Capture photo from camera" };
+        pictureDialog.setItems(pictureDialogItems,
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch (which) {
+                            case 0:
+                                choosePhotoFromGallery();
+                                break;
+                            case 1:
+                                takePhotoFromCamera();
+                                break;
+                        }
+                    }
+                });
+        pictureDialog.show();
+    }
 
-//    public void choosePhotoFromGallary() {
-//        Intent galleryIntent = new Intent(Intent.ACTION_PICK,
-//                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-//
-//        startActivityForResult(galleryIntent, GALLERY);
-//    }
-//
-//    private void takePhotoFromCamera() {
-//        Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-//        startActivityForResult(intent, CAMERA);
-//    }
+    public void choosePhotoFromGallery() {
+        Intent galleryIntent = new Intent(Intent.ACTION_PICK,
+                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
 
-//    @Override
-//    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-//
-//        super.onActivityResult(requestCode, resultCode, data);
-//        if (resultCode == this.RESULT_CANCELED) {
-//            return;
-//        }
-//        if (requestCode == GALLERY) {
-//            if (data != null) {
-//                Uri contentURI = data.getData();
-//                try {
-//                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), contentURI);
-//                    String path = saveImage(bitmap);
-//                    Toast.makeText(MainActivity.this, "Image Saved!", Toast.LENGTH_SHORT).show();
-//                    imageview.setImageBitmap(bitmap);
-//
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                    Toast.makeText(MainActivity.this, "Failed!", Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//
-//        } else if (requestCode == CAMERA) {
-//            Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
-//            imageview.setImageBitmap(thumbnail);
-//            saveImage(thumbnail);
-//            Toast.makeText(MainActivity.this, "Image Saved!", Toast.LENGTH_SHORT).show();
-//        }
-//    }
+        startActivityForResult(galleryIntent, GALLERY);
+    }
+
+    private void takePhotoFromCamera() {
+        Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+        startActivityForResult(intent, CAMERA);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == this.RESULT_CANCELED) {
+            return;
+        }
+        if (requestCode == GALLERY) {
+            if (data != null) {
+                Uri contentURI = data.getData();
+                try {
+                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), contentURI);
+                    imageView.setImageBitmap(bitmap);
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Toast.makeText(Activity_CreateNewGroup.this, "Failed!", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+        } else if (requestCode == CAMERA) {
+            Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
+            imageView.setImageBitmap(thumbnail);
+        }
+    }
 
     ///////////////////////////////////////////// convert image view to byte array /////////////////////////////////////////////
 
@@ -202,8 +205,6 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
 
         if (createGroup != -1) {
             toastMessage("New group!");
-            Intent myIntent = new Intent(Activity_CreateNewGroup.this, Activity_InGroup.class);
-            Activity_CreateNewGroup.this.startActivity(myIntent);
         } else {
             toastMessage("Fail.");
         }
