@@ -1,12 +1,16 @@
 package com.example.pplki18.grouptravelplanner;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Layout;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,6 +22,11 @@ public class SignUpActivity extends AppCompatActivity {
     TextInputLayout signup_fullname, signup_username;
     TextView toLoginPage;
     Button buttonSignup;
+    RelativeLayout signUpLayout;
+
+    InputMethodManager imm;
+
+    Intent intent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +46,11 @@ public class SignUpActivity extends AppCompatActivity {
 
         toLoginPage = (TextView) findViewById(R.id.toLoginPage);
 
+        signUpLayout = (RelativeLayout) findViewById(R.id.signup_layout);
+
         createNewUser();
+        renderLoginPage();
+        hideKeyboard(signUpLayout);
     }
 
     public void createNewUser() {
@@ -46,10 +59,8 @@ public class SignUpActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View view) {
                         if (!validate()) {
-//                            onSignupFailed();
                             return;
                         }
-//                        buttonSignup.setEnabled(false);
 
                         int isCreated = myDb.insertData(edit_fullname.getText().toString(),
                                 edit_username.getText().toString(),
@@ -59,31 +70,43 @@ public class SignUpActivity extends AppCompatActivity {
                         if (isCreated == 2) {
                             Toast.makeText(SignUpActivity.this, "Username or email is already taken",
                                     Toast.LENGTH_LONG).show();
-                            return;
                         } else if (isCreated == 1) {
                             Toast.makeText(SignUpActivity.this, "Sign-up success!",
                                     Toast.LENGTH_LONG).show();
-                            return;
+                            intent = new Intent(SignUpActivity.this, LoginActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(intent);
                         } else if (isCreated == 0) {
                             Toast.makeText(SignUpActivity.this, "Sign-up failed",
                                     Toast.LENGTH_LONG).show();
-                            return;
                         }
                     }
                 }
         );
+    }
 
+    public void renderLoginPage() {
+        // Add listener to the Login TextView
         toLoginPage.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                Intent intent = new Intent(SignUpActivity.this, LoginActivity.class);
+                intent = new Intent(SignUpActivity.this, LoginActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
+                SignUpActivity.this.finish();
             }
         });
     }
 
-    public void onSignupFailed() {
-        Toast.makeText(getBaseContext(), "Sign-up Failed", Toast.LENGTH_LONG).show();
-        buttonSignup.setEnabled(true);
+    public void hideKeyboard(View view) {
+        view.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                    }
+                }
+        );
     }
 
     public boolean validate() {
