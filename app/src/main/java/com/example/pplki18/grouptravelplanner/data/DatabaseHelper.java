@@ -13,6 +13,7 @@ import com.example.pplki18.grouptravelplanner.data.UserContract.UserEntry;
 import com.example.pplki18.grouptravelplanner.data.GroupContract.GroupEntry;
 import com.example.pplki18.grouptravelplanner.data.UserGroupContract.UserGroupEntry;
 import com.example.pplki18.grouptravelplanner.data.FriendsContract.FriendsEntry;
+import com.example.pplki18.grouptravelplanner.utils.SessionManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +26,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     /**
      * Database version. If you change the database schema, you must increment the database version.
      */
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
+
+    SessionManager sessionManager;
 
     /**
      * Constructs a new instance of {@link DatabaseHelper}.
@@ -58,7 +61,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + GroupEntry.COL_GROUP_IMAGE + " LONGBLOB, "
                 + GroupEntry.COL_GROUP_CREATOR + " INTEGER NOT NULL, "
                 + "FOREIGN KEY(" + GroupEntry.COL_GROUP_CREATOR + ")"
-                + " REFERENCES " + UserEntry.TABLE_NAME + "(" + UserEntry._ID + "));`12`";
+                + " REFERENCES " + UserEntry.TABLE_NAME + "(" + UserEntry._ID + "));";
 
         // String to create a table for user-group relation
         String SQL_CREATE_IN_GROUP_REL = "CREATE TABLE " + UserGroupEntry.TABLE_NAME + " ("
@@ -92,6 +95,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + UserEntry.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + GroupEntry.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + UserGroupEntry.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + FriendsEntry.TABLE_NAME);
         onCreate(db);
     }
 
@@ -129,88 +133,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             return 1;
     }
 
-    public long insertGroup(Group group, ArrayList<Long> user_ids) {
-        SQLiteDatabase db = this.getWritableDatabase();
 
-        ContentValues values = new ContentValues();
-        values.put(GroupEntry.COL_GROUP_NAME, group.getGroup_name());
-        values.put(GroupEntry.COL_GROUP_IMAGE, group.getGroup_image());
-
-        // insert row
-        long group_id = db.insert(GroupEntry.TABLE_NAME, null, values);
-
-        // assigning users to groups
-        for (long user_id : user_ids) {
-            insertUserGroup(group_id, user_id);
-        }
-
-        return group_id;
-    }
-
-    public long insertUserGroup(long group_id, long user_id) {
-        SQLiteDatabase db = this.getWritableDatabase();
-
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(UserGroupEntry.COL_GROUP_ID, group_id);
-        contentValues.put(UserGroupEntry.COL_USER_ID, user_id);
-
-        long id = db.insert(UserGroupEntry.TABLE_NAME, null, contentValues);
-
-        return id;
-    }
-
-    /*
-     * Get all groups
-     * */
-    public List<Group> getAllGroups() {
-        List<Group> groups = new ArrayList<Group>();
-        String selectQuery = "SELECT * FROM " + GroupEntry.TABLE_NAME;
-
-        Log.e("GROUPS", selectQuery);
-
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor c = db.rawQuery(selectQuery, null);
-
-        // looping through all rows and adding to list
-        if (c.moveToFirst()) {
-            do {
-                Group group = new Group();
-                group.setGroup_name((c.getString(c.getColumnIndex(GroupEntry.COL_GROUP_NAME))));
-                group.setGroup_image(c.getBlob(c.getColumnIndex(GroupEntry.COL_GROUP_IMAGE)));
-
-                // adding to group list
-                groups.add(group);
-            } while (c.moveToNext());
-        }
-
-        return groups;
-    }
-
-    /*
-     * Get all users
-     * */
-    public List<User> getAllUsers() {
-        List<User> users = new ArrayList<User>();
-        String selectQuery = "SELECT * FROM " + UserEntry.TABLE_NAME;
-
-        Log.e("USERS", selectQuery);
-
-
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor c = db.rawQuery(selectQuery, null);
-
-        // looping through all rows and adding to list
-        if (c.moveToFirst()) {
-            do {
-                User user = new User();
-                user.setUser_name((c.getString(c.getColumnIndex(UserEntry.COL_FULLNAME))));
-
-                // adding to group list
-                users.add(user);
-            } while (c.moveToNext());
-        }
-
-        return users;
-    }
 
 }

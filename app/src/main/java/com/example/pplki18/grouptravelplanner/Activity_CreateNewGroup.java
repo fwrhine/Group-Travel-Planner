@@ -1,8 +1,11 @@
 package com.example.pplki18.grouptravelplanner;
 
 import android.app.AlertDialog;
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
@@ -24,6 +27,10 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
+import com.example.pplki18.grouptravelplanner.data.GroupContract;
+import com.example.pplki18.grouptravelplanner.data.UserContract;
+import com.example.pplki18.grouptravelplanner.data.UserGroupContract;
+import com.example.pplki18.grouptravelplanner.utils.SessionManager;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -39,7 +46,9 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
     private ImageView imageView;
     private ListView listViewUser;
     private Toolbar toolbar;
-    private ArrayList<Long> user_ids;private int GALLERY = 1, CAMERA = 2;
+    private SessionManager sessionManager;
+    private ArrayList<Long> user_ids;
+    private int GALLERY = 1, CAMERA = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,7 +105,7 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
         Log.d(TAG, "populateUserListView: Displaying data in the ListView.");
 
         //get data and append to list
-        List<User> users = databaseHelper.getAllUsers();
+        List<User> users = getAllUsers();
         List<String> user_names = new ArrayList<>();
 
         for (User user: users) {
@@ -201,7 +210,7 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
 
     //Todo: insert data to database, if success, open group chat
     public void CreateGroup(Group group, ArrayList<Long> user_ids) {
-        long createGroup = databaseHelper.insertGroup(group, user_ids);
+        long createGroup = insertGroup(group, user_ids);
 
         if (createGroup != -1) {
             toastMessage("New group!");
@@ -210,6 +219,66 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
         }
     }
 
+    //////////////////////////////////////////////////// database functions ////////////////////////////////////////////////////
+
+    public long insertGroup(Group group, ArrayList<Long> user_ids) {
+        sessionManager = new SessionManager(getApplicationContext());
+        SQLiteDatabase db = databaseHelper.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(GroupContract.GroupEntry.COL_GROUP_NAME, group.getGroup_name());
+        values.put(GroupContract.GroupEntry.COL_GROUP_IMAGE, group.getGroup_image());
+        values.put(GroupContract.GroupEntry.COL_GROUP_CREATOR, sessionManager.KEY_USERNAME);
+
+        // insert row
+        long group_id = db.insert(GroupContract.GroupEntry.TABLE_NAME, null, values);
+
+        // assigning users to groups
+        for (long user_id : user_ids) {
+            insertUserGroup(group_id, user_id);
+        }
+
+        return group_id;
+    }
+
+    public long insertUserGroup(long group_id, long user_id) {
+        SQLiteDatabase db = databaseHelper.getWritableDatabase();
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(UserGroupContract.UserGroupEntry.COL_GROUP_ID, group_id);
+        contentValues.put(UserGroupContract.UserGroupEntry.COL_USER_ID, user_id);
+
+        long id = db.insert(UserGroupContract.UserGroupEntry.TABLE_NAME, null, contentValues);
+
+        return id;
+    }
+
+    /*
+     * Get all users
+     * */
+    public List<User> getAllUsers() {
+        List<User> users = new ArrayList<User>();
+        String selectQuery = "SELECT * FROM " + UserContract.UserEntry.TABLE_NAME;
+
+        Log.e("USERS", selectQuery);
+
+
+        SQLiteDatabase db = databaseHelper.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (c.moveToFirst()) {
+            do {
+                User user = new User();
+                user.setUser_name((c.getString(c.getColumnIndex(UserContract.UserEntry.COL_FULLNAME))));
+
+                // adding to group list
+                users.add(user);
+            } while (c.moveToNext());
+        }
+
+        return users;
+    }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -225,6 +294,7 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
         btnCreate = findViewById(R.id.btnCreate);
         btnChoose = findViewById(R.id.btnChoose);
         databaseHelper = new DatabaseHelper(this);
+        sessionManager = new SessionManager(getApplicationContext());
         user_ids = new ArrayList<>();
     }
 
