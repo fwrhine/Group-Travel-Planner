@@ -8,10 +8,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.CursorAdapter;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
 import com.example.pplki18.grouptravelplanner.data.UserContract;
+import com.example.pplki18.grouptravelplanner.utils.SearchCursorAdapter;
 
 public class SearchBarActivity extends AppCompatActivity {
 
@@ -37,6 +39,9 @@ public class SearchBarActivity extends AppCompatActivity {
             }
 
             else {
+                ListView searchItems = (ListView) findViewById(R.id.search);
+                SearchCursorAdapter adapter = new SearchCursorAdapter(this, result);
+                searchItems.setAdapter(adapter);
 
             }
         }
