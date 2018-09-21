@@ -76,8 +76,10 @@ public class LoginActivity extends AppCompatActivity {
                     Log.d("EMAIL", email);
                 } while (cursor.moveToNext());
             }
+            cursor.close();
             return true;
         }
+        cursor.close();
         return false;
     }
 
