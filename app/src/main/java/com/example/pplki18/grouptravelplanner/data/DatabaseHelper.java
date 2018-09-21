@@ -6,10 +6,16 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+
+import com.example.pplki18.grouptravelplanner.Group;
+import com.example.pplki18.grouptravelplanner.User;
 import com.example.pplki18.grouptravelplanner.data.UserContract.UserEntry;
 import com.example.pplki18.grouptravelplanner.data.GroupContract.GroupEntry;
 import com.example.pplki18.grouptravelplanner.data.UserGroupContract.UserGroupEntry;
 import com.example.pplki18.grouptravelplanner.data.FriendsContract.FriendsEntry;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
@@ -82,10 +88,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int i, int i1) {
         db.execSQL("DROP TABLE IF EXISTS " + UserEntry.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + GroupEntry.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + UserGroupEntry.TABLE_NAME);
         onCreate(db);
     }
 
-    public int insertData(String fullname, String username, String email, String password) {
+    public int insertUser(String fullname, String username, String email, String password) {
         SQLiteDatabase db = this.getWritableDatabase();
 //        db.execSQL("SELECT setval('user_id_seq', (SELECT max(user_id) FROM users))");
 
@@ -116,6 +123,90 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             return 0;
         else
             return 1;
+    }
+
+    public long insertGroup(Group group, ArrayList<Long> user_ids) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(GroupEntry.COL_GROUP_NAME, group.getGroup_name());
+        values.put(GroupEntry.COL_GROUP_IMAGE, group.getGroup_image());
+
+        // insert row
+        long group_id = db.insert(GroupEntry.TABLE_NAME, null, values);
+
+        // assigning users to groups
+        for (long user_id : user_ids) {
+            insertUserGroup(group_id, user_id);
+        }
+
+        return group_id;
+    }
+
+    public long insertUserGroup(long group_id, long user_id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(UserGroupEntry.COL_GROUP_ID, group_id);
+        contentValues.put(UserGroupEntry.COL_USER_ID, user_id);
+
+        long id = db.insert(UserGroupEntry.TABLE_NAME, null, contentValues);
+
+        return id;
+    }
+
+    /*
+     * Get all groups
+     * */
+    public List<Group> getAllGroups() {
+        List<Group> groups = new ArrayList<Group>();
+        String selectQuery = "SELECT * FROM " + GroupEntry.TABLE_NAME;
+
+        Log.e("GROUPS", selectQuery);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (c.moveToFirst()) {
+            do {
+                Group group = new Group();
+                group.setGroup_name((c.getString(c.getColumnIndex(GroupEntry.COL_GROUP_NAME))));
+                group.setGroup_image(c.getBlob(c.getColumnIndex(GroupEntry.COL_GROUP_IMAGE)));
+
+                // adding to group list
+                groups.add(group);
+            } while (c.moveToNext());
+        }
+
+        return groups;
+    }
+
+    /*
+     * Get all users
+     * */
+    public List<User> getAllUsers() {
+        List<User> users = new ArrayList<User>();
+        String selectQuery = "SELECT * FROM " + UserEntry.TABLE_NAME;
+
+        Log.e("USERS", selectQuery);
+
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (c.moveToFirst()) {
+            do {
+                User user = new User();
+                user.setUser_name((c.getString(c.getColumnIndex(UserEntry.COL_FULLNAME))));
+
+                // adding to group list
+                users.add(user);
+            } while (c.moveToNext());
+        }
+
+        return users;
     }
 
 }
