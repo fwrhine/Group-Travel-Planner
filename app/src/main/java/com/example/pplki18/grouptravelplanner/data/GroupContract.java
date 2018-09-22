@@ -19,5 +19,6 @@ public class GroupContract {
         public static final String _ID = BaseColumns._ID;
         public static final String COL_GROUP_NAME = "name";
         public static final String COL_GROUP_IMAGE = "image";
+        public static final String COL_GROUP_CREATOR = "creator";
     }
 }
