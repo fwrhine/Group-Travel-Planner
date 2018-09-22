@@ -11,6 +11,9 @@ import android.widget.SearchView;
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
 import com.example.pplki18.grouptravelplanner.data.UserContract;
 import com.example.pplki18.grouptravelplanner.utils.SearchCursorAdapter;
+import com.example.pplki18.grouptravelplanner.utils.SessionManager;
+
+import java.util.HashMap;
 
 public class SearchBarActivity extends AppCompatActivity {
 
@@ -23,7 +26,11 @@ public class SearchBarActivity extends AppCompatActivity {
         setContentView(R.layout.activity_search_bar);
         myDb = new DatabaseHelper(this);
 
-        final SearchView simpleSearchView = (SearchView) findViewById(R.id.search); // inititate a search view
+        SearchView simpleSearchView = (SearchView) findViewById(R.id.search); // inititate a search view
+
+        SessionManager session = new SessionManager(getApplicationContext());
+        HashMap<String, String> user = session.getUserDetails();
+        final String currUsername = user.get(SessionManager.KEY_USERNAME);
 
         simpleSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -36,7 +43,7 @@ public class SearchBarActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextChange(String newText) {
                 // do something when text changes
-                result = searchData(newText.toString());
+                result = searchData(newText.toString(), currUsername);
 
                 Log.d("QUERY", "START_SEARCH");
                 ListView searchItems = (ListView) findViewById(R.id.list);
@@ -45,16 +52,14 @@ public class SearchBarActivity extends AppCompatActivity {
                 return true;
             }
         });
-
     }
 
-    public Cursor searchData(String query) {
+    public Cursor searchData(String query, String currentUser) {
         SQLiteDatabase db = myDb.getReadableDatabase();
-        String command = "SELECT * FROM " + UserContract.UserEntry.TABLE_NAME + " WHERE " +
-                UserContract.UserEntry.COL_USERNAME + " LIKE ?";
+        String command = "SELECT * FROM " + UserContract.UserEntry.TABLE_NAME + " WHERE "
+                + UserContract.UserEntry.COL_USERNAME + " LIKE ?";
         String[] selectionArgs = new String[]{"%" + query + "%"};
         Cursor data = db.rawQuery(command, selectionArgs);
-        Log.d("DATA", query);
         Log.d("DATA", data.getCount() + ".");
         return data;
     }
