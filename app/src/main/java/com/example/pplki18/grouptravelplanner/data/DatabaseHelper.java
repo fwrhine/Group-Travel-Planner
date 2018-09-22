@@ -6,10 +6,17 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+
+import com.example.pplki18.grouptravelplanner.Group;
+import com.example.pplki18.grouptravelplanner.User;
 import com.example.pplki18.grouptravelplanner.data.UserContract.UserEntry;
 import com.example.pplki18.grouptravelplanner.data.GroupContract.GroupEntry;
 import com.example.pplki18.grouptravelplanner.data.UserGroupContract.UserGroupEntry;
 import com.example.pplki18.grouptravelplanner.data.FriendsContract.FriendsEntry;
+import com.example.pplki18.grouptravelplanner.utils.SessionManager;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
@@ -19,7 +26,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     /**
      * Database version. If you change the database schema, you must increment the database version.
      */
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
+
+    SessionManager sessionManager;
 
     /**
      * Constructs a new instance of {@link DatabaseHelper}.
@@ -52,7 +61,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + GroupEntry.COL_GROUP_IMAGE + " LONGBLOB, "
                 + GroupEntry.COL_GROUP_CREATOR + " INTEGER NOT NULL, "
                 + "FOREIGN KEY(" + GroupEntry.COL_GROUP_CREATOR + ")"
-                + " REFERENCES " + UserEntry.TABLE_NAME + "(" + UserEntry._ID + "));`12`";
+                + " REFERENCES " + UserEntry.TABLE_NAME + "(" + UserEntry._ID + "));";
 
         // String to create a table for user-group relation
         String SQL_CREATE_IN_GROUP_REL = "CREATE TABLE " + UserGroupEntry.TABLE_NAME + " ("
@@ -85,10 +94,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int i, int i1) {
         db.execSQL("DROP TABLE IF EXISTS " + UserEntry.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + GroupEntry.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + UserGroupEntry.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + FriendsEntry.TABLE_NAME);
         onCreate(db);
     }
 
-    public int insertData(String fullname, String username, String email, String password) {
+    public int insertUser(String fullname, String username, String email, String password) {
         SQLiteDatabase db = this.getWritableDatabase();
 //        db.execSQL("SELECT setval('user_id_seq', (SELECT max(user_id) FROM users))");
 
@@ -121,5 +132,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         else
             return 1;
     }
+
+
 
 }

@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.Layout;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -62,7 +61,7 @@ public class SignUpActivity extends AppCompatActivity {
                             return;
                         }
 
-                        int isCreated = myDb.insertData(edit_fullname.getText().toString(),
+                        int isCreated = myDb.insertUser(edit_fullname.getText().toString(),
                                 edit_username.getText().toString(),
                                 edit_email.getText().toString(),
                                 edit_password.getText().toString());
