@@ -23,6 +23,7 @@ public class UserContract {
         public static final String COL_EMAIL = "email";
         public static final String COL_GENDER = "gender";
         public static final String COL_PHONE = "phone_no";
+        public static final String COL_BIRTHDAY = "birthday";
         public static final String COL_PICTURE = "display_picture";
         public static final String COL_STATUS = "status";
 

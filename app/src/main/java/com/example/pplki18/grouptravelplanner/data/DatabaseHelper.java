@@ -13,7 +13,6 @@ import com.example.pplki18.grouptravelplanner.data.UserContract.UserEntry;
 import com.example.pplki18.grouptravelplanner.data.GroupContract.GroupEntry;
 import com.example.pplki18.grouptravelplanner.data.UserGroupContract.UserGroupEntry;
 import com.example.pplki18.grouptravelplanner.data.FriendsContract.FriendsEntry;
-import com.example.pplki18.grouptravelplanner.utils.SessionManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,9 +25,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     /**
      * Database version. If you change the database schema, you must increment the database version.
      */
-    private static final int DATABASE_VERSION = 2;
-
-    SessionManager sessionManager;
+    private static final int DATABASE_VERSION = 3;
 
     /**
      * Constructs a new instance of {@link DatabaseHelper}.
@@ -50,7 +47,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + UserEntry.COL_PASSWORD + " TEXT NOT NULL, "
                 + UserEntry.COL_EMAIL + " TEXT UNIQUE NOT NULL, "
                 + UserEntry.COL_GENDER + " INTEGER NOT NULL DEFAULT 0, "
-                + UserEntry.COL_PHONE + " INTEGER NOT NULL DEFAULT 0, "
+                + UserEntry.COL_PHONE + " TEXT DEFAULT \'\', "
+                + UserEntry.COL_BIRTHDAY + " TEXT DEFAULT \'\', "
                 + UserEntry.COL_PICTURE + " LONGBLOB, "
                 + UserEntry.COL_STATUS + " INTEGER NOT NULL DEFAULT 0);";
 
@@ -123,7 +121,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put(UserEntry.COL_PASSWORD, password);
         contentValues.put(UserEntry.COL_EMAIL, email);
         contentValues.put(UserEntry.COL_GENDER, 0);
-        contentValues.put(UserEntry.COL_PHONE, 0);
+        contentValues.put(UserEntry.COL_PHONE, "");
+        contentValues.put(UserEntry.COL_BIRTHDAY, "");
         contentValues.put(UserEntry.COL_PICTURE, 0);
         contentValues.put(UserEntry.COL_STATUS, 0);
         long result = db.insert(UserEntry.TABLE_NAME, null, contentValues);
