@@ -10,6 +10,7 @@ import android.graphics.Typeface;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.telephony.PhoneNumberUtils;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -41,6 +42,8 @@ public class UserProfileActivity extends AppCompatActivity {
 
     RelativeLayout phone_layout, birthday_layout;
 
+    Toolbar edit_profile_toolbar;
+
     Spinner genderSpinner;
 
     String fullname_str, username_str, email_str, phone_no, birthday;
@@ -62,6 +65,7 @@ public class UserProfileActivity extends AppCompatActivity {
         setSelectGender();
         editPhoneNo();
         editBirthday();
+        setUpToolbar();
     }
 
     public void init() {
@@ -72,6 +76,8 @@ public class UserProfileActivity extends AppCompatActivity {
         email_label = (TextView) findViewById(R.id.email_label);
         phone_label = (TextView) findViewById(R.id.phone_label);
         birthday_label = (TextView) findViewById(R.id.birthday_label);
+
+        edit_profile_toolbar = (Toolbar) findViewById(R.id.edit_profile_toolbar);
 
         genderSpinner = (Spinner) findViewById(R.id.gender_label);
 
@@ -253,6 +259,19 @@ public class UserProfileActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View view) {
                         Intent intent = new Intent(UserProfileActivity.this, EditBirthdayActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(intent);
+                    }
+                }
+        );
+    }
+
+    public void setUpToolbar() {
+        edit_profile_toolbar.setNavigationOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(UserProfileActivity.this, Activity_GroupList.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(intent);
                     }

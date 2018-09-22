@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">GroupTravelPlanner</string>
-<<<<<<< HEAD
     <string name="to_sign_in_page_dialog">Already have an account? <b>Sign-in</b></string>
     <string name="to_sign_up_page_dialog">Don\'t have an account? <b>Sign-up</b></string>
 
@@ -9,11 +8,8 @@
         <item>Male</item>
         <item>Female</item>
     </string-array>
-=======
-    <string name="to_sign_in_page_dialog">Already have an account? <b>Sign in</b></string>
-    <string name="to_sign_up_page_dialog">Don\'t have an account? <b>Sign up</b></string>
+    
     <string name="title_activity_groups">Groups</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
->>>>>>> master
 </resources>
