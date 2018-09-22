@@ -116,7 +116,7 @@ public class LoginActivity extends AppCompatActivity {
                             Toast.LENGTH_SHORT).show();
 
                     // Redirect to ProfileActivity and forget the previous activities
-                    intent = new Intent(LoginActivity.this, UserProfileActivity.class);
+                    intent = new Intent(LoginActivity.this, SearchBarActivity.class); //TEMP
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
                     Log.d("SIGN-IN", "SUCCESS");
