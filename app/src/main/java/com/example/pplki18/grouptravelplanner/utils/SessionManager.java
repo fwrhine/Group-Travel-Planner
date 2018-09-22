@@ -44,6 +44,12 @@ public class SessionManager {
     // Gender
     public static final String KEY_GENDER = "gender";
 
+    // Phone number
+    public static final String KEY_PHONE = "phone_no";
+
+    // Birthday
+    public static final String KEY_BIRTHDAY = "birthday";
+
     // Trip status
     public static final String IS_ON_TRIP = "isOnTrip";
 
@@ -57,7 +63,8 @@ public class SessionManager {
     /**
      * Create login session
      * */
-    public void createLoginSession(String name, String email, String gender){
+    public void createLoginSession(String name, String email, String gender,
+                                   String phone_no, String birthday){
         // Storing login value as TRUE
         editor.putBoolean(IS_LOGIN, true);
 
@@ -67,8 +74,14 @@ public class SessionManager {
         // Storing email in pref
         editor.putString(KEY_EMAIL, email);
 
-        //Storing gender in pref
+        // Storing gender in pref
         editor.putString(KEY_GENDER, gender);
+
+        // Storing phone number in pref
+        editor.putString(KEY_PHONE, phone_no);
+
+        // Storing birthday in pref
+        editor.putString(KEY_BIRTHDAY, birthday);
 
         // commit changes
         editor.commit();
@@ -112,6 +125,12 @@ public class SessionManager {
         // user gender
         user.put(KEY_GENDER, pref.getString(KEY_GENDER, null));
 
+        // user phone number
+        user.put(KEY_PHONE, pref.getString(KEY_PHONE, null));
+
+        // user birthday
+        user.put(KEY_BIRTHDAY, pref.getString(KEY_BIRTHDAY, null));
+
         // user trip status (TYPE IS STRING)
         user.put(IS_ON_TRIP, pref.getString(IS_ON_TRIP, null));
 
@@ -142,5 +161,11 @@ public class SessionManager {
     // Get Login State
     public boolean isLoggedIn(){
         return pref.getBoolean(IS_LOGIN, false);
+    }
+
+    public void updateSession(String key, String value) {
+        editor.putString(key, value);
+        // commit changes
+        editor.commit();
     }
 }
