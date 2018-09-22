@@ -9,4 +9,6 @@
     <color name="colorWhite">#ffffff</color>
     <color name="background_color2">#ccff90</color>
     <color name="colorTitle">#000000</color>
+    <color name="user_pressed">#e1e4ea</color>
+
 </resources>

@@ -59,7 +59,7 @@ public class Activity_GroupList extends AppCompatActivity {
         //get data and append to list
         List<Group> groups = getAllGroups();
 
-        RVAdapter adapter = new RVAdapter(groups);
+        RVAdapter_Group adapter = new RVAdapter_Group(groups);
         recyclerViewGroup.setAdapter(adapter);
     }
 

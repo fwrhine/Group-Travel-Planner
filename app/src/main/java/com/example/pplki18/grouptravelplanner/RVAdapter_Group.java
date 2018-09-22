@@ -12,11 +12,11 @@ import android.widget.TextView;
 
 import java.util.List;
 
-public class RVAdapter extends RecyclerView.Adapter<RVAdapter.GroupViewHolder>{
+public class RVAdapter_Group extends RecyclerView.Adapter<RVAdapter_Group.GroupViewHolder>{
 
     List<Group> groups;
 
-    RVAdapter(List<Group> groups){
+    RVAdapter_Group(List<Group> groups){
         this.groups = groups;
     }
 
@@ -27,18 +27,18 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.GroupViewHolder>{
 
     @Override
     public GroupViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.row, viewGroup, false);
+        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.row_group, viewGroup, false);
         GroupViewHolder pvh = new GroupViewHolder(v);
         return pvh;
     }
 
     @Override
-    public void onBindViewHolder(GroupViewHolder personViewHolder, int i) {
-        personViewHolder.groupName.setText(groups.get(i).getGroup_name());
+    public void onBindViewHolder(GroupViewHolder groupViewHolder, int i) {
+        groupViewHolder.groupName.setText(groups.get(i).getGroup_name());
 
         byte[] byteArray = groups.get(i).getGroup_image();
         Bitmap bmp = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
-        personViewHolder.groupImage.setImageBitmap(bmp);
+        groupViewHolder.groupImage.setImageBitmap(bmp);
     }
 
     @Override
@@ -54,8 +54,8 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.GroupViewHolder>{
         GroupViewHolder(View itemView) {
             super(itemView);
             cardView = (CardView)itemView.findViewById(R.id.cv);
-            groupName = (TextView)itemView.findViewById(R.id.group_name);
-            groupImage = (ImageView)itemView.findViewById(R.id.group_image);
+            groupName = (TextView)itemView.findViewById(R.id.name);
+            groupImage = (ImageView)itemView.findViewById(R.id.image);
         }
 
     }

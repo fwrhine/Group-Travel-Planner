@@ -87,10 +87,10 @@
         app:layout_constraintStart_toStartOf="parent"/>
 
 
-    <ListView
-        android:id="@+id/listViewUser"
+    <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="?attr/actionBarSize" />
+        android:layout_marginTop="?attr/actionBarSize"
+        android:id="@+id/rv" />
 
 </LinearLayout>

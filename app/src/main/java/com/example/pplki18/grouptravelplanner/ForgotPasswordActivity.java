@@ -40,7 +40,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         // Create and/or open a database to read from it
         SQLiteDatabase db = myDb.getReadableDatabase();
 
-        // Query string to get a row of user based on the email.
+        // Query string to get a row_user of user based on the email.
         String query = "SELECT * FROM " + UserEntry.TABLE_NAME + " WHERE "
                 + UserEntry.COL_EMAIL + "=?";
         // Arguments for the query
