@@ -47,7 +47,7 @@ public class SplashScreenActivity extends AppCompatActivity {
             }
             else {
                 // Redirect to Profile Activity if the user is logged in
-                Intent intent = new Intent(SplashScreenActivity.this, UserProfileActivity.class);
+                Intent intent = new Intent(SplashScreenActivity.this, Activity_GroupList.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
                 SplashScreenActivity.this.finish();

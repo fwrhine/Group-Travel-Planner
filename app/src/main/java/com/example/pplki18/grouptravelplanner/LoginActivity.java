@@ -33,6 +33,9 @@ public class LoginActivity extends AppCompatActivity {
 
     Intent intent;
     String email;
+    String gender;
+    String phone_no;
+    String birthday;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,7 +76,9 @@ public class LoginActivity extends AppCompatActivity {
             if(cursor !=null && cursor.moveToFirst()) {
                 do {
                     email = cursor.getString(cursor.getColumnIndex("email"));
-                    Log.d("EMAIL", email);
+                    gender = cursor.getInt(cursor.getColumnIndex("gender")) + "";
+                    phone_no = cursor.getString(cursor.getColumnIndex("phone_no"));
+                    birthday = cursor.getString(cursor.getColumnIndex("birthday"));
                 } while (cursor.moveToNext());
             }
             cursor.close();
@@ -108,7 +113,7 @@ public class LoginActivity extends AppCompatActivity {
                 if(validateLogin()) {
 
                     // Saves the login information to the session
-                    sessionManager.createLoginSession(getUsernameFromEditText(), email);
+                    sessionManager.createLoginSession(getUsernameFromEditText(), email, gender, phone_no, birthday);
                     Log.d("SIGN-IN", sessionManager.isLoggedIn()+".");
 
                     // Send success message to the user
@@ -116,7 +121,7 @@ public class LoginActivity extends AppCompatActivity {
                             Toast.LENGTH_SHORT).show();
 
                     // Redirect to ProfileActivity and forget the previous activities
-                    intent = new Intent(LoginActivity.this, UserProfileActivity.class);
+                    intent = new Intent(LoginActivity.this, Activity_GroupList.class); //TEMP
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
                     Log.d("SIGN-IN", "SUCCESS");
@@ -129,7 +134,6 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         });
-
     }
 
     public void renderSignUpPage() {
