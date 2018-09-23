@@ -1,14 +1,14 @@
-package com.example.pplki18.grouptravelplanner;
+package com.example.pplki18.grouptravelplanner.utils;
 
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import com.example.pplki18.grouptravelplanner.R;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
@@ -18,7 +18,7 @@ public class RVAdapter_User extends RecyclerView.Adapter<RVAdapter_User.UserView
     private List<User> users;
     private final ClickListener listener;
 
-    RVAdapter_User(List<User> users, ClickListener listener){
+    public RVAdapter_User(List<User> users, ClickListener listener){
         this.users = users;
         this.listener = listener;
     }

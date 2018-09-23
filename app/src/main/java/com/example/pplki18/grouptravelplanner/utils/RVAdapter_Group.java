@@ -1,4 +1,4 @@
-package com.example.pplki18.grouptravelplanner;
+package com.example.pplki18.grouptravelplanner.utils;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
+import com.example.pplki18.grouptravelplanner.R;
 
 import java.util.List;
 
@@ -18,7 +18,7 @@ public class RVAdapter_Group extends RecyclerView.Adapter<RVAdapter_Group.GroupV
 
     List<Group> groups;
 
-    RVAdapter_Group(List<Group> groups){
+    public RVAdapter_Group(List<Group> groups){
         this.groups = groups;
     }
 
