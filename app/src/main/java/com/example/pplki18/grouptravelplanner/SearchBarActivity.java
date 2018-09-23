@@ -1,10 +1,13 @@
 package com.example.pplki18.grouptravelplanner;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.View;
 import android.widget.ListView;
 import android.widget.SearchView;
 
@@ -19,14 +22,19 @@ public class SearchBarActivity extends AppCompatActivity {
 
     DatabaseHelper myDb;
     Cursor result;
+    Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_bar);
+
         myDb = new DatabaseHelper(this);
 
         SearchView simpleSearchView = (SearchView) findViewById(R.id.search);
+
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setUpToolbar();
 
         SessionManager session = new SessionManager(getApplicationContext());
         HashMap<String, String> user = session.getUserDetails();
@@ -62,6 +70,19 @@ public class SearchBarActivity extends AppCompatActivity {
 
         Log.d("DATA", data.getCount() + ".");
         return data;
+    }
+
+    public void setUpToolbar() {
+        toolbar.setNavigationOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(SearchBarActivity.this, Activity_GroupList.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(intent);
+                    }
+                }
+        );
     }
 
 }
