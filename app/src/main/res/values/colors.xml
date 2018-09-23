@@ -7,6 +7,11 @@
     <color name="colorAccent">#7CB342</color>
     <color name="colorAccent2">#EBEF00</color>
     <color name="colorWhite">#ffffff</color>
+    <color name="colorBlack">#000000</color>
     <color name="background_color2">#ccff90</color>
+    <color name="colorRipple">#A9A9F5</color>
+    <color name="darkgrey">#A9A9A9</color>
     <color name="colorTitle">#000000</color>
+    <color name="user_pressed">#e1e4ea</color>
+
 </resources>

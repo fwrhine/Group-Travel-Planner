@@ -10,6 +10,7 @@ public class User {
 
     public User(String user_name) {
         this.user_name = user_name;
+
     }
 
     //setter
