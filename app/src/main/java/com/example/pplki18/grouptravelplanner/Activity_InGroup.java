@@ -61,7 +61,8 @@ public class Activity_InGroup extends AppCompatActivity implements NavigationVie
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer((GravityCompat.START));
         } else {
-            super.onBackPressed();
+            Intent intent = new Intent(Activity_InGroup.this, Activity_GroupList.class);
+            startActivity(intent);
         }
     }
 

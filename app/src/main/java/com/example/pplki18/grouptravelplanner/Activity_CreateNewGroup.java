@@ -14,6 +14,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.v4.view.GravityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
@@ -35,6 +36,7 @@ import com.example.pplki18.grouptravelplanner.utils.SessionManager;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class Activity_CreateNewGroup extends AppCompatActivity {
@@ -109,11 +111,13 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
             @Override public void onClick(View v, int position) {
                 Toast.makeText(Activity_CreateNewGroup.this, "SOME OTHER = " + String.valueOf(position), Toast.LENGTH_SHORT).show();
 
-                if (user_ids.contains(position)) {
-                    user_ids.remove(Integer.valueOf(position));
+                if (user_ids.contains(position + 1)) {
+                    Log.d("IF", String.valueOf(position + 1));
+                    user_ids.remove(Integer.valueOf(position + 1));
                     v.setBackgroundColor(getResources().getColor(R.color.colorWhite));
                 } else {
-                    user_ids.add(position);
+                    Log.d("ELSE", String.valueOf(position + 1));
+                    user_ids.add(position + 1);
                     v.setBackgroundColor(getResources().getColor(R.color.user_pressed));
                 }
 
@@ -234,10 +238,14 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
         sessionManager = new SessionManager(getApplicationContext());
         SQLiteDatabase db = databaseHelper.getWritableDatabase();
 
+        HashMap<String, String> user = sessionManager.getUserDetails();
+        Log.d("USER DETAIL", user.toString());
+
         ContentValues values = new ContentValues();
         values.put(GroupContract.GroupEntry.COL_GROUP_NAME, group.getGroup_name());
         values.put(GroupContract.GroupEntry.COL_GROUP_IMAGE, group.getGroup_image());
-        values.put(GroupContract.GroupEntry.COL_GROUP_CREATOR, sessionManager.KEY_USERNAME);
+        values.put(GroupContract.GroupEntry.COL_GROUP_CREATOR, user.get(sessionManager.KEY_USERNAME));
+        Log.d("CURRENT USERNAME", user.get(sessionManager.KEY_USERNAME));
 
         // insert row_user
         long group_id = db.insert(GroupContract.GroupEntry.TABLE_NAME, null, values);
@@ -293,6 +301,12 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
 
     private void toastMessage(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        user_ids.clear();
     }
 
     private void init() {

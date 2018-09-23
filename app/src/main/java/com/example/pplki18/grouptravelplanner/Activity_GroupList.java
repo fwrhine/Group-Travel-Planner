@@ -14,7 +14,10 @@ import android.view.View;
 
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
 import com.example.pplki18.grouptravelplanner.data.GroupContract;
+import com.example.pplki18.grouptravelplanner.data.UserContract;
+import com.example.pplki18.grouptravelplanner.data.UserGroupContract;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -82,12 +85,43 @@ public class Activity_GroupList extends AppCompatActivity {
                 group.setGroup_name((c.getString(c.getColumnIndex(GroupContract.GroupEntry.COL_GROUP_NAME))));
                 group.setGroup_image(c.getBlob(c.getColumnIndex(GroupContract.GroupEntry.COL_GROUP_IMAGE)));
 
+                List<String> members = getAllGroupMember(c.getString(c.getColumnIndex(GroupContract.GroupEntry._ID)));
+                group.setGroup_members(members);
+
                 // adding to group list
                 groups.add(group);
             } while (c.moveToNext());
         }
 
         return groups;
+    }
+
+    /*
+     * Get all members of a group.
+     */
+    public List<String> getAllGroupMember(String group_id) {
+        List<String> members = new ArrayList<String>();
+
+        String selectQuery = "SELECT  * FROM " + GroupContract.GroupEntry.TABLE_NAME + " g, "
+                + UserContract.UserEntry.TABLE_NAME + " u, " + UserGroupContract.UserGroupEntry.TABLE_NAME
+                + " ug WHERE g." + GroupContract.GroupEntry._ID + " = '" + group_id + "'" + " AND g."
+                + GroupContract.GroupEntry._ID + " = " + "ug." + UserGroupContract.UserGroupEntry.COL_GROUP_ID
+                + " AND u." + UserGroupContract.UserGroupEntry._ID + " = " + "ug."
+                + UserGroupContract.UserGroupEntry.COL_USER_ID;
+
+        Log.e("USERGROUP", selectQuery);
+
+        SQLiteDatabase db = databaseHelper.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (c.moveToFirst()) {
+            do {
+                members.add(c.getString(c.getColumnIndex(UserContract.UserEntry.COL_FULLNAME)));
+            } while (c.moveToNext());
+        }
+
+        return members;
     }
 
     private void init() {

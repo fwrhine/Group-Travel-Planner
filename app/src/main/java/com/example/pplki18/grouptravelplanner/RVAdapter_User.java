@@ -58,7 +58,7 @@ public class RVAdapter_User extends RecyclerView.Adapter<RVAdapter_User.UserView
         UserViewHolder(View itemView, ClickListener listener) {
             super(itemView);
             cardView = (CardView)itemView.findViewById(R.id.cv);
-            userName = (TextView)itemView.findViewById(R.id.name);
+            userName = (TextView)itemView.findViewById(R.id.user_name);
 //            userImage = (ImageView)itemView.findViewById(R.id.user_image);
             listenerRef = new WeakReference<>(listener);
 

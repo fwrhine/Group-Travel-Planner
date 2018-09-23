@@ -10,6 +10,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.w3c.dom.Text;
+
 import java.util.List;
 
 public class RVAdapter_Group extends RecyclerView.Adapter<RVAdapter_Group.GroupViewHolder>{
@@ -39,6 +41,8 @@ public class RVAdapter_Group extends RecyclerView.Adapter<RVAdapter_Group.GroupV
         byte[] byteArray = groups.get(i).getGroup_image();
         Bitmap bmp = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
         groupViewHolder.groupImage.setImageBitmap(bmp);
+
+        groupViewHolder.groupMembers.setText(groups.get(i).getGroup_members().toString());
     }
 
     @Override
@@ -49,13 +53,15 @@ public class RVAdapter_Group extends RecyclerView.Adapter<RVAdapter_Group.GroupV
     public static class GroupViewHolder extends RecyclerView.ViewHolder {
         CardView cardView;
         TextView groupName;
+        TextView groupMembers;
         ImageView groupImage;
 
         GroupViewHolder(View itemView) {
             super(itemView);
             cardView = (CardView)itemView.findViewById(R.id.cv);
-            groupName = (TextView)itemView.findViewById(R.id.name);
-            groupImage = (ImageView)itemView.findViewById(R.id.image);
+            groupName = (TextView)itemView.findViewById(R.id.group_name);
+            groupMembers = (TextView) itemView.findViewById(R.id.group_members);
+            groupImage = (ImageView)itemView.findViewById(R.id.group_image);
         }
 
     }
