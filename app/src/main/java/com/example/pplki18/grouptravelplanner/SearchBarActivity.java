@@ -26,7 +26,7 @@ public class SearchBarActivity extends AppCompatActivity {
         setContentView(R.layout.activity_search_bar);
         myDb = new DatabaseHelper(this);
 
-        SearchView simpleSearchView = (SearchView) findViewById(R.id.search); // inititate a search view
+        SearchView simpleSearchView = (SearchView) findViewById(R.id.search);
 
         SessionManager session = new SessionManager(getApplicationContext());
         HashMap<String, String> user = session.getUserDetails();
@@ -35,14 +35,12 @@ public class SearchBarActivity extends AppCompatActivity {
         simpleSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                // do something on text submit
 
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                // do something when text changes
                 result = searchData(newText.toString(), currUsername);
 
                 Log.d("QUERY", "START_SEARCH");
