@@ -1,4 +1,4 @@
-package com.example.pplki18.grouptravelplanner;
+package com.example.pplki18.grouptravelplanner.utils;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
