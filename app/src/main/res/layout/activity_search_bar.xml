@@ -40,7 +40,7 @@
             android:layout_height="wrap_content"
             android:background="@android:color/darker_gray"
             android:iconifiedByDefault="false"
-            android:queryHint="Search Here..." />
+            android:queryHint="Search Name Here" />
 
         <ListView
             android:id="@+id/list"

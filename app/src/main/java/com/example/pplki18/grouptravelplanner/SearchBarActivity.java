@@ -63,7 +63,7 @@ public class SearchBarActivity extends AppCompatActivity {
     public Cursor searchData(String query, String currentUser) {
         SQLiteDatabase db = myDb.getReadableDatabase();
         String command = "SELECT * FROM " + UserContract.UserEntry.TABLE_NAME + " WHERE "
-                + UserContract.UserEntry.COL_USERNAME + " LIKE ? AND "
+                + UserContract.UserEntry.COL_FULLNAME + " LIKE ? AND "
                 + UserContract.UserEntry.COL_USERNAME + " != ?";
         String[] selectionArgs = new String[]{"%" + query + "%", currentUser};
         Cursor data = db.rawQuery(command, selectionArgs);
