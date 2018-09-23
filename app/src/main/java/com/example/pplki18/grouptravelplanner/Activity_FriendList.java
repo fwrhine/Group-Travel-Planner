@@ -57,37 +57,37 @@ public class Activity_FriendList extends AppCompatActivity {
         Log.d(TAG, "populateFriendRecyclerView: Displaying list of friends in the ListView.");
 
         //get data and append to list
-        List<Friend> friend = getAllFriends();
+//        List<Friend> friend = getAllFriends();
 
-        RVAdapter_Friend adapter = new RVAdapter_Friend(friend);
-        recyclerViewGroup.setAdapter(adapter);
+//        RVAdapter_Friend adapter = new RVAdapter_Friend(friend);
+//        recyclerViewGroup.setAdapter(adapter);
     }
 
     /*
      * Get all groups
      * */
-    public List<Friend> getAllFriends() {
-        List<Friend> friends = new ArrayList<Friend>();
-        String selectQuery = "SELECT * FROM " + FriendsContract.FriendsEntry.TABLE_NAME;
-
-        Log.e("FRIENDS", selectQuery);
-
-        SQLiteDatabase db = databaseHelper.getReadableDatabase();
-        Cursor c = db.rawQuery(selectQuery, null);
-
-        // looping through all rows and adding to list
-        if (c.moveToFirst()) {
-            do {
-                Friend friend = new Friend();
-                friend.setFriend_name((c.getString(c.getColumnIndex(FriendsContract.FriendsEntry.COL_USER_ID))));
-
-                // adding to group list
-                friends.add(friend);
-            } while (c.moveToNext());
-        }
-
-        return friends;
-    }
+//    public List<Friend> getAllFriends() {
+//        List<Friend> friends = new ArrayList<Friend>();
+//        String selectQuery = "SELECT * FROM " + FriendsContract.FriendsEntry.TABLE_NAME;
+//
+//        Log.e("FRIENDS", selectQuery);
+//
+//        SQLiteDatabase db = databaseHelper.getReadableDatabase();
+//        Cursor c = db.rawQuery(selectQuery, null);
+//
+//        // looping through all rows and adding to list
+//        if (c.moveToFirst()) {
+//            do {
+//                Friend friend = new Friend();
+//                friend.setFriend_name((c.getString(c.getColumnIndex(FriendsContract.FriendsEntry.COL_USER_ID))));
+//
+//                // adding to group list
+//                friends.add(friend);
+//            } while (c.moveToNext());
+//        }
+//
+//        return friends;
+//    }
 
     private void init() {
         toolbar = findViewById(R.id.toolbar);

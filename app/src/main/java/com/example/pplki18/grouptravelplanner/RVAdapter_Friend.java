@@ -41,7 +41,7 @@ public class RVAdapter_Friend extends RecyclerView.Adapter<RVAdapter_Friend.Grou
 
     @Override
     public void onBindViewHolder(RVAdapter_Friend.GroupViewHolder personViewHolder, int i) {
-        personViewHolder.friendName.setText(friend.get(i).getFriend_name());
+        personViewHolder.friendName.setText(friend.get(i).getFriend_id());
 
 /*        byte[] byteArray = friend.get(i).friend_image;
         Bitmap bmp = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
