@@ -8,15 +8,12 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.support.v4.view.GravityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -31,7 +28,10 @@ import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
 import com.example.pplki18.grouptravelplanner.data.GroupContract;
 import com.example.pplki18.grouptravelplanner.data.UserContract;
 import com.example.pplki18.grouptravelplanner.data.UserGroupContract;
+import com.example.pplki18.grouptravelplanner.utils.Group;
+import com.example.pplki18.grouptravelplanner.utils.RVAdapter_User;
 import com.example.pplki18.grouptravelplanner.utils.SessionManager;
+import com.example.pplki18.grouptravelplanner.utils.User;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -57,8 +57,12 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_group);
-        setSupportActionBar(toolbar);
         init();
+
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        setTitle("Create Group");
 
         //Todo: choose image button: on click, ask permission to read gallery
         btnChoose.setOnClickListener(new View.OnClickListener() {
@@ -76,7 +80,11 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
                 byte[] group_image = imageViewToByte(imageView);
                 Group newGroup = new Group(group_name, group_image);
 
-                if (editText.length() != 0) {
+                if (editText.length() == 0) {
+                    toastMessage("Please enter group name.");
+                } else if (user_ids.size() == 0) {
+                    toastMessage("Please select group members.");
+                } else {
                     CreateGroup(newGroup, user_ids);
                     Intent myIntent = new Intent(Activity_CreateNewGroup.this, Activity_InGroup.class);
                     Activity_CreateNewGroup.this.startActivity(myIntent);
@@ -84,8 +92,6 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
                     //empty name and image input
                     editText.setText("");
                     imageView.setImageResource(R.mipmap.ic_launcher_round);
-                } else {
-                    toastMessage("Name cannot be empty.");
                 }
             }
         });
@@ -95,7 +101,12 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
 
         populateGroupRecyclerView();
 
+    }
 
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 
     ////////////////////////////////////////////////// populate user list //////////////////////////////////////////////////////
@@ -109,14 +120,10 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
 
         RVAdapter_User adapter = new RVAdapter_User(users, new RVAdapter_User.ClickListener() {
             @Override public void onClick(View v, int position) {
-                Toast.makeText(Activity_CreateNewGroup.this, "SOME OTHER = " + String.valueOf(position), Toast.LENGTH_SHORT).show();
-
                 if (user_ids.contains(position + 1)) {
-                    Log.d("IF", String.valueOf(position + 1));
                     user_ids.remove(Integer.valueOf(position + 1));
                     v.setBackgroundColor(getResources().getColor(R.color.colorWhite));
                 } else {
-                    Log.d("ELSE", String.valueOf(position + 1));
                     user_ids.add(position + 1);
                     v.setBackgroundColor(getResources().getColor(R.color.user_pressed));
                 }
@@ -177,6 +184,7 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
                 Uri contentURI = data.getData();
                 try {
                     Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), contentURI);
+                    bitmap =  getResizedBitmap(bitmap, 70);
                     imageView.setImageBitmap(bitmap);
 
                 } catch (IOException e) {
@@ -215,6 +223,22 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
         drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
         drawable.draw(canvas);
         return bmp;
+    }
+
+    //get resized bitmap
+    public Bitmap getResizedBitmap(Bitmap image, int maxSize) {
+        int width = image.getWidth();
+        int height = image.getHeight();
+
+        float bitmapRatio = (float)width / (float) height;
+        if (bitmapRatio > 1) {
+            width = maxSize;
+            height = (int) (width / bitmapRatio);
+        } else {
+            height = maxSize;
+            width = (int) (height * bitmapRatio);
+        }
+        return Bitmap.createScaledBitmap(image, width, height, true);
     }
 
     ////////////////////////////////////////////// insert new group to database ////////////////////////////////////////////////

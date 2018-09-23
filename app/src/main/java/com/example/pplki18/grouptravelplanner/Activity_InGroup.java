@@ -21,7 +21,6 @@ public class Activity_InGroup extends AppCompatActivity implements NavigationVie
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_in_group);
-        setSupportActionBar(toolbar);
         init();
 
         navigationView.setNavigationItemSelectedListener(this);

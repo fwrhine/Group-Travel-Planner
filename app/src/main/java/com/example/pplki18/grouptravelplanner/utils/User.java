@@ -1,4 +1,4 @@
-package com.example.pplki18.grouptravelplanner;
+package com.example.pplki18.grouptravelplanner.utils;
 
 public class User {
 

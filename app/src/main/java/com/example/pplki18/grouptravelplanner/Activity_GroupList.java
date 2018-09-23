@@ -17,8 +17,9 @@ import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
 import com.example.pplki18.grouptravelplanner.data.GroupContract;
 import com.example.pplki18.grouptravelplanner.data.UserContract;
 import com.example.pplki18.grouptravelplanner.data.UserGroupContract;
+import com.example.pplki18.grouptravelplanner.utils.Group;
+import com.example.pplki18.grouptravelplanner.utils.RVAdapter_Group;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,8 +38,9 @@ public class Activity_GroupList extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_group_list);
-        setSupportActionBar(toolbar);
         init();
+
+        setSupportActionBar(toolbar);
 
         //FAB: when clicked, open create new group interface
         fab.setOnClickListener(new View.OnClickListener() {
