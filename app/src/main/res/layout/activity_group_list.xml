@@ -75,5 +75,16 @@
 
     </android.support.constraint.ConstraintLayout>
 
+    <!-- TEMP - nopal -->
+    <Button
+        android:id="@+id/to_search_friend"
+        android:text="ADD FRIEND"
+        android:background="@color/background_color"
+        android:textColor="@android:color/white"
+        android:layout_margin="8dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/group_list_bot" />
+
 
 </RelativeLayout>
