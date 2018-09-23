@@ -8,22 +8,23 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.v4.view.GravityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ListAdapter;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
@@ -35,6 +36,7 @@ import com.example.pplki18.grouptravelplanner.utils.SessionManager;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class Activity_CreateNewGroup extends AppCompatActivity {
@@ -44,10 +46,11 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
     private Button btnCreate, btnChoose;
     private EditText editText;
     private ImageView imageView;
-    private ListView listViewUser;
     private Toolbar toolbar;
     private SessionManager sessionManager;
-    private ArrayList<Long> user_ids;
+    private ArrayList<Integer> user_ids;
+    private RecyclerView recyclerViewUser;
+    private LinearLayoutManager linearLayoutManager;
     private int GALLERY = 1, CAMERA = 2;
 
     @Override
@@ -87,34 +90,42 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
             }
         });
 
-        //Todo: users on list view: on click, move to top of list and change icon to checklist
-        listViewUser.setOnItemClickListener(new AdapterView.OnItemClickListener(){
-            @Override
-            public void onItemClick(AdapterView<?> adapter, View v, int position, long id){
-                //Todo: add to user_ids
-//                user_ids.add();
-            }
-        });
+        recyclerViewUser.setHasFixedSize(true);
+        recyclerViewUser.setLayoutManager(linearLayoutManager);
 
-        populateUserListView();
+        populateGroupRecyclerView();
+
+
     }
 
     ////////////////////////////////////////////////// populate user list //////////////////////////////////////////////////////
 
-    private void populateUserListView() {
-        Log.d(TAG, "populateUserListView: Displaying data in the ListView.");
+    //Todo: refactor? exactly the same code as the one in CreateNewGroup
+    private void populateGroupRecyclerView() {
+        Log.d(TAG, "populateGroupRecyclerView: Displaying list of groups in the ListView.");
 
         //get data and append to list
-        List<User> users = getAllUsers();
-        List<String> user_names = new ArrayList<>();
+        final List<User> users = getAllUsers();
 
-        for (User user: users) {
-            user_names.add(user.getUser_name());
-        }
+        RVAdapter_User adapter = new RVAdapter_User(users, new RVAdapter_User.ClickListener() {
+            @Override public void onClick(View v, int position) {
+                Toast.makeText(Activity_CreateNewGroup.this, "SOME OTHER = " + String.valueOf(position), Toast.LENGTH_SHORT).show();
 
-        //create the list adapter and set the adapter
-        ListAdapter adapter = new ArrayAdapter<>(this, android.R.layout.simple_expandable_list_item_1, user_names);
-        listViewUser.setAdapter(adapter);
+                if (user_ids.contains(position + 1)) {
+                    Log.d("IF", String.valueOf(position + 1));
+                    user_ids.remove(Integer.valueOf(position + 1));
+                    v.setBackgroundColor(getResources().getColor(R.color.colorWhite));
+                } else {
+                    Log.d("ELSE", String.valueOf(position + 1));
+                    user_ids.add(position + 1);
+                    v.setBackgroundColor(getResources().getColor(R.color.user_pressed));
+                }
+
+                Log.d("IDS", user_ids.toString());
+            }
+        });
+
+        recyclerViewUser.setAdapter(adapter);
     }
 
     ////////////////////////////////////////////////////// choose image ////////////////////////////////////////////////////////
@@ -209,7 +220,7 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
     ////////////////////////////////////////////// insert new group to database ////////////////////////////////////////////////
 
     //Todo: insert data to database, if success, open group chat
-    public void CreateGroup(Group group, ArrayList<Long> user_ids) {
+    public void CreateGroup(Group group, ArrayList<Integer> user_ids) {
         long createGroup = insertGroup(group, user_ids);
 
         if (createGroup != -1) {
@@ -217,31 +228,37 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
         } else {
             toastMessage("Fail.");
         }
+
+        user_ids.clear();
     }
 
     //////////////////////////////////////////////////// database functions ////////////////////////////////////////////////////
 
-    public long insertGroup(Group group, ArrayList<Long> user_ids) {
+    public long insertGroup(Group group, ArrayList<Integer> user_ids) {
         sessionManager = new SessionManager(getApplicationContext());
         SQLiteDatabase db = databaseHelper.getWritableDatabase();
+
+        HashMap<String, String> user = sessionManager.getUserDetails();
+        Log.d("USER DETAIL", user.toString());
 
         ContentValues values = new ContentValues();
         values.put(GroupContract.GroupEntry.COL_GROUP_NAME, group.getGroup_name());
         values.put(GroupContract.GroupEntry.COL_GROUP_IMAGE, group.getGroup_image());
-        values.put(GroupContract.GroupEntry.COL_GROUP_CREATOR, sessionManager.KEY_USERNAME);
+        values.put(GroupContract.GroupEntry.COL_GROUP_CREATOR, user.get(sessionManager.KEY_USERNAME));
+        Log.d("CURRENT USERNAME", user.get(sessionManager.KEY_USERNAME));
 
-        // insert row
+        // insert row_user
         long group_id = db.insert(GroupContract.GroupEntry.TABLE_NAME, null, values);
 
         // assigning users to groups
-        for (long user_id : user_ids) {
+        for (int user_id : user_ids) {
             insertUserGroup(group_id, user_id);
         }
 
         return group_id;
     }
 
-    public long insertUserGroup(long group_id, long user_id) {
+    public long insertUserGroup(long group_id, int user_id) {
         SQLiteDatabase db = databaseHelper.getWritableDatabase();
 
         ContentValues contentValues = new ContentValues();
@@ -286,15 +303,22 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        user_ids.clear();
+    }
+
     private void init() {
         toolbar = findViewById(R.id.toolbar);
         editText = findViewById(R.id.editText);
         imageView = findViewById(R.id.imageView);
-        listViewUser = findViewById(R.id.listViewUser);
         btnCreate = findViewById(R.id.btnCreate);
         btnChoose = findViewById(R.id.btnChoose);
         databaseHelper = new DatabaseHelper(this);
         sessionManager = new SessionManager(getApplicationContext());
+        recyclerViewUser = (RecyclerView)findViewById(R.id.rv);
+        linearLayoutManager = new LinearLayoutManager(this);
         user_ids = new ArrayList<>();
     }
 
