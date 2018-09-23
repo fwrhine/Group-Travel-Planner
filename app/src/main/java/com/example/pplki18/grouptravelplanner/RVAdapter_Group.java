@@ -42,7 +42,12 @@ public class RVAdapter_Group extends RecyclerView.Adapter<RVAdapter_Group.GroupV
         Bitmap bmp = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
         groupViewHolder.groupImage.setImageBitmap(bmp);
 
-        groupViewHolder.groupMembers.setText(groups.get(i).getGroup_members().toString());
+//        groupViewHolder.groupMembers.setText(groups.get(i).getGroup_members().toString());
+        //TODO set image resource depending on user's profile image
+        groupViewHolder.memberImg1.setImageResource(R.drawable.user_pic);
+        groupViewHolder.memberImg2.setImageResource(R.drawable.user_pic);
+        groupViewHolder.memberImg3.setImageResource(R.drawable.user_pic);
+        groupViewHolder.memberImg4.setImageResource(R.drawable.user_pic);
     }
 
     @Override
@@ -53,15 +58,21 @@ public class RVAdapter_Group extends RecyclerView.Adapter<RVAdapter_Group.GroupV
     public static class GroupViewHolder extends RecyclerView.ViewHolder {
         CardView cardView;
         TextView groupName;
-        TextView groupMembers;
         ImageView groupImage;
+        ImageView memberImg1;
+        ImageView memberImg2;
+        ImageView memberImg3;
+        ImageView memberImg4;
 
         GroupViewHolder(View itemView) {
             super(itemView);
             cardView = (CardView)itemView.findViewById(R.id.cv);
             groupName = (TextView)itemView.findViewById(R.id.group_name);
-            groupMembers = (TextView) itemView.findViewById(R.id.group_members);
             groupImage = (ImageView)itemView.findViewById(R.id.group_image);
+            memberImg1 = (ImageView) itemView.findViewById(R.id.user_image1);
+            memberImg2 = (ImageView) itemView.findViewById(R.id.user_image2);
+            memberImg3 = (ImageView) itemView.findViewById(R.id.user_image3);
+            memberImg4 = (ImageView) itemView.findViewById(R.id.user_image4);
         }
 
     }
