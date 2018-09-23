@@ -76,6 +76,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + FriendsEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + FriendsEntry.COL_USER_ID + " INTEGER, "
                 + FriendsEntry.COL_FRIEND_ID + " INTEGER, "
+
+                // EDIT
+                + FriendsEntry.COL_FRIEND_USERNAME + " TEXT, "
+
                 + "FOREIGN KEY(" + FriendsEntry.COL_USER_ID + ")"
                 + " REFERENCES " + UserEntry.TABLE_NAME + "(" + UserEntry._ID + "), "
                 + "FOREIGN KEY(" + FriendsEntry.COL_USER_ID + ")"

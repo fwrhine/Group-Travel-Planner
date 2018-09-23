@@ -1,10 +1,12 @@
 package com.example.pplki18.grouptravelplanner;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ListView;
 import android.widget.SearchView;
 
@@ -57,6 +59,11 @@ public class SearchBarActivity extends AppCompatActivity {
         Log.d("DATA", query);
         Log.d("DATA", data.getCount() + ".");
         return data;
+    }
+
+    public void gotoAdd_Friend(View vw){
+        Intent i = new Intent(SearchBarActivity.this, Activity_AddFriend.class);
+        startActivity(i);
     }
 
 }

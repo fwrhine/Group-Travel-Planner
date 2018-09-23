@@ -2,33 +2,32 @@ package com.example.pplki18.grouptravelplanner;
 
 public class Friend {
 
-    String friend_name;
-    byte[] friend_image;
-
+    Integer friend_id;
+    Integer user_id;
     //constructor
     public Friend() {
     }
 
-    public Friend(String friend_name, byte[] friend_image) {
-        this.friend_name = friend_name;
-        this.friend_image = friend_image;
+    public Friend(Integer user_id, Integer friend_id) {
+        this.user_id =user_id;
+        this.friend_id = friend_id;
     }
 
     //setters
-    public void setFriend_name(String friend_name) {
-        this.friend_name = friend_name;
+    public void setFriend_id(Integer friend_id) {
+        this.friend_id = friend_id;
     }
-
-    public void setFriend_image(byte[] friend_image) {
-        this.friend_image = friend_image;
+    public void setUser_id(Integer user_id) {
+        this.user_id = user_id;
     }
 
     //getters
-    public String getFriend_name() {
-        return friend_name;
+    public Integer getFriend_id() {
+        return friend_id;
     }
-    public byte[] getFriend_image() {
-        return friend_image;
+
+    public Integer getUser_id() {
+        return user_id;
     }
 
 }
