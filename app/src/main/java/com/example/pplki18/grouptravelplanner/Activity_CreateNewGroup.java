@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -39,13 +40,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class Activity_CreateNewGroup extends AppCompatActivity {
     private static final String TAG = "Activity_CreateNewGroup";
 
     DatabaseHelper databaseHelper;
-    private Button btnCreate, btnChoose;
+    private Button btnCreate;
+    private FloatingActionButton fab_pic;
     private EditText editText;
-    private ImageView imageView;
+    private CircleImageView circleImageView;
     private Toolbar toolbar;
     private SessionManager sessionManager;
     private ArrayList<Integer> user_ids;
@@ -65,7 +69,7 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
         setTitle("Create Group");
 
         //Todo: choose image button: on click, ask permission to read gallery
-        btnChoose.setOnClickListener(new View.OnClickListener() {
+        fab_pic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 showPictureDialog();
@@ -77,7 +81,7 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String group_name = editText.getText().toString();
-                byte[] group_image = imageViewToByte(imageView);
+                byte[] group_image = imageViewToByte(circleImageView);
                 Group newGroup = new Group(group_name, group_image);
 
                 if (editText.length() == 0) {
@@ -89,9 +93,9 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
                     Intent myIntent = new Intent(Activity_CreateNewGroup.this, Activity_InGroup.class);
                     Activity_CreateNewGroup.this.startActivity(myIntent);
 
-                    //empty name and image input
-                    editText.setText("");
-                    imageView.setImageResource(R.mipmap.ic_launcher_round);
+//                    //empty name and image input
+//                    editText.setText("");
+//                    circleImageView.setImageResource(R.mipmap.ic_launcher_round);
                 }
             }
         });
@@ -120,12 +124,16 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
 
         RVAdapter_User adapter = new RVAdapter_User(users, new RVAdapter_User.ClickListener() {
             @Override public void onClick(View v, int position) {
+                ImageView button = (ImageView) v.findViewById(R.id.button);
+
                 if (user_ids.contains(position + 1)) {
                     user_ids.remove(Integer.valueOf(position + 1));
-                    v.setBackgroundColor(getResources().getColor(R.color.colorWhite));
+//                    v.setBackgroundColor(getResources().getColor(R.color.colorWhite));
+                    button.setImageResource(R.drawable.ic_radio_button_unchecked);
                 } else {
                     user_ids.add(position + 1);
-                    v.setBackgroundColor(getResources().getColor(R.color.user_pressed));
+//                    v.setBackgroundColor(getResources().getColor(R.color.user_pressed));
+                    button.setImageResource(R.drawable.ic_check_circle);
                 }
 
                 Log.d("IDS", user_ids.toString());
@@ -185,7 +193,7 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
                 try {
                     Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), contentURI);
                     bitmap =  getResizedBitmap(bitmap, 70);
-                    imageView.setImageBitmap(bitmap);
+                    circleImageView.setImageBitmap(bitmap);
 
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -195,7 +203,7 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
 
         } else if (requestCode == CAMERA) {
             Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
-            imageView.setImageBitmap(thumbnail);
+            circleImageView.setImageBitmap(thumbnail);
         }
     }
 
@@ -336,9 +344,9 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
     private void init() {
         toolbar = findViewById(R.id.toolbar);
         editText = findViewById(R.id.editText);
-        imageView = findViewById(R.id.imageView);
+        circleImageView = findViewById(R.id.group_image);
+        fab_pic = findViewById(R.id.fab_pic);
         btnCreate = findViewById(R.id.btnCreate);
-        btnChoose = findViewById(R.id.btnChoose);
         databaseHelper = new DatabaseHelper(this);
         sessionManager = new SessionManager(getApplicationContext());
         recyclerViewUser = (RecyclerView)findViewById(R.id.rv);
