@@ -57,15 +57,23 @@
                 app:civ_border_color="#FF000000"
                 app:civ_border_width="2dp" />
 
-            <android.support.design.widget.FloatingActionButton xmlns:app="http://schemas.android.com/apk/res-auto"
+            <android.support.design.widget.FloatingActionButton
                 android:id="@+id/fab_pic"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_toEndOf="@+id/buttonEditFullname"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginEnd="134dp"
+                android:layout_marginTop="79dp"
                 android:backgroundTint="@color/colorWhite"
                 android:clickable="true"
-                android:src="@drawable/ic_photo_camera_black_24dp" />
+                android:src="@drawable/ic_photo_camera_black_24dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.942"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.946" />
 
             <EditText
                 android:id="@+id/fullname_label"
