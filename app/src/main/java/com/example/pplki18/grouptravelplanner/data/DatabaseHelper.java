@@ -118,7 +118,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put(UserEntry.COL_GENDER, 0);
         contentValues.put(UserEntry.COL_PHONE, "");
         contentValues.put(UserEntry.COL_BIRTHDAY, "");
-        contentValues.put(UserEntry.COL_PICTURE, 0);
+        contentValues.putNull(UserEntry.COL_PICTURE); // contentValues.put(UserEntry.COL_PICTURE, 0);
         contentValues.put(UserEntry.COL_STATUS, 0);
         long result = db.insert(UserEntry.TABLE_NAME, null, contentValues);
         if(result == -1)
