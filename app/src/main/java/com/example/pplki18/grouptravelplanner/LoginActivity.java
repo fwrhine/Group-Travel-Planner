@@ -32,6 +32,7 @@ public class LoginActivity extends AppCompatActivity {
     InputMethodManager imm;
 
     Intent intent;
+    String id;
     String email;
     String gender;
     String phone_no;
@@ -75,10 +76,11 @@ public class LoginActivity extends AppCompatActivity {
         if(cursor.getCount() == 1){
             if(cursor !=null && cursor.moveToFirst()) {
                 do {
-                    email = cursor.getString(cursor.getColumnIndex("email"));
-                    gender = cursor.getInt(cursor.getColumnIndex("gender")) + "";
-                    phone_no = cursor.getString(cursor.getColumnIndex("phone_no"));
-                    birthday = cursor.getString(cursor.getColumnIndex("birthday"));
+                    id = cursor.getInt(cursor.getColumnIndex(UserEntry._ID)) + "";
+                    email = cursor.getString(cursor.getColumnIndex(UserEntry.COL_EMAIL));
+                    gender = cursor.getInt(cursor.getColumnIndex(UserEntry.COL_GENDER)) + "";
+                    phone_no = cursor.getString(cursor.getColumnIndex(UserEntry.COL_PHONE));
+                    birthday = cursor.getString(cursor.getColumnIndex(UserEntry.COL_BIRTHDAY));
                 } while (cursor.moveToNext());
             }
             cursor.close();
@@ -113,7 +115,7 @@ public class LoginActivity extends AppCompatActivity {
                 if(validateLogin()) {
 
                     // Saves the login information to the session
-                    sessionManager.createLoginSession(getUsernameFromEditText(), email, gender, phone_no, birthday);
+                    sessionManager.createLoginSession(id, getUsernameFromEditText(), email, gender, phone_no, birthday);
                     Log.d("SIGN-IN", sessionManager.isLoggedIn()+".");
 
                     // Send success message to the user
