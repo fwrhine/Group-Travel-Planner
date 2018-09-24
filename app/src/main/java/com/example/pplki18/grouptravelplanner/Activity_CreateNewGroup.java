@@ -95,7 +95,7 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
                     toastMessage("Please select group members.");
                 } else {
 //                    Log.d("CURRENT ID", currId + Integer.parseInt(currId));
-                    user_ids.add(Integer.getInteger(currId));
+                    user_ids.add(Integer.parseInt(currId));
                     CreateGroup(newGroup, user_ids);
                     Intent myIntent = new Intent(Activity_CreateNewGroup.this, Activity_InGroup.class);
                     Activity_CreateNewGroup.this.startActivity(myIntent);
