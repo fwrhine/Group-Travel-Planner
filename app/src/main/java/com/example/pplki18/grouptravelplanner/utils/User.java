@@ -2,6 +2,7 @@ package com.example.pplki18.grouptravelplanner.utils;
 
 public class User {
 
+    int user_id;
     String user_name;
     byte[] user_image;
 
@@ -9,14 +10,19 @@ public class User {
     public User() {
     }
 
-    public User(String user_name, byte[] user_image) {
+    public User(int user_id, String user_name) {
+        this.user_id = user_id;
         this.user_name = user_name;
-        this.user_image = user_image;
+//        this.user_image = user_image;
 
 
     }
 
     //setter
+    public void setUser_id(int user_id) {
+        this.user_id = user_id;
+    }
+
     public void setUser_name(String user_name) {
         this.user_name = user_name;
     }
@@ -25,6 +31,10 @@ public class User {
 
 
     //getter
+    public int getUser_id() {
+        return user_id;
+    }
+
     public String getUser_name() {
         return user_name;
     }
