@@ -61,7 +61,7 @@ public class LoginActivity extends AppCompatActivity {
         // Create and/or open a database to read from it
         SQLiteDatabase db = myDb.getReadableDatabase();
 
-        // Query string to get a row of user based on the username and password
+        // Query string to get a row_user of user based on the username and password
         String query = "SELECT * FROM " + UserEntry.TABLE_NAME + " WHERE "
                 + UserEntry.COL_USERNAME + "=?" + " AND "
                 + UserEntry.COL_PASSWORD + "=?";
@@ -121,7 +121,7 @@ public class LoginActivity extends AppCompatActivity {
                             Toast.LENGTH_SHORT).show();
 
                     // Redirect to ProfileActivity and forget the previous activities
-                    intent = new Intent(LoginActivity.this, Activity_GroupList.class); //TEMP
+                    intent = new Intent(LoginActivity.this, Activity_GroupList.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
                     Log.d("SIGN-IN", "SUCCESS");

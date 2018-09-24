@@ -13,52 +13,63 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ListAdapter;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
 import com.example.pplki18.grouptravelplanner.data.GroupContract;
 import com.example.pplki18.grouptravelplanner.data.UserContract;
 import com.example.pplki18.grouptravelplanner.data.UserGroupContract;
+import com.example.pplki18.grouptravelplanner.utils.Group;
+import com.example.pplki18.grouptravelplanner.utils.RVAdapter_User;
 import com.example.pplki18.grouptravelplanner.utils.SessionManager;
+import com.example.pplki18.grouptravelplanner.utils.User;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class Activity_CreateNewGroup extends AppCompatActivity {
     private static final String TAG = "Activity_CreateNewGroup";
 
     DatabaseHelper databaseHelper;
-    private Button btnCreate, btnChoose;
+    private Button btnCreate;
+    private FloatingActionButton fab_pic;
     private EditText editText;
-    private ImageView imageView;
-    private ListView listViewUser;
+    private CircleImageView circleImageView;
     private Toolbar toolbar;
     private SessionManager sessionManager;
-    private ArrayList<Long> user_ids;
+    private ArrayList<Integer> user_ids;
+    private RecyclerView recyclerViewUser;
+    private LinearLayoutManager linearLayoutManager;
     private int GALLERY = 1, CAMERA = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_group);
-        setSupportActionBar(toolbar);
         init();
 
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        setTitle("Create Group");
+
         //Todo: choose image button: on click, ask permission to read gallery
-        btnChoose.setOnClickListener(new View.OnClickListener() {
+        fab_pic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 showPictureDialog();
@@ -70,51 +81,66 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String group_name = editText.getText().toString();
-                byte[] group_image = imageViewToByte(imageView);
+                byte[] group_image = imageViewToByte(circleImageView);
                 Group newGroup = new Group(group_name, group_image);
 
-                if (editText.length() != 0) {
+                if (editText.length() == 0) {
+                    toastMessage("Please enter group name.");
+                } else if (user_ids.size() == 0) {
+                    toastMessage("Please select group members.");
+                } else {
                     CreateGroup(newGroup, user_ids);
                     Intent myIntent = new Intent(Activity_CreateNewGroup.this, Activity_InGroup.class);
                     Activity_CreateNewGroup.this.startActivity(myIntent);
 
-                    //empty name and image input
-                    editText.setText("");
-                    imageView.setImageResource(R.mipmap.ic_launcher_round);
-                } else {
-                    toastMessage("Name cannot be empty.");
+//                    //empty name and image input
+//                    editText.setText("");
+//                    circleImageView.setImageResource(R.mipmap.ic_launcher_round);
                 }
             }
         });
 
-        //Todo: users on list view: on click, move to top of list and change icon to checklist
-        listViewUser.setOnItemClickListener(new AdapterView.OnItemClickListener(){
-            @Override
-            public void onItemClick(AdapterView<?> adapter, View v, int position, long id){
-                //Todo: add to user_ids
-//                user_ids.add();
-            }
-        });
+        recyclerViewUser.setHasFixedSize(true);
+        recyclerViewUser.setLayoutManager(linearLayoutManager);
 
-        populateUserListView();
+        populateGroupRecyclerView();
+
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 
     ////////////////////////////////////////////////// populate user list //////////////////////////////////////////////////////
 
-    private void populateUserListView() {
-        Log.d(TAG, "populateUserListView: Displaying data in the ListView.");
+    //Todo: refactor? exactly the same code as the one in CreateNewGroup
+    private void populateGroupRecyclerView() {
+        Log.d(TAG, "populateGroupRecyclerView: Displaying list of groups in the ListView.");
 
         //get data and append to list
-        List<User> users = getAllUsers();
-        List<String> user_names = new ArrayList<>();
+        final List<User> users = getAllUsers();
 
-        for (User user: users) {
-            user_names.add(user.getUser_name());
-        }
+        RVAdapter_User adapter = new RVAdapter_User(users, new RVAdapter_User.ClickListener() {
+            @Override public void onClick(View v, int position) {
+                ImageView button = (ImageView) v.findViewById(R.id.button);
 
-        //create the list adapter and set the adapter
-        ListAdapter adapter = new ArrayAdapter<>(this, android.R.layout.simple_expandable_list_item_1, user_names);
-        listViewUser.setAdapter(adapter);
+                if (user_ids.contains(position + 1)) {
+                    user_ids.remove(Integer.valueOf(position + 1));
+//                    v.setBackgroundColor(getResources().getColor(R.color.colorWhite));
+                    button.setImageResource(R.drawable.ic_radio_button_unchecked);
+                } else {
+                    user_ids.add(position + 1);
+//                    v.setBackgroundColor(getResources().getColor(R.color.user_pressed));
+                    button.setImageResource(R.drawable.ic_check_circle);
+                }
+
+                Log.d("IDS", user_ids.toString());
+            }
+        });
+
+        recyclerViewUser.setAdapter(adapter);
     }
 
     ////////////////////////////////////////////////////// choose image ////////////////////////////////////////////////////////
@@ -166,7 +192,8 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
                 Uri contentURI = data.getData();
                 try {
                     Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), contentURI);
-                    imageView.setImageBitmap(bitmap);
+                    bitmap =  getResizedBitmap(bitmap, 70);
+                    circleImageView.setImageBitmap(bitmap);
 
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -176,7 +203,7 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
 
         } else if (requestCode == CAMERA) {
             Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
-            imageView.setImageBitmap(thumbnail);
+            circleImageView.setImageBitmap(thumbnail);
         }
     }
 
@@ -206,10 +233,26 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
         return bmp;
     }
 
+    //get resized bitmap
+    public Bitmap getResizedBitmap(Bitmap image, int maxSize) {
+        int width = image.getWidth();
+        int height = image.getHeight();
+
+        float bitmapRatio = (float)width / (float) height;
+        if (bitmapRatio > 1) {
+            width = maxSize;
+            height = (int) (width / bitmapRatio);
+        } else {
+            height = maxSize;
+            width = (int) (height * bitmapRatio);
+        }
+        return Bitmap.createScaledBitmap(image, width, height, true);
+    }
+
     ////////////////////////////////////////////// insert new group to database ////////////////////////////////////////////////
 
     //Todo: insert data to database, if success, open group chat
-    public void CreateGroup(Group group, ArrayList<Long> user_ids) {
+    public void CreateGroup(Group group, ArrayList<Integer> user_ids) {
         long createGroup = insertGroup(group, user_ids);
 
         if (createGroup != -1) {
@@ -217,31 +260,37 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
         } else {
             toastMessage("Fail.");
         }
+
+        user_ids.clear();
     }
 
     //////////////////////////////////////////////////// database functions ////////////////////////////////////////////////////
 
-    public long insertGroup(Group group, ArrayList<Long> user_ids) {
+    public long insertGroup(Group group, ArrayList<Integer> user_ids) {
         sessionManager = new SessionManager(getApplicationContext());
         SQLiteDatabase db = databaseHelper.getWritableDatabase();
+
+        HashMap<String, String> user = sessionManager.getUserDetails();
+        Log.d("USER DETAIL", user.toString());
 
         ContentValues values = new ContentValues();
         values.put(GroupContract.GroupEntry.COL_GROUP_NAME, group.getGroup_name());
         values.put(GroupContract.GroupEntry.COL_GROUP_IMAGE, group.getGroup_image());
-        values.put(GroupContract.GroupEntry.COL_GROUP_CREATOR, sessionManager.KEY_USERNAME);
+        values.put(GroupContract.GroupEntry.COL_GROUP_CREATOR, user.get(sessionManager.KEY_USERNAME));
+        Log.d("CURRENT USERNAME", user.get(sessionManager.KEY_USERNAME));
 
-        // insert row
+        // insert row_user
         long group_id = db.insert(GroupContract.GroupEntry.TABLE_NAME, null, values);
 
         // assigning users to groups
-        for (long user_id : user_ids) {
+        for (int user_id : user_ids) {
             insertUserGroup(group_id, user_id);
         }
 
         return group_id;
     }
 
-    public long insertUserGroup(long group_id, long user_id) {
+    public long insertUserGroup(long group_id, int user_id) {
         SQLiteDatabase db = databaseHelper.getWritableDatabase();
 
         ContentValues contentValues = new ContentValues();
@@ -286,15 +335,22 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        user_ids.clear();
+    }
+
     private void init() {
         toolbar = findViewById(R.id.toolbar);
         editText = findViewById(R.id.editText);
-        imageView = findViewById(R.id.imageView);
-        listViewUser = findViewById(R.id.listViewUser);
+        circleImageView = findViewById(R.id.group_image);
+        fab_pic = findViewById(R.id.fab_pic);
         btnCreate = findViewById(R.id.btnCreate);
-        btnChoose = findViewById(R.id.btnChoose);
         databaseHelper = new DatabaseHelper(this);
         sessionManager = new SessionManager(getApplicationContext());
+        recyclerViewUser = (RecyclerView)findViewById(R.id.rv);
+        linearLayoutManager = new LinearLayoutManager(this);
         user_ids = new ArrayList<>();
     }
 
