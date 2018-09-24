@@ -38,6 +38,9 @@ public class SessionManager {
     // User name
     public static final String KEY_USERNAME = "username";
 
+    // User full name
+    public static final String KEY_FULLNAME = "fullname";
+
     // Log-in status
     public static final String IS_LOGIN = "isLoggedIn";
 
@@ -128,6 +131,9 @@ public class SessionManager {
         // user name
         user.put(KEY_USERNAME, pref.getString(KEY_USERNAME, null));
 
+        // user full name
+        user.put(KEY_FULLNAME, pref.getString(KEY_FULLNAME, null));
+
         // user email id
         user.put(KEY_EMAIL, pref.getString(KEY_EMAIL, null));
 
@@ -170,6 +176,19 @@ public class SessionManager {
     // Get Login State
     public boolean isLoggedIn(){
         return pref.getBoolean(IS_LOGIN, false);
+    }
+
+    /**
+     * Quick check for trip status
+     * **/
+    // Get Login State
+    public boolean isOnTrip(){
+        return pref.getBoolean(IS_ON_TRIP, false);
+    }
+
+    public void setFullName(String fullname){
+        editor.putString(KEY_FULLNAME, fullname);
+        editor.commit();
     }
 
     public void updateSession(String key, String value) {
