@@ -19,5 +19,6 @@ public class FriendsContract {
         public static final String _ID = BaseColumns._ID;
         public static final String COL_USER_ID = "user_id";
         public static final String COL_FRIEND_ID = "friend_id";
+        public static final String COL_FRIEND_USERNAME = "username";
     }
 }
