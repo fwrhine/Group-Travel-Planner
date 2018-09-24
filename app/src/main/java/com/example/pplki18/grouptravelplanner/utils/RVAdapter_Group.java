@@ -1,4 +1,4 @@
-package com.example.pplki18.grouptravelplanner;
+package com.example.pplki18.grouptravelplanner.utils;
 
 import android.app.Activity;
 import android.content.Context;
@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.pplki18.grouptravelplanner.R;
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
 import com.example.pplki18.grouptravelplanner.utils.SessionManager;
 
@@ -27,7 +28,7 @@ public class RVAdapter_Group extends RecyclerView.Adapter<RVAdapter_Group.GroupV
     SessionManager sessionManager;
     Context context;
 
-    RVAdapter_Group(List<Group> groups, Context context){
+    public RVAdapter_Group(List<Group> groups, Context context){
         this.groups = groups;
         this.context = context;
     }
