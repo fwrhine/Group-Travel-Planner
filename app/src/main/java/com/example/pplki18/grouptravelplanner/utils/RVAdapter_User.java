@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.media.Image;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,12 +20,14 @@ import java.util.List;
 
 public class RVAdapter_User extends RecyclerView.Adapter<RVAdapter_User.UserViewHolder>{
 
-    private List<User> users;
+    private static List<User> users;
+    private static List<Integer> user_ids;
     private final ClickListener listener;
 
-    public RVAdapter_User(List<User> users, ClickListener listener){
+    public RVAdapter_User(List<User> users, List<Integer> user_ids, ClickListener listener){
         this.users = users;
         this.listener = listener;
+        this.user_ids = user_ids;
     }
 
     @Override
@@ -48,7 +51,15 @@ public class RVAdapter_User extends RecyclerView.Adapter<RVAdapter_User.UserView
 //        userViewHolder.userImage.setImageBitmap(bmp);
 
         userViewHolder.userImage.setImageResource(R.drawable.ic_face);
-        userViewHolder.button.setImageResource(R.drawable.ic_radio_button_unchecked);
+
+//        Log.d("USER_IDS INSIDE", user_ids.toString());
+//        Log.d("USER ID INSIDE", String.valueOf(users.get(i).getUser_id()));
+
+        if (user_ids.contains(users.get(i).getUser_id())) {
+            userViewHolder.button.setImageResource(R.drawable.ic_check_circle);
+        } else {
+            userViewHolder.button.setImageResource(R.drawable.ic_radio_button_unchecked);
+        }
     }
 
     @Override
@@ -77,7 +88,6 @@ public class RVAdapter_User extends RecyclerView.Adapter<RVAdapter_User.UserView
         // onClick Listener for view
         @Override
         public void onClick(View v) {
-//            Toast.makeText(v.getContext(), "ROW PRESSED = " + String.valueOf(getAdapterPosition()), Toast.LENGTH_SHORT).show();
             listenerRef.get().onClick(v, getAdapterPosition());
         }
 

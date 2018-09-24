@@ -81,6 +81,13 @@ public class SearchBarActivity extends AppCompatActivity {
         return data;
     }
 
+
+    public void gotoAdd_Friend(View vw){
+        Intent i = new Intent(SearchBarActivity.this, Activity_AddFriend.class);
+        startActivity(i);
+    }
+
+
     public void setUpToolbar() {
         toolbar.setNavigationOnClickListener(
                 new View.OnClickListener() {
@@ -93,4 +100,5 @@ public class SearchBarActivity extends AppCompatActivity {
                 }
         );
     }
+
 }
