@@ -77,7 +77,7 @@ public class SearchBarActivity extends AppCompatActivity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Intent intent = new Intent(SearchBarActivity.this, Activity_GroupList.class);
+                        Intent intent = new Intent(SearchBarActivity.this, Activity_InHome.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(intent);
                     }

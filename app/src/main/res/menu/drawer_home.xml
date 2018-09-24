@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item android:id="@+id/nav_group_list"
+            android:icon="@drawable/ic_group_black_24dp"
+            android:title="Groups" />
+        <item android:id="@+id/nav_friend_list"
+            android:icon="@drawable/ic_person_black_24dp"
+            android:title="Friends" />
+    </group>
+
+</menu>

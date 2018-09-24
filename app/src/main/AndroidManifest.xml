@@ -8,6 +8,10 @@
         android:smallScreens="true"
         android:xlargeScreens="true" />
 
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -24,40 +28,33 @@
         </activity>
         <activity android:name=".SignUpActivity" />
         <activity android:name=".LoginActivity">
-            <!-- <intent-filter>
+
+            <!--
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter> -->
+            </intent-filter>
+            -->
         </activity>
         <activity android:name=".ForgotPasswordActivity" />
-        <activity android:name=".RecoverPasswordActivity"/>
-        <activity android:name=".UserProfileActivity"/>
-
-        <activity android:name=".SearchBarActivity"/>
-
+        <activity android:name=".RecoverPasswordActivity" />
+        <activity android:name=".UserProfileActivity" />
+        <activity android:name=".SearchBarActivity" />
         <activity
             android:name=".Activity_InGroup"
-            android:theme="@style/AppTheme.NoActionBar"/>
-        <activity
-            android:name=".Activity_GroupList"
-            android:label="@string/title_activity_groups"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".Activity_CreateNewGroup"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
 
         <activity android:name=".EditPhoneNoActivity" />
-        <activity android:name=".EditBirthdayActivity"></activity>
+        <activity android:name=".EditBirthdayActivity" />
+        <activity android:name=".Activity_InHome"></activity>
     </application>
-
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.CAMERA" />
 
 </manifest>
