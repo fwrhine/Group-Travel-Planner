@@ -32,6 +32,9 @@ public class SessionManager {
     // Sharedpref file name
     public static final String PREF_NAME = "mypref";
 
+    // User id
+    public static final String KEY_ID = "id";
+
     // User name
     public static final String KEY_USERNAME = "username";
 
@@ -63,10 +66,13 @@ public class SessionManager {
     /**
      * Create login session
      * */
-    public void createLoginSession(String name, String email, String gender,
+    public void createLoginSession(String id, String name, String email, String gender,
                                    String phone_no, String birthday){
         // Storing login value as TRUE
         editor.putBoolean(IS_LOGIN, true);
+
+        // Storing user id in pref
+        editor.putString(KEY_ID, id);
 
         // Storing name in pref
         editor.putString(KEY_USERNAME, name);
@@ -116,6 +122,9 @@ public class SessionManager {
      * */
     public HashMap<String, String> getUserDetails(){
         HashMap<String, String> user = new HashMap<String, String>();
+        // user id
+        user.put(KEY_ID, pref.getString(KEY_ID, null));
+
         // user name
         user.put(KEY_USERNAME, pref.getString(KEY_USERNAME, null));
 

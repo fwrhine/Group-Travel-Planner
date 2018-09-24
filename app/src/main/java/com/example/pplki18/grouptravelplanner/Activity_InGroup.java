@@ -46,7 +46,7 @@ public class Activity_InGroup extends AppCompatActivity implements NavigationVie
                         new Fragment_Reminder()).commit();
                 break;
             case R.id.nav_close_group:
-                Intent intent = new Intent(Activity_InGroup.this, Activity_GroupList.class);
+                Intent intent = new Intent(Activity_InGroup.this, Fragment_GroupList.class);
                 startActivity(intent);
                 break;
 
@@ -60,7 +60,7 @@ public class Activity_InGroup extends AppCompatActivity implements NavigationVie
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer((GravityCompat.START));
         } else {
-            Intent intent = new Intent(Activity_InGroup.this, Activity_GroupList.class);
+            Intent intent = new Intent(Activity_InGroup.this, Activity_InHome.class);
             startActivity(intent);
         }
     }
