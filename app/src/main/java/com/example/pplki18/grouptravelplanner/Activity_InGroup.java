@@ -47,6 +47,7 @@ public class Activity_InGroup extends AppCompatActivity implements NavigationVie
                 break;
             case R.id.nav_close_group:
                 Intent intent = new Intent(Activity_InGroup.this, Activity_InHome.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 break;
 
@@ -61,6 +62,7 @@ public class Activity_InGroup extends AppCompatActivity implements NavigationVie
             drawer.closeDrawer((GravityCompat.START));
         } else {
             Intent intent = new Intent(Activity_InGroup.this, Activity_InHome.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
         }
     }

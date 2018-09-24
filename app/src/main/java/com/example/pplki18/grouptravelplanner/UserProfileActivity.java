@@ -269,9 +269,10 @@ public class UserProfileActivity extends AppCompatActivity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Intent intent = new Intent(UserProfileActivity.this, Activity_InHome.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        startActivity(intent);
+//                        Intent intent = new Intent(UserProfileActivity.this, Activity_InHome.class);
+//                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                        startActivity(intent);
+                        onBackPressed();
                     }
                 }
         );

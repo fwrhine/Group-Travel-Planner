@@ -1,8 +1,10 @@
 package com.example.pplki18.grouptravelplanner;
 
+import android.app.Fragment;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -93,9 +95,12 @@ public class SearchBarActivity extends AppCompatActivity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Intent intent = new Intent(SearchBarActivity.this, Activity_InHome.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        startActivity(intent);
+//                        Intent intent = new Intent(SearchBarActivity.this, Activity_InHome.class);
+//                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                        startActivity(intent);
+                        onBackPressed();
+//                        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container_home,
+//                                new Fragment_Friends()).commit();
                     }
                 }
         );
