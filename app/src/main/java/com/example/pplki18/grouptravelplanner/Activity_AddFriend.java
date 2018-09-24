@@ -29,29 +29,27 @@ import java.util.List;
 public class Activity_AddFriend extends AppCompatActivity {
     DatabaseHelper myDb;
     private Button btnAdd;
-    private EditText editText;
-    private ImageView imageView;
+    private TextView username;
+    private Button addFriendButton;
     private Toolbar toolbar;
     private SessionManager sessionManager;
-    private ArrayList<Integer> user_ids;
-    private RecyclerView recyclerViewUser;
+    private RecyclerView recyclerViewFriend;
     private LinearLayoutManager linearLayoutManager;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.search_row);
         setSupportActionBar(toolbar);
-
-
-
+        init();
 
     }
 
-    public Integer findFriendId(String username){
+    public Integer findFriendId(String username1){
         Integer friendID;
         String selectQuery = "SELECT * FROM " + UserContract.UserEntry.TABLE_NAME +
-                "WHERE " + UserContract.UserEntry.COL_USERNAME + " = " +  username + ";";
+                "WHERE " + UserContract.UserEntry.COL_USERNAME + " = " +  username1 + ";";
 
         Log.e("USERS", selectQuery);
 
@@ -77,5 +75,14 @@ public class Activity_AddFriend extends AppCompatActivity {
         Toast.makeText(this, "Added friend", Toast.LENGTH_SHORT).show();
     }
 
+    private void init() {
+        toolbar = findViewById(R.id.toolbar);
+        addFriendButton = findViewById(R.id.add_friend);
+        username = findViewById(R.id.username);
+        myDb = new DatabaseHelper(this);
+        sessionManager = new SessionManager(getApplicationContext());
+        recyclerViewFriend = (RecyclerView) findViewById(R.id.rv2);
+        linearLayoutManager = new LinearLayoutManager(this);
+    }
 
 }

@@ -12,22 +12,22 @@ import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
 
 import java.util.List;
 
-public class RVAdapter_Friend extends RecyclerView.Adapter<RVAdapter_Friend.GroupViewHolder>{
+public class RVAdapter_Friend extends RecyclerView.Adapter<RVAdapter_Friend.FriendViewHolder>{
     List<Friend> friend;
     DatabaseHelper myDb;
-    RVAdapter_Friend(List<Friend> groups){
-        this.friend = groups;
+    RVAdapter_Friend(List<Friend> friend){
+        this.friend = friend;
     }
 
     @Override
     public int getItemCount() {
-        return friend.size();
+        return 4;
     }
 
     @Override
-    public RVAdapter_Friend.GroupViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+    public RVAdapter_Friend.FriendViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
         View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.row_friend, viewGroup, false);
-        RVAdapter_Friend.GroupViewHolder pvh = new RVAdapter_Friend.GroupViewHolder(v);
+        RVAdapter_Friend.FriendViewHolder pvh = new RVAdapter_Friend.FriendViewHolder(v);
         return pvh;
     }
 
@@ -40,8 +40,9 @@ public class RVAdapter_Friend extends RecyclerView.Adapter<RVAdapter_Friend.Grou
     }*/
 
     @Override
-    public void onBindViewHolder(RVAdapter_Friend.GroupViewHolder personViewHolder, int i) {
-        personViewHolder.friendName.setText(friend.get(i).getFriend_id());
+    public void onBindViewHolder(RVAdapter_Friend.FriendViewHolder personViewHolder, int i) {
+        personViewHolder.friendName.setText("Dummy 1");
+        personViewHolder.friendImage.setImageResource(R.drawable.user_pic);
 
 /*        byte[] byteArray = friend.get(i).friend_image;
         Bitmap bmp = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
@@ -58,12 +59,12 @@ public class RVAdapter_Friend extends RecyclerView.Adapter<RVAdapter_Friend.Grou
         super.onAttachedToRecyclerView(recyclerView);
     }
 
-    public static class GroupViewHolder extends RecyclerView.ViewHolder {
+    public static class FriendViewHolder extends RecyclerView.ViewHolder {
         CardView cardView;
         TextView friendName;
         ImageView friendImage;
 
-        GroupViewHolder(View itemView) {
+        FriendViewHolder(View itemView) {
             super(itemView);
             cardView = (CardView)itemView.findViewById(R.id.cv);
             friendName = (TextView)itemView.findViewById(R.id.friend_name);

@@ -57,10 +57,10 @@ public class Activity_FriendList extends AppCompatActivity {
         Log.d(TAG, "populateFriendRecyclerView: Displaying list of friends in the ListView.");
 
         //get data and append to list
-//        List<Friend> friend = getAllFriends();
+        List<Friend> friend = null;
 
-//        RVAdapter_Friend adapter = new RVAdapter_Friend(friend);
-//        recyclerViewGroup.setAdapter(adapter);
+        RVAdapter_Friend adapter = new RVAdapter_Friend(friend);
+        recyclerViewGroup.setAdapter(adapter);
     }
 
     /*
