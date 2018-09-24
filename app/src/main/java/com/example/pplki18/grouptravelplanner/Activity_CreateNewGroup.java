@@ -58,7 +58,7 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
     private LinearLayoutManager linearLayoutManager;
     private SearchView searchView;
     private HashMap<String, String> user;
-    private String currUsername;
+    private String currId;
     private int GALLERY = 1, CAMERA = 2;
 
 
@@ -94,6 +94,8 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
                 } else if (user_ids.size() == 0) {
                     toastMessage("Please select group members.");
                 } else {
+//                    Log.d("CURRENT ID", currId + Integer.parseInt(currId));
+                    user_ids.add(Integer.parseInt(currId));
                     CreateGroup(newGroup, user_ids);
                     Intent myIntent = new Intent(Activity_CreateNewGroup.this, Activity_InGroup.class);
                     Activity_CreateNewGroup.this.startActivity(myIntent);
@@ -299,8 +301,8 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
         ContentValues values = new ContentValues();
         values.put(GroupContract.GroupEntry.COL_GROUP_NAME, group.getGroup_name());
         values.put(GroupContract.GroupEntry.COL_GROUP_IMAGE, group.getGroup_image());
-        values.put(GroupContract.GroupEntry.COL_GROUP_CREATOR, currUsername);
-        Log.d("CURRENT USERNAME", currUsername);
+        values.put(GroupContract.GroupEntry.COL_GROUP_CREATOR, currId);
+        Log.d("CURRENT ID", currId);
 
         // insert row_user
         long group_id = db.insert(GroupContract.GroupEntry.TABLE_NAME, null, values);
@@ -331,8 +333,8 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
     public List<User> getAllUsers() {
         List<User> users = new ArrayList<User>();
         String selectQuery = "SELECT * FROM " + UserContract.UserEntry.TABLE_NAME + " WHERE "
-                + UserContract.UserEntry.COL_USERNAME + " != ?";
-        String[] selectionArgs = new String[]{currUsername};
+                + UserContract.UserEntry._ID + " != ?";
+        String[] selectionArgs = new String[]{currId};
 
         Log.e("USERS", selectQuery);
 
@@ -366,8 +368,8 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
 
         String selectQuery = "SELECT * FROM " + UserContract.UserEntry.TABLE_NAME + " WHERE "
                 + UserContract.UserEntry.COL_FULLNAME + " LIKE ? AND "
-                + UserContract.UserEntry.COL_USERNAME + " != ?";
-        String[] selectionArgs = new String[]{"%" + query + "%", currUsername};
+                + UserContract.UserEntry._ID + " != ?";
+        String[] selectionArgs = new String[]{"%" + query + "%", currId};
 
         Log.e("USERS", selectQuery);
 
@@ -415,7 +417,7 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
         user_ids = new ArrayList<>();
         searchView = (SearchView) findViewById(R.id.search_user);
         user = sessionManager.getUserDetails();
-        currUsername = user.get(SessionManager.KEY_USERNAME);
+        currId = user.get(SessionManager.KEY_ID);
     }
 
 }
