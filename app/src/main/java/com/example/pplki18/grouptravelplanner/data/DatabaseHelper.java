@@ -15,9 +15,7 @@ import android.support.v4.content.res.ResourcesCompat;
 import android.util.Log;
 import android.widget.ImageView;
 
-import com.example.pplki18.grouptravelplanner.Group;
 import com.example.pplki18.grouptravelplanner.R;
-import com.example.pplki18.grouptravelplanner.User;
 import com.example.pplki18.grouptravelplanner.data.UserContract.UserEntry;
 import com.example.pplki18.grouptravelplanner.data.GroupContract.GroupEntry;
 import com.example.pplki18.grouptravelplanner.data.UserGroupContract.UserGroupEntry;
