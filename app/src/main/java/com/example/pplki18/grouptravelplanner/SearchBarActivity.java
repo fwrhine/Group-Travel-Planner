@@ -31,7 +31,7 @@ public class SearchBarActivity extends AppCompatActivity {
 
         myDb = new DatabaseHelper(this);
 
-        SearchView simpleSearchView = (SearchView) findViewById(R.id.search);
+        SearchView searchView = (SearchView) findViewById(R.id.search);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setUpToolbar();
@@ -40,7 +40,7 @@ public class SearchBarActivity extends AppCompatActivity {
         HashMap<String, String> user = session.getUserDetails();
         final String currUsername = user.get(SessionManager.KEY_USERNAME);
 
-        simpleSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
 
@@ -49,10 +49,18 @@ public class SearchBarActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                result = searchData(newText.toString(), currUsername);
+                ListView searchItems;
+                if (newText.isEmpty()) {
+                    result = null;
+                }
 
-                Log.d("QUERY", "START_SEARCH");
-                ListView searchItems = (ListView) findViewById(R.id.list);
+                else {
+                    result = searchData(newText.toString(), currUsername);
+
+                    Log.d("QUERY", "START_SEARCH");
+                }
+
+                searchItems = (ListView) findViewById(R.id.list);
                 SearchCursorAdapter adapter = new SearchCursorAdapter(getApplicationContext(), result);
                 searchItems.setAdapter(adapter);
                 return true;
@@ -62,8 +70,9 @@ public class SearchBarActivity extends AppCompatActivity {
 
     public Cursor searchData(String query, String currentUser) {
         SQLiteDatabase db = myDb.getReadableDatabase();
+
         String command = "SELECT * FROM " + UserContract.UserEntry.TABLE_NAME + " WHERE "
-                + UserContract.UserEntry.COL_FULLNAME + " LIKE ? AND "
+                + UserContract.UserEntry.COL_USERNAME + " LIKE ? AND "
                 + UserContract.UserEntry.COL_USERNAME + " != ?";
         String[] selectionArgs = new String[]{"%" + query + "%", currentUser};
         Cursor data = db.rawQuery(command, selectionArgs);
@@ -71,6 +80,13 @@ public class SearchBarActivity extends AppCompatActivity {
         Log.d("DATA", data.getCount() + ".");
         return data;
     }
+
+
+    public void gotoAdd_Friend(View vw){
+        Intent i = new Intent(SearchBarActivity.this, Activity_AddFriend.class);
+        startActivity(i);
+    }
+
 
     public void setUpToolbar() {
         toolbar.setNavigationOnClickListener(

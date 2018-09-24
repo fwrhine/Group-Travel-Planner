@@ -74,7 +74,7 @@ public class Fragment_GroupList extends Fragment implements NavigationView.OnNav
         //get data and append to list
         List<Group> groups = getAllGroups();
 
-        RVAdapter_Group adapter = new RVAdapter_Group(groups);
+        RVAdapter_Group adapter = new RVAdapter_Group(groups, getApplicationContext());
         recyclerViewGroup.setAdapter(adapter);
     }
 
