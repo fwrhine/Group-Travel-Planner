@@ -3,12 +3,9 @@ package com.example.pplki18.grouptravelplanner;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 
-import com.example.pplki18.grouptravelplanner.R;
-import com.example.pplki18.grouptravelplanner.SignUpActivity;
 import com.example.pplki18.grouptravelplanner.utils.SessionManager;
 
 public class SplashScreenActivity extends AppCompatActivity {
@@ -47,7 +44,7 @@ public class SplashScreenActivity extends AppCompatActivity {
             }
             else {
                 // Redirect to Profile Activity if the user is logged in
-                Intent intent = new Intent(SplashScreenActivity.this, Activity_GroupList.class);
+                Intent intent = new Intent(SplashScreenActivity.this, Activity_InHome.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
                 SplashScreenActivity.this.finish();
