@@ -1,8 +1,10 @@
 package com.example.pplki18.grouptravelplanner;
 
+import android.app.Fragment;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -31,7 +33,7 @@ public class SearchBarActivity extends AppCompatActivity {
 
         myDb = new DatabaseHelper(this);
 
-        SearchView simpleSearchView = (SearchView) findViewById(R.id.search);
+        SearchView searchView = (SearchView) findViewById(R.id.search);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setUpToolbar();
@@ -40,7 +42,7 @@ public class SearchBarActivity extends AppCompatActivity {
         HashMap<String, String> user = session.getUserDetails();
         final String currUsername = user.get(SessionManager.KEY_USERNAME);
 
-        simpleSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
 
@@ -49,10 +51,18 @@ public class SearchBarActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                result = searchData(newText.toString(), currUsername);
+                ListView searchItems;
+                if (newText.isEmpty()) {
+                    result = null;
+                }
 
-                Log.d("QUERY", "START_SEARCH");
-                ListView searchItems = (ListView) findViewById(R.id.list);
+                else {
+                    result = searchData(newText.toString(), currUsername);
+
+                    Log.d("QUERY", "START_SEARCH");
+                }
+
+                searchItems = (ListView) findViewById(R.id.list);
                 SearchCursorAdapter adapter = new SearchCursorAdapter(getApplicationContext(), result);
                 searchItems.setAdapter(adapter);
                 return true;
@@ -62,8 +72,9 @@ public class SearchBarActivity extends AppCompatActivity {
 
     public Cursor searchData(String query, String currentUser) {
         SQLiteDatabase db = myDb.getReadableDatabase();
+
         String command = "SELECT * FROM " + UserContract.UserEntry.TABLE_NAME + " WHERE "
-                + UserContract.UserEntry.COL_FULLNAME + " LIKE ? AND "
+                + UserContract.UserEntry.COL_USERNAME + " LIKE ? AND "
                 + UserContract.UserEntry.COL_USERNAME + " != ?";
         String[] selectionArgs = new String[]{"%" + query + "%", currentUser};
         Cursor data = db.rawQuery(command, selectionArgs);
@@ -72,14 +83,24 @@ public class SearchBarActivity extends AppCompatActivity {
         return data;
     }
 
+
+    public void gotoAdd_Friend(View vw){
+        Intent i = new Intent(SearchBarActivity.this, Activity_AddFriend.class);
+        startActivity(i);
+    }
+
+
     public void setUpToolbar() {
         toolbar.setNavigationOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Intent intent = new Intent(SearchBarActivity.this, Activity_GroupList.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        startActivity(intent);
+//                        Intent intent = new Intent(SearchBarActivity.this, Activity_InHome.class);
+//                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                        startActivity(intent);
+                        onBackPressed();
+//                        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container_home,
+//                                new Fragment_Friends()).commit();
                     }
                 }
         );

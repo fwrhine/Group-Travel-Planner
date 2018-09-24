@@ -4,13 +4,20 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
@@ -23,32 +30,33 @@ import com.example.pplki18.grouptravelplanner.utils.RVAdapter_Group;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Activity_GroupList extends AppCompatActivity {
+public class Fragment_GroupList extends Fragment implements NavigationView.OnNavigationItemSelectedListener {
+
     private static final String TAG = "ListGroupActivity";
 
     DatabaseHelper databaseHelper;
     private RecyclerView recyclerViewGroup;
     private LinearLayoutManager linearLayoutManager;
     private FloatingActionButton fab;
-    private Toolbar toolbar;
 
-    private Button to_search_friend;    // TEMP - nopal
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState){
+        return inflater.inflate(R.layout.fragment_group_list, container, false);
+    }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_group_list);
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
         init();
-
-        setSupportActionBar(toolbar);
 
         //FAB: when clicked, open create new group interface
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.v("fab","FAB Clicked");
-                Intent myIntent = new Intent(Activity_GroupList.this, Activity_CreateNewGroup.class);
-                Activity_GroupList.this.startActivity(myIntent);
+                Log.v("fab", "FAB Clicked");
+                Intent myIntent = new Intent(getActivity(), Activity_CreateNewGroup.class);
+                Fragment_GroupList.this.startActivity(myIntent);
             }
         });
 
@@ -57,18 +65,6 @@ public class Activity_GroupList extends AppCompatActivity {
         recyclerViewGroup.setLayoutManager(linearLayoutManager);
 
         populateGroupRecyclerView();
-
-        toolbar.setNavigationOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Intent intent = new Intent(Activity_GroupList.this, UserProfileActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(intent);
-                    }
-                }
-        );
-
     }
 
     //Todo: refactor? exactly the same code as the one in CreateNewGroup
@@ -78,7 +74,7 @@ public class Activity_GroupList extends AppCompatActivity {
         //get data and append to list
         List<Group> groups = getAllGroups();
 
-        RVAdapter_Group adapter = new RVAdapter_Group(groups);
+        RVAdapter_Group adapter = new RVAdapter_Group(groups, getActivity());
         recyclerViewGroup.setAdapter(adapter);
     }
 
@@ -141,30 +137,16 @@ public class Activity_GroupList extends AppCompatActivity {
     }
 
     private void init() {
-        toolbar = findViewById(R.id.toolbar);
-        recyclerViewGroup = (RecyclerView)findViewById(R.id.rv);
-        linearLayoutManager = new LinearLayoutManager(this);
-        databaseHelper = new DatabaseHelper(this);
-        fab = findViewById(R.id.fab);
-
-        // TEMP - nopal
-        to_search_friend = (Button) findViewById(R.id.to_search_friend);
-        setAddFriendButton();
-    }
-
-
-    // TEMP - nopal
-    public void setAddFriendButton() {
-        to_search_friend.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.v("TEMP","To Search Friend");
-                Intent myIntent = new Intent(Activity_GroupList.this, SearchBarActivity.class);
-                Activity_GroupList.this.startActivity(myIntent);
-            }
-        });
+        recyclerViewGroup = (RecyclerView) getView().findViewById(R.id.rv);
+        linearLayoutManager = new LinearLayoutManager(getActivity());
+        databaseHelper = new DatabaseHelper(getActivity());
+        fab = getView().findViewById(R.id.fab);
     }
 
 
 
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        return false;
+    }
 }

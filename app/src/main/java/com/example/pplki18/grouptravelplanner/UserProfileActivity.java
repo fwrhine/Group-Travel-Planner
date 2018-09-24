@@ -23,7 +23,6 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.telephony.PhoneNumberUtils;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
@@ -39,7 +38,6 @@ import android.widget.Toast;
 
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
 import com.example.pplki18.grouptravelplanner.data.UserContract;
-import com.example.pplki18.grouptravelplanner.utils.Group;
 import com.example.pplki18.grouptravelplanner.utils.SessionManager;
 
 import java.io.ByteArrayOutputStream;
@@ -225,6 +223,8 @@ public class UserProfileActivity extends AppCompatActivity {
                         buttonCheckFullname.setVisibility(View.GONE);
                         buttonEditFullname.setVisibility(View.VISIBLE);
                         String new_fullname = fullname_label.getText().toString();
+
+                        session.updateSession(SessionManager.KEY_FULLNAME, new_fullname);
                         Log.d("FULLNAME", new_fullname);
 
                         // Create and/or open a database to read from it
@@ -307,7 +307,7 @@ public class UserProfileActivity extends AppCompatActivity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Intent intent = new Intent(UserProfileActivity.this, Activity_GroupList.class);
+                        Intent intent = new Intent(UserProfileActivity.this, Activity_InHome.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(intent);
                     }

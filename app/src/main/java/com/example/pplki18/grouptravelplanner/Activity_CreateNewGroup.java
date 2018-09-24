@@ -23,6 +23,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
@@ -55,7 +56,11 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
     private ArrayList<Integer> user_ids;
     private RecyclerView recyclerViewUser;
     private LinearLayoutManager linearLayoutManager;
+    private SearchView searchView;
+    private HashMap<String, String> user;
+    private String currId;
     private int GALLERY = 1, CAMERA = 2;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +94,8 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
                 } else if (user_ids.size() == 0) {
                     toastMessage("Please select group members.");
                 } else {
+//                    Log.d("CURRENT ID", currId + Integer.parseInt(currId));
+                    user_ids.add(Integer.parseInt(currId));
                     CreateGroup(newGroup, user_ids);
                     Intent myIntent = new Intent(Activity_CreateNewGroup.this, Activity_InGroup.class);
                     Activity_CreateNewGroup.this.startActivity(myIntent);
@@ -100,10 +107,27 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
             }
         });
 
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                List<User> result = searchUser(newText.toString());
+
+                Log.d("QUERY", "START_SEARCH");
+                populateUserRecyclerView(result);
+                return true;
+            }
+        });
+
         recyclerViewUser.setHasFixedSize(true);
         recyclerViewUser.setLayoutManager(linearLayoutManager);
 
-        populateGroupRecyclerView();
+        populateUserRecyclerView(getAllUsers());
 
     }
 
@@ -116,22 +140,23 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
     ////////////////////////////////////////////////// populate user list //////////////////////////////////////////////////////
 
     //Todo: refactor? exactly the same code as the one in CreateNewGroup
-    private void populateGroupRecyclerView() {
-        Log.d(TAG, "populateGroupRecyclerView: Displaying list of groups in the ListView.");
+    private void populateUserRecyclerView(final List<User> users) {
+        Log.d(TAG, "populateUserRecyclerView: Displaying list of groups in the ListView.");
 
-        //get data and append to list
-        final List<User> users = getAllUsers();
-
-        RVAdapter_User adapter = new RVAdapter_User(users, new RVAdapter_User.ClickListener() {
+        RVAdapter_User adapter = new RVAdapter_User(users, user_ids, new RVAdapter_User.ClickListener() {
             @Override public void onClick(View v, int position) {
                 ImageView button = (ImageView) v.findViewById(R.id.button);
 
-                if (user_ids.contains(position + 1)) {
-                    user_ids.remove(Integer.valueOf(position + 1));
+                Log.d("POSITION", String.valueOf(position));
+                Log.d("ID", String.valueOf(users.get(position).getUser_id()));
+                Log.d("NAME", String.valueOf(users.get(position).getUser_name()));
+
+                if (user_ids.contains(users.get(position).getUser_id())) {
+                    user_ids.remove(Integer.valueOf(users.get(position).getUser_id()));
 //                    v.setBackgroundColor(getResources().getColor(R.color.colorWhite));
                     button.setImageResource(R.drawable.ic_radio_button_unchecked);
                 } else {
-                    user_ids.add(position + 1);
+                    user_ids.add(users.get(position).getUser_id());
 //                    v.setBackgroundColor(getResources().getColor(R.color.user_pressed));
                     button.setImageResource(R.drawable.ic_check_circle);
                 }
@@ -210,7 +235,7 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
     ///////////////////////////////////////////// convert image view to byte array /////////////////////////////////////////////
 
     //convert image view to byte array
-    public static byte[] imageViewToByte(ImageView image) {
+    public byte[] imageViewToByte(ImageView image) {
         try {
             Bitmap bitmap = getBitmapFromDrawable(image.getDrawable());
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
@@ -276,8 +301,8 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
         ContentValues values = new ContentValues();
         values.put(GroupContract.GroupEntry.COL_GROUP_NAME, group.getGroup_name());
         values.put(GroupContract.GroupEntry.COL_GROUP_IMAGE, group.getGroup_image());
-        values.put(GroupContract.GroupEntry.COL_GROUP_CREATOR, user.get(sessionManager.KEY_USERNAME));
-        Log.d("CURRENT USERNAME", user.get(sessionManager.KEY_USERNAME));
+        values.put(GroupContract.GroupEntry.COL_GROUP_CREATOR, currId);
+        Log.d("CURRENT ID", currId);
 
         // insert row_user
         long group_id = db.insert(GroupContract.GroupEntry.TABLE_NAME, null, values);
@@ -307,19 +332,25 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
      * */
     public List<User> getAllUsers() {
         List<User> users = new ArrayList<User>();
-        String selectQuery = "SELECT * FROM " + UserContract.UserEntry.TABLE_NAME;
+        String selectQuery = "SELECT * FROM " + UserContract.UserEntry.TABLE_NAME + " WHERE "
+                + UserContract.UserEntry._ID + " != ?";
+        String[] selectionArgs = new String[]{currId};
 
         Log.e("USERS", selectQuery);
 
 
         SQLiteDatabase db = databaseHelper.getReadableDatabase();
-        Cursor c = db.rawQuery(selectQuery, null);
+        Cursor c = db.rawQuery(selectQuery, selectionArgs);
 
         // looping through all rows and adding to list
         if (c.moveToFirst()) {
             do {
                 User user = new User();
                 user.setUser_name((c.getString(c.getColumnIndex(UserContract.UserEntry.COL_FULLNAME))));
+                user.setUser_id((c.getInt(c.getColumnIndex(UserContract.UserEntry._ID))));
+
+                Log.d("NAME", c.getString(c.getColumnIndex(UserContract.UserEntry.COL_FULLNAME)));
+                Log.d("ID", String.valueOf(c.getInt(c.getColumnIndex(UserContract.UserEntry._ID))));
 
                 // adding to group list
                 users.add(user);
@@ -328,6 +359,38 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
 
         return users;
     }
+
+    /*
+     * Search user by full name
+     * */
+    public List<User> searchUser(String query) {
+        List<User> users = new ArrayList<User>();
+
+        String selectQuery = "SELECT * FROM " + UserContract.UserEntry.TABLE_NAME + " WHERE "
+                + UserContract.UserEntry.COL_FULLNAME + " LIKE ? AND "
+                + UserContract.UserEntry._ID + " != ?";
+        String[] selectionArgs = new String[]{"%" + query + "%", currId};
+
+        Log.e("USERS", selectQuery);
+
+        SQLiteDatabase db = databaseHelper.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, selectionArgs);
+
+        // looping through all rows and adding to list
+        if (c.moveToFirst()) {
+            do {
+                User user = new User();
+                user.setUser_name((c.getString(c.getColumnIndex(UserContract.UserEntry.COL_FULLNAME))));
+                user.setUser_id((c.getInt(c.getColumnIndex(UserContract.UserEntry._ID))));
+
+                // adding to group list
+                users.add(user);
+            } while (c.moveToNext());
+        }
+
+        return users;
+    }
+
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -352,6 +415,9 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
         recyclerViewUser = (RecyclerView)findViewById(R.id.rv);
         linearLayoutManager = new LinearLayoutManager(this);
         user_ids = new ArrayList<>();
+        searchView = (SearchView) findViewById(R.id.search_user);
+        user = sessionManager.getUserDetails();
+        currId = user.get(SessionManager.KEY_ID);
     }
 
 }

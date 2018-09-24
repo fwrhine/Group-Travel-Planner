@@ -32,8 +32,14 @@ public class SessionManager {
     // Sharedpref file name
     public static final String PREF_NAME = "mypref";
 
+    // User id
+    public static final String KEY_ID = "id";
+
     // User name
     public static final String KEY_USERNAME = "username";
+
+    // User full name
+    public static final String KEY_FULLNAME = "fullname";
 
     // Log-in status
     public static final String IS_LOGIN = "isLoggedIn";
@@ -63,13 +69,19 @@ public class SessionManager {
     /**
      * Create login session
      * */
-    public void createLoginSession(String name, String email, String gender,
+    public void createLoginSession(String id, String fullname, String username, String email, String gender,
                                    String phone_no, String birthday){
         // Storing login value as TRUE
         editor.putBoolean(IS_LOGIN, true);
 
-        // Storing name in pref
-        editor.putString(KEY_USERNAME, name);
+        // Storing user id in pref
+        editor.putString(KEY_ID, id);
+
+        // Storing fullname in pref
+        editor.putString(KEY_FULLNAME, fullname);
+
+        // Storing username in pref
+        editor.putString(KEY_USERNAME, username);
 
         // Storing email in pref
         editor.putString(KEY_EMAIL, email);
@@ -116,8 +128,14 @@ public class SessionManager {
      * */
     public HashMap<String, String> getUserDetails(){
         HashMap<String, String> user = new HashMap<String, String>();
+        // user id
+        user.put(KEY_ID, pref.getString(KEY_ID, null));
+
         // user name
         user.put(KEY_USERNAME, pref.getString(KEY_USERNAME, null));
+
+        // user full name
+        user.put(KEY_FULLNAME, pref.getString(KEY_FULLNAME, null));
 
         // user email id
         user.put(KEY_EMAIL, pref.getString(KEY_EMAIL, null));
@@ -161,6 +179,19 @@ public class SessionManager {
     // Get Login State
     public boolean isLoggedIn(){
         return pref.getBoolean(IS_LOGIN, false);
+    }
+
+    /**
+     * Quick check for trip status
+     * **/
+    // Get Login State
+    public boolean isOnTrip(){
+        return pref.getBoolean(IS_ON_TRIP, false);
+    }
+
+    public void setFullName(String fullname){
+        editor.putString(KEY_FULLNAME, fullname);
+        editor.commit();
     }
 
     public void updateSession(String key, String value) {
