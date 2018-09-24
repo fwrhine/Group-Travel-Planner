@@ -33,6 +33,7 @@ public class LoginActivity extends AppCompatActivity {
 
     Intent intent;
     String id;
+    String fullname;
     String email;
     String gender;
     String phone_no;
@@ -77,6 +78,7 @@ public class LoginActivity extends AppCompatActivity {
             if(cursor !=null && cursor.moveToFirst()) {
                 do {
                     id = cursor.getString(cursor.getColumnIndex(UserEntry._ID));
+                    fullname = cursor.getString(cursor.getColumnIndex(UserEntry.COL_FULLNAME));
                     email = cursor.getString(cursor.getColumnIndex(UserEntry.COL_EMAIL));
                     gender = cursor.getInt(cursor.getColumnIndex(UserEntry.COL_GENDER)) + "";
                     phone_no = cursor.getString(cursor.getColumnIndex(UserEntry.COL_PHONE));
@@ -115,7 +117,7 @@ public class LoginActivity extends AppCompatActivity {
                 if(validateLogin()) {
 
                     // Saves the login information to the session
-                    sessionManager.createLoginSession(id, getUsernameFromEditText(), email, gender, phone_no, birthday);
+                    sessionManager.createLoginSession(id, fullname, getUsernameFromEditText(), email, gender, phone_no, birthday);
                     Log.d("SIGN-IN", sessionManager.isLoggedIn()+".");
 
                     // Send success message to the user

@@ -184,6 +184,8 @@ public class UserProfileActivity extends AppCompatActivity {
                         buttonCheckFullname.setVisibility(View.GONE);
                         buttonEditFullname.setVisibility(View.VISIBLE);
                         String new_fullname = fullname_label.getText().toString();
+
+                        session.updateSession(SessionManager.KEY_FULLNAME, new_fullname);
                         Log.d("FULLNAME", new_fullname);
 
                         // Create and/or open a database to read from it
@@ -269,10 +271,9 @@ public class UserProfileActivity extends AppCompatActivity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-//                        Intent intent = new Intent(UserProfileActivity.this, Activity_InHome.class);
-//                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//                        startActivity(intent);
-                        onBackPressed();
+                        Intent intent = new Intent(UserProfileActivity.this, Activity_InHome.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(intent);
                     }
                 }
         );

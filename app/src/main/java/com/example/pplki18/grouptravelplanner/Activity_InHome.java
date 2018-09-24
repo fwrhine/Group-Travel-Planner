@@ -102,21 +102,6 @@ public class Activity_InHome extends AppCompatActivity implements NavigationView
         TextView header_fullname = headerView.findViewById(R.id.user_fullname);
         TextView header_status = headerView.findViewById(R.id.user_status);
 
-        if(sessionManager.getUserDetails().get(sessionManager.KEY_FULLNAME) == null){
-            myDb = new DatabaseHelper(this);
-            SQLiteDatabase db = myDb.getReadableDatabase();
-
-            // Find the full name from the database
-            String query = "SELECT " + UserEntry.COL_FULLNAME +" FROM " + UserEntry.TABLE_NAME + " WHERE "
-                    + UserEntry.COL_USERNAME + "=?";
-            String[] selectionArgs = new String[]{sessionManager.getUserDetails().get(sessionManager.KEY_USERNAME)};
-
-            Cursor cursor = db.rawQuery(query, selectionArgs);
-
-            cursor.moveToFirst();
-            sessionManager.setFullName(cursor.getString(cursor.getColumnIndex(UserEntry.COL_FULLNAME)));
-        }
-
         header_fullname.setText(sessionManager.getUserDetails().get(sessionManager.KEY_FULLNAME));
 
         String status = null;

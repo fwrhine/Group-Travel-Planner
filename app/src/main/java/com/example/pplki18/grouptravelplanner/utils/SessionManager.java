@@ -69,7 +69,7 @@ public class SessionManager {
     /**
      * Create login session
      * */
-    public void createLoginSession(String id, String name, String email, String gender,
+    public void createLoginSession(String id, String fullname, String username, String email, String gender,
                                    String phone_no, String birthday){
         // Storing login value as TRUE
         editor.putBoolean(IS_LOGIN, true);
@@ -77,8 +77,11 @@ public class SessionManager {
         // Storing user id in pref
         editor.putString(KEY_ID, id);
 
-        // Storing name in pref
-        editor.putString(KEY_USERNAME, name);
+        // Storing fullname in pref
+        editor.putString(KEY_FULLNAME, fullname);
+
+        // Storing username in pref
+        editor.putString(KEY_USERNAME, username);
 
         // Storing email in pref
         editor.putString(KEY_EMAIL, email);
