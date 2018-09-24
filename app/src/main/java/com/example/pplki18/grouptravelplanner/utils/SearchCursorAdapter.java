@@ -41,7 +41,6 @@ public class SearchCursorAdapter extends CursorAdapter {
             tvDisplayPicture.setImageBitmap(bmImage);
         }
 
-
         tvUsername.setText("@" + String.valueOf(username));
         tvFullname.setText(String.valueOf(fullname));
     }
