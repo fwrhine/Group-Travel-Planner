@@ -101,6 +101,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(SQL_CREATE_IN_GROUP_REL);
         db.execSQL(SQL_CREATE_FRIENDS_REL);
 
+        /*
         //insert dummy
         ContentValues dummyUser1 = new ContentValues();
         dummyUser1.put(UserEntry.COL_FULLNAME, "dummy1");
@@ -165,6 +166,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         dummyGroup.put(GroupEntry.COL_GROUP_IMAGE, bmpInDrawableToByteArr(c2, R.drawable.group_pic));
         dummyGroup.put(GroupEntry.COL_GROUP_NAME, "dummyGroup");
         db.insert(UserEntry.TABLE_NAME, null, dummyUser5);
+        */
     }
 
     @Override
@@ -202,7 +204,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put(UserEntry.COL_GENDER, 0);
         contentValues.put(UserEntry.COL_PHONE, "");
         contentValues.put(UserEntry.COL_BIRTHDAY, "");
-        contentValues.put(UserEntry.COL_PICTURE, 0);
+        contentValues.putNull(UserEntry.COL_PICTURE); // contentValues.put(UserEntry.COL_PICTURE, 0);
         contentValues.put(UserEntry.COL_STATUS, 0);
         long result = db.insert(UserEntry.TABLE_NAME, null, contentValues);
         if(result == -1)
