@@ -8,15 +8,13 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.support.v4.view.GravityCompat;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -25,13 +23,17 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
 import com.example.pplki18.grouptravelplanner.data.GroupContract;
 import com.example.pplki18.grouptravelplanner.data.UserContract;
 import com.example.pplki18.grouptravelplanner.data.UserGroupContract;
+import com.example.pplki18.grouptravelplanner.utils.Group;
+import com.example.pplki18.grouptravelplanner.utils.RVAdapter_User;
 import com.example.pplki18.grouptravelplanner.utils.SessionManager;
+import com.example.pplki18.grouptravelplanner.utils.User;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -39,29 +41,40 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class Activity_CreateNewGroup extends AppCompatActivity {
     private static final String TAG = "Activity_CreateNewGroup";
 
     DatabaseHelper databaseHelper;
-    private Button btnCreate, btnChoose;
+    private Button btnCreate;
+    private FloatingActionButton fab_pic;
     private EditText editText;
-    private ImageView imageView;
+    private CircleImageView circleImageView;
     private Toolbar toolbar;
     private SessionManager sessionManager;
     private ArrayList<Integer> user_ids;
     private RecyclerView recyclerViewUser;
     private LinearLayoutManager linearLayoutManager;
+    private SearchView searchView;
+    private HashMap<String, String> user;
+    private String currUsername;
     private int GALLERY = 1, CAMERA = 2;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_group);
-        setSupportActionBar(toolbar);
         init();
 
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        setTitle("Create Group");
+
         //Todo: choose image button: on click, ask permission to read gallery
-        btnChoose.setOnClickListener(new View.OnClickListener() {
+        fab_pic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 showPictureDialog();
@@ -73,52 +86,77 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String group_name = editText.getText().toString();
-                byte[] group_image = imageViewToByte(imageView);
+                byte[] group_image = imageViewToByte(circleImageView);
                 Group newGroup = new Group(group_name, group_image);
 
-                if (editText.length() != 0) {
+                if (editText.length() == 0) {
+                    toastMessage("Please enter group name.");
+                } else if (user_ids.size() == 0) {
+                    toastMessage("Please select group members.");
+                } else {
                     CreateGroup(newGroup, user_ids);
                     Intent myIntent = new Intent(Activity_CreateNewGroup.this, Activity_InGroup.class);
                     Activity_CreateNewGroup.this.startActivity(myIntent);
 
-                    //empty name and image input
-                    editText.setText("");
-                    imageView.setImageResource(R.mipmap.ic_launcher_round);
-                } else {
-                    toastMessage("Name cannot be empty.");
+//                    //empty name and image input
+//                    editText.setText("");
+//                    circleImageView.setImageResource(R.mipmap.ic_launcher_round);
                 }
+            }
+        });
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                List<User> result = searchUser(newText.toString());
+
+                Log.d("QUERY", "START_SEARCH");
+                populateUserRecyclerView(result);
+                return true;
             }
         });
 
         recyclerViewUser.setHasFixedSize(true);
         recyclerViewUser.setLayoutManager(linearLayoutManager);
 
-        populateGroupRecyclerView();
+        populateUserRecyclerView(getAllUsers());
 
+    }
 
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 
     ////////////////////////////////////////////////// populate user list //////////////////////////////////////////////////////
 
     //Todo: refactor? exactly the same code as the one in CreateNewGroup
-    private void populateGroupRecyclerView() {
-        Log.d(TAG, "populateGroupRecyclerView: Displaying list of groups in the ListView.");
+    private void populateUserRecyclerView(final List<User> users) {
+        Log.d(TAG, "populateUserRecyclerView: Displaying list of groups in the ListView.");
 
-        //get data and append to list
-        final List<User> users = getAllUsers();
-
-        RVAdapter_User adapter = new RVAdapter_User(users, new RVAdapter_User.ClickListener() {
+        RVAdapter_User adapter = new RVAdapter_User(users, user_ids, new RVAdapter_User.ClickListener() {
             @Override public void onClick(View v, int position) {
-                Toast.makeText(Activity_CreateNewGroup.this, "SOME OTHER = " + String.valueOf(position), Toast.LENGTH_SHORT).show();
+                ImageView button = (ImageView) v.findViewById(R.id.button);
 
-                if (user_ids.contains(position + 1)) {
-                    Log.d("IF", String.valueOf(position + 1));
-                    user_ids.remove(Integer.valueOf(position + 1));
-                    v.setBackgroundColor(getResources().getColor(R.color.colorWhite));
+                Log.d("POSITION", String.valueOf(position));
+                Log.d("ID", String.valueOf(users.get(position).getUser_id()));
+                Log.d("NAME", String.valueOf(users.get(position).getUser_name()));
+
+                if (user_ids.contains(users.get(position).getUser_id())) {
+                    user_ids.remove(Integer.valueOf(users.get(position).getUser_id()));
+//                    v.setBackgroundColor(getResources().getColor(R.color.colorWhite));
+                    button.setImageResource(R.drawable.ic_radio_button_unchecked);
                 } else {
-                    Log.d("ELSE", String.valueOf(position + 1));
-                    user_ids.add(position + 1);
-                    v.setBackgroundColor(getResources().getColor(R.color.user_pressed));
+                    user_ids.add(users.get(position).getUser_id());
+//                    v.setBackgroundColor(getResources().getColor(R.color.user_pressed));
+                    button.setImageResource(R.drawable.ic_check_circle);
                 }
 
                 Log.d("IDS", user_ids.toString());
@@ -177,7 +215,8 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
                 Uri contentURI = data.getData();
                 try {
                     Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), contentURI);
-                    imageView.setImageBitmap(bitmap);
+                    bitmap =  getResizedBitmap(bitmap, 70);
+                    circleImageView.setImageBitmap(bitmap);
 
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -187,14 +226,14 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
 
         } else if (requestCode == CAMERA) {
             Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
-            imageView.setImageBitmap(thumbnail);
+            circleImageView.setImageBitmap(thumbnail);
         }
     }
 
     ///////////////////////////////////////////// convert image view to byte array /////////////////////////////////////////////
 
     //convert image view to byte array
-    public static byte[] imageViewToByte(ImageView image) {
+    public byte[] imageViewToByte(ImageView image) {
         try {
             Bitmap bitmap = getBitmapFromDrawable(image.getDrawable());
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
@@ -215,6 +254,22 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
         drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
         drawable.draw(canvas);
         return bmp;
+    }
+
+    //get resized bitmap
+    public Bitmap getResizedBitmap(Bitmap image, int maxSize) {
+        int width = image.getWidth();
+        int height = image.getHeight();
+
+        float bitmapRatio = (float)width / (float) height;
+        if (bitmapRatio > 1) {
+            width = maxSize;
+            height = (int) (width / bitmapRatio);
+        } else {
+            height = maxSize;
+            width = (int) (height * bitmapRatio);
+        }
+        return Bitmap.createScaledBitmap(image, width, height, true);
     }
 
     ////////////////////////////////////////////// insert new group to database ////////////////////////////////////////////////
@@ -244,8 +299,8 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
         ContentValues values = new ContentValues();
         values.put(GroupContract.GroupEntry.COL_GROUP_NAME, group.getGroup_name());
         values.put(GroupContract.GroupEntry.COL_GROUP_IMAGE, group.getGroup_image());
-        values.put(GroupContract.GroupEntry.COL_GROUP_CREATOR, user.get(sessionManager.KEY_USERNAME));
-        Log.d("CURRENT USERNAME", user.get(sessionManager.KEY_USERNAME));
+        values.put(GroupContract.GroupEntry.COL_GROUP_CREATOR, currUsername);
+        Log.d("CURRENT USERNAME", currUsername);
 
         // insert row_user
         long group_id = db.insert(GroupContract.GroupEntry.TABLE_NAME, null, values);
@@ -275,19 +330,25 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
      * */
     public List<User> getAllUsers() {
         List<User> users = new ArrayList<User>();
-        String selectQuery = "SELECT * FROM " + UserContract.UserEntry.TABLE_NAME;
+        String selectQuery = "SELECT * FROM " + UserContract.UserEntry.TABLE_NAME + " WHERE "
+                + UserContract.UserEntry.COL_USERNAME + " != ?";
+        String[] selectionArgs = new String[]{currUsername};
 
         Log.e("USERS", selectQuery);
 
 
         SQLiteDatabase db = databaseHelper.getReadableDatabase();
-        Cursor c = db.rawQuery(selectQuery, null);
+        Cursor c = db.rawQuery(selectQuery, selectionArgs);
 
         // looping through all rows and adding to list
         if (c.moveToFirst()) {
             do {
                 User user = new User();
                 user.setUser_name((c.getString(c.getColumnIndex(UserContract.UserEntry.COL_FULLNAME))));
+                user.setUser_id((c.getInt(c.getColumnIndex(UserContract.UserEntry._ID))));
+
+                Log.d("NAME", c.getString(c.getColumnIndex(UserContract.UserEntry.COL_FULLNAME)));
+                Log.d("ID", String.valueOf(c.getInt(c.getColumnIndex(UserContract.UserEntry._ID))));
 
                 // adding to group list
                 users.add(user);
@@ -296,6 +357,38 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
 
         return users;
     }
+
+    /*
+     * Search user by full name
+     * */
+    public List<User> searchUser(String query) {
+        List<User> users = new ArrayList<User>();
+
+        String selectQuery = "SELECT * FROM " + UserContract.UserEntry.TABLE_NAME + " WHERE "
+                + UserContract.UserEntry.COL_FULLNAME + " LIKE ? AND "
+                + UserContract.UserEntry.COL_USERNAME + " != ?";
+        String[] selectionArgs = new String[]{"%" + query + "%", currUsername};
+
+        Log.e("USERS", selectQuery);
+
+        SQLiteDatabase db = databaseHelper.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, selectionArgs);
+
+        // looping through all rows and adding to list
+        if (c.moveToFirst()) {
+            do {
+                User user = new User();
+                user.setUser_name((c.getString(c.getColumnIndex(UserContract.UserEntry.COL_FULLNAME))));
+                user.setUser_id((c.getInt(c.getColumnIndex(UserContract.UserEntry._ID))));
+
+                // adding to group list
+                users.add(user);
+            } while (c.moveToNext());
+        }
+
+        return users;
+    }
+
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -312,14 +405,17 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
     private void init() {
         toolbar = findViewById(R.id.toolbar);
         editText = findViewById(R.id.editText);
-        imageView = findViewById(R.id.imageView);
+        circleImageView = findViewById(R.id.group_image);
+        fab_pic = findViewById(R.id.fab_pic);
         btnCreate = findViewById(R.id.btnCreate);
-        btnChoose = findViewById(R.id.btnChoose);
         databaseHelper = new DatabaseHelper(this);
         sessionManager = new SessionManager(getApplicationContext());
         recyclerViewUser = (RecyclerView)findViewById(R.id.rv);
         linearLayoutManager = new LinearLayoutManager(this);
         user_ids = new ArrayList<>();
+        searchView = (SearchView) findViewById(R.id.search_user);
+        user = sessionManager.getUserDetails();
+        currUsername = user.get(SessionManager.KEY_USERNAME);
     }
 
 }

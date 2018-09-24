@@ -11,13 +11,15 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
 import com.example.pplki18.grouptravelplanner.data.GroupContract;
 import com.example.pplki18.grouptravelplanner.data.UserContract;
 import com.example.pplki18.grouptravelplanner.data.UserGroupContract;
+import com.example.pplki18.grouptravelplanner.utils.Group;
+import com.example.pplki18.grouptravelplanner.utils.RVAdapter_Group;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,12 +32,15 @@ public class Activity_GroupList extends AppCompatActivity {
     private FloatingActionButton fab;
     private Toolbar toolbar;
 
+    private Button to_search_friend;    // TEMP - nopal
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_group_list);
-        setSupportActionBar(toolbar);
         init();
+
+        setSupportActionBar(toolbar);
 
         //FAB: when clicked, open create new group interface
         fab.setOnClickListener(new View.OnClickListener() {
@@ -141,6 +146,25 @@ public class Activity_GroupList extends AppCompatActivity {
         linearLayoutManager = new LinearLayoutManager(this);
         databaseHelper = new DatabaseHelper(this);
         fab = findViewById(R.id.fab);
+
+        // TEMP - nopal
+        to_search_friend = (Button) findViewById(R.id.to_search_friend);
+        setAddFriendButton();
     }
+
+
+    // TEMP - nopal
+    public void setAddFriendButton() {
+        to_search_friend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.v("TEMP","To Search Friend");
+                Intent myIntent = new Intent(Activity_GroupList.this, SearchBarActivity.class);
+                Activity_GroupList.this.startActivity(myIntent);
+            }
+        });
+    }
+
+
 
 }
