@@ -45,7 +45,6 @@
             android:name=".Activity_InGroup"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-
             android:name=".Activity_CreateNewGroup"
             android:theme="@style/AppTheme.NoActionBar" />
 
@@ -55,7 +54,8 @@
 
         <activity android:name=".EditPhoneNoActivity" />
         <activity android:name=".EditBirthdayActivity" />
-        <activity android:name=".Activity_InHome"></activity>
+        <activity android:name=".Activity_InHome" />
+        <activity android:name=".CreateNewPlanActivity"></activity>
     </application>
 
 </manifest>

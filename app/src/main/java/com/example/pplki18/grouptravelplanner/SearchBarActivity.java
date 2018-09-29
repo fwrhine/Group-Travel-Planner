@@ -46,7 +46,10 @@ public class SearchBarActivity extends AppCompatActivity {
         SearchView searchView = (SearchView) findViewById(R.id.search);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setUpToolbar();
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        setTitle("Add Friend");
 
         SessionManager session = new SessionManager(getApplicationContext());
         HashMap<String, String> user = session.getUserDetails();
@@ -93,21 +96,27 @@ public class SearchBarActivity extends AppCompatActivity {
         return data;
     }
 
-    public void setUpToolbar() {
-        toolbar.setNavigationOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-//                        Intent intent = new Intent(SearchBarActivity.this, Activity_InHome.class);
-//                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//                        startActivity(intent);
-                        onBackPressed();
-//                        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container_home,
-//                                new Fragment_Friends()).commit();
-                    }
-                }
-        );
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
+
+//    public void setUpToolbar() {
+//        toolbar.setNavigationOnClickListener(
+//                new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View view) {
+////                        Intent intent = new Intent(SearchBarActivity.this, Activity_InHome.class);
+////                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+////                        startActivity(intent);
+//                        onBackPressed();
+////                        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container_home,
+////                                new Fragment_Friends()).commit();
+//                    }
+//                }
+//        );
+//    }
 
     public class SearchCursorAdapter extends CursorAdapter {
         SessionManager sessionManager;

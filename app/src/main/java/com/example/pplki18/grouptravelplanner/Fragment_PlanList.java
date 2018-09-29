@@ -52,7 +52,6 @@ public class Fragment_PlanList extends Fragment {
         populatePlanRecyclerView();
     }
 
-    // TEMP - nopal
     public void setCreatePlanButton() {
         new_plan_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -101,27 +100,6 @@ public class Fragment_PlanList extends Fragment {
         plan2.setPlan_modified("Sep 29, 2018");
         plan2.setPlan_created("Sep 29, 2018");
         plans.add(plan2);
-//        String selectQuery = "SELECT * FROM " + UserContract.UserEntry.TABLE_NAME + "  u, " +
-//                FriendsContract.FriendsEntry.TABLE_NAME + "  f" +
-//                " WHERE " + "f." + FriendsContract.FriendsEntry.COL_FRIEND_ID + " = " + "u." +
-//                UserContract.UserEntry._ID;
-//
-//        Log.e("FRIENDS", selectQuery);
-//
-//        SQLiteDatabase db = databaseHelper.getReadableDatabase();
-//        Cursor c = db.rawQuery(selectQuery, null);
-//
-//        // looping through all rows and adding to list
-//        if (c.moveToFirst()) {
-//            do {
-//                Friend plan = new Friend();
-//                plan.setFriend_username((c.getString(c.getColumnIndex(UserContract.UserEntry.COL_USERNAME))));
-//                plan.setUser_plan_image((c.getBlob(c.getColumnIndex(UserContract.UserEntry.COL_PICTURE))));
-//
-//                // adding to group list
-//                plans.add(plan);
-//            } while (c.moveToNext());
-//        }
 
         return plans;
     }
