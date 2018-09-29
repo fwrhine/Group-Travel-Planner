@@ -83,10 +83,12 @@ public class UserProfileActivity extends AppCompatActivity {
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         init();
+
         setSupportActionBar(edit_profile_toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         setTitle("Edit Profile");
+
         editUsername();
         setSelectGender();
         editPhoneNo();

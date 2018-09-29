@@ -86,7 +86,7 @@
                 android:layout_alignTop="@+id/fullname_label"
                 android:layout_toEndOf="@+id/fullname_label"
                 android:backgroundTint="@color/colorWhite"
-                android:src="@drawable/ic_check_black_24dp" />
+                android:src="@drawable/ic_check_green_24dp" />
 
             <ImageButton
                 android:id="@+id/buttonEditFullname"

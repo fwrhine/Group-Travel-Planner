@@ -1,5 +1,6 @@
 package com.example.pplki18.grouptravelplanner;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -56,10 +57,10 @@ public class Fragment_PlanList extends Fragment {
         new_plan_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getActivity(), "Create New Plan",
-                        Toast.LENGTH_LONG).show();
-//                Intent myIntent = new Intent(getActivity(), CreatePlanActivity.class);
-//                Fragment_PlanList.this.startActivity(myIntent);
+//                Toast.makeText(getActivity(), "Create New Plan",
+//                        Toast.LENGTH_LONG).show();
+                Intent myIntent = new Intent(getActivity(), CreateNewPlanActivity.class);
+                Fragment_PlanList.this.startActivity(myIntent);
             }
         });
     }
