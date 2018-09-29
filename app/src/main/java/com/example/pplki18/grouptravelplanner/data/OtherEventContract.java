@@ -17,7 +17,7 @@ public class OtherEventContract {
         public static final String TABLE_NAME = "other_events";
 
         public static final String _ID = BaseColumns._ID;
-        public static final String COL_RUNDOWN_ID = "rundown_id";
+        public static final String COL_PLAN_ID = "rundown_id";
         public static final String COL_OTHER_EVENT_NAME = "other_event_name";
         public static final String COL_OTHER_EVENT_LOCATION = "other_event_location";
         public static final String COL_OTHER_EVENT_DESCRIPTION = "other_event_description";

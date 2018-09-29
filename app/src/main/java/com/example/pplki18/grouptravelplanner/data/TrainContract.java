@@ -17,7 +17,7 @@ public class TrainContract {
         public static final String TABLE_NAME = "trains";
 
         public static final String _ID = BaseColumns._ID;
-        public static final String COL_RUNDOWN_ID = "rundown_id";
+        public static final String COL_PLAN_ID = "rundown_id";
         public static final String COL_TRAIN_NAME = "_name";
         public static final String COL_TRAIN_ORIGIN = "origin_station";
         public static final String COL_TRAIN_DESTINATION = "destination_station";

@@ -17,7 +17,7 @@ public class FlightContract {
         public static final String TABLE_NAME = "flights";
 
         public static final String _ID = BaseColumns._ID;
-        public static final String COL_RUNDOWN_ID = "rundown_id";
+        public static final String COL_PLAN_ID = "rundown_id";
         public static final String COL_FLIGHT_NAME = "name";
         public static final String COL_FLIGHT_ORIGIN = "origin_airport";
         public static final String COL_FLIGHT_DESTINATION = "destination_airport";

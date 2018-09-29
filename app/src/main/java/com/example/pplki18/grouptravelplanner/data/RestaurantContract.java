@@ -17,7 +17,7 @@ public class RestaurantContract {
         public static final String TABLE_NAME = "restaurants";
 
         public static final String _ID = BaseColumns._ID;
-        public static final String COL_RUNDOWN_ID = "rundown_id";
+        public static final String COL_PLAN_ID = "rundown_id";
         public static final String COL_RESTAURANT_NAME = "restaurant_name";
         public static final String COL_RESTAURANT_LOCATION = "restaurant_location";
         public static final String COL_RESTAURANT_DESCRIPTION = "restaurant_description";

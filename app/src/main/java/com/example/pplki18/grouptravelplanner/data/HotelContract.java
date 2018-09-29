@@ -17,7 +17,7 @@ public class HotelContract {
         public static final String TABLE_NAME = "hotels";
 
         public static final String _ID = BaseColumns._ID;
-        public static final String COL_RUNDOWN_ID = "rundown_id";
+        public static final String COL_PLAN_ID = "rundown_id";
         public static final String COL_HOTEL_NAME = "hotel_name";
         public static final String COL_HOTEL_LOCATION = "hotel_location";
         public static final String COL_HOTEL_DESCRIPTION = "hotel_description";

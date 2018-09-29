@@ -2,21 +2,22 @@ package com.example.pplki18.grouptravelplanner.data;
 
 import android.provider.BaseColumns;
 
-public class RundownContract {
+public class PlanContract {
 
     // To prevent someone from accidentally instantiating the contract class,
     // give it an empty constructor.
-    private RundownContract(){}
+    private PlanContract(){}
 
     /**
-     * Inner class that defines constant values for the rundown table.
+     * Inner class that defines constant values for the plan table.
      */
     public static final class RundownEntry implements BaseColumns {
 
         /** Name of database table for user-friend relation */
-        public static final String TABLE_NAME = "rundowns";
+        public static final String TABLE_NAME = "plans";
 
         public static final String _ID = BaseColumns._ID;
+        public static final String COL_PLAN_NAME = "plan_name";
         public static final String COL_USER_ID = "user_id";
         public static final String COL_TOTAL_DAY = "total_day";
         public static final String COL_START_DAY = "start_day";
