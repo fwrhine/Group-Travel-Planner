@@ -6,14 +6,14 @@
     android:layout_height="match_parent"
     android:id="@+id/drawer_home"
     android:fitsSystemWindows="true"
-    tools:context=".Activity_InGroup"
+    tools:context=".InGroupActivity"
     tools:openDrawer="start">
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".Activity_InHome">
+        tools:context=".InHomeActivity">
 
         <android.support.v7.widget.Toolbar
             android:layout_width="match_parent"
