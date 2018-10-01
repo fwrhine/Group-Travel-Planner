@@ -24,8 +24,6 @@ import java.util.List;
 public class RVAdapter_Group extends RecyclerView.Adapter<RVAdapter_Group.GroupViewHolder>{
 
     List<Group> groups;
-    DatabaseHelper myDb;
-    SessionManager sessionManager;
     Context context;
 
     public RVAdapter_Group(List<Group> groups, Context context){
