@@ -58,14 +58,6 @@
         <activity android:name=".EditPhoneNoActivity" />
         <activity android:name=".EditBirthdayActivity" />
         <activity android:name=".Activity_InHome" />
-        <activity android:name=".Activity_Places">
-            <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.MAIN" />-->
-
-                <!--<category android:name="android.intent.category.LAUNCHER" />-->
-            <!--</intent-filter>-->
-        </activity>
-
         <activity android:name=".Activity_ChooseEvent">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -77,6 +69,8 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/api_key" />
+
+        <activity android:name=".Activity_Restaurant"></activity>
     </application>
 
 </manifest>

@@ -1,5 +1,6 @@
 package com.example.pplki18.grouptravelplanner;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -107,6 +108,10 @@ public class Fragment_RestaurantList extends Fragment {
         RVAdapter_Place adapter = new RVAdapter_Place(places, new RVAdapter_Place.ClickListener() {
             @Override public void onClick(View v, int position) {
                 Log.d("ID", String.valueOf(places.get(position).getPlace_id()));
+
+                Intent intent = new Intent(getActivity(), Activity_Restaurant.class);
+                intent.putExtra("PLACE_ID", places.get(position).getPlace_id());
+                startActivity(intent);
             }
         });
 
