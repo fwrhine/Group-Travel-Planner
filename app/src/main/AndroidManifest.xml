@@ -11,6 +11,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
         android:allowBackup="true"
@@ -20,11 +21,13 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".SplashScreenActivity">
+            <!--
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            -->
         </activity>
         <activity android:name=".SignUpActivity" />
         <activity android:name=".LoginActivity">
@@ -56,6 +59,17 @@
         <activity android:name=".EditPhoneNoActivity" />
         <activity android:name=".EditBirthdayActivity" />
         <activity android:name=".Activity_InHome"></activity>
+
+        <!-- TEMP -->
+        <activity android:name=".BookPlaneActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <!-- TEMP -->
+
     </application>
 
 </manifest>

@@ -21,8 +21,8 @@
             android:background="@color/colorPrimary"
             android:id="@+id/toolbar_home"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            android:elevation="4dp"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            android:elevation="4dp"/>
 
         <FrameLayout
             android:id="@+id/fragment_container_home"

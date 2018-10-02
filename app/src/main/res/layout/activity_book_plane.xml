@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/coordinatorLayout3"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".BookPlaneActivity">
+
+    <RelativeLayout
+        android:id="@+id/editPlace"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <EditText
+            android:id="@+id/origin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/darker_gray"
+            android:hint="Origin..."
+            android:layout_margin="8dp" />
+
+        <EditText
+            android:id="@+id/destination"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/darker_gray"
+            android:hint="Destination..."
+            android:layout_margin="8dp"
+            android:layout_toRightOf="@id/origin" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/editDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/editPlace">
+
+        <EditText
+            android:id="@+id/departureDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/darker_gray"
+            android:hint="Departure..."
+            android:layout_margin="8dp" />
+
+        <EditText
+            android:id="@+id/returnDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/darker_gray"
+            android:hint="Return..."
+            android:layout_margin="8dp"
+            android:layout_toRightOf="@id/departureDate" />
+
+
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/resultList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/editDate">
+
+        <Button
+            android:id="@+id/searchButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="FIND FLIGHT" />
+
+        <TextView
+            android:id="@+id/response"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="response here..."
+            android:layout_margin="8dp"
+            android:layout_below="@+id/searchButton" />
+
+        <!--
+        <ListView
+            android:id="@+id/listTravel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+             />
+        -->
+
+    </RelativeLayout>
+
+</RelativeLayout>
