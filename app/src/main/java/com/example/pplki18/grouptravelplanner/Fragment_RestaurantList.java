@@ -76,10 +76,10 @@ public class Fragment_RestaurantList extends Fragment {
         queue.add(stringRequest);
     }
 
-    public List<Place> getPlaces(String result) {
+    public List<Place> getPlaces(String response) {
         ArrayList<Place> places = new ArrayList<>();
         try {
-            JSONObject obj = new JSONObject(result);
+            JSONObject obj = new JSONObject(response);
             JSONArray results = obj.getJSONArray("results");
 
             for (int i = 0 ; i < results.length() ; i++)
@@ -109,8 +109,8 @@ public class Fragment_RestaurantList extends Fragment {
             @Override public void onClick(View v, int position) {
                 Log.d("ID", String.valueOf(places.get(position).getPlace_id()));
 
-                Intent intent = new Intent(getActivity(), Activity_Restaurant.class);
-                intent.putExtra("PLACE_ID", places.get(position).getPlace_id());
+                Intent intent = new Intent(getActivity(), Activity_Place.class);
+                intent.putExtra("PLACE_ID", String.valueOf(places.get(position).getPlace_id()));
                 startActivity(intent);
             }
         });

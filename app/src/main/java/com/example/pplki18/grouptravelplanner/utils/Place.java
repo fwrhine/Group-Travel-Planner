@@ -6,6 +6,10 @@ public class Place {
     String name;
     String address;
     int rating;
+    String phone_number;
+//    String opening_hours;
+    String website;
+//    String photo;
 
     public Place() {
     }
@@ -20,6 +24,14 @@ public class Place {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public void setPhone_number(String phone_number) {
+        this.phone_number = phone_number;
+    }
+
+    public void setWebsite(String website) {
+        this.website = website;
     }
 
     public void setRating(int rating) {
@@ -40,5 +52,13 @@ public class Place {
 
     public int getRating() {
         return rating;
+    }
+
+    public String getWebsite() {
+        return website;
+    }
+
+    public String getPhone_number() {
+        return phone_number;
     }
 }

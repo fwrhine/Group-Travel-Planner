@@ -70,7 +70,7 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/api_key" />
 
-        <activity android:name=".Activity_Restaurant"></activity>
+        <activity android:name=".Activity_Place"></activity>
     </application>
 
 </manifest>
