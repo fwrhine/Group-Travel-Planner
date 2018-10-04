@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:id="@+id/flightData"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp">
+
+        <RelativeLayout
+            android:id="@+id/airlineData"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/airlineName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Airline Name"/>
+
+            <TextView
+                android:id="@+id/separator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=" - "
+                android:layout_toEndOf="@id/airlineName"/>
+
+            <TextView
+                android:id="@+id/flightNumber"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Flight Number"
+                android:layout_toEndOf="@id/separator"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/departData"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/airlineData">
+
+            <TextView
+                android:id="@+id/departCity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Depart City"/>
+
+            <TextView
+                android:id="@+id/departTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Depart Time"
+                android:layout_below="@id/departCity"/>
+
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/arrow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" -> "
+            android:layout_toEndOf="@id/departData"
+            android:layout_below="@id/airlineData"/>
+
+        <RelativeLayout
+            android:id="@+id/arriveData"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/airlineData"
+            android:layout_toEndOf="@id/arrow">
+
+            <TextView
+                android:id="@+id/arriveCity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Depart City"/>
+
+            <TextView
+                android:id="@+id/arriveTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Depart Time"
+                android:layout_below="@id/arriveCity"/>
+
+        </RelativeLayout>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/priceLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/flightData"
+        android:layout_margin="8dp" >
+
+        <TextView
+            android:id="@+id/price"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:gravity="center"
+            android:text="Price"/>
+
+    </RelativeLayout>
+
+</RelativeLayout>
