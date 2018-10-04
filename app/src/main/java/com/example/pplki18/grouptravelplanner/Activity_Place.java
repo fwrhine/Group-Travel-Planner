@@ -1,15 +1,22 @@
 package com.example.pplki18.grouptravelplanner;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.Image;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.pplki18.grouptravelplanner.utils.Place;
@@ -18,6 +25,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +37,10 @@ public class Activity_Place extends AppCompatActivity {
     TextView title;
     TextView rating;
     TextView address;
+    TextView phone;
+    TextView website;
+    ImageView image;
+//    ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +67,7 @@ public class Activity_Place extends AppCompatActivity {
                     @Override
                     public void onResponse(String response) {
                         populatePlaceView(getPlace(response));
+//                        progressBar.setVisibility(View.GONE);
                     }
                 }, new Response.ErrorListener() {
             @Override
@@ -76,8 +89,15 @@ public class Activity_Place extends AppCompatActivity {
             place.setName(results.getString("name"));
             place.setRating(results.getInt("rating"));
             place.setAddress(results.getString("formatted_address"));
-//            place.setPhone_number(results.getString("formatted_phone_number"));
-//            place.setWebsite(results.getString("website"));
+            place.setPhone_number(results.getString("formatted_phone_number"));
+            place.setWebsite(results.getString("website"));
+
+            JSONArray photos = results.getJSONArray("photos");
+
+            JSONObject first = new JSONObject(photos.get(0).toString());
+            Log.d("PHOTOS", first.getString("photo_reference"));
+
+            place.setPhoto(first.getString("photo_reference"));
 
 
         } catch (JSONException e) {
@@ -117,7 +137,38 @@ public class Activity_Place extends AppCompatActivity {
         title.setText(place.getName());
         rating.setText(place.getRating() + "/5");
         address.setText(place.getAddress());
+        phone.setText(place.getPhone_number());
+        website.setText(place.getWebsite());
 
+        Log.d("populate", place.getPhoto());
+        getPhoto(place.getPhoto());
+
+
+    }
+
+    public void getPhoto(String photo_reference) {
+        // Instantiate the RequestQueue.
+        RequestQueue queue = Volley.newRequestQueue(this);
+        String url = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference="
+                + photo_reference + "&key=" + getString(R.string.api_key);
+
+
+        // Request an image response from the provided URL.
+        ImageRequest imageRequest = new ImageRequest(url,
+                new Response.Listener<Bitmap>() {
+                    @Override
+                    public void onResponse(Bitmap response) {
+                        image.setImageBitmap(response);
+                    }
+                },  0, 0,  ImageView.ScaleType.FIT_CENTER, Bitmap.Config.RGB_565,
+                new Response.ErrorListener() {
+            public void onErrorResponse(VolleyError error) {
+                Log.e(TAG, "Image Load Error: ");
+            }
+        });
+
+        // Add the request to the RequestQueue.
+        queue.add(imageRequest);
     }
 
     public void init() {
@@ -126,5 +177,9 @@ public class Activity_Place extends AppCompatActivity {
         title = (TextView) findViewById(R.id.title);
         rating = (TextView) findViewById(R.id.rating);
         address = (TextView) findViewById(R.id.address);
+        phone = (TextView) findViewById(R.id.phone);
+        website = (TextView) findViewById(R.id.website);
+        image = (ImageView) findViewById(R.id.image);
+//        progressBar = (ProgressBar) findViewById(R.id.progress);
     }
 }

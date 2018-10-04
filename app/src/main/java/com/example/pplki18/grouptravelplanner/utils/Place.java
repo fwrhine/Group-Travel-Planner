@@ -9,9 +9,11 @@ public class Place {
     String phone_number;
 //    String opening_hours;
     String website;
-//    String photo;
+    String photo;
+
 
     public Place() {
+
     }
 
     public void setPlace_id(String place_id) {
@@ -38,6 +40,10 @@ public class Place {
         this.rating = rating;
     }
 
+    public void setPhoto(String photo) {
+        this.photo = photo;
+    }
+
     public String getPlace_id() {
         return place_id;
     }
@@ -60,5 +66,9 @@ public class Place {
 
     public String getPhone_number() {
         return phone_number;
+    }
+
+    public String getPhoto() {
+        return photo;
     }
 }
