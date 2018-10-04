@@ -3,8 +3,11 @@ package com.example.pplki18.grouptravelplanner;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,12 +16,14 @@ import android.widget.TextView;
 
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class RVAdapter_Friend extends RecyclerView.Adapter<RVAdapter_Friend.FriendViewHolder>{
     List<Friend> friends;
     DatabaseHelper myDb;
     Context context;
+    Drawable drawable;
 
     RVAdapter_Friend(List<Friend> friend, Context context){
         this.friends = friend;
@@ -66,17 +71,24 @@ public class RVAdapter_Friend extends RecyclerView.Adapter<RVAdapter_Friend.Frie
         }*/
     @Override
     public void onBindViewHolder(RVAdapter_Friend.FriendViewHolder friendViewHolder, int i) {
-
-        friendViewHolder.friendName.setText(friends.get(i).getFriend_username());
-//        friendViewHolder.friendName.setText("dummy");
-
-        byte[] pic = friends.get(i).getFriend_image();
-        Bitmap bmp = BitmapFactory.decodeByteArray(pic, 0, pic.length);
-//        friendViewHolder.friendImage.setImageResource(R.drawable.user_pic);
+//        Log.d("INSIDE FRIEND", friends.get(i).getFriend_username());
+//        List<Friend> friendDummyList = new ArrayList<Friend>();
+//        Friend dummy1 = new Friend();
+//        dummy1.setFriend_username("dummy1");
+//        Drawable drawable = drawable.user_pic;
+//        Bitmap dummypic = ((BitmapDrawable) drawable).getBitmap();
+//        dummy1.setUser_friend_image(R.drawable.user_pic);
+//        friendDummyList.add(dummy1);
+//        friendViewHolder.friendName.setText(friends.get(i).getFriend_username());
+        String res = friends.get(i).getId() + "";
+        friendViewHolder.friendName.setText(res);
 
         //TODO set image resource depending on user's profile image
-//        personViewHolder.friendImage.setImageResource(R.drawable.user_pic);
 
+//        byte[] pic = friends.get(i).getFriend_image();
+//        Bitmap bmp = BitmapFactory.decodeByteArray(pic, 0, pic.length);
+//        friendViewHolder.friendImage.setImageResource(R.drawable.user_pic);
+//        friendViewHolder.friendImage.setImageBitmap(bmp);
 
     }
 

@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/coordinatorLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".Activity_CreateNewGroup">
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appBarLayout3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/colorPrimary"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
+    </android.support.design.widget.AppBarLayout>
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <Button
+            android:id="@+id/button_pick_notification"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:text="Pick a Notification" />
+
+        <TextView
+            android:id="@+id/text_resultYear"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/button_pick_notification"
+            android:text="Year: " />
+
+        <TextView
+            android:id="@+id/notifaction_resultYear"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/button_pick_notification"
+            android:layout_toRightOf="@id/text_resultYear" />
+
+        <TextView
+            android:id="@+id/text_resultMonth"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/text_resultYear"
+            android:text="Month: " />
+
+        <TextView
+            android:id="@+id/notifaction_resultMonth"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/notifaction_resultYear"
+            android:layout_toRightOf="@id/text_resultMonth" />
+
+        <TextView
+            android:id="@+id/text_resultDay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/text_resultMonth"
+            android:text="Day :" />
+
+        <TextView
+            android:id="@+id/notifaction_resultDay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/notifaction_resultMonth"
+            android:layout_toRightOf="@id/text_resultDay" />
+
+        <TextView
+            android:id="@+id/text_resultTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/text_resultDay"
+            android:text="Time: "/>
+
+        <TextView
+            android:id="@+id/notifaction_resultTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/notifaction_resultDay"
+            android:layout_toRightOf="@id/text_resultDay" />
+
+        <EditText
+            android:id="@+id/notification_destination"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/notifaction_resultTime"
+            android:layout_centerHorizontal="true"
+            android:hint="event location" />
+
+        <Button
+            android:id="@+id/button_create_notification"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/notification_destination"
+            android:layout_centerHorizontal="true"
+            android:text="Make a Notification" />
+
+
+    </RelativeLayout>
+</LinearLayout>

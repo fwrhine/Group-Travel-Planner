@@ -135,7 +135,7 @@ public class Fragment_GroupList extends Fragment implements NavigationView.OnNav
     }
 
     public List<byte[]> getAllGroupMemberPic(String group_id) {
-        List<byte[]> members = new ArrayList<byte[]>();
+        List<byte[]> membersPic = new ArrayList<byte[]>();
         int max = 4;
         String selectQuery = "SELECT  * FROM " + GroupContract.GroupEntry.TABLE_NAME + " g, "
                 + UserContract.UserEntry.TABLE_NAME + " u, " + UserGroupContract.UserGroupEntry.TABLE_NAME
@@ -152,12 +152,12 @@ public class Fragment_GroupList extends Fragment implements NavigationView.OnNav
         // looping through all rows and adding to list
         if (c.moveToFirst()) {
             do {
-                members.add(c.getBlob(c.getColumnIndex(UserContract.UserEntry.COL_PICTURE)));
+                membersPic.add(c.getBlob(c.getColumnIndex(UserContract.UserEntry.COL_PICTURE)));
                 max--;
             } while (c.moveToNext() && max > 0);
         }
 
-        return members;
+        return membersPic;
     }
 
     private void init() {

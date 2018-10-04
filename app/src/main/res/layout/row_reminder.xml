@@ -2,10 +2,10 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="16dp">
+    android:padding="5dp">
 
     <android.support.v7.widget.CardView
-        android:id="@+id/cv"
+        android:id="@+id/cvReminder"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -14,25 +14,26 @@
             android:layout_height="wrap_content"
             android:padding="16dp">
 
-            <!--TODO maybe add image too-->
-            <ImageView
-                android:id="@+id/friend_image"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:src="@drawable/group_pic"
-                android:layout_alignParentTop="true"
+
+            <TextView
+                android:id="@+id/destination_adap"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/user_image2"
+                android:textSize="30sp"
                 android:layout_centerHorizontal="true"/>
 
             <TextView
-                android:id="@+id/friend_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="30sp"
-                android:layout_centerHorizontal="true"
-                android:layout_below="@id/friend_image"/>
+            android:id="@+id/date_adap"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/user_image2"
+            android:textSize="30sp"
+            android:layout_centerHorizontal="true"/>
 
 
         </RelativeLayout>
+
     </android.support.v7.widget.CardView>
 
 </LinearLayout>
