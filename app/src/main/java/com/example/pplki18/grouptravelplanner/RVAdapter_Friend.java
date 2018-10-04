@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
+import com.example.pplki18.grouptravelplanner.utils.Friend;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -107,7 +108,6 @@ public class RVAdapter_Friend extends RecyclerView.Adapter<RVAdapter_Friend.Frie
             cardView = itemView.findViewById(R.id.cv);
             friendName = itemView.findViewById(R.id.friend_name);
             friendImage = itemView.findViewById(R.id.friend_image);
-
 
         }
     }
