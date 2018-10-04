@@ -7,45 +7,103 @@
     android:layout_height="match_parent"
     tools:context=".BookPlaneActivity">
 
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/editPlace"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="From:"
+            android:layout_margin="8dp" />
 
         <EditText
             android:id="@+id/origin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_weight="4"
             android:background="@android:color/darker_gray"
-            android:hint="Origin..."
-            android:layout_margin="8dp" />
+            android:hint="Origin"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="8dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="To:"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="8dp" />
 
         <EditText
             android:id="@+id/destination"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_weight="4"
             android:background="@android:color/darker_gray"
-            android:hint="Destination..."
-            android:layout_margin="8dp"
-            android:layout_toRightOf="@id/origin" />
+            android:hint="Destination"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="8dp" />
 
-    </RelativeLayout>
+    </LinearLayout>
 
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/editDate"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/editPlace">
+        android:layout_below="@+id/editPlace"
+        android:orientation="horizontal" >
 
-        <EditText
-            android:id="@+id/departureDate"
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@android:color/darker_gray"
-            android:hint="Departure..."
-            android:layout_margin="8dp" />
+            android:layout_weight="1"
+            android:text="Date:"
+            android:layout_margin="8dp"/>
 
-    </RelativeLayout>
+        <EditText
+            android:id="@+id/departureDay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="4"
+            android:background="@android:color/darker_gray"
+            android:hint="Day"
+            android:inputType="number"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp" />
+
+        <EditText
+            android:id="@+id/departureMonth"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="4"
+            android:background="@android:color/darker_gray"
+            android:hint="Month"
+            android:inputType="number"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp" />
+
+        <EditText
+            android:id="@+id/departureYear"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="4"
+            android:background="@android:color/darker_gray"
+            android:hint="Year"
+            android:inputType="number"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp" />
+
+    </LinearLayout>
 
     <RelativeLayout
         android:id="@+id/resultList"
@@ -55,16 +113,17 @@
 
         <Button
             android:id="@+id/searchButton"
-            android:layout_width="wrap_content"
+            android:background="@color/background_color"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="FIND FLIGHT" />
+            android:text="FIND FLIGHT"
+            android:layout_margin="8dp"/>
 
         <ListView
             android:id="@+id/listTravel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/searchButton"/>
-
 
     </RelativeLayout>
 

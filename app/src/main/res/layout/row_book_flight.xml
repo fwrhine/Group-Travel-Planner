@@ -5,7 +5,7 @@
 
     <RelativeLayout
         android:id="@+id/flightData"
-        android:layout_width="wrap_content"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:layout_margin="8dp">
 
@@ -18,21 +18,24 @@
                 android:id="@+id/airlineName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Airline Name"/>
+                android:text="Airline Name"
+                android:textSize="16dp" />
 
             <TextView
                 android:id="@+id/separator"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text=" - "
-                android:layout_toEndOf="@id/airlineName"/>
+                android:layout_toEndOf="@id/airlineName"
+                android:textSize="16dp" />
 
             <TextView
                 android:id="@+id/flightNumber"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Flight Number"
-                android:layout_toEndOf="@id/separator"/>
+                android:layout_toEndOf="@id/separator"
+                android:textSize="16dp" />
 
         </RelativeLayout>
 
@@ -46,14 +49,16 @@
                 android:id="@+id/departCity"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Depart City"/>
+                android:text="Depart City"
+                android:textSize="14dp" />
 
             <TextView
                 android:id="@+id/departTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Depart Time"
-                android:layout_below="@id/departCity"/>
+                android:layout_below="@id/departCity"
+                android:textSize="12dp" />
 
         </RelativeLayout>
 
@@ -63,27 +68,30 @@
             android:layout_height="wrap_content"
             android:text=" -> "
             android:layout_toEndOf="@id/departData"
-            android:layout_below="@id/airlineData"/>
+            android:layout_below="@id/airlineData"
+            android:textSize="14dp" />
 
         <RelativeLayout
             android:id="@+id/arriveData"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/airlineData"
-            android:layout_toEndOf="@id/arrow">
+            android:layout_toEndOf="@id/arrow" >
 
             <TextView
                 android:id="@+id/arriveCity"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Depart City"/>
+                android:text="Depart City"
+                android:textSize="14dp" />
 
             <TextView
                 android:id="@+id/arriveTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Depart Time"
-                android:layout_below="@id/arriveCity"/>
+                android:layout_below="@id/arriveCity"
+                android:textSize="12dp" />
 
         </RelativeLayout>
     </RelativeLayout>
@@ -100,7 +108,8 @@
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:gravity="center"
-            android:text="Price"/>
+            android:text="Price"
+            android:textSize="16dp" />
 
     </RelativeLayout>
 

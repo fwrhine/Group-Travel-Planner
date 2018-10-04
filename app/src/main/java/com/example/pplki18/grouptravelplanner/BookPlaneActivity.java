@@ -7,7 +7,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -29,7 +28,8 @@ import java.util.HashMap;
 
 public class BookPlaneActivity extends Activity {
 
-    EditText origin, destination, departureDate;
+    EditText origin, destination;
+    EditText departureDay, departureMonth, departureYear;
     Button searchButton;
 
     String token;
@@ -45,7 +45,10 @@ public class BookPlaneActivity extends Activity {
 
         origin = (EditText) findViewById(R.id.origin);
         destination = (EditText) findViewById(R.id.destination);
-        departureDate = (EditText) findViewById(R.id.departureDate);
+
+        departureDay = (EditText) findViewById(R.id.departureDay);
+        departureMonth = (EditText) findViewById(R.id.departureMonth);
+        departureYear = (EditText) findViewById(R.id.departureYear);
 
         searchButton = (Button) findViewById(R.id.searchButton);
         listTravel = (ListView) findViewById(R.id.listTravel);
@@ -71,7 +74,7 @@ public class BookPlaneActivity extends Activity {
                         // TODO CHANGE VAR NAME LATER M8
                         final String start = origin.getText().toString();
                         final String end = destination.getText().toString();
-                        final String depart = departureDate.getText().toString();
+                        final String depart = departureYear.getText().toString() + "-" + departureMonth.getText().toString() + "-" + departureDay.getText().toString();
 
                         String secretKey = "6c484049beacda6541bf40c90e62e8e5";
                         String tokenUrl = "https://api-sandbox.tiket.com/apiv1/payexpress"
@@ -229,7 +232,7 @@ public class BookPlaneActivity extends Activity {
             ArrayList<String> moreFlightInfo = map.get(key);
             // airlineName, price, flightNumber, departTime, arriveTime
             String airlineName = moreFlightInfo.get(0);
-            String priceValue = "Rp. " + moreFlightInfo.get(1);
+            String priceValue = "IDR " + moreFlightInfo.get(1);
             String flightNumber = moreFlightInfo.get(2);
             String departTime = moreFlightInfo.get(3);
             String arriveTime = moreFlightInfo.get(4);
@@ -292,7 +295,9 @@ public class BookPlaneActivity extends Activity {
 
         String startLoc = origin.getText().toString();
         String endLoc = destination.getText().toString();
-        String startDate = departureDate.getText().toString();
+        String startDay = departureDay.getText().toString();
+        String startMonth = departureMonth.getText().toString();
+        String startYear = departureYear.getText().toString();
 
         if (startLoc.isEmpty() && startLoc.length() != 3) {
             Toast.makeText(BookPlaneActivity.this, "Please write the origin",
@@ -306,7 +311,8 @@ public class BookPlaneActivity extends Activity {
             valid = false;
         }
 
-        else if (startDate.isEmpty()) {
+        else if ((startDay.isEmpty() && startDay.length() != 2) && (startMonth.isEmpty()
+                && startMonth.length() != 2) && (startYear.isEmpty() && startYear.length() != 4)) {
             Toast.makeText(BookPlaneActivity.this, "Please write the departure date",
                     Toast.LENGTH_LONG).show();
             valid = false;
