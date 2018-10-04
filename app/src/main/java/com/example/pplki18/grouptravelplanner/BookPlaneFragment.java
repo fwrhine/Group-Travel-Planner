@@ -1,9 +1,13 @@
 package com.example.pplki18.grouptravelplanner;
 
-import android.app.Activity;
+import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -26,7 +30,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class BookPlaneActivity extends Activity {
+public class BookPlaneFragment extends Fragment {
 
     EditText origin, destination;
     EditText departureDay, departureMonth, departureYear;
@@ -38,24 +42,30 @@ public class BookPlaneActivity extends Activity {
     int countUpdate;
     ListView listTravel;
 
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_book_plane);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        origin = (EditText) findViewById(R.id.origin);
-        destination = (EditText) findViewById(R.id.destination);
+        return inflater.inflate(R.layout.fragment_book_plane, container, false);
+    }
 
-        departureDay = (EditText) findViewById(R.id.departureDay);
-        departureMonth = (EditText) findViewById(R.id.departureMonth);
-        departureYear = (EditText) findViewById(R.id.departureYear);
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
-        searchButton = (Button) findViewById(R.id.searchButton);
-        listTravel = (ListView) findViewById(R.id.listTravel);
+        origin = (EditText) getView().findViewById(R.id.origin);
+        destination = (EditText) getView().findViewById(R.id.destination);
+
+        departureDay = (EditText) getView().findViewById(R.id.departureDay);
+        departureMonth = (EditText) getView().findViewById(R.id.departureMonth);
+        departureYear = (EditText) getView().findViewById(R.id.departureYear);
+
+        searchButton = (Button) getView().findViewById(R.id.searchButton);
+        listTravel = (ListView) getView().findViewById(R.id.listTravel);
 
         token = "";
         countUpdate = 0;
-        queue = Volley.newRequestQueue(this);
+        queue = Volley.newRequestQueue(this.getActivity());
 
         initSearch();
     }
@@ -242,7 +252,7 @@ public class BookPlaneActivity extends Activity {
             availableFlights.add(flight);
         }
         Log.d("ALMOST", "Almost finished");
-        FlightAdapter adapter = new FlightAdapter(this, availableFlights);
+        FlightAdapter adapter = new FlightAdapter(this.getActivity(), availableFlights);
         listTravel.setAdapter(adapter);
         Log.d("DONE", "ListView populated");
 
@@ -300,20 +310,20 @@ public class BookPlaneActivity extends Activity {
         String startYear = departureYear.getText().toString();
 
         if (startLoc.isEmpty() && startLoc.length() != 3) {
-            Toast.makeText(BookPlaneActivity.this, "Please write the origin",
+            Toast.makeText(BookPlaneFragment.this.getActivity(), "Please write the origin",
                     Toast.LENGTH_LONG).show();
             valid = false;
         }
 
         else if (endLoc.isEmpty() && startLoc.length() != 3) {
-            Toast.makeText(BookPlaneActivity.this, "Please write the destination",
+            Toast.makeText(BookPlaneFragment.this.getActivity(), "Please write the destination",
                     Toast.LENGTH_LONG).show();
             valid = false;
         }
 
         else if ((startDay.isEmpty() && startDay.length() != 2) && (startMonth.isEmpty()
                 && startMonth.length() != 2) && (startYear.isEmpty() && startYear.length() != 4)) {
-            Toast.makeText(BookPlaneActivity.this, "Please write the departure date",
+            Toast.makeText(BookPlaneFragment.this.getActivity(), "Please write the departure date",
                     Toast.LENGTH_LONG).show();
             valid = false;
         }
