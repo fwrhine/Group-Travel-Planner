@@ -107,32 +107,6 @@ public class Activity_Place extends AppCompatActivity {
         return place;
     }
 
-//    public List<Place> getPlaces(String result) {
-//        ArrayList<Place> places = new ArrayList<>();
-//        try {
-//            JSONObject obj = new JSONObject(result);
-//            JSONArray results = obj.getJSONArray("results");
-//
-//            for (int i = 0 ; i < results.length() ; i++)
-//            {
-//                JSONObject placeObj = new JSONObject(results.get(i).toString());
-//
-//                Place place = new Place();
-//                place.setPlace_id(placeObj.getString("place_id"));
-//                place.setName(placeObj.getString("name"));
-//                place.setAddress(placeObj.getString("formatted_address"));
-//                place.setRating(placeObj.getInt("rating"));
-//
-//                places.add(place);
-//            }
-//
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//
-//        return places;
-//    }
-
     public void populatePlaceView(Place place) {
         title.setText(place.getName());
         rating.setText(place.getRating() + "/5");
@@ -142,14 +116,12 @@ public class Activity_Place extends AppCompatActivity {
 
         Log.d("populate", place.getPhoto());
         getPhoto(place.getPhoto());
-
-
     }
 
     public void getPhoto(String photo_reference) {
         // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(this);
-        String url = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference="
+        String url = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=900&photoreference="
                 + photo_reference + "&key=" + getString(R.string.api_key);
 
 
@@ -160,7 +132,7 @@ public class Activity_Place extends AppCompatActivity {
                     public void onResponse(Bitmap response) {
                         image.setImageBitmap(response);
                     }
-                },  0, 0,  ImageView.ScaleType.FIT_CENTER, Bitmap.Config.RGB_565,
+                },  0, 0,  ImageView.ScaleType.CENTER_CROP, Bitmap.Config.RGB_565,
                 new Response.ErrorListener() {
             public void onErrorResponse(VolleyError error) {
                 Log.e(TAG, "Image Load Error: ");

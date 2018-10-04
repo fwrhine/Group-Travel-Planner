@@ -29,6 +29,13 @@
         app:tabMode="scrollable"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"/>
 
+    <fragment
+        android:id="@+id/place_autocomplete_fragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment"
+        />
+
     <android.support.v4.view.ViewPager
         android:id="@+id/pager"
         android:layout_width="match_parent"

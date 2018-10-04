@@ -35,6 +35,9 @@ public class Fragment_RestaurantList extends Fragment {
     private RecyclerView recyclerViewPlace;
     private LinearLayoutManager linearLayoutManager;
 
+    private String type;
+    private String region;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -55,7 +58,7 @@ public class Fragment_RestaurantList extends Fragment {
     public void sendRequest() {
         // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(getActivity());
-        String url ="https://maps.googleapis.com/maps/api/place/textsearch/json?query=restaurants+in+Tokyo&key=" + getString(R.string.api_key);
+        String url ="https://maps.googleapis.com/maps/api/place/textsearch/json?query=" + type + "+in+" + region + "&key=" + getString(R.string.api_key);
 
 
         // Request a string response from the provided URL.
@@ -69,6 +72,7 @@ public class Fragment_RestaurantList extends Fragment {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.d(TAG, "REQUEST ERROR");
+                Log.d(TAG, error.toString());
             }
         });
 
@@ -121,5 +125,7 @@ public class Fragment_RestaurantList extends Fragment {
     private void init() {
         recyclerViewPlace = (RecyclerView) getView().findViewById(R.id.rv);
         linearLayoutManager = new LinearLayoutManager(getActivity());
+        type = getArguments().getString("TYPE");
+        region = getArguments().getString("REGION", "jakarta");
     }
 }
