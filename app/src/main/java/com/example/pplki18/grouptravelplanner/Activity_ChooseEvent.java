@@ -1,10 +1,7 @@
 package com.example.pplki18.grouptravelplanner;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.support.design.widget.TabLayout;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -20,11 +17,10 @@ import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.AutocompleteFilter;
 import com.google.android.gms.location.places.Place;
-import com.google.android.gms.location.places.PlaceDetectionClient;
-import com.google.android.gms.location.places.PlaceLikelihoodBufferResponse;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
+import com.google.android.gms.maps.model.LatLng;
 
 public class Activity_ChooseEvent extends AppCompatActivity {
 
@@ -32,13 +28,17 @@ public class Activity_ChooseEvent extends AppCompatActivity {
     TabLayout tabLayout;
     ViewPager viewPager;
     PlaceAutocompleteFragment autocompleteFragment;
+//    SearchView searchView;
     String region = "Jakarta";
-//
+    LatLng regionCoor;
+
+    //
 //    if(ContextCompat.checkSelfPermission(mActivity,Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED){
 //        // Camera permission granted
 //        PlaceLikelihoodBufferResponse currentPlace = PlaceDetectionClient.getCurrentPlace();
 
-    int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
+    int REGION_AUTOCOMPLETE_REQUEST_CODE = 1;
+    int PLACE_AUTOCOMPLETE_REQUEST_CODE = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,13 +53,13 @@ public class Activity_ChooseEvent extends AppCompatActivity {
 
         setTitle("");
 
-        tabLayout.addTab(tabLayout.newTab().setText("Restaurant"));
-        tabLayout.addTab(tabLayout.newTab().setText("Entertainment"));
+        tabLayout.addTab(tabLayout.newTab().setText("Restaurants"));
+        tabLayout.addTab(tabLayout.newTab().setText("Attractions"));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
 
         final PagerAdapter adapter = new PagerAdapter
-                (getSupportFragmentManager(), tabLayout.getTabCount(), region);
+                (getSupportFragmentManager(), tabLayout.getTabCount(), region, regionCoor);
 
         viewPager.setAdapter(adapter);
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
@@ -93,6 +93,34 @@ public class Activity_ChooseEvent extends AppCompatActivity {
                 Log.i("ERROR SEARCH", "An error occurred: " + status);
             }
         });
+
+//        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+//            @Override
+//            public boolean onQueryTextSubmit(String query) {
+//
+//                return false;
+//            }
+//
+//            @Override
+//            public boolean onQueryTextChange(String newText) {
+//                try {
+//                    AutocompleteFilter typeFilter = new AutocompleteFilter.Builder()
+//                            .setTypeFilter(AutocompleteFilter.TYPE_FILTER_REGIONS)
+//                            .build();
+//
+//                    Intent intent =
+//                            new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY)
+//                                    .setFilter(typeFilter)
+//                                    .setBoundsBias(region_bounds)
+//                                    .build(Activity_ChooseEvent.this);
+//                    startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
+//                } catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e) {
+//                    e.printStackTrace();
+//                }
+//
+//                return true;
+//            }
+//        });
     }
 
     @Override
@@ -120,11 +148,9 @@ public class Activity_ChooseEvent extends AppCompatActivity {
                     Intent intent =
                             new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY)
                                     .setFilter(typeFilter)
-                                    .build(this);
-                    startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
-                } catch (GooglePlayServicesRepairableException e) {
-                    e.printStackTrace();
-                } catch (GooglePlayServicesNotAvailableException e) {
+                                    .build(Activity_ChooseEvent.this);
+                    startActivityForResult(intent, REGION_AUTOCOMPLETE_REQUEST_CODE);
+                } catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e) {
                     e.printStackTrace();
                 }
 
@@ -134,22 +160,38 @@ public class Activity_ChooseEvent extends AppCompatActivity {
                 // If we got here, the user's action was not recognized.
                 // Invoke the superclass to handle it.
                 return super.onOptionsItemSelected(item);
-
         }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
+        if (requestCode == REGION_AUTOCOMPLETE_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 Place place = PlaceAutocomplete.getPlace(this, data);
-                Log.i("AFTER CLICK", "Place: " + place.getName());
                 region = place.getName().toString();
+                regionCoor = place.getLatLng();
+
+//                LatLngBounds.Builder builder = new LatLngBounds.Builder().include(place.getLatLng());
+//                region_bounds = builder.build();
 
                 final PagerAdapter adapter = new PagerAdapter
-                        (getSupportFragmentManager(), tabLayout.getTabCount(), region);
+                        (getSupportFragmentManager(), tabLayout.getTabCount(), region, regionCoor);
 
                 viewPager.setAdapter(adapter);
+                Log.d("COOR", regionCoor.toString());
+                setTitle(place.getName());
+            } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
+                Status status = PlaceAutocomplete.getStatus(this, data);
+                // TODO: Handle the error.
+                Log.i("AFTER CLICK", status.getStatusMessage());
+
+            } else if (resultCode == RESULT_CANCELED) {
+                // The user canceled the operation.
+            }
+        } else if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                Place place = PlaceAutocomplete.getPlace(this, data);
+                Log.d("PLACE ONE", place.getName().toString());
             } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
                 Status status = PlaceAutocomplete.getStatus(this, data);
                 // TODO: Handle the error.
@@ -167,6 +209,8 @@ public class Activity_ChooseEvent extends AppCompatActivity {
         autocompleteFragment = (PlaceAutocompleteFragment)
                 getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
         viewPager = (ViewPager) findViewById(R.id.pager);
+//        searchView = (SearchView) findViewById(R.id.search_place);
+        regionCoor = new LatLng(-6.17511, 106.8650395);
 
     }
 }

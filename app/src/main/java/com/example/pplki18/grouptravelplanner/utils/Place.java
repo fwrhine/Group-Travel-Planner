@@ -5,7 +5,7 @@ public class Place {
     String place_id;
     String name;
     String address;
-    int rating;
+    String rating;
     String phone_number;
 //    String opening_hours;
     String website;
@@ -36,7 +36,7 @@ public class Place {
         this.website = website;
     }
 
-    public void setRating(int rating) {
+    public void setRating(String rating) {
         this.rating = rating;
     }
 
@@ -56,7 +56,7 @@ public class Place {
         return address;
     }
 
-    public int getRating() {
+    public String getRating() {
         return rating;
     }
 

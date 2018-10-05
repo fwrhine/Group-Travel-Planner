@@ -86,18 +86,18 @@ public class Activity_Place extends AppCompatActivity {
             JSONObject obj = new JSONObject(response);
             JSONObject results = obj.getJSONObject("result");
 
-            place.setName(results.getString("name"));
-            place.setRating(results.getInt("rating"));
-            place.setAddress(results.getString("formatted_address"));
-            place.setPhone_number(results.getString("formatted_phone_number"));
-            place.setWebsite(results.getString("website"));
+            place.setName(results.optString("name"));
+            place.setRating(results.optString("rating", "-"));
+            place.setAddress(results.optString("formatted_address"));
+            place.setPhone_number(results.optString("formatted_phone_number"));
+            place.setWebsite(results.optString("website"));
 
             JSONArray photos = results.getJSONArray("photos");
 
             JSONObject first = new JSONObject(photos.get(0).toString());
-            Log.d("PHOTOS", first.getString("photo_reference"));
+            Log.d("PHOTOS", first.optString("photo_reference"));
 
-            place.setPhoto(first.getString("photo_reference"));
+            place.setPhoto(first.optString("photo_reference"));
 
 
         } catch (JSONException e) {

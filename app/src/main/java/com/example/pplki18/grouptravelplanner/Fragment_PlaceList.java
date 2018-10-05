@@ -7,6 +7,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,20 +30,23 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Fragment_RestaurantList extends Fragment {
+public class Fragment_PlaceList extends Fragment {
 
     private static final String TAG = "RestaurantList";
 
     private RecyclerView recyclerViewPlace;
     private LinearLayoutManager linearLayoutManager;
+    private SearchView searchView;
 
-    private String type;
+    private String query;
     private String region;
+    private String latitude;
+    private String longitude;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_restaurant_list, container, false);
+        return inflater.inflate(R.layout.fragment_place_list, container, false);
     }
 
     @Override
@@ -52,13 +57,35 @@ public class Fragment_RestaurantList extends Fragment {
         recyclerViewPlace.setHasFixedSize(true);
         recyclerViewPlace.setLayoutManager(linearLayoutManager);
 
-        sendRequest();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String newQuery) {
+                sendRequest(newQuery);
+
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newQuery) {
+                if (TextUtils.isEmpty(newQuery)){
+                    sendRequest(query);
+                }
+                return false;
+            }
+        });
+
+        sendRequest(query);
     }
 
-    public void sendRequest() {
+    public void sendRequest(String query) {
         // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(getActivity());
-        String url ="https://maps.googleapis.com/maps/api/place/textsearch/json?query=" + type + "+in+" + region + "&key=" + getString(R.string.api_key);
+        String url ="https://maps.googleapis.com/maps/api/place/textsearch/json?query=" + query + "+in+" + region
+                + "&fields=id,name,types,rating,formatted_address&key=" + getString(R.string.api_key);
+
+//        String url ="https://maps.googleapis.com/maps/api/place/textsearch/json?query=" + query
+//                + "&locationbias=circle:5000@" + latitude + "," + longitude
+//                + "&fields=id,name,types,rating,formatted_address&key=" + getString(R.string.api_key);
 
 
         // Request a string response from the provided URL.
@@ -89,12 +116,16 @@ public class Fragment_RestaurantList extends Fragment {
             for (int i = 0 ; i < results.length() ; i++)
             {
                 JSONObject placeObj = new JSONObject(results.get(i).toString());
-
+                Log.d("PLACE", placeObj.toString());
                 Place place = new Place();
-                place.setPlace_id(placeObj.getString("place_id"));
-                place.setName(placeObj.getString("name"));
-                place.setAddress(placeObj.getString("formatted_address"));
-                place.setRating(placeObj.getInt("rating"));
+                place.setPlace_id(placeObj.optString("place_id"));
+                place.setName(placeObj.optString("name"));
+                place.setAddress(placeObj.optString("formatted_address"));
+                place.setRating(placeObj.optString("rating", "-"));
+
+                JSONArray photos = placeObj.getJSONArray("photos");
+                JSONObject first = new JSONObject(photos.get(0).toString());
+                place.setPhoto(first.optString("photo_reference"));
 
                 places.add(place);
             }
@@ -109,7 +140,7 @@ public class Fragment_RestaurantList extends Fragment {
     private void populatePlaceRecyclerView(final List<Place> places) {
         Log.d(TAG, "populatePlaceRecyclerView: Displaying list of places in the ListView.");
 
-        RVAdapter_Place adapter = new RVAdapter_Place(places, new RVAdapter_Place.ClickListener() {
+        RVAdapter_Place adapter = new RVAdapter_Place(places, getContext(), new RVAdapter_Place.ClickListener() {
             @Override public void onClick(View v, int position) {
                 Log.d("ID", String.valueOf(places.get(position).getPlace_id()));
 
@@ -124,8 +155,11 @@ public class Fragment_RestaurantList extends Fragment {
 
     private void init() {
         recyclerViewPlace = (RecyclerView) getView().findViewById(R.id.rv);
+        searchView = (SearchView) getView().findViewById(R.id.search_place);
         linearLayoutManager = new LinearLayoutManager(getActivity());
-        type = getArguments().getString("TYPE");
-        region = getArguments().getString("REGION", "jakarta");
+        query = getArguments().getString("QUERY");
+        region = getArguments().getString("REGION");
+        latitude = getArguments().getString("LATITUDE");
+        longitude = getArguments().getString("LONGITUDE");
     }
 }

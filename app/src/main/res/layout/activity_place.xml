@@ -32,7 +32,8 @@
         <android.support.constraint.ConstraintLayout
             android:layout_width="367dp"
             android:layout_height="wrap_content"
-            android:padding="23dp"
+            android:layout_marginTop="10dp"
+            android:padding="10dp"
             app1:layout_constraintEnd_toEndOf="parent"
             app1:layout_constraintStart_toStartOf="parent"
             app1:layout_constraintTop_toBottomOf="@+id/image">
@@ -43,10 +44,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:layout_marginTop="20dp"
-                android:text="TITLE"
                 android:textSize="22sp"
                 android:textStyle="bold"
-                app1:layout_constraintEnd_toStartOf="@+id/imageView2"
+                app1:layout_constraintEnd_toStartOf="@+id/ic_add"
                 app1:layout_constraintHorizontal_bias="0.0"
                 app1:layout_constraintStart_toStartOf="parent" />
 
@@ -54,12 +54,11 @@
                 android:id="@+id/rating"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Rating"
                 app1:layout_constraintStart_toStartOf="parent"
                 app1:layout_constraintTop_toBottomOf="@+id/title" />
 
             <ImageView
-                android:id="@+id/imageView2"
+                android:id="@+id/ic_add"
                 android:layout_width="45dp"
                 android:layout_height="45dp"
                 android:layout_marginEnd="4dp"
@@ -68,7 +67,7 @@
                 app1:layout_constraintEnd_toEndOf="parent" />
 
             <ImageView
-                android:id="@+id/imageView3"
+                android:id="@+id/ic_location"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:src="@drawable/ic_location"
@@ -81,11 +80,12 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="2dp"
                 android:layout_marginTop="32dp"
-                app1:layout_constraintStart_toEndOf="@+id/imageView3"
-                app1:layout_constraintTop_toBottomOf="@+id/imageView2" />
+                android:paddingRight="30dp"
+                app1:layout_constraintStart_toEndOf="@+id/ic_location"
+                app1:layout_constraintTop_toBottomOf="@+id/ic_add" />
 
             <ImageView
-                android:id="@+id/imageView4"
+                android:id="@+id/ic_website"
                 android:layout_width="23dp"
                 android:layout_height="23dp"
                 android:layout_marginStart="4dp"
@@ -100,11 +100,11 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
                 android:layout_marginTop="11dp"
-                app1:layout_constraintStart_toEndOf="@+id/imageView4"
+                app1:layout_constraintStart_toEndOf="@+id/ic_website"
                 app1:layout_constraintTop_toBottomOf="@+id/address" />
 
             <ImageView
-                android:id="@+id/imageView5"
+                android:id="@+id/ic_phone"
                 android:layout_width="22dp"
                 android:layout_height="22dp"
                 android:layout_marginStart="4dp"
@@ -119,7 +119,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
                 android:layout_marginTop="11dp"
-                app1:layout_constraintStart_toEndOf="@+id/imageView4"
+                app1:layout_constraintStart_toEndOf="@+id/ic_website"
                 app1:layout_constraintTop_toBottomOf="@+id/website" />
 
         </android.support.constraint.ConstraintLayout>

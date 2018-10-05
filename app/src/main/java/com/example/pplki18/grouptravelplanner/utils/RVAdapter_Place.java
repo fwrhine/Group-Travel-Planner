@@ -3,14 +3,21 @@ package com.example.pplki18.grouptravelplanner.utils;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.Image;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageRequest;
+import com.android.volley.toolbox.Volley;
 import com.example.pplki18.grouptravelplanner.R;
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
 
@@ -21,10 +28,12 @@ public class RVAdapter_Place extends RecyclerView.Adapter<RVAdapter_Place.PlaceV
 
     List<Place> places;
     private final ClickListener listener;
+    Context context;
 
-    public RVAdapter_Place(List<Place> places, ClickListener listener){
+    public RVAdapter_Place(List<Place> places, Context context, ClickListener listener){
         this.places = places;
         this.listener = listener;
+        this.context = context;
     }
 
     @Override
@@ -43,8 +52,34 @@ public class RVAdapter_Place extends RecyclerView.Adapter<RVAdapter_Place.PlaceV
     public void onBindViewHolder(PlaceViewHolder placeViewHolder, int i) {
         placeViewHolder.placeName.setText(places.get(i).getName());
         placeViewHolder.placeAddress.setText(places.get(i).getAddress());
-        placeViewHolder.placeRating.setText(String.valueOf(places.get(i).getRating()));
+        placeViewHolder.placeRating.setText(String.valueOf(places.get(i).getRating()) + "/5");
 
+        getPhoto(placeViewHolder, places.get(i).getPhoto());
+    }
+
+    public void getPhoto(final PlaceViewHolder placeViewHolder, String photo_reference) {
+        // Instantiate the RequestQueue.
+        RequestQueue queue = Volley.newRequestQueue(context);
+        String url = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=900&photoreference="
+                + photo_reference + "&key=" + context.getString(R.string.api_key);
+
+
+        // Request an image response from the provided URL.
+        ImageRequest imageRequest = new ImageRequest(url,
+                new Response.Listener<Bitmap>() {
+                    @Override
+                    public void onResponse(Bitmap response) {
+                        placeViewHolder.placeImage.setImageBitmap(response);
+                    }
+                },  0, 0,  ImageView.ScaleType.CENTER_CROP, Bitmap.Config.RGB_565,
+                new Response.ErrorListener() {
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e("PHOTO REQUEST", "Image Load Error: ");
+                    }
+                });
+
+        // Add the request to the RequestQueue.
+        queue.add(imageRequest);
     }
 
     @Override
@@ -57,6 +92,7 @@ public class RVAdapter_Place extends RecyclerView.Adapter<RVAdapter_Place.PlaceV
         private TextView placeName;
         private TextView placeAddress;
         private TextView placeRating;
+        private ImageView placeImage;
         private WeakReference<ClickListener> listenerRef;
 
 
@@ -66,6 +102,7 @@ public class RVAdapter_Place extends RecyclerView.Adapter<RVAdapter_Place.PlaceV
             placeName = (TextView)itemView.findViewById(R.id.place_name);
             placeAddress = (TextView)itemView.findViewById(R.id.place_address);
             placeRating = (TextView)itemView.findViewById(R.id.place_rating);
+            placeImage = (ImageView) itemView.findViewById(R.id.place_image);
             listenerRef = new WeakReference<>(listener);
 
             cardView.setOnClickListener(this);

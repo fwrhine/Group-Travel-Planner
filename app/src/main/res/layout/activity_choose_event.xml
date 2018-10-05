@@ -29,6 +29,14 @@
         app:tabMode="scrollable"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"/>
 
+    <!--<SearchView-->
+        <!--android:id="@+id/search_place"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_alignParentStart="true"-->
+        <!--android:layout_below="@+id/tab_layout"-->
+        <!--android:layout_marginTop="0dp" />-->
+
     <fragment
         android:id="@+id/place_autocomplete_fragment"
         android:layout_width="match_parent"
