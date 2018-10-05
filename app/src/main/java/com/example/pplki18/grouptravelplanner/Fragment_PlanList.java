@@ -1,6 +1,9 @@
 package com.example.pplki18.grouptravelplanner;
 
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -16,6 +19,10 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
+import com.example.pplki18.grouptravelplanner.data.EventContract;
+import com.example.pplki18.grouptravelplanner.data.PlanContract;
+import com.example.pplki18.grouptravelplanner.data.PlanContract.PlanEntry;
+import com.example.pplki18.grouptravelplanner.data.UserContract;
 import com.example.pplki18.grouptravelplanner.utils.Plan;
 import com.example.pplki18.grouptravelplanner.utils.RVAdapter_Plan;
 
@@ -59,10 +66,49 @@ public class Fragment_PlanList extends Fragment {
             public void onClick(View view) {
 //                Toast.makeText(getActivity(), "Create New Plan",
 //                        Toast.LENGTH_LONG).show();
+                int plan_id = createNewPlan();
                 Intent myIntent = new Intent(getActivity(), CreateNewPlanActivity.class);
+                myIntent.putExtra("plan_id", plan_id);
                 Fragment_PlanList.this.startActivity(myIntent);
             }
         });
+    }
+
+    public int createNewPlan() {
+        SQLiteDatabase db = databaseHelper.getReadableDatabase();
+
+        String query = "SELECT * FROM " + PlanEntry.TABLE_NAME + " WHERE user_id = "
+                + UserContract.UserEntry._ID;
+
+        String query2 = "SELECT * FROM " + PlanEntry.TABLE_NAME;
+
+        Cursor cursor = db.rawQuery(query, null);
+        String planName;
+        int idx = 0;
+        int last_id = 0;
+        if(cursor.getCount() > 0) {
+            idx = cursor.getCount() + 1;
+            planName = "New Plan (" + idx + ")";
+            cursor.close();
+        } else {
+            planName = "New Plan";
+            cursor.close();
+        }
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(PlanEntry.COL_PLAN_NAME, planName);
+        db.insert(PlanEntry.TABLE_NAME, null, contentValues);
+
+        cursor = db.rawQuery(query2, null);
+        if(cursor.getCount() > 0) {
+            cursor.moveToLast();
+            last_id = cursor.getColumnIndex(PlanEntry._ID);
+            cursor.close();
+        } else {
+            cursor.close();
+        }
+
+        return last_id;
     }
 
 

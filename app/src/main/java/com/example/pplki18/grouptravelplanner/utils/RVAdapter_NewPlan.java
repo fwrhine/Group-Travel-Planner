@@ -1,75 +1,100 @@
 package com.example.pplki18.grouptravelplanner.utils;
 
-        import android.content.ClipData.Item;
-        import android.support.v7.widget.RecyclerView;
-        import android.view.View;
-        import android.view.ViewGroup;
-        import android.widget.FrameLayout;
-        import android.widget.TextView;
+import android.content.Context;
+import android.support.v7.widget.CardView;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.TextView;
 
-        import com.example.pplki18.grouptravelplanner.R;
+import com.example.pplki18.grouptravelplanner.R;
+import com.github.vipulasri.timelineview.TimelineView;
 
-        import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.List;
 
-public class Adapter_NewPlan extends RecyclerView.Adapter<Adapter_NewPlan.ViewHolder>{
-    private static final int VIEW_TYPE_TOP = 0;
-    private static final int VIEW_TYPE_MIDDLE = 1;
-    private static final int VIEW_TYPE_BOTTOM = 2;
-    private List<Item> mItems;
+/**
+ * Created by HP-HP on 05-12-2015.
+ */
+public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.NewPlanViewHolder> {
 
-// ...
+    private List<Event> events;
+    private Context mContext;
+    private LayoutInflater mLayoutInflater;
 
-    class ViewHolder extends RecyclerView.ViewHolder {
-
-        TextView mItemTitle;
-        TextView mItemSubtitle;
-        FrameLayout mItemLine;
-
-        public ViewHolder(View itemView) {
-            super(itemView);
-            mItemTitle = (TextView) itemView.findViewById(R.id.item_title);
-            mItemSubtitle = (TextView) itemView.findViewById(R.id.item_subtitle);
-            mItemLine = (FrameLayout) itemView.findViewById(R.id.item_line);
-        }
-    }
-
-    @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return null;
-    }
-
-    @Override
-    public void onBindViewHolder(final ViewHolder holder, final int position) {
-        Item item = mItems.get(position);
-        // Populate views...
-        switch(holder.getItemViewType()) {
-            case VIEW_TYPE_TOP:
-                // The top of the line has to be rounded
-                holder.mItemLine.setBackgroundColor(R.drawable.line_bg_top);
-                break;
-            case VIEW_TYPE_MIDDLE:
-                // Only the color could be enough
-                // but a drawable can be used to make the cap rounded also here
-                holder.mItemLine.setBackgroundColor(R.drawable.line_bg_middle);
-                break;
-            case VIEW_TYPE_BOTTOM:
-                holder.mItemLine.setBackgroundColor(R.drawable.line_bg_bottom);
-                break;
-        }
+    public RVAdapter_NewPlan(List<Event> events, Context context) {
+        this.events = events;
+        this.mContext = context;
     }
 
     @Override
     public int getItemViewType(int position) {
-        if(position == 0) {
-            return VIEW_TYPE_TOP;
-        } else if(position == mItems.size() - 1) {
-            return VIEW_TYPE_BOTTOM;
-        }
-        return VIEW_TYPE_MIDDLE;
+        return TimelineView.getTimeLineViewType(position,getItemCount());
+    }
+
+    @Override
+    public NewPlanViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+        mContext = viewGroup.getContext();
+        mLayoutInflater = LayoutInflater.from(mContext);
+        View view;
+
+        view = mLayoutInflater.inflate(R.layout.item_timeline, viewGroup, false);
+
+        return new NewPlanViewHolder(view);
+    }
+
+    @Override
+    public void onBindViewHolder(NewPlanViewHolder holder, int position) {
+
+        Event event = events.get(position);
+        SimpleDateFormat format = new SimpleDateFormat("HH:mm");
+
+        String time_start = format.format(event.getTime_start());
+
+        String timeString = time_start + " - " + format.format(event.getTime_end()) +
+                " (" + event.getTotal_time() + ")";
+        holder.eventTime.setText(time_start);
+        holder.eventTitle.setText(event.getTitle());
+        holder.eventTimeDetail.setText(timeString);
+
+//        if(timeLineModel.getStatus() == OrderStatus.INACTIVE) {
+//            holder.mTimelineView.setMarker(VectorDrawableUtils.getDrawable(mContext, R.drawable.ic_marker_inactive, android.R.color.darker_gray));
+//        } else if(timeLineModel.getStatus() == OrderStatus.ACTIVE) {
+//            holder.mTimelineView.setMarker(VectorDrawableUtils.getDrawable(mContext, R.drawable.ic_marker_active, R.color.colorPrimary));
+//        } else {
+//            holder.mTimelineView.setMarker(ContextCompat.getDrawable(mContext, R.drawable.ic_marker), ContextCompat.getColor(mContext, R.color.colorPrimary));
+//        }
+//
+//        if(!timeLineModel.getDate().isEmpty()) {
+//            holder.mDate.setVisibility(View.VISIBLE);
+//            holder.mDate.setText(DateTimeUtils.parseDateTime(timeLineModel.getDate(), "yyyy-MM-dd HH:mm", "hh:mm a, dd-MMM-yyyy"));
+//        }
+//        else
+//            holder.mDate.setVisibility(View.GONE);
+//
+//        holder.mMessage.setText(timeLineModel.getMessage());
     }
 
     @Override
     public int getItemCount() {
-        return mItems.size();
+        return (events !=null? events.size():0);
     }
+
+    public static class NewPlanViewHolder extends RecyclerView.ViewHolder {
+        CardView cardView;
+        TextView eventTitle;
+        TextView eventTimeDetail;
+        TextView eventTime;
+
+        NewPlanViewHolder(View itemView) {
+            super(itemView);
+            cardView = (CardView) itemView.findViewById(R.id.cv_event);
+            eventTitle = (TextView) itemView.findViewById(R.id.item_title);
+            eventTime = (TextView) itemView.findViewById(R.id.item_time);
+            eventTimeDetail = (TextView) itemView.findViewById(R.id.item_time_detail);
+        }
+    }
+
 }

@@ -1,4 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?>
-<selector xmlns:android="http://schemas.android.com/apk/res/android">
-
-</selector>
+<!-- line_bg_top.xml -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="@color/background_color2"/>
+    <corners
+        android:topLeftRadius="8dp"
+        android:topRightRadius="8dp"/>
+    <!-- this has to be at least half of line FrameLayout's
+         width to appear completely rounded -->
+</shape>
