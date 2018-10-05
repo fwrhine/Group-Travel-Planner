@@ -1,9 +1,11 @@
 package com.example.pplki18.grouptravelplanner;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
@@ -14,6 +16,8 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -28,12 +32,21 @@ import android.widget.Toast;
 
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
 import com.example.pplki18.grouptravelplanner.data.GroupContract;
+import com.example.pplki18.grouptravelplanner.data.User;
 import com.example.pplki18.grouptravelplanner.data.UserContract;
 import com.example.pplki18.grouptravelplanner.data.UserGroupContract;
 import com.example.pplki18.grouptravelplanner.utils.Group;
 import com.example.pplki18.grouptravelplanner.utils.RVAdapter_User;
 import com.example.pplki18.grouptravelplanner.utils.SessionManager;
-import com.example.pplki18.grouptravelplanner.utils.User;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -53,7 +66,7 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
     private CircleImageView circleImageView;
     private Toolbar toolbar;
     private SessionManager sessionManager;
-    private ArrayList<Integer> user_ids;
+    private ArrayList<String> user_ids;
     private RecyclerView recyclerViewUser;
     private LinearLayoutManager linearLayoutManager;
     private SearchView searchView;
@@ -61,11 +74,24 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
     private String currId;
     private int GALLERY = 1, CAMERA = 2;
 
+    private FirebaseDatabase firebaseDatabase;
+    private FirebaseAuth firebaseAuth;
+    private FirebaseAuth.AuthStateListener mAuthStateListener;
+    private FirebaseUser firebaseUser;
+    private DatabaseReference userRef;
+    private StorageReference storageReference;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_group);
+
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
+        userRef = firebaseDatabase.getReference().child("users").child(firebaseUser.getUid());
+        storageReference = FirebaseStorage.getInstance().getReference();
         init();
 
         setSupportActionBar(toolbar);
@@ -94,15 +120,7 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
                 } else if (user_ids.size() == 0) {
                     toastMessage("Please select group members.");
                 } else {
-//                    Log.d("CURRENT ID", currId + Integer.parseInt(currId));
-                    user_ids.add(Integer.parseInt(currId));
-                    CreateGroup(newGroup, user_ids);
-                    Intent myIntent = new Intent(Activity_CreateNewGroup.this, Activity_InGroup.class);
-                    Activity_CreateNewGroup.this.startActivity(myIntent);
 
-//                    //empty name and image input
-//                    editText.setText("");
-//                    circleImageView.setImageResource(R.mipmap.ic_launcher_round);
                 }
             }
         });
@@ -148,15 +166,15 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
                 ImageView button = (ImageView) v.findViewById(R.id.button);
 
                 Log.d("POSITION", String.valueOf(position));
-                Log.d("ID", String.valueOf(users.get(position).getUser_id()));
-                Log.d("NAME", String.valueOf(users.get(position).getUser_name()));
+                Log.d("ID", users.get(position).getId());
+                Log.d("NAME", users.get(position).getId());
 
-                if (user_ids.contains(users.get(position).getUser_id())) {
-                    user_ids.remove(Integer.valueOf(users.get(position).getUser_id()));
+                if (user_ids.contains(users.get(position).getId())) {
+                    user_ids.remove(users.get(position).getId());
 //                    v.setBackgroundColor(getResources().getColor(R.color.colorWhite));
                     button.setImageResource(R.drawable.ic_radio_button_unchecked);
                 } else {
-                    user_ids.add(users.get(position).getUser_id());
+                    user_ids.add(users.get(position).getId());
 //                    v.setBackgroundColor(getResources().getColor(R.color.user_pressed));
                     button.setImageResource(R.drawable.ic_check_circle);
                 }
@@ -202,7 +220,11 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
 
     private void takePhotoFromCamera() {
         Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-        startActivityForResult(intent, CAMERA);
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                == PackageManager.PERMISSION_DENIED){
+            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.CAMERA}, CAMERA);
+        }
+        startActivityForResult(intent, CAMERA);;
     }
 
     @Override
@@ -277,7 +299,7 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
     ////////////////////////////////////////////// insert new group to database ////////////////////////////////////////////////
 
     //Todo: insert data to database, if success, open group chat
-    public void CreateGroup(Group group, ArrayList<Integer> user_ids) {
+    public void CreateGroup(Group group, ArrayList<String> user_ids) {
         long createGroup = insertGroup(group, user_ids);
 
         if (createGroup != -1) {
@@ -291,7 +313,7 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
 
     //////////////////////////////////////////////////// database functions ////////////////////////////////////////////////////
 
-    public long insertGroup(Group group, ArrayList<Integer> user_ids) {
+    public long insertGroup(Group group, ArrayList<String> user_ids) {
         sessionManager = new SessionManager(getApplicationContext());
         SQLiteDatabase db = databaseHelper.getWritableDatabase();
 
@@ -301,21 +323,21 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
         ContentValues values = new ContentValues();
         values.put(GroupContract.GroupEntry.COL_GROUP_NAME, group.getGroup_name());
         values.put(GroupContract.GroupEntry.COL_GROUP_IMAGE, group.getGroup_image());
-        values.put(GroupContract.GroupEntry.COL_GROUP_CREATOR, currId);
+        values.put(GroupContract.GroupEntry.COL_GROUP_CREATOR,currId);
         Log.d("CURRENT ID", currId);
 
         // insert row_user
         long group_id = db.insert(GroupContract.GroupEntry.TABLE_NAME, null, values);
 
         // assigning users to groups
-        for (int user_id : user_ids) {
+        for (String user_id : user_ids) {
             insertUserGroup(group_id, user_id);
         }
 
         return group_id;
     }
 
-    public long insertUserGroup(long group_id, int user_id) {
+    public long insertUserGroup(long group_id, String user_id) {
         SQLiteDatabase db = databaseHelper.getWritableDatabase();
 
         ContentValues contentValues = new ContentValues();
@@ -346,8 +368,8 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
         if (c.moveToFirst()) {
             do {
                 User user = new User();
-                user.setUser_name((c.getString(c.getColumnIndex(UserContract.UserEntry.COL_FULLNAME))));
-                user.setUser_id((c.getInt(c.getColumnIndex(UserContract.UserEntry._ID))));
+                user.setUsername((c.getString(c.getColumnIndex(UserContract.UserEntry.COL_FULLNAME))));
+                user.setId((c.getString(c.getColumnIndex(UserContract.UserEntry._ID))));
 
                 Log.d("NAME", c.getString(c.getColumnIndex(UserContract.UserEntry.COL_FULLNAME)));
                 Log.d("ID", String.valueOf(c.getInt(c.getColumnIndex(UserContract.UserEntry._ID))));
@@ -363,30 +385,30 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
     /*
      * Search user by full name
      * */
-    public List<User> searchUser(String query) {
-        List<User> users = new ArrayList<User>();
+    public List<User> searchUser(final String query) {
+        final List<User> users = new ArrayList<>();
 
-        String selectQuery = "SELECT * FROM " + UserContract.UserEntry.TABLE_NAME + " WHERE "
-                + UserContract.UserEntry.COL_FULLNAME + " LIKE ? AND "
-                + UserContract.UserEntry._ID + " != ?";
-        String[] selectionArgs = new String[]{"%" + query + "%", currId};
-
-        Log.e("USERS", selectQuery);
-
-        SQLiteDatabase db = databaseHelper.getReadableDatabase();
-        Cursor c = db.rawQuery(selectQuery, selectionArgs);
-
-        // looping through all rows and adding to list
-        if (c.moveToFirst()) {
-            do {
-                User user = new User();
-                user.setUser_name((c.getString(c.getColumnIndex(UserContract.UserEntry.COL_FULLNAME))));
-                user.setUser_id((c.getInt(c.getColumnIndex(UserContract.UserEntry._ID))));
-
-                // adding to group list
-                users.add(user);
-            } while (c.moveToNext());
+        if(query == null){
+            return users;
         }
+
+        DatabaseReference allUsers = firebaseDatabase.getReference().child("users");
+        allUsers.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot postSnapshot: dataSnapshot.getChildren()){
+                    User user = postSnapshot.getValue(User.class);
+                    if(user.getFullName().contains(query) && !user.getId().equals(firebaseUser.getUid())){
+                        users.add(user);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
         return users;
     }

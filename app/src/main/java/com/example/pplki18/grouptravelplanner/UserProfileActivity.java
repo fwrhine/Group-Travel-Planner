@@ -1,14 +1,15 @@
 package com.example.pplki18.grouptravelplanner;
 
+import android.Manifest;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
+import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -18,6 +19,8 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -28,7 +31,6 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -36,13 +38,22 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
-import com.example.pplki18.grouptravelplanner.data.UserContract;
+import com.bumptech.glide.request.RequestOptions;
+import com.example.pplki18.grouptravelplanner.utils.GlideApp;
 import com.example.pplki18.grouptravelplanner.utils.SessionManager;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.sql.Blob;
 import java.util.HashMap;
 import java.util.Locale;
 
@@ -50,10 +61,18 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class UserProfileActivity extends AppCompatActivity {
     SessionManager session;
-    DatabaseHelper myDb;
+
+    FirebaseDatabase firebaseDatabase;
+    FirebaseAuth firebaseAuth;
+    FirebaseAuth.AuthStateListener mAuthStateListener;
+    FirebaseUser firebaseUser;
+    DatabaseReference userRef;
+    StorageReference storageReference;
+
+    String photoUrl;
+    Uri mImageUri;
 
     TextView fullname_label, username_label, email_label, phone_label, birthday_label;
-    Button buttonLogout;
     ImageButton buttonCheckFullname, buttonEditFullname;
     CircleImageView profile_image;
 
@@ -66,7 +85,6 @@ public class UserProfileActivity extends AppCompatActivity {
     FloatingActionButton fab_pic_user;
 
     String fullname_str, username_str, email_str, phone_no, birthday;
-    byte[] byte_array;
 
     HashMap<String, String> user;
 
@@ -82,6 +100,12 @@ public class UserProfileActivity extends AppCompatActivity {
         getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
+        userRef = firebaseDatabase.getReference().child("users").child(firebaseUser.getUid());
+        storageReference = FirebaseStorage.getInstance().getReference();
+
         init();
         editUsername();
         setSelectGender();
@@ -89,6 +113,31 @@ public class UserProfileActivity extends AppCompatActivity {
         editBirthday();
         setUpToolbar();
         choosePicture();
+
+        mAuthStateListener = new FirebaseAuth.AuthStateListener(){
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth){
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user != null){
+
+                } else {
+                    Intent intent = new Intent(UserProfileActivity.this, LoginActivity.class);
+                    startActivity(intent);
+                }
+            }
+        };
+    }
+
+    @Override
+    protected void onPause(){
+        super.onPause();
+        firebaseAuth.removeAuthStateListener(mAuthStateListener);
+    }
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+        firebaseAuth.addAuthStateListener(mAuthStateListener);
     }
 
     public void init() {
@@ -106,7 +155,6 @@ public class UserProfileActivity extends AppCompatActivity {
 
         fab_pic_user = (FloatingActionButton) findViewById(R.id.fab_pic_user);
 
-        buttonLogout = (Button) findViewById(R.id.buttonLogout);
         buttonEditFullname = (ImageButton) findViewById(R.id.buttonEditFullname);
         buttonCheckFullname = (ImageButton) findViewById(R.id.buttonCheckFullname);
         profile_image = (CircleImageView) findViewById(R.id.profile_image);
@@ -133,41 +181,25 @@ public class UserProfileActivity extends AppCompatActivity {
         // get birthday from the session
         birthday = user.get(SessionManager.KEY_BIRTHDAY);
 
-        // To access our database, we instantiate our subclass of SQLiteOpenHelper
-        // and pass the context, which is the current activity
-        myDb = new DatabaseHelper(this);
-
-        // Create and/or open a database to read from it
-        db = myDb.getReadableDatabase();
-
-        // Find the user from the database
-        String query = "SELECT * FROM " + UserContract.UserEntry.TABLE_NAME + " WHERE "
-                + UserContract.UserEntry.COL_USERNAME + "=?";
-        String[] selectionArgs = new String[]{username_str};
-
-        Cursor cursor = db.rawQuery(query, selectionArgs);
-
-        // Get the data (fullname only) from the database
-        if(cursor != null && cursor.moveToFirst()) {
-            do {
-                fullname_str = cursor.getString(cursor.getColumnIndex(UserContract.UserEntry.COL_FULLNAME));
-                byte_array = cursor.getBlob(cursor.getColumnIndex(UserContract.UserEntry.COL_PICTURE));
-            } while (cursor.moveToNext());
-        }
+        fullname_str = session.getUserDetails().get(session.KEY_FULLNAME);
 
         fullname_label.setText(fullname_str);
         username_label.setText(username_str);
         email_label.setText(email_str);
 
-        Log.d("IMAGE", byte_array + "");
-        if (byte_array != null) {
-            Bitmap bitmap = BitmapFactory.decodeByteArray(byte_array, 0, byte_array.length);
-            if(bitmap != null) {
-                profile_image.setImageBitmap(Bitmap.createScaledBitmap(bitmap, 120, 120, false));
-            } else {
-                Log.d("IMAGE", "ERROR");
-            }
-        }
+        photoUrl = session.getUserDetails().get(session.KEY_PHOTO_URL);
+        // Load user profile and put it to the imageView
+        Log.d("IMAGE", photoUrl + "");
+        Uri uri = Uri.parse(photoUrl);
+
+        GlideApp.with(this)
+                .load(uri)
+                .placeholder(R.mipmap.ic_launcher_round)
+                .error(R.mipmap.ic_launcher_round)
+                .centerCrop()
+                .apply(new RequestOptions().override(300, 300))
+                .apply(RequestOptions.circleCropTransform())
+                .into(profile_image);
 
         // set up user phone number
         if (phone_no.isEmpty()) {
@@ -188,14 +220,6 @@ public class UserProfileActivity extends AppCompatActivity {
             birthday_label.setTypeface(birthday_label.getTypeface(), Typeface.NORMAL);
         }
 
-        buttonLogout.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        session.logoutUser();
-                    }
-                }
-        );
     }
 
     public void editUsername() {
@@ -227,18 +251,7 @@ public class UserProfileActivity extends AppCompatActivity {
                         session.updateSession(SessionManager.KEY_FULLNAME, new_fullname);
                         Log.d("FULLNAME", new_fullname);
 
-                        // Create and/or open a database to read from it
-                        db = myDb.getReadableDatabase();
-
-                        // Query string to update the user full name
-                        String query = "UPDATE " + UserContract.UserEntry.TABLE_NAME
-                                + " SET " + UserContract.UserEntry.COL_FULLNAME + "=?"
-                                + " WHERE " + UserContract.UserEntry.COL_USERNAME + "=?";
-                        // Arguments for the query
-                        String[] selectionArgs = new String[]{new_fullname, username_str};
-
-                        // Execute the query
-                        db.execSQL(query, selectionArgs);
+                        userRef.child("fullName").setValue(new_fullname);
 
                     }
                 }
@@ -258,13 +271,7 @@ public class UserProfileActivity extends AppCompatActivity {
                     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                         int selected_item = genderSpinner.getSelectedItemPosition();
 
-                        // Query string to update the user's gender
-                        String query = "UPDATE " + UserContract.UserEntry.TABLE_NAME
-                                + " SET " + UserContract.UserEntry.COL_GENDER + "=" + selected_item + " WHERE "
-                                + UserContract.UserEntry.COL_USERNAME + "=" + "\"" + username_str + "\"";
-
-                        // Execute the query
-                        db.execSQL(query);
+                        userRef.child("gender").setValue(String.valueOf(selected_item));
                         session.updateSession(SessionManager.KEY_GENDER, selected_item+"");
                     }
 
@@ -362,6 +369,10 @@ public class UserProfileActivity extends AppCompatActivity {
 
     private void takePhotoFromCamera() {
         Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                == PackageManager.PERMISSION_DENIED){
+            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.CAMERA}, CAMERA);
+        }
         startActivityForResult(intent, CAMERA);
     }
 
@@ -372,67 +383,90 @@ public class UserProfileActivity extends AppCompatActivity {
         if (resultCode == this.RESULT_CANCELED) {
             return;
         }
-        if (requestCode == GALLERY) {
+        if(requestCode == GALLERY) {
             if (data != null) {
-                Uri contentURI = data.getData();
+                mImageUri = data.getData();
                 try {
-                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), contentURI);
-                    bitmap =  getResizedBitmap(bitmap, 70);
-                    profile_image.setImageBitmap(bitmap);
-                    boolean flag = saveImageToDb();
-                    if (flag) {
-                        Toast.makeText(UserProfileActivity.this, "Profile Image Updated",
-                                Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(UserProfileActivity.this, "Profile Image Not Updated",
-                                Toast.LENGTH_SHORT).show();
-                    }
-
+                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), mImageUri);
+                    bitmap = getResizedBitmap(bitmap, 300);
+                    uploadImage(mImageUri, bitmap);
                 } catch (IOException e) {
                     e.printStackTrace();
                     Toast.makeText(UserProfileActivity.this, "Failed!", Toast.LENGTH_SHORT).show();
                 }
             }
+        }
+        else if(requestCode == CAMERA) {
+            mImageUri = data.getData();
+            Log.d("FILEPATH_CAM", mImageUri.toString());
+        }
+    }
 
-        } else if (requestCode == CAMERA) {
-            Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
-            profile_image.setImageBitmap(thumbnail);
-            boolean flag = saveImageToDb();
-            if (flag) {
-                Toast.makeText(UserProfileActivity.this, "Profile Image Updated",
-                        Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(UserProfileActivity.this, "Profile Image Not Updated",
-                        Toast.LENGTH_SHORT).show();
-            }
+    private void uploadImage(Uri filePath, Bitmap bitmap){
+        if (filePath != null) {
+            final ProgressDialog progressDialog = new ProgressDialog(this);
+            progressDialog.setTitle("Uploading...");
+            progressDialog.show();
+
+            final StorageReference ref = storageReference.child("images/"+ firebaseUser.getUid());
+            final Bitmap finalBitmap = bitmap;
+            ref.putFile(filePath)
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            progressDialog.dismiss();
+                            ref.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+                                    session.updateSession(session.KEY_PHOTO_URL, uri.toString());
+                                    userRef.child("photoUrl").setValue(uri.toString());
+                                }
+                            });
+                            profile_image.setImageBitmap(finalBitmap);
+                            Toast.makeText(UserProfileActivity.this, "Profile Image Updated",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            progressDialog.dismiss();
+                            Toast.makeText(UserProfileActivity.this, "Failed!",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                            double progress = (100.0*taskSnapshot.getBytesTransferred()/taskSnapshot
+                                    .getTotalByteCount());
+                            progressDialog.setMessage("Uploaded "+(int)progress+"%");
+                        }
+                    });
+        } else {
+            Toast.makeText(UserProfileActivity.this, "Profile Image Not Updated",
+                    Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (mImageUri != null) {
+            outState.putString("cameraImageUri", mImageUri.toString());
+        }
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        if (savedInstanceState.containsKey("cameraImageUri")) {
+            mImageUri = Uri.parse(savedInstanceState.getString("cameraImageUri"));
         }
     }
 
     ///////////////////////////////////////////// convert image view to byte array /////////////////////////////////////////////
 
-    //convert image view to byte array
-    public static byte[] imageViewToByte(ImageView image) {
-        try {
-            Bitmap bitmap = getBitmapFromDrawable(image.getDrawable());
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-            byte[] byteArray = stream.toByteArray();
-            return byteArray;
-        } catch (ClassCastException e) {
-            e.printStackTrace();
-            return new byte[0];
-        }
-    }
-
-    //convert drawable to bitmap
-    @NonNull
-    private static Bitmap getBitmapFromDrawable(@NonNull Drawable drawable) {
-        final Bitmap bmp = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-        final Canvas canvas = new Canvas(bmp);
-        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-        drawable.draw(canvas);
-        return bmp;
-    }
 
     //get resized bitmap
     public Bitmap getResizedBitmap(Bitmap image, int maxSize) {
@@ -448,22 +482,6 @@ public class UserProfileActivity extends AppCompatActivity {
             width = (int) (height * bitmapRatio);
         }
         return Bitmap.createScaledBitmap(image, width, height, true);
-    }
-
-    private boolean saveImageToDb() {
-        byte[] profile_image_byte = imageViewToByte(profile_image);
-
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(UserContract.UserEntry.COL_PICTURE, profile_image_byte);
-
-        String whereClause = UserContract.UserEntry.COL_USERNAME + " = ? ";
-        final String whereArgs[] = {username_str};
-
-        long result = db.update(UserContract.UserEntry.TABLE_NAME, contentValues, whereClause, whereArgs);
-        if(result == -1)
-            return false;
-        else
-            return true;
     }
 
 }
