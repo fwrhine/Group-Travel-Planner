@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -23,10 +24,13 @@ import com.example.pplki18.grouptravelplanner.data.EventContract;
 import com.example.pplki18.grouptravelplanner.data.PlanContract;
 import com.example.pplki18.grouptravelplanner.data.PlanContract.PlanEntry;
 import com.example.pplki18.grouptravelplanner.data.UserContract;
+import com.example.pplki18.grouptravelplanner.utils.Friend;
 import com.example.pplki18.grouptravelplanner.utils.Plan;
 import com.example.pplki18.grouptravelplanner.utils.RVAdapter_Plan;
+import com.example.pplki18.grouptravelplanner.utils.SessionManager;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -38,7 +42,10 @@ public class Fragment_PlanList extends Fragment {
     private RecyclerView recyclerViewPlan;
     private LinearLayoutManager linearLayoutManager;
     private FloatingActionButton new_plan_button;
-    private Toolbar toolbar;
+    private SessionManager session;
+    private HashMap<String, String> user;
+    private List<Plan> plans;
+    RVAdapter_Plan adapter;
     DatabaseHelper myDb;
 
     @Nullable
@@ -77,49 +84,50 @@ public class Fragment_PlanList extends Fragment {
     public int createNewPlan() {
         SQLiteDatabase db = databaseHelper.getReadableDatabase();
 
-        String query = "SELECT * FROM " + PlanEntry.TABLE_NAME + " WHERE user_id = "
-                + UserContract.UserEntry._ID;
-
-        String query2 = "SELECT * FROM " + PlanEntry.TABLE_NAME;
+        String query = "SELECT * FROM " + PlanEntry.TABLE_NAME + " WHERE " + PlanEntry.COL_USER_ID +
+                " = " + user.get(SessionManager.KEY_ID) + " AND " + PlanEntry.COL_PLAN_NAME +
+                " LIKE \'New Plan (%)\' ";
 
         Cursor cursor = db.rawQuery(query, null);
         String planName;
-        int idx = 0;
-        int last_id = 0;
+        int idx;
+
         if(cursor.getCount() > 0) {
-            idx = cursor.getCount() + 1;
+            cursor.moveToLast();
+//            idx = cursor.getCount() + 1;
+            String temp = cursor.getString(cursor.getColumnIndex(PlanEntry.COL_PLAN_NAME));
+            idx = Integer.parseInt(temp.substring(10,temp.length()-1)) + 1;
             planName = "New Plan (" + idx + ")";
             cursor.close();
         } else {
-            planName = "New Plan";
+            planName = "New Plan (1)";
             cursor.close();
         }
 
         ContentValues contentValues = new ContentValues();
         contentValues.put(PlanEntry.COL_PLAN_NAME, planName);
-        db.insert(PlanEntry.TABLE_NAME, null, contentValues);
+        contentValues.put(PlanEntry.COL_USER_ID, user.get(SessionManager.KEY_ID));
+        long plan_id = db.insert(PlanEntry.TABLE_NAME, null, contentValues);
 
-        cursor = db.rawQuery(query2, null);
-        if(cursor.getCount() > 0) {
-            cursor.moveToLast();
-            last_id = cursor.getColumnIndex(PlanEntry._ID);
-            cursor.close();
-        } else {
-            cursor.close();
-        }
-
-        return last_id;
+        return (int)plan_id;
     }
 
+    @Override
+    public void onResume() {  // After a pause OR at startup
+        Log.d("RESUME", "masuk resume");
+        super.onResume();
+        plans = getAllPlans();
+        adapter = new RVAdapter_Plan(plans, getActivity());
+        recyclerViewPlan.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
+}
 
     //Todo: refactor? exactly the same code as the one in CreateNewGroup
     private void populatePlanRecyclerView() {
         Log.d(TAG, "populatePlanRecyclerView: Displaying list of plans in the ListView.");
 
-        //get data and append to list
-        List<Plan> plans = getAllPlans();
-        RVAdapter_Plan adapter = new RVAdapter_Plan(plans, getActivity());
         recyclerViewPlan.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
     }
 
     /*
@@ -127,6 +135,26 @@ public class Fragment_PlanList extends Fragment {
      * */
     public List<Plan> getAllPlans() {
         List<Plan> plans = new ArrayList<Plan>();
+
+        String selectQuery = " SELECT * FROM " + PlanEntry.TABLE_NAME + " WHERE " +
+                PlanEntry.COL_USER_ID + " = " + user.get(SessionManager.KEY_ID);
+
+        SQLiteDatabase db = databaseHelper.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        if (c.moveToFirst()) {
+            do {
+                Plan plan = new Plan();
+                plan.setPlan_name((c.getString(c.getColumnIndex(PlanEntry.COL_PLAN_NAME))));
+                plan.setPlan_start_date((c.getString(c.getColumnIndex(PlanEntry.COL_START_DAY))));
+                plan.setPlan_end_date((c.getString(c.getColumnIndex(PlanEntry.COL_END_DAY))));
+                plan.setPlan_total_days((c.getInt(c.getColumnIndex(PlanEntry.COL_TOTAL_DAY))));
+                plan.setPlan_id((c.getInt(c.getColumnIndex(PlanEntry._ID))));
+
+                // adding to plan list
+                plans.add(plan);
+            } while (c.moveToNext());
+        }
 
         Plan plan = new Plan();
         plan.setPlan_name("Sample Plan");
@@ -156,5 +184,9 @@ public class Fragment_PlanList extends Fragment {
         linearLayoutManager = new LinearLayoutManager(this.getActivity());
         databaseHelper = new DatabaseHelper(this.getActivity());
         new_plan_button = getView().findViewById(R.id.fab_add_plan);
+        session = new SessionManager(getActivity().getApplicationContext());
+        user = session.getUserDetails();
+        plans = getAllPlans();
+        adapter = new RVAdapter_Plan(plans, getActivity());
     }
 }

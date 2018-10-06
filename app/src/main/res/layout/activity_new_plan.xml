@@ -21,6 +21,7 @@
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
         <ImageButton
+            android:id="@+id/save_plan"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
@@ -154,8 +155,7 @@
                     android:layout_centerVertical="true"
                     android:layout_centerHorizontal="true"
                     android:layout_marginBottom="5dp"
-                    android:background="@drawable/ripple_oval"
-                    android:backgroundTint="@color/background_color2"
+                    android:background="@drawable/ripple_oval_off"
                     android:elevation="4dp"
                     android:src="@drawable/ic_navigate_before_white_24dp" />
             </RelativeLayout>
@@ -202,8 +202,7 @@
                     android:layout_centerVertical="true"
                     android:layout_centerHorizontal="true"
                     android:layout_marginBottom="5dp"
-                    android:background="@drawable/ripple_oval"
-                    android:backgroundTint="@color/background_color2"
+                    android:background="@drawable/ripple_oval_off"
                     android:elevation="4dp"
                     android:rotation="180"
                     android:src="@drawable/ic_navigate_before_white_24dp" />
@@ -240,6 +239,7 @@
                 <!--tools:listitem="@layout/item_timeline" />-->
 
             <ImageButton
+                android:id="@+id/add_event"
                 android:layout_width="70dp"
                 android:layout_height="70dp"
                 android:layout_alignParentBottom="true"

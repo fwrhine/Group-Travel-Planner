@@ -3,9 +3,12 @@ package com.example.pplki18.grouptravelplanner.utils;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.database.sqlite.SQLiteDatabase;
+import android.provider.ContactsContract;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
@@ -18,6 +21,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.pplki18.grouptravelplanner.R;
+import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
+import com.example.pplki18.grouptravelplanner.data.PlanContract;
 
 import java.util.List;
 
@@ -46,8 +51,15 @@ public class RVAdapter_Plan extends RecyclerView.Adapter<RVAdapter_Plan.PlanView
     @Override
     public void onBindViewHolder(final RVAdapter_Plan.PlanViewHolder planViewHolder, int i) {
         Plan plan = plans.get(i);
+        String total_day_str;
+        int total_day = plan.getPlan_total_days();
+        if (total_day == 1 || total_day == 0) {
+            total_day_str = " (" + total_day + " day trip)";
+        } else {
+            total_day_str = " (" + total_day + " days trip)";
+        }
         String dateString = plan.getPlan_start_date() + " - " +plan.getPlan_end_date()
-                + " (" + plan.getPlan_total_days() + " day(s) trip)";
+                + total_day_str;
         String createdString = "Modified: " + plan.getPlan_modified() + " / "
                 + "Created: " + plan.getPlan_created();
 
@@ -106,6 +118,7 @@ public class RVAdapter_Plan extends RecyclerView.Adapter<RVAdapter_Plan.PlanView
 
                     public void onClick(DialogInterface dialog, int whichButton) {
                         //your deleting code
+                        deletePlan(plans.get(position));
                         plans.remove(position);
                         notifyDataSetChanged();
                         dialog.dismiss();
@@ -124,6 +137,18 @@ public class RVAdapter_Plan extends RecyclerView.Adapter<RVAdapter_Plan.PlanView
         return myQuittingDialogBox;
     }
 
+    private void deletePlan(Plan plan) {
+        DatabaseHelper myDb = new DatabaseHelper(context);
+        SQLiteDatabase db = myDb.getWritableDatabase();
+
+        String deleteQuery = "DELETE FROM " + PlanContract.PlanEntry.TABLE_NAME + " WHERE " +
+                PlanContract.PlanEntry._ID + " = " + plan.getPlan_id();
+
+        db.execSQL(deleteQuery);
+        db.close();
+        notifyDataSetChanged();
+    }
+
     private AlertDialog renameDialog(final int position, String name) {
         final EditText edtText = new EditText(context);
         AlertDialog myQuittingDialogBox = new AlertDialog.Builder(context)
@@ -134,8 +159,10 @@ public class RVAdapter_Plan extends RecyclerView.Adapter<RVAdapter_Plan.PlanView
                 .setPositiveButton("Rename", new DialogInterface.OnClickListener() {
 
                     public void onClick(DialogInterface dialog, int whichButton) {
-                        //your deleting code
-                        plans.get(position).setPlan_name(edtText.getText().toString());
+                        //your renaming code
+                        String new_name = edtText.getText().toString();
+                        renamePlan(plans.get(position), new_name);
+                        plans.get(position).setPlan_name(new_name);
                         notifyDataSetChanged();
                         dialog.dismiss();
                     }
@@ -151,6 +178,19 @@ public class RVAdapter_Plan extends RecyclerView.Adapter<RVAdapter_Plan.PlanView
                 })
                 .create();
         return myQuittingDialogBox;
+    }
+
+    public void renamePlan(Plan plan, String new_name) {
+        DatabaseHelper myDb = new DatabaseHelper(context);
+        SQLiteDatabase db = myDb.getWritableDatabase();
+
+        String updateQuery = "UPDATE " + PlanContract.PlanEntry.TABLE_NAME + " SET " +
+                PlanContract.PlanEntry.COL_PLAN_NAME + " = " + "\"" + new_name + "\"" +
+                " WHERE " + PlanContract.PlanEntry._ID + " = " + plan.getPlan_id();
+
+        db.execSQL(updateQuery);
+        db.close();
+        notifyDataSetChanged();
     }
 
     public static class PlanViewHolder extends RecyclerView.ViewHolder {
@@ -171,13 +211,5 @@ public class RVAdapter_Plan extends RecyclerView.Adapter<RVAdapter_Plan.PlanView
             planMenuButton = (ImageButton) itemView.findViewById(R.id.plan_menu_button);
         }
 
-
-//        @Override
-//        public void onCreateContextMenu(ContextMenu contextMenu, View view, ContextMenu.ContextMenuInfo contextMenuInfo) {
-//            view.animate();
-//            contextMenu.setHeaderTitle(planName.getText());
-//            contextMenu.add(0, view.getId(), 0, "Rename");
-//            contextMenu.add(0, view.getId(), 0, "Delete");
-//        }
     }
 }
