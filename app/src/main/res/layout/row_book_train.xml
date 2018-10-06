@@ -4,37 +4,21 @@
     android:layout_height="match_parent">
 
     <RelativeLayout
-        android:id="@+id/flightData"
+        android:id="@+id/trainLayout"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:layout_margin="8dp">
 
         <RelativeLayout
-            android:id="@+id/airlineData"
+            android:id="@+id/trainData"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
             <TextView
-                android:id="@+id/airlineName"
+                android:id="@+id/trainName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Airline Name"
-                android:textSize="16dp" />
-
-            <TextView
-                android:id="@+id/separator"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text=" - "
-                android:layout_toEndOf="@id/airlineName"
-                android:textSize="16dp" />
-
-            <TextView
-                android:id="@+id/flightNumber"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Flight Number"
-                android:layout_toEndOf="@id/separator"
                 android:textSize="16dp" />
 
         </RelativeLayout>
@@ -43,7 +27,7 @@
             android:id="@+id/departData"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/airlineData">
+            android:layout_below="@id/trainData">
 
             <TextView
                 android:id="@+id/departCity"
@@ -68,14 +52,14 @@
             android:layout_height="wrap_content"
             android:text=" -> "
             android:layout_toEndOf="@id/departData"
-            android:layout_below="@id/airlineData"
+            android:layout_below="@id/trainData"
             android:textSize="14dp" />
 
         <RelativeLayout
             android:id="@+id/arriveData"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/airlineData"
+            android:layout_below="@id/trainData"
             android:layout_toEndOf="@id/arrow" >
 
             <TextView
@@ -100,7 +84,7 @@
         android:id="@+id/priceLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toEndOf="@id/flightData"
+        android:layout_toEndOf="@id/trainLayout"
         android:layout_margin="8dp" >
 
         <TextView

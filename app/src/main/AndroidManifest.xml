@@ -61,7 +61,7 @@
         <activity android:name=".Activity_InHome" />
 
         <!-- TEMP -->
-        <activity android:name=".PagerBookPlane">    <!-- BookPlaneActivity -->
+        <activity android:name=".PagerBooking">    <!-- BookPlaneActivity -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

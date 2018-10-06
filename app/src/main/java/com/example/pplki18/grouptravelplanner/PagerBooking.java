@@ -8,14 +8,14 @@ import android.os.Bundle;
 
 import com.example.pplki18.grouptravelplanner.utils.PagerAdapter;
 
-public class PagerBookPlane extends AppCompatActivity {
+public class PagerBooking extends AppCompatActivity {
 
     private ViewPager mViewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_pager_book_plane);
+        setContentView(R.layout.activity_pager_booking);
 
         ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
         PagerAdapter myPagerAdapter = new PagerAdapter(getSupportFragmentManager());
