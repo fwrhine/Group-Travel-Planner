@@ -71,4 +71,9 @@ public class Place {
     public String getPhoto() {
         return photo;
     }
+
+    @Override
+    public String toString() {
+        return this.name;
+    }
 }

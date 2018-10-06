@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.android.volley.RequestQueue;
@@ -22,13 +23,14 @@ import com.example.pplki18.grouptravelplanner.R;
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.List;
 
 public class RVAdapter_Place extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
 
-    List<Place> places;
+    private List<Place> places;
     private ClickListener listener;
-    Context context;
+    private Context context;
     private boolean isLoadingAdded = false;
 
     private static final int ITEM = 0;
@@ -36,24 +38,11 @@ public class RVAdapter_Place extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     public RVAdapter_Place(Context context){
         this.context = context;
-    }
-
-    public void setPlaces(List<Place> places) {
-        this.places = places;
+        places = new ArrayList<>();
     }
 
     public void setListener(ClickListener listener) {
         this.listener = listener;
-    }
-
-    @Override
-    public int getItemCount() {
-        return places == null ? 0 : places.size();
-    }
-
-    @Override
-    public int getItemViewType(int position) {
-        return (position == places.size() - 1 && isLoadingAdded) ? LOADING : ITEM;
     }
 
     @Override
@@ -67,6 +56,7 @@ public class RVAdapter_Place extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 viewHolder = new PlaceViewHolder(view, listener);
                 break;
             case LOADING:
+                Log.d("DISPLAY", "LOADING");
                 view = inflater.inflate(R.layout.row_progress, viewGroup, false);
                 viewHolder = new LoadingViewHolder(view);
                 break;
@@ -95,6 +85,73 @@ public class RVAdapter_Place extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
     }
 
+    @Override
+    public int getItemCount() {
+        return places == null ? 0 : places.size();
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return (position == places.size() - 1 && isLoadingAdded) ? LOADING : ITEM;
+    }
+
+//    @Override
+//    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+//        super.onAttachedToRecyclerView(recyclerView);
+//    }
+
+    /*
+   Helpers
+   _________________________________________________________________________________________________
+    */
+
+    public void add(Place place) {
+        places.add(place);
+        notifyItemInserted(places.size() - 1);
+    }
+
+    public void addAll(List<Place> places) {
+        for (Place place : places) {
+            add(place);
+        }
+    }
+
+    public void remove(Place city) {
+        int position = places.indexOf(city);
+        if (position > -1) {
+            places.remove(position);
+            notifyItemRemoved(position);
+        }
+    }
+
+    public void clear() {
+        isLoadingAdded = false;
+        while (getItemCount() > 0) {
+            remove(getItem(0));
+        }
+    }
+
+    public void addLoadingFooter() {
+        isLoadingAdded = true;
+        places.add(new Place());
+    }
+
+    public void removeLoadingFooter() {
+        isLoadingAdded = false;
+
+        int position = places.size() - 1;
+        Place item = getItem(position);
+
+        if (item != null) {
+            places.remove(position);
+            notifyItemRemoved(position);
+        }
+    }
+
+    public Place getItem(int position) {
+        return places.get(position);
+    }
+
     public void getPhoto(final PlaceViewHolder placeViewHolder, String photo_reference) {
         // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(context);
@@ -120,49 +177,11 @@ public class RVAdapter_Place extends RecyclerView.Adapter<RecyclerView.ViewHolde
         queue.add(imageRequest);
     }
 
-    @Override
-    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
-        super.onAttachedToRecyclerView(recyclerView);
-    }
 
-        /*
-   Helpers
+    /*
+   View Holders
    _________________________________________________________________________________________________
     */
-
-    public void add(Place place) {
-        places.add(place);
-        notifyItemInserted(places.size() - 1);
-    }
-
-    public void addAll(List<Place> places) {
-        for (Place place : places) {
-            add(place);
-        }
-    }
-
-    public void addLoadingFooter() {
-        isLoadingAdded = true;
-        places.add(new Place());
-        notifyItemInserted(places.size() - 1);
-    }
-
-    public void removeLoadingFooter() {
-        isLoadingAdded = false;
-
-        int position = places.size() - 1;
-        Place item = getItem(position);
-
-        if (item != null) {
-            places.remove(position);
-            notifyItemRemoved(position);
-        }
-    }
-
-    public Place getItem(int position) {
-        return places.get(position);
-    }
-
 
     public static class PlaceViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private CardView cardView;
@@ -179,7 +198,7 @@ public class RVAdapter_Place extends RecyclerView.Adapter<RecyclerView.ViewHolde
             placeName = (TextView)itemView.findViewById(R.id.place_name);
             placeAddress = (TextView)itemView.findViewById(R.id.place_address);
             placeRating = (TextView)itemView.findViewById(R.id.place_rating);
-            placeImage = (ImageView) itemView.findViewById(R.id.place_image);
+            placeImage = (ImageView)itemView.findViewById(R.id.place_image);
             listenerRef = new WeakReference<>(listener);
 
             cardView.setOnClickListener(this);
