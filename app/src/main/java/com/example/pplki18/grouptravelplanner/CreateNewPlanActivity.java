@@ -2,30 +2,31 @@ package com.example.pplki18.grouptravelplanner;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
-import android.support.v4.view.GravityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
 import com.example.pplki18.grouptravelplanner.data.PlanContract;
-import com.example.pplki18.grouptravelplanner.utils.Plan;
+import com.example.pplki18.grouptravelplanner.utils.SessionManager;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
 
 public class CreateNewPlanActivity extends AppCompatActivity implements View.OnClickListener {
@@ -39,6 +40,8 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
     TextView date_month_year, day;
     ImageButton button_left, button_right, add_event, save_plan;
     Intent intent;
+    private SessionManager session;
+    private HashMap<String, String> user;
 
     private DatePickerDialog fromDatePickerDialog;
     private DatePickerDialog toDatePickerDialog;
@@ -47,6 +50,7 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
     private Date date_start;
     private Date date_end;
     private int plan_id;
+    private String plan_name;
 
     private LinearLayoutManager linearLayoutManager;
 
@@ -59,6 +63,8 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
         intent = getIntent();
         plan_id = intent.getIntExtra("plan_id", -1);
         databaseHelper = new DatabaseHelper(CreateNewPlanActivity.this);
+        session = new SessionManager(getApplicationContext());
+        user = session.getUserDetails();
 
         setSupportActionBar(new_plan_toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -108,23 +114,37 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
 
     @Override
     public void onBackPressed() {
-        AlertDialog box;
-        box = deleteConfirmation(plan_id);
-        box.show();
+
+        if (!trip_start_date.getText().toString().equals("Date") ||
+                !trip_end_date.getText().toString().equals("Date")) {
+            AlertDialog box;
+            box = exitConfirmation(plan_id);
+            box.show();
+        } else {
+            super.onBackPressed();
+        }
     }
 
-    private AlertDialog deleteConfirmation(final int plan_id) {
+    private AlertDialog exitConfirmation(final int plan_id) {
         AlertDialog myQuittingDialogBox = new AlertDialog.Builder(this)
                 //set message, title, and icon
                 .setTitle("Unsaved Changes")
                 .setMessage("Do you want to discard your new plan?")
-
-                .setPositiveButton("Discard", new DialogInterface.OnClickListener() {
+                .setNeutralButton("Discard", new DialogInterface.OnClickListener() {
 
                     public void onClick(DialogInterface dialog, int whichButton) {
                         //your deleting code
-                        deletePlan(plan_id);
+//                        deletePlan(plan_id);
                         CreateNewPlanActivity.this.finish();
+                    }
+
+                })
+
+                .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        //your saving code
+                        savePlanDialog();
                     }
 
                 })
@@ -140,39 +160,43 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
         return myQuittingDialogBox;
     }
 
-    private void deletePlan(int plan_id) {
-        SQLiteDatabase db = databaseHelper.getWritableDatabase();
-
-        String deleteQuery = "DELETE FROM " + PlanContract.PlanEntry.TABLE_NAME + " WHERE " +
-                PlanContract.PlanEntry._ID + " = " + plan_id;
-
-        db.execSQL(deleteQuery);
-        db.close();
-    }
+//    private void deletePlan(int plan_id) {
+//        SQLiteDatabase db = databaseHelper.getWritableDatabase();
+//
+//        String deleteQuery = "DELETE FROM " + PlanContract.PlanEntry.TABLE_NAME + " WHERE " +
+//                PlanContract.PlanEntry._ID + " = " + plan_id;
+//
+//        db.execSQL(deleteQuery);
+//        db.close();
+//    }
 
     private void setSavePlanButton() {
         save_plan.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if (trip_start_date.getText().toString().equals("Date") ||
-                                trip_end_date.getText().toString().equals("Date")) {
-                            saveAlertDialog();
-                        } else {
-                            savePlan();
-                            CreateNewPlanActivity.this.finish();
-                        }
+                        savePlanDialog();
                     }
                 }
         );
     }
 
+    private void savePlanDialog() {
+        if (trip_start_date.getText().toString().equals("Date") ||
+                trip_end_date.getText().toString().equals("Date")) {
+            saveAlertDialog();
+        } else {
+            askPlanNameDialog();
+        }
+    }
+
     private void saveAlertDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder
-                .setTitle("Date is not provided")
-                .setMessage("Please fill in your trip dates first!")
+                .setTitle("Missing required info")
+                .setMessage("Trip start date is required.\nTrip end date is required.")
                 .setCancelable(true)
+                .setIcon(R.drawable.ic_error_black_24dp)
                 .setNeutralButton("Ok", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         ;
@@ -182,7 +206,34 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
         alert.show();
     }
 
-    private void savePlan() {
+    private void askPlanNameDialog() {
+        final EditText edtText = new EditText(this);
+        plan_name = intent.getStringExtra("plan_name");
+        edtText.setText(plan_name);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder
+                .setMessage("Set your plan name!")
+                .setCancelable(false)
+                .setView(edtText)
+                .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        //your saving code
+                        plan_name = edtText.getText().toString();
+                        savePlanToDB(plan_name);
+                        CreateNewPlanActivity.this.finish();
+                    }
+
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        ;
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+    private void savePlanToDB(String plan_name_fix) {
         SQLiteDatabase db = databaseHelper.getWritableDatabase();
 
         plan_id = intent.getIntExtra("plan_id", -1);
@@ -190,13 +241,21 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
         String end_day = trip_end_date.getText().toString();
         int total_days = Integer.parseInt(trip_days.getText().toString());
 
-        String updateQuery = "UPDATE " + PlanContract.PlanEntry.TABLE_NAME + " SET " +
-                PlanContract.PlanEntry.COL_START_DAY + " = " + "\"" + start_day + "\", " +
-                PlanContract.PlanEntry.COL_END_DAY + " = " + "\"" + end_day + "\", " +
-                PlanContract.PlanEntry.COL_TOTAL_DAY + " = " + total_days + " WHERE " +
-                PlanContract.PlanEntry._ID + " = " + plan_id;
-        db.execSQL(updateQuery);
-        db.close();
+//        String updateQuery = "UPDATE " + PlanContract.PlanEntry.TABLE_NAME + " SET " +
+//                PlanContract.PlanEntry.COL_START_DAY + " = " + "\"" + start_day + "\", " +
+//                PlanContract.PlanEntry.COL_END_DAY + " = " + "\"" + end_day + "\", " +
+//                PlanContract.PlanEntry.COL_TOTAL_DAY + " = " + total_days + " WHERE " +
+//                PlanContract.PlanEntry._ID + " = " + plan_id;
+//        db.execSQL(updateQuery);
+//        db.close();
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(PlanContract.PlanEntry.COL_PLAN_NAME, plan_name_fix);
+        contentValues.put(PlanContract.PlanEntry.COL_USER_ID, user.get(SessionManager.KEY_ID));
+        contentValues.put(PlanContract.PlanEntry.COL_START_DAY, start_day);
+        contentValues.put(PlanContract.PlanEntry.COL_END_DAY, end_day);
+        contentValues.put(PlanContract.PlanEntry.COL_TOTAL_DAY, total_days);
+        long plan_id = db.insert(PlanContract.PlanEntry.TABLE_NAME, null, contentValues);
     }
 
     private void setAddEventButton() {

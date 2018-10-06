@@ -47,6 +47,7 @@ public class Fragment_PlanList extends Fragment {
     private List<Plan> plans;
     RVAdapter_Plan adapter;
     DatabaseHelper myDb;
+    Intent myIntent;
 
     @Nullable
     @Override
@@ -73,15 +74,15 @@ public class Fragment_PlanList extends Fragment {
             public void onClick(View view) {
 //                Toast.makeText(getActivity(), "Create New Plan",
 //                        Toast.LENGTH_LONG).show();
-                int plan_id = createNewPlan();
-                Intent myIntent = new Intent(getActivity(), CreateNewPlanActivity.class);
-                myIntent.putExtra("plan_id", plan_id);
+//                int plan_id = createNewPlan();
+//                myIntent.putExtra("plan_id", plan_id);
+                setPlanName();
                 Fragment_PlanList.this.startActivity(myIntent);
             }
         });
     }
 
-    public int createNewPlan() {
+    public void setPlanName() {
         SQLiteDatabase db = databaseHelper.getReadableDatabase();
 
         String query = "SELECT * FROM " + PlanEntry.TABLE_NAME + " WHERE " + PlanEntry.COL_USER_ID +
@@ -104,12 +105,27 @@ public class Fragment_PlanList extends Fragment {
             cursor.close();
         }
 
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(PlanEntry.COL_PLAN_NAME, planName);
-        contentValues.put(PlanEntry.COL_USER_ID, user.get(SessionManager.KEY_ID));
-        long plan_id = db.insert(PlanEntry.TABLE_NAME, null, contentValues);
+        myIntent.putExtra("plan_name", planName);
+//        ContentValues contentValues = new ContentValues();
+//        contentValues.put(PlanEntry.COL_PLAN_NAME, planName);
+//        contentValues.put(PlanEntry.COL_USER_ID, user.get(SessionManager.KEY_ID));
+//        long plan_id = db.insert(PlanEntry.TABLE_NAME, null, contentValues);
 
-        return (int)plan_id;
+//        return (int)plan_id;
+//        getLastId();
+    }
+
+    public void getLastId() {
+        SQLiteDatabase db = databaseHelper.getReadableDatabase();
+        long lastId = -1;
+        String query = "SELECT " + PlanEntry._ID + " FROM " + PlanEntry.TABLE_NAME + " ORDER BY " +
+                PlanEntry._ID + " DESC limit 1";
+
+        Cursor c = db.rawQuery(query, null);
+        if (c != null && c.moveToFirst()) {
+            lastId = c.getLong(0); //The 0 is the column index, we only have 1 column, so the index is 0
+        }
+        myIntent.putExtra("plan_id", lastId+1);
     }
 
     @Override
@@ -120,7 +136,7 @@ public class Fragment_PlanList extends Fragment {
         adapter = new RVAdapter_Plan(plans, getActivity());
         recyclerViewPlan.setAdapter(adapter);
         adapter.notifyDataSetChanged();
-}
+    }
 
     //Todo: refactor? exactly the same code as the one in CreateNewGroup
     private void populatePlanRecyclerView() {
@@ -188,5 +204,6 @@ public class Fragment_PlanList extends Fragment {
         user = session.getUserDetails();
         plans = getAllPlans();
         adapter = new RVAdapter_Plan(plans, getActivity());
+        myIntent = new Intent(getActivity(), CreateNewPlanActivity.class);
     }
 }

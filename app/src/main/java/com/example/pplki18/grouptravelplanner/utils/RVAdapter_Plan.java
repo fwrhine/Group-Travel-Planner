@@ -71,6 +71,13 @@ public class RVAdapter_Plan extends RecyclerView.Adapter<RVAdapter_Plan.PlanView
         final int position = i;
         final String name = plan.getPlan_name();
 
+        planViewHolder.cardView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+
         planViewHolder.planMenuButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
