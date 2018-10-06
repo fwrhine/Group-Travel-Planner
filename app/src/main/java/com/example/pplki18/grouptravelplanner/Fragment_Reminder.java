@@ -5,11 +5,13 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -21,13 +23,14 @@ import java.util.List;
 
 import static android.content.ContentValues.TAG;
 
-public class Fragment_Reminder extends Fragment {
+public class Fragment_Reminder extends Fragment implements NavigationView.OnNavigationItemSelectedListener{
 
     DatabaseHelper databaseHelper;
     private RecyclerView recyclerViewGroup;
     private LinearLayoutManager linearLayoutManager;
     private FloatingActionButton fab;
     List<Reminder> channelList;
+    Reminder r;
 
     @Nullable
     @Override
@@ -39,6 +42,10 @@ public class Fragment_Reminder extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         init();
+        r = new Reminder("2001/9/11", "New York", 0);
+//        r.setDate("2001/9/11");
+//        r.setDestination("New York");
+//        r.setChannel(0);
 
         //FAB: when clicked, open create new group interface
         fab.setOnClickListener(new View.OnClickListener() {
@@ -62,7 +69,8 @@ public class Fragment_Reminder extends Fragment {
         Log.d(TAG, "populateGroupRecyclerView: Displaying list of groups in the ListView.");
 
         //get data and append to list
-        List<Reminder> reminderList = getAllReminders();
+        List<Reminder> reminderList = new ArrayList<Reminder>();
+        reminderList.add(r);
         RVAdapter_Reminder adapter = new RVAdapter_Reminder(reminderList, getActivity());
         recyclerViewGroup.setAdapter(adapter);
     }
@@ -80,5 +88,10 @@ public class Fragment_Reminder extends Fragment {
         fab = getView().findViewById(R.id.fab2);
     }
 
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        return false;
+    }
 
 }

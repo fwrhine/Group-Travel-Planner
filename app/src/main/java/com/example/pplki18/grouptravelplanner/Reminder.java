@@ -25,6 +25,10 @@ public class Reminder {
         this.date = d;
     }
 
+    public void setChannel(Integer c) {
+        this.channel = c;
+    }
+
     //getters
     public String getDestination() {
         return destination;

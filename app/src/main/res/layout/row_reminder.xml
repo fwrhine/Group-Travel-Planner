@@ -27,10 +27,20 @@
             android:id="@+id/date_adap"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/user_image2"
             android:textSize="30sp"
-            android:layout_centerHorizontal="true"/>
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/destination_adap"
+                />
 
+            <Button
+                android:id="@+id/remove_notification"
+                android:text="DEL"
+                android:background="#D50000"
+                android:textColor="@android:color/white"
+                android:layout_margin="8dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true" />
 
         </RelativeLayout>
 
