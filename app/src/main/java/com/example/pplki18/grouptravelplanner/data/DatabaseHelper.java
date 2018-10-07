@@ -15,13 +15,8 @@ import com.example.pplki18.grouptravelplanner.data.UserContract.UserEntry;
 import com.example.pplki18.grouptravelplanner.data.GroupContract.GroupEntry;
 import com.example.pplki18.grouptravelplanner.data.UserGroupContract.UserGroupEntry;
 import com.example.pplki18.grouptravelplanner.data.FriendsContract.FriendsEntry;
-import com.example.pplki18.grouptravelplanner.data.PlanContract.RundownEntry;
-import com.example.pplki18.grouptravelplanner.data.HotelContract.HotelEntry;
-import com.example.pplki18.grouptravelplanner.data.RestaurantContract.RestaurantEntry;
-import com.example.pplki18.grouptravelplanner.data.EntertainmentContract.EntertainmentEntry;
-import com.example.pplki18.grouptravelplanner.data.FlightContract.FlightEntry;
-import com.example.pplki18.grouptravelplanner.data.TrainContract.TrainEntry;
-import com.example.pplki18.grouptravelplanner.data.OtherEventContract.OtherEventEntry;
+import com.example.pplki18.grouptravelplanner.data.PlanContract.PlanEntry;
+import com.example.pplki18.grouptravelplanner.data.EventContract.EventEntry;
 
 import java.io.ByteArrayOutputStream;
 
@@ -33,7 +28,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     /**
      * Database version. If you change the database schema, you must increment the database version.
      */
-    private static final int DATABASE_VERSION = 5;
+    private static final int DATABASE_VERSION = 6;
     private Context c2;
     /**
      * Constructs a new instance of {@link DatabaseHelper}.
@@ -95,92 +90,42 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + " REFERENCES " + UserEntry.TABLE_NAME + "(" + UserEntry._ID + "));";
 
         // String to create a table for plan table
-        String SQL_CREATE_PLAN_TABLE = "CREATE TABLE " + RundownEntry.TABLE_NAME + " ("
-                + RundownEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + RundownEntry.COL_PLAN_NAME + " TEXT UNIQUE NOT NULL, "
-                + RundownEntry.COL_USER_ID + " INTEGER, "
-                + RundownEntry.COL_START_DAY + " TEXT, "
-                + RundownEntry.COL_END_DAY + " TEXT, "
-                + RundownEntry.COL_TOTAL_DAY + " INTEGER, "
+        String SQL_CREATE_PLAN_TABLE = "CREATE TABLE " + PlanEntry.TABLE_NAME + " ("
+                + PlanEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + PlanEntry.COL_PLAN_NAME + " TEXT NOT NULL, "
+                + PlanEntry.COL_USER_ID + " INTEGER, "
+                + PlanEntry.COL_START_DAY + " TEXT, "
+                + PlanEntry.COL_END_DAY + " TEXT, "
+                + PlanEntry.COL_TOTAL_DAY + " INTEGER, "
 
-                + "FOREIGN KEY(" + RundownEntry.COL_USER_ID + ")"
+                + "FOREIGN KEY(" + PlanEntry.COL_USER_ID + ")"
                 + " REFERENCES " + UserEntry.TABLE_NAME + "(" + UserEntry._ID + "));";
 
-        String SQL_CREATE_HOTEL_TABLE = "CREATE TABLE " + HotelEntry.TABLE_NAME + " ("
-                + HotelEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + HotelEntry.COL_PLAN_ID + " INTEGER, "
-                + HotelEntry.COL_HOTEL_NAME + " TEXT, "
-                + HotelEntry.COL_HOTEL_LOCATION + " TEXT, "
-                + HotelEntry.COL_HOTEL_DESCRIPTION + " TEXT, "
-                + HotelEntry.COL_DATE_CHECK_IN + " TEXT, "
-                + HotelEntry.COL_DATE_CHECK_OUT + " TEXT, "
-                + HotelEntry.COL_TIME_CHECK_IN + " TEXT, "
-                + HotelEntry.COL_TIME_CHECK_OUT + " TEXT, "
+        String SQL_CREATE_EVENT_TABLE = "CREATE TABLE " + EventEntry.TABLE_NAME + " ("
+                + EventEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + EventEntry.COL_PLAN_ID + " INTEGER, "
+                + EventEntry.COL_TITLE + " TEXT, "
+                + EventEntry.COL_LOCATION + " TEXT, "
+                + EventEntry.COL_DESCRIPTION + " TEXT, "
+                + EventEntry.COL_DATE + " TEXT, "
+                + EventEntry.COL_TIME_START + " TEXT, "
+                + EventEntry.COL_TIME_END + " TEXT, "
+                + EventEntry.COL_PHONE + " TEXT, "
+                + EventEntry.COL_TYPE + " TEXT, "
 
-                + "FOREIGN KEY(" + HotelEntry.COL_PLAN_ID + ")"
-                + " REFERENCES " + RundownEntry.TABLE_NAME + "(" + RundownEntry._ID + "));";
+                + EventEntry.COL_ORIGIN + " TEXT, "
+                + EventEntry.COL_DESTINATION + " TEXT, "
+                + EventEntry.COL_DEPARTURE_TIME + " TEXT, "
+                + EventEntry.COL_ARRIVAL_TIME + " TEXT, "
+                + EventEntry.COL_TRANS_NUMBER + " TEXT, "
 
-        String SQL_CREATE_RESTAURANT_TABLE = "CREATE TABLE " + RestaurantEntry.TABLE_NAME + " ("
-                + RestaurantEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + RestaurantEntry.COL_PLAN_ID + " INTEGER, "
-                + RestaurantEntry.COL_RESTAURANT_NAME + " TEXT, "
-                + RestaurantEntry.COL_RESTAURANT_LOCATION + " TEXT, "
-                + RestaurantEntry.COL_RESTAURANT_DESCRIPTION + " TEXT, "
-                + RestaurantEntry.COL_DATE + " TEXT, "
-                + RestaurantEntry.COL_TIME + " TEXT, "
+                + EventEntry.COL_DATE_CHECK_IN + " TEXT, "
+                + EventEntry.COL_DATE_CHECK_OUT + " TEXT, "
+                + EventEntry.COL_TIME_CHECK_IN + " TEXT, "
+                + EventEntry.COL_TIME_CHECK_OUT + " TEXT, "
 
-                + "FOREIGN KEY(" + RestaurantEntry.COL_PLAN_ID + ")"
-                + " REFERENCES " + RundownEntry.TABLE_NAME + "(" + RundownEntry._ID + "));";
-
-        String SQL_CREATE_ENTERTAINMENT_TABLE = "CREATE TABLE " + EntertainmentEntry.TABLE_NAME + " ("
-                + EntertainmentEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + EntertainmentEntry.COL_PLAN_ID + " INTEGER, "
-                + EntertainmentEntry.COL_ENTERTAINMENT_NAME + " TEXT, "
-                + EntertainmentEntry.COL_ENTERTAINMENT_LOCATION + " TEXT, "
-                + EntertainmentEntry.COL_ENTERTAINMENT_DESCRIPTION + " TEXT, "
-                + EntertainmentEntry.COL_DATE + " TEXT, "
-                + EntertainmentEntry.COL_TIME + " TEXT, "
-
-                + "FOREIGN KEY(" + EntertainmentEntry.COL_PLAN_ID + ")"
-                + " REFERENCES " + RundownEntry.TABLE_NAME + "(" + RundownEntry._ID + "));";
-
-        String SQL_CREATE_FLIGHT_TABLE = "CREATE TABLE " + FlightEntry.TABLE_NAME + " ("
-                + FlightEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + FlightEntry.COL_PLAN_ID + " INTEGER, "
-                + FlightEntry.COL_FLIGHT_NAME + " TEXT, "
-                + FlightEntry.COL_FLIGHT_ORIGIN + " TEXT, "
-                + FlightEntry.COL_FLIGHT_DESTINATION + " TEXT, "
-                + FlightEntry.COL_FLIGHT_DESCRIPTION + " TEXT, "
-                + FlightEntry.COL_DATE + " TEXT, "
-                + FlightEntry.COL_TIME + " TEXT, "
-
-                + "FOREIGN KEY(" + FlightEntry.COL_PLAN_ID + ")"
-                + " REFERENCES " + RundownEntry.TABLE_NAME + "(" + RundownEntry._ID + "));";
-
-        String SQL_CREATE_TRAIN_TABLE = "CREATE TABLE " + TrainEntry.TABLE_NAME + " ("
-                + TrainEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + TrainEntry.COL_PLAN_ID + " INTEGER, "
-                + TrainEntry.COL_TRAIN_NAME + " TEXT, "
-                + TrainEntry.COL_TRAIN_ORIGIN + " TEXT, "
-                + TrainEntry.COL_TRAIN_DESTINATION + " TEXT, "
-                + TrainEntry.COL_TRAIN_DESCRIPTION + " TEXT, "
-                + TrainEntry.COL_DATE + " TEXT, "
-                + TrainEntry.COL_TIME + " TEXT, "
-
-                + "FOREIGN KEY(" + TrainEntry.COL_PLAN_ID + ")"
-                + " REFERENCES " + RundownEntry.TABLE_NAME + "(" + RundownEntry._ID + "));";
-
-        String SQL_CREATE_OTHER_EVENT_TABLE = "CREATE TABLE " + OtherEventEntry.TABLE_NAME + " ("
-                + OtherEventEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + OtherEventEntry.COL_PLAN_ID + " INTEGER, "
-                + OtherEventEntry.COL_OTHER_EVENT_NAME + " TEXT, "
-                + OtherEventEntry.COL_OTHER_EVENT_LOCATION + " TEXT, "
-                + OtherEventEntry.COL_OTHER_EVENT_DESCRIPTION + " TEXT, "
-                + OtherEventEntry.COL_DATE + " TEXT, "
-                + OtherEventEntry.COL_TIME + " TEXT, "
-
-                + "FOREIGN KEY(" + OtherEventEntry.COL_PLAN_ID + ")"
-                + " REFERENCES " + RundownEntry.TABLE_NAME + "(" + RundownEntry._ID + "));";
+                + "FOREIGN KEY(" + EventEntry.COL_PLAN_ID + ")"
+                + " REFERENCES " + PlanEntry.TABLE_NAME + "(" + PlanEntry._ID + "));";
 
         // Execute the SQL statements
         db.execSQL(SQL_CREATE_USER_TABLE);
@@ -188,12 +133,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(SQL_CREATE_IN_GROUP_REL);
         db.execSQL(SQL_CREATE_FRIENDS_REL);
         db.execSQL(SQL_CREATE_PLAN_TABLE);
-        db.execSQL(SQL_CREATE_HOTEL_TABLE);
-        db.execSQL(SQL_CREATE_RESTAURANT_TABLE);
-        db.execSQL(SQL_CREATE_ENTERTAINMENT_TABLE);
-        db.execSQL(SQL_CREATE_FLIGHT_TABLE);
-        db.execSQL(SQL_CREATE_TRAIN_TABLE);
-        db.execSQL(SQL_CREATE_OTHER_EVENT_TABLE);
+        db.execSQL(SQL_CREATE_EVENT_TABLE);
     }
 
     @Override
@@ -202,13 +142,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + GroupEntry.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + UserGroupEntry.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + FriendsEntry.TABLE_NAME);
-        db.execSQL("DROP TABLE IF EXISTS " + RundownEntry.TABLE_NAME);
-        db.execSQL("DROP TABLE IF EXISTS " + HotelEntry.TABLE_NAME);
-        db.execSQL("DROP TABLE IF EXISTS " + RestaurantEntry.TABLE_NAME);
-        db.execSQL("DROP TABLE IF EXISTS " + EntertainmentEntry.TABLE_NAME);
-        db.execSQL("DROP TABLE IF EXISTS " + FlightEntry.TABLE_NAME);
-        db.execSQL("DROP TABLE IF EXISTS " + TrainEntry.TABLE_NAME);
-        db.execSQL("DROP TABLE IF EXISTS " + OtherEventEntry.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + PlanEntry.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + EventEntry.TABLE_NAME);
         onCreate(db);
     }
 

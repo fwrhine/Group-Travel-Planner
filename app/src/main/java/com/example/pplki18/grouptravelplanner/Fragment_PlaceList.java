@@ -1,6 +1,5 @@
 package com.example.pplki18.grouptravelplanner;
 
-import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -37,7 +36,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 public class Fragment_PlaceList extends Fragment {
@@ -223,7 +221,7 @@ public class Fragment_PlaceList extends Fragment {
             @Override public void cardViewOnClick(View v, int position) {
                 Log.d("SELECTED PLACE ID", String.valueOf(places.get(position).getPlace_id()));
 
-                Intent intent = new Intent(getActivity(), Activity_Place.class);
+                Intent intent = new Intent(getActivity(), PlaceActivity.class);
                 intent.putExtra("PLACE_ID", String.valueOf(places.get(position).getPlace_id()));
                 startActivity(intent);
             }

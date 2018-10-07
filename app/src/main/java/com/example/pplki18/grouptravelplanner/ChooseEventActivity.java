@@ -23,7 +23,7 @@ import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.maps.model.LatLng;
 
-public class Activity_ChooseEvent extends AppCompatActivity {
+public class ChooseEventActivity extends AppCompatActivity {
 
     Toolbar toolbar;
     TabLayout tabLayout;
@@ -74,7 +74,7 @@ public class Activity_ChooseEvent extends AppCompatActivity {
                     Intent intent =
                             new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY)
                                     .setFilter(typeFilter)
-                                    .build(Activity_ChooseEvent.this);
+                                    .build(ChooseEventActivity.this);
                     startActivityForResult(intent, REGION_AUTOCOMPLETE_REQUEST_CODE);
                 } catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e) {
                     e.printStackTrace();

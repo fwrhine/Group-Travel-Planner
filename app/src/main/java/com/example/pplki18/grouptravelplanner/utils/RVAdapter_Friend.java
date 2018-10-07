@@ -1,4 +1,4 @@
-package com.example.pplki18.grouptravelplanner;
+package com.example.pplki18.grouptravelplanner.utils;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -11,8 +11,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.pplki18.grouptravelplanner.R;
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
-import com.example.pplki18.grouptravelplanner.utils.Friend;
 
 import java.util.List;
 
@@ -21,7 +21,7 @@ public class RVAdapter_Friend extends RecyclerView.Adapter<RVAdapter_Friend.Frie
     DatabaseHelper myDb;
     Context context;
 
-    RVAdapter_Friend(List<Friend> friend, Context context){
+    public RVAdapter_Friend(List<Friend> friend, Context context){
         this.friends = friend;
         this.context = context;
     }

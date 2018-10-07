@@ -37,7 +37,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Activity_Place extends AppCompatActivity {
+public class PlaceActivity extends AppCompatActivity {
     private static final String TAG = "RestaurantList";
 
     String place_id;
