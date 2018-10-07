@@ -36,13 +36,11 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
             case 1:
                 Fragment_PlaceList tab2 = newInstance("attractions");
                 return tab2;
-
-            case 2:
+            case 2: return new BookPlaneFragment();
+            case 3: return new BookTrainFragment();
+            case 4:
                 Fragment_CustomEvent tab3 = new Fragment_CustomEvent();
                 return tab3;
-            case 3: return new BookPlaneFragment();
-            case 4: return new BookTrainFragment();
-
             default:
                 return null;
         }
@@ -55,8 +53,11 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
 
     @Override    public CharSequence getPageTitle(int position) {
         switch (position) {
-            case 3: return "Airplane";
-            case 4: return "Train";
+            case 0: return "Restaurant";
+            case 1: return "Attraction";
+            case 2: return "Airplane";
+            case 3: return "Train";
+            case 4: return "Custom";
             default: return null;
         }
     }

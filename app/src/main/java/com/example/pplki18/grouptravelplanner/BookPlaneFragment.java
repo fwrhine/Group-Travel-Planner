@@ -1,5 +1,6 @@
 package com.example.pplki18.grouptravelplanner;
 
+import android.app.Dialog;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -8,9 +9,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -340,7 +343,55 @@ public class BookPlaneFragment extends Fragment {
         }
         Log.d("ALMOST", "Almost finished");
         FlightAdapter adapter = new FlightAdapter(this.getActivity(), availableFlights);
+
         listTravel.setAdapter(adapter);
+        listTravel.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+                final Dialog dialog = new Dialog(BookPlaneFragment.this.getActivity());
+
+                dialog.setContentView(R.layout.popup_booking);
+
+                dialog.show();
+
+                Button noButton = dialog.findViewById(R.id.noButton);
+                Button yesButton = dialog.findViewById(R.id.yesButton);
+
+                noButton.setOnClickListener(
+                        new View.OnClickListener() {
+
+                            @Override
+                            public void onClick(View view) {
+                                dialog.dismiss();
+                            }
+                        }
+                );
+
+                //TextView tvAirlineName = (TextView) view.findViewById(R.id.airlineName);
+                final TextView tvFlightNum = (TextView) view.findViewById(R.id.flightNumber);
+                //TextView tvDepartCity = (TextView) view.findViewById(R.id.departCity);
+                //TextView tvArriveCity = (TextView) view.findViewById(R.id.arriveCity);
+                //TextView tvDepartTime = (TextView) view.findViewById(R.id.departTime);
+                //TextView tvArriveTime = (TextView) view.findViewById(R.id.arriveTime);
+                //TextView tvPrice = (TextView) view.findViewById(R.id.price);
+
+                yesButton.setOnClickListener(
+                        new View.OnClickListener() {
+
+                            @Override
+                            public void onClick(View view) {
+
+                                Toast.makeText(BookPlaneFragment.this.getActivity(), "Selected Flight : "
+                                                + tvFlightNum.getText() , Toast.LENGTH_LONG).show();
+                                dialog.dismiss();
+                            }
+                        }
+                );
+
+
+            }
+        });
         Log.d("DONE", "ListView populated");
 
     }
