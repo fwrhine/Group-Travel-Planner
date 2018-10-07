@@ -37,6 +37,7 @@ public class BookPlaneFragment extends Fragment {
     Button searchButton;
 
     String token;
+    HashMap<String, String> availableAirports;
 
     RequestQueue queue;
     int countUpdate;
@@ -67,10 +68,36 @@ public class BookPlaneFragment extends Fragment {
         countUpdate = 0;
         queue = Volley.newRequestQueue(this.getActivity());
 
+        availableAirports = new HashMap<>();
+
         initSearch();
     }
 
     public void initSearch() {
+
+        String secretKey = "6c484049beacda6541bf40c90e62e8e5";
+        String tokenUrl = "https://api-sandbox.tiket.com/apiv1/payexpress"
+                + "?method=getToken&secretkey=" + secretKey + "&output=json";
+
+        generateToken(tokenUrl, new TokenCallback() {
+            @Override
+            public void onCallback(String tokenStr) {
+                token = tokenStr;
+
+                Log.d("TOKEN", token);
+
+                fillAirportList(new AirportCallback() {
+                    @Override
+                    public void onCallback(HashMap<String, String> map) {
+                        Log.d("MAP-FINAL", "map size: "+ map.size());
+                        availableAirports = map;
+                    }
+                });
+
+            }
+        });
+
+
 
         searchButton.setOnClickListener(
                 new View.OnClickListener() {
@@ -82,27 +109,37 @@ public class BookPlaneFragment extends Fragment {
                         }
 
                         // TODO CHANGE VAR NAME LATER M8
-                        final String start = origin.getText().toString();
-                        final String end = destination.getText().toString();
+                        String startLoc = origin.getText().toString();
+                        String endLoc = destination.getText().toString();
                         final String depart = departureYear.getText().toString()
                                 + "-" + departureMonth.getText().toString() + "-"
                                 + departureDay.getText().toString();
 
-                        String secretKey = "6c484049beacda6541bf40c90e62e8e5";
-                        String tokenUrl = "https://api-sandbox.tiket.com/apiv1/payexpress"
-                                + "?method=getToken&secretkey=" + secretKey + "&output=json";
-                        generateToken(tokenUrl, start, end, depart);
+                        Log.d("SIZE-MAP", availableAirports.size()+"");
+
+                        if(availableAirports.containsKey(startLoc)) {
+                            if(availableAirports.containsKey(endLoc)) {
+
+                                final String start = availableAirports.get(startLoc);
+                                final String end = availableAirports.get(endLoc);
+                                getFlightData(token, start, end, depart);
+
+                            }
+                            else {
+                                Log.d("NAME", "No Airports are in the arrival area");
+                            }
+
+                        }
+                        else {
+                            Log.d("NAME", "No Airports are in the departure area");
+                        }
+
                     }
                 }
         );
     }
 
-    public void setToken (String strToken) {
-        token = strToken;
-    }
-
-    public void generateToken(String url, final String start, final String end,
-                              final String depart) {
+    public void generateToken(String url, final TokenCallback callback) {
         // Request a string response from the provided URL.
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
@@ -112,9 +149,73 @@ public class BookPlaneFragment extends Fragment {
 
                         try {
                             JSONObject json = new JSONObject(response);
-                            String token = json.getString("token");
-                            getFlightData(token, start, end, depart);
-                            setToken(token);
+                            String strToken = json.getString("token");
+
+                            Log.d("TOKEN", strToken);
+
+                            token = strToken;
+
+                            callback.onCallback(token);
+
+                            Log.d("TOKEN", token);
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("ERROR", "API call fail");
+            }
+        });
+
+        queue.add(stringRequest);
+    }
+
+    public void fillAirportList(final AirportCallback callback) {
+
+        String url = "https://api-sandbox.tiket.com/flight_api/all_airport?token=" + token + "&output=json";
+
+        Log.d("FILL-MAP", "url -> " + url);
+
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+                        try {
+                            Log.d("FILL-MAP", "start -> " + response);
+                            JSONObject json = new JSONObject(response);
+
+                            JSONObject allAirport = json.getJSONObject("all_airport");
+
+                            JSONArray airportList = allAirport.getJSONArray("airport");
+
+                            HashMap<String, String> airportMap = new HashMap<>();
+
+                            for (int i = 0; i < airportList.length(); i++) {
+
+                                JSONObject airportData = airportList.getJSONObject(i);
+
+                                String airportLoc = airportData.getString("location_name");
+                                String airportCode = airportData.getString("airport_code");
+
+
+                                if (airportLoc.contains(" - ")) {
+                                    String[] splitLoc = airportLoc.split(" - ");
+                                    airportMap.put(splitLoc[1], airportCode);
+                                }
+
+                                else {
+                                    airportMap.put(airportLoc, airportCode);
+                                }
+                            }
+                            availableAirports = airportMap;
+
+                            callback.onCallback(availableAirports);
+
+                            Log.d("MAP", "map size: "+ airportMap.size());
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -136,6 +237,8 @@ public class BookPlaneFragment extends Fragment {
 
         String url = "http://api-sandbox.tiket.com/search/flight?d="
                 + start + "&a=" + end + "&date=" + depart + "&token=" + token + "&v=2&output=json";
+
+        Log.d("URL", url);
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
@@ -312,13 +415,13 @@ public class BookPlaneFragment extends Fragment {
         String startMonth = departureMonth.getText().toString();
         String startYear = departureYear.getText().toString();
 
-        if (startLoc.isEmpty() && startLoc.length() != 3) {
+        if (startLoc.isEmpty()) {
             Toast.makeText(BookPlaneFragment.this.getActivity(), "Please write the origin",
                     Toast.LENGTH_LONG).show();
             valid = false;
         }
 
-        else if (endLoc.isEmpty() && startLoc.length() != 3) {
+        else if (endLoc.isEmpty()) {
             Toast.makeText(BookPlaneFragment.this.getActivity(), "Please write the destination",
                     Toast.LENGTH_LONG).show();
             valid = false;
@@ -332,5 +435,13 @@ public class BookPlaneFragment extends Fragment {
         }
 
         return valid;
+    }
+
+    private interface AirportCallback {
+        void onCallback (HashMap<String, String> map);
+    }
+
+    private interface TokenCallback {
+        void onCallback (String tokenStr);
     }
 }

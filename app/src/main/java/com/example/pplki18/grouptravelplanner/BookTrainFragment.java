@@ -136,7 +136,7 @@ public class BookTrainFragment extends Fragment {
                               final String depart) {
         // Request a string response from the provided URL.
 
-        String url = "http://api-sandbox.tiket.com/search/train?d="
+        final String url = "http://api-sandbox.tiket.com/search/train?d="
                 + start + "&a=" + end + "&date=" + depart + "&token=" + token + "&output=json";
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
@@ -146,15 +146,16 @@ public class BookTrainFragment extends Fragment {
 
                         try {
                             JSONObject json = new JSONObject(response);
-                            Log.d("JSON", "there is response");
+                            Log.d("JSON", "there is response: " + response);
+                            Log.d("URL", url);
 
-                            String test = "{\"output_type\":\"json\",\"diagnostic\":{\"elapstime\":\"0.5343\",\"memoryusage\":\"5.16MB\",\"status\":\"200\",\"lang\":\"en\",\"currency\":\"IDR\"},\"search_queries\":{\"dep_station\":\"GMR\",\"arr_station\":\"BD\",\"date\":\"2012-06-03\",\"formatted_date\":\"03 June 2012\",\"train_class\":\"all\",\"count_adult\":\"1\",\"count_child\":\"0\",\"count_infant\":\"0\"},\"departures\":{\"result\":[{\"detail_availability\":\"90\",\"schedule_id\":\"3\",\"train_id\":\"IVHAN3\",\"train_name\":\"Argo Cantik\",\"departure_time\":\"17:00\",\"arrival_time\":\"19:30\",\"class_name\":\"bis\",\"subclass_name\":\"B\",\"is_promo\":0,\"price_adult\":\"56.000,00\",\"price_child\":\"46.000,00\",\"duration\":\"2 h 30 m\",\"price_infant\":\"3.000,00\"}]},\"token\":\"ebaa92ff1a060a7a5610b7159bd68b28\"}\n";
+                            //String test = "{\"output_type\":\"json\",\"diagnostic\":{\"elapstime\":\"0.5343\",\"memoryusage\":\"5.16MB\",\"status\":\"200\",\"lang\":\"en\",\"currency\":\"IDR\"},\"search_queries\":{\"dep_station\":\"GMR\",\"arr_station\":\"BD\",\"date\":\"2012-06-03\",\"formatted_date\":\"03 June 2012\",\"train_class\":\"all\",\"count_adult\":\"1\",\"count_child\":\"0\",\"count_infant\":\"0\"},\"departures\":{\"result\":[{\"detail_availability\":\"90\",\"schedule_id\":\"3\",\"train_id\":\"IVHAN3\",\"train_name\":\"Argo Cantik\",\"departure_time\":\"17:00\",\"arrival_time\":\"19:30\",\"class_name\":\"bis\",\"subclass_name\":\"B\",\"is_promo\":0,\"price_adult\":\"56.000,00\",\"price_child\":\"46.000,00\",\"duration\":\"2 h 30 m\",\"price_infant\":\"3.000,00\"}]},\"token\":\"ebaa92ff1a060a7a5610b7159bd68b28\"}\n";
 
-                            JSONObject testResponse = new JSONObject(test);
+                            //JSONObject testResponse = new JSONObject(test);
 
-                            if (!testResponse.isNull("departures")) {
+                            if (!json.isNull("departures")) {
                                 Log.d("TRUE", "there is train data");
-                                JSONObject results = testResponse.getJSONObject("departures");
+                                JSONObject results = json.getJSONObject("departures");
                                 JSONArray departure = results.getJSONArray("result");
                                 retrieveTrains(start, end, departure);
                             }
