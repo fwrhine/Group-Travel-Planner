@@ -3,6 +3,7 @@ package com.example.pplki18.grouptravelplanner.utils;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.provider.ContactsContract;
 import android.support.v7.widget.CardView;
@@ -20,20 +21,27 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.pplki18.grouptravelplanner.EditPlanActivity;
 import com.example.pplki18.grouptravelplanner.R;
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
 import com.example.pplki18.grouptravelplanner.data.PlanContract;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 
 public class RVAdapter_Plan extends RecyclerView.Adapter<RVAdapter_Plan.PlanViewHolder>{
 
     List<Plan> plans;
     Context context;
+    SimpleDateFormat dateFormatter1, dateFormatter2;
 
     public RVAdapter_Plan(List<Plan> plans, Context context) {
         this.plans = plans;
         this.context = context;
+        dateFormatter1 = new SimpleDateFormat("EEE, MMM d", Locale.US);
+        dateFormatter2 = new SimpleDateFormat("d MMMM yyyy", Locale.US);
     }
 
     @Override
@@ -50,7 +58,7 @@ public class RVAdapter_Plan extends RecyclerView.Adapter<RVAdapter_Plan.PlanView
 
     @Override
     public void onBindViewHolder(final RVAdapter_Plan.PlanViewHolder planViewHolder, int i) {
-        Plan plan = plans.get(i);
+        final Plan plan = plans.get(i);
         String total_day_str;
         int total_day = plan.getPlan_total_days();
         if (total_day == 1 || total_day == 0) {
@@ -58,7 +66,17 @@ public class RVAdapter_Plan extends RecyclerView.Adapter<RVAdapter_Plan.PlanView
         } else {
             total_day_str = " (" + total_day + " days trip)";
         }
-        String dateString = plan.getPlan_start_date() + " - " +plan.getPlan_end_date()
+
+        String start_date = plan.getPlan_start_date();
+        String end_date = plan.getPlan_end_date();
+        try {
+            start_date = dateFormatter1.format(dateFormatter2.parse(start_date));
+            end_date = dateFormatter1.format(dateFormatter2.parse(end_date));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        String dateString = start_date + " - " + end_date
                 + total_day_str;
         String createdString = "Modified: " + plan.getPlan_modified() + " / "
                 + "Created: " + plan.getPlan_created();
@@ -74,7 +92,13 @@ public class RVAdapter_Plan extends RecyclerView.Adapter<RVAdapter_Plan.PlanView
         planViewHolder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Intent intent = new Intent(context, EditPlanActivity.class);
+                intent.putExtra("plan_id", plan.getPlan_id());
+                intent.putExtra("plan_name", planViewHolder.planName.getText().toString());
+                intent.putExtra("plan_date_start", plan.getPlan_start_date());
+                intent.putExtra("plan_date_end", plan.getPlan_end_date());
+                intent.putExtra("plan_total_days", plan.getPlan_total_days());
+                context.startActivity(intent);
             }
         });
 

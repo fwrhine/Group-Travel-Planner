@@ -116,7 +116,7 @@ public class CreateNewGroupActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                List<User> result = searchUser(newText.toString());
+                List<User> result = searchUser(newText);
 
                 Log.d("QUERY", "START_SEARCH");
                 populateUserRecyclerView(result);

@@ -13,7 +13,7 @@
         android:layout_height="50dp">
 
         <android.support.v7.widget.Toolbar
-            android:id="@+id/new_plan_toolbar"
+            android:id="@+id/plan_toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="?attr/colorPrimary"

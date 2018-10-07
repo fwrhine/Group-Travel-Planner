@@ -48,7 +48,7 @@ public class Fragment_EventList extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        getActivity().setTitle("Event List");
+//        getActivity().setTitle("Event List");
         return inflater.inflate(R.layout.fragment_event_list, container, false);
     }
 

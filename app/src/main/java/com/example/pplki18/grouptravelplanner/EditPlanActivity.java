@@ -6,13 +6,12 @@ import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.DatePicker;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,17 +27,18 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 
-public class CreateNewPlanActivity extends AppCompatActivity implements View.OnClickListener {
+public class EditPlanActivity extends AppCompatActivity implements View.OnClickListener{
 
-    private static final String TAG = "CreateNewPlanActivity";
+    private static final String TAG = "EditPlanActivity";
 
     DatabaseHelper databaseHelper;
+    Intent intent;
+
     Toolbar plan_toolbar;
-    //    RecyclerView rvNewPlan;
     TextView trip_start_date, trip_end_date, trip_days;
     TextView date_month_year, day;
     ImageButton button_left, button_right, add_event, save_plan;
-    Intent intent;
+
     private SessionManager session;
     private HashMap<String, String> user;
 
@@ -48,47 +48,33 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
     private SimpleDateFormat dateFormatter2;
     private Date date_start;
     private Date date_end;
+    private Date date_start_temp;
+    private Date date_end_temp;
+
     private int plan_id;
-    private String plan_name;
+    private String from_intent_plan_name;
+    private String from_intent_end_date;
+    private String from_intent_start_date;
+    private int from_intent_total_day;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_plan);
-        findViewById();
 
-        intent = getIntent();
-        plan_id = intent.getIntExtra("plan_id", -1);
-        databaseHelper = new DatabaseHelper(CreateNewPlanActivity.this);
-        session = new SessionManager(getApplicationContext());
-        user = session.getUserDetails();
+        findViewById();
 
         setSupportActionBar(plan_toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        setTitle("Create Plan");
 
-//        rvNewPlan.setHasFixedSize(true);
-//        linearLayoutManager = new LinearLayoutManager(CreateNewPlanActivity.this);
-//        rvNewPlan.setLayoutManager(linearLayoutManager);
-
-//        populateEventRecyclerView();
-        dateFormatter1 = new SimpleDateFormat("EEE, MMM d", Locale.US);
-        dateFormatter2 = new SimpleDateFormat("d MMMM yyyy", Locale.US);
-
-        setAddEventButton();
-        setSavePlanButton();
-        setDateTimeField();
+        init();
     }
 
     public void findViewById() {
         plan_toolbar = (Toolbar) findViewById(R.id.plan_toolbar);
 
-//        rvNewPlan = (RecyclerView) findViewById(R.id.rvNewPlan);
-
-//        trip_start_label = (TextView) findViewById(R.id.trip_start_label);
         trip_start_date = (TextView) findViewById(R.id.trip_start_date);
-//        trip_end_label = (TextView) findViewById(R.id.trip_end_label);
         trip_end_date = (TextView) findViewById(R.id.trip_end_date);
         trip_days = (TextView) findViewById(R.id.trip_days);
 
@@ -101,6 +87,48 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
         save_plan = (ImageButton) findViewById(R.id.save_plan);
     }
 
+    public void init() {
+        dateFormatter1 = new SimpleDateFormat("EEE, MMM d", Locale.US);
+        dateFormatter2 = new SimpleDateFormat("d MMMM yyyy", Locale.US);
+
+        intent = getIntent();
+        plan_id = intent.getIntExtra("plan_id", -1);
+        databaseHelper = new DatabaseHelper(EditPlanActivity.this);
+        session = new SessionManager(getApplicationContext());
+        user = session.getUserDetails();
+
+        from_intent_plan_name = intent.getStringExtra("plan_name");
+        from_intent_end_date = intent.getStringExtra("plan_date_end");
+        from_intent_start_date = intent.getStringExtra("plan_date_start");
+        from_intent_total_day = intent.getIntExtra("plan_total_days", -1);
+        setTitle(from_intent_plan_name);
+
+        save_plan.setImageDrawable(getResources().getDrawable(R.drawable.ic_more_vert_white_24dp));
+
+        try {
+            date_start = dateFormatter2.parse(from_intent_start_date);
+            date_start_temp = date_start;
+            date_end = dateFormatter2.parse(from_intent_end_date);
+            date_end_temp = date_end;
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        trip_start_date.setText(dateFormatter1.format(date_start));
+        trip_start_date.setTextColor(getResources().getColor(R.color.colorBlack));
+        trip_end_date.setText(dateFormatter1.format(date_end));
+        trip_end_date.setTextColor(getResources().getColor(R.color.colorBlack));
+        trip_days.setText(from_intent_total_day + "");
+        setDateTimeField();
+
+        try {
+            setDateChanger();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        setAddEventButton();
+    }
+
     @Override
     public boolean onSupportNavigateUp() {
         onBackPressed();
@@ -109,37 +137,39 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
 
     @Override
     public void onBackPressed() {
-
-        if (!trip_start_date.getText().toString().equals("Date") ||
-                !trip_end_date.getText().toString().equals("Date")) {
+        Log.d("dateeeeee", dateFormatter1.format(date_start));
+        Log.d("dateeeeee", dateFormatter1.format(date_end));
+        if (!trip_start_date.getText().toString().equals(dateFormatter1.format(date_start)) ||
+                !trip_end_date.getText().toString().equals(dateFormatter1.format(date_end))) {
             AlertDialog box;
             box = exitConfirmation();
             box.show();
         } else {
-            super.onBackPressed();
+            this.finish();
         }
     }
 
     public AlertDialog exitConfirmation() {
         AlertDialog myQuittingDialogBox = new AlertDialog.Builder(this)
                 //set message, title, and icon
-                .setTitle("Unsaved Changes")
-                .setMessage("Do you want to discard your new plan?")
+                .setTitle("Trip Date Changed")
+                .setMessage("Do you want to change your trip dates?")
                 .setNeutralButton("Discard", new DialogInterface.OnClickListener() {
 
                     public void onClick(DialogInterface dialog, int whichButton) {
                         //your deleting code
 //                        deletePlan(plan_id);
-                        CreateNewPlanActivity.this.finish();
+                        EditPlanActivity.this.finish();
                     }
 
                 })
 
-                .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                .setPositiveButton("Change", new DialogInterface.OnClickListener() {
 
                     public void onClick(DialogInterface dialog, int whichButton) {
                         //your saving code
-                        savePlanDialog();
+                        updatePlanDate();
+                        EditPlanActivity.this.finish();
                     }
 
                 })
@@ -155,94 +185,32 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
         return myQuittingDialogBox;
     }
 
-//    private void deletePlan(int plan_id) {
-//        SQLiteDatabase db = databaseHelper.getWritableDatabase();
-//
-//        String deleteQuery = "DELETE FROM " + PlanContract.PlanEntry.TABLE_NAME + " WHERE " +
-//                PlanContract.PlanEntry._ID + " = " + plan_id;
-//
-//        db.execSQL(deleteQuery);
-//        db.close();
-//    }
-
-    private void setSavePlanButton() {
+    private void setMoreButton() {
         save_plan.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        savePlanDialog();
+                        updatePlanDate();
                     }
                 }
         );
     }
 
-    private void savePlanDialog() {
-        if (trip_start_date.getText().toString().equals("Date") ||
-                trip_end_date.getText().toString().equals("Date")) {
-            saveAlertDialog();
-        } else {
-            askPlanNameDialog();
-        }
-    }
-
-    private void saveAlertDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder
-                .setTitle("Missing required info")
-                .setMessage("Trip start date is required.\nTrip end date is required.")
-                .setCancelable(true)
-                .setIcon(R.drawable.ic_error_black_24dp)
-                .setNeutralButton("Ok", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        ;
-                    }
-                });
-        AlertDialog alert = builder.create();
-        alert.show();
-    }
-
-    private void askPlanNameDialog() {
-        final EditText edtText = new EditText(this);
-        plan_name = intent.getStringExtra("plan_name");
-        edtText.setText(plan_name);
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder
-                .setMessage("Set your plan name!")
-                .setCancelable(false)
-                .setView(edtText)
-                .setPositiveButton("Save", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        //your saving code
-                        plan_name = edtText.getText().toString();
-                        savePlanToDB(plan_name);
-                        CreateNewPlanActivity.this.finish();
-                    }
-
-                })
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        ;
-                    }
-                });
-        AlertDialog alert = builder.create();
-        alert.show();
-    }
-
-    private void savePlanToDB(String plan_name_fix) {
+    private void updatePlanDate() {
         SQLiteDatabase db = databaseHelper.getWritableDatabase();
 
-        plan_id = intent.getIntExtra("plan_id", -1);
-        String start_day = dateFormatter2.format(date_start);
-        String end_day = dateFormatter2.format(date_end);
+        String start_day = dateFormatter2.format(date_start_temp);
+        String end_day = dateFormatter2.format(date_end_temp);
         int total_days = Integer.parseInt(trip_days.getText().toString());
+        String updateQuery = "UPDATE " + PlanContract.PlanEntry.TABLE_NAME + " SET " +
+                PlanContract.PlanEntry.COL_START_DAY + " = " + "\"" + start_day + "\", " +
+                PlanContract.PlanEntry.COL_END_DAY + " = " + "\"" + end_day + "\", " +
+                PlanContract.PlanEntry.COL_TOTAL_DAY + " = " + total_days + " WHERE " +
+                PlanContract.PlanEntry._ID + " = " + plan_id;
+        Log.d("updateQuery", updateQuery);
+        db.execSQL(updateQuery);
+        db.close();
 
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(PlanContract.PlanEntry.COL_PLAN_NAME, plan_name_fix);
-        contentValues.put(PlanContract.PlanEntry.COL_USER_ID, user.get(SessionManager.KEY_ID));
-        contentValues.put(PlanContract.PlanEntry.COL_START_DAY, start_day);
-        contentValues.put(PlanContract.PlanEntry.COL_END_DAY, end_day);
-        contentValues.put(PlanContract.PlanEntry.COL_TOTAL_DAY, total_days);
-        long plan_id = db.insert(PlanContract.PlanEntry.TABLE_NAME, null, contentValues);
     }
 
     private void setAddEventButton() {
@@ -256,75 +224,10 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
 //                        myIntent.putExtra("date", date);
 //
 //                        CreateNewPlanActivity.this.startActivity(myIntent);
-                        Toast.makeText(CreateNewPlanActivity.this, "Add Event", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(EditPlanActivity.this, "Add Event", Toast.LENGTH_SHORT).show();
                     }
                 }
         );
-    }
-
-    private void setDateTimeField() {
-        trip_start_date.setOnClickListener(this);
-        trip_end_date.setOnClickListener(this);
-
-        Calendar newCalendar = Calendar.getInstance();
-        fromDatePickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
-
-            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                Calendar newDate = Calendar.getInstance();
-                newDate.set(year, monthOfYear, dayOfMonth);
-                date_start = newDate.getTime();
-                trip_start_date.setText(dateFormatter1.format(date_start));
-                trip_start_date.setTextColor(getResources().getColor(R.color.colorBlack));
-                //toDatePickerDialog.getDatePicker().setMinDate(newDate.getTimeInMillis()); // trying to limit trip end date
-                //picker from date start
-
-                if (!trip_start_date.getText().toString().equals("Date") &&
-                        !trip_end_date.getText().toString().equals("Date")) {
-                    try {
-                        long diff = date_end.getTime() - date_start.getTime();
-                        long total_days = diff / (24 * 60 * 60 * 1000) + 2;
-                        trip_days.setText(total_days + "");
-                        intent.putExtra("date", date_start);
-                        setDateChanger();
-                        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_timeline_activity,
-                                new Fragment_EventList()).commit();
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        },newCalendar.get(Calendar.YEAR), newCalendar.get(Calendar.MONTH), newCalendar.get(Calendar.DAY_OF_MONTH));
-
-        toDatePickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
-
-            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                Calendar newDate = Calendar.getInstance();
-                newDate.set(year, monthOfYear, dayOfMonth);
-                date_end = newDate.getTime();
-                trip_end_date.setText(dateFormatter1.format(date_end));
-                trip_end_date.setTextColor(getResources().getColor(R.color.colorBlack));
-
-                Log.d("testtttt", (!trip_start_date.getText().toString().equals("Date") &&
-                        !trip_end_date.getText().toString().equals("Date")) + "");
-                if (!trip_start_date.getText().toString().equals("Date") &&
-                        !trip_end_date.getText().toString().equals("Date")) {
-                    try {
-                        long diff = date_end.getTime() - date_start.getTime();
-                        long total_days = diff / (24 * 60 * 60 * 1000) + 1;
-                        trip_days.setText(total_days + "");
-                        intent.putExtra("date", date_start);
-                        setDateChanger();
-                        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_timeline_activity,
-                                new Fragment_EventList()).commit();
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        },newCalendar.get(Calendar.YEAR), newCalendar.get(Calendar.MONTH), newCalendar.get(Calendar.DAY_OF_MONTH));
-
-        fromDatePickerDialog.getDatePicker().setMinDate(newCalendar.getTimeInMillis());
-        toDatePickerDialog.getDatePicker().setMinDate(newCalendar.getTimeInMillis());
     }
 
     @Override
@@ -336,8 +239,64 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
         }
     }
 
+    public void setDateTimeField() {
+        trip_start_date.setOnClickListener(this);
+        trip_end_date.setOnClickListener(this);
+
+        Calendar newCalendar = Calendar.getInstance();
+        fromDatePickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
+
+            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                Calendar newDate = Calendar.getInstance();
+                newDate.set(year, monthOfYear, dayOfMonth);
+                date_start_temp = newDate.getTime();
+                trip_start_date.setText(dateFormatter1.format(date_start_temp));
+                trip_start_date.setTextColor(getResources().getColor(R.color.colorBlack));
+
+                try {
+                    long diff = date_end_temp.getTime() - date_start_temp.getTime();
+                    long total_days = diff / (24 * 60 * 60 * 1000) + 2;
+                    trip_days.setText(total_days + "");
+                    intent.putExtra("date", date_start_temp);
+                    setDateChanger();
+                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment_timeline_activity,
+                            new Fragment_EventList()).commit();
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            }
+        },newCalendar.get(Calendar.YEAR), newCalendar.get(Calendar.MONTH), newCalendar.get(Calendar.DAY_OF_MONTH));
+
+        toDatePickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
+
+            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                Calendar newDate = Calendar.getInstance();
+                newDate.set(year, monthOfYear, dayOfMonth);
+                date_end_temp = newDate.getTime();
+                trip_end_date.setText(dateFormatter1.format(date_end_temp));
+                trip_end_date.setTextColor(getResources().getColor(R.color.colorBlack));
+
+                try {
+                    long diff = date_end_temp.getTime() - date_start_temp.getTime();
+                    long total_days = diff / (24 * 60 * 60 * 1000) + 1;
+                    trip_days.setText(total_days + "");
+                    intent.putExtra("date", date_start_temp);
+                    setDateChanger();
+                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment_timeline_activity,
+                            new Fragment_EventList()).commit();
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        },newCalendar.get(Calendar.YEAR), newCalendar.get(Calendar.MONTH), newCalendar.get(Calendar.DAY_OF_MONTH));
+
+        fromDatePickerDialog.getDatePicker().setMinDate(newCalendar.getTimeInMillis());
+        toDatePickerDialog.getDatePicker().setMinDate(newCalendar.getTimeInMillis());
+    }
+
     public void setDateChanger() throws ParseException {
-        date_month_year.setText(dateFormatter2.format(date_start));
+        date_month_year.setText(dateFormatter2.format(date_start.getTime()));
         date_month_year.setTextColor(getResources().getColor(R.color.colorBlack));
         day.setText(new SimpleDateFormat("EEEE").format(date_start));
         day.setTextColor(getResources().getColor(R.color.colorBlack));
@@ -356,6 +315,10 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
         Date cur_date = dateFormatter2.parse(date_month_year.getText().toString());
         final Calendar c_cur_date = Calendar.getInstance();
         c_cur_date.setTime(cur_date);
+
+        intent.putExtra("date", c_cur_date.getTime());
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_timeline_activity,
+                new Fragment_EventList()).commit();
 
         button_left.setOnClickListener(
                 new View.OnClickListener() {
@@ -412,6 +375,8 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
                     }
                 }
         );
-    }
 
+
+
+    }
 }
