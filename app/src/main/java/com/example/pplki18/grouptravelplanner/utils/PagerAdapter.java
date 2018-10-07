@@ -9,6 +9,10 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.util.Log;
 
+import com.example.pplki18.grouptravelplanner.BookPlaneFragment;
+import com.example.pplki18.grouptravelplanner.BookTrainFragment;
+
+
 import com.example.pplki18.grouptravelplanner.Fragment_CustomEvent;
 import com.example.pplki18.grouptravelplanner.Fragment_PlaceList;
 import com.google.android.gms.maps.model.LatLng;
@@ -31,14 +35,16 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
 
         switch (position) {
+
             case 0:
                 Fragment_PlaceList tab1 = newInstance("restaurants");
                 return tab1;
             case 1:
                 Fragment_PlaceList tab2 = newInstance("attractions");
                 return tab2;
-            case 2:
-                Fragment_CustomEvent tab3 = new Fragment_CustomEvent();
+            case 2: return new BookPlaneFragment();
+            case 3: return new BookTrainFragment();
+            case 4: Fragment_CustomEvent tab3 = new Fragment_CustomEvent();
                 return tab3;
             default:
                 return null;
@@ -48,6 +54,17 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
     @Override
     public int getCount() {
         return mNumOfTabs;
+    }
+
+    @Override    public CharSequence getPageTitle(int position) {
+        switch (position) {
+            case 0: return "Restaurant";
+            case 1: return "Attraction";
+            case 2: return "Airplane";
+            case 3: return "Train";
+            case 4: return "Custom";
+            default: return null;
+        }
     }
 
     public Fragment_PlaceList newInstance(String type) {
@@ -69,4 +86,5 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
 
         return myFragment;
     }
+
 }

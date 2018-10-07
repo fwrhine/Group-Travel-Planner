@@ -9,13 +9,16 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
 import com.example.pplki18.grouptravelplanner.data.GroupContract;
@@ -70,6 +73,7 @@ public class Fragment_GroupList extends Fragment implements NavigationView.OnNav
 
         //get data and append to list
         List<Group> groups = getAllGroups();
+
         RVAdapter_Group adapter = new RVAdapter_Group(groups, getActivity());
         recyclerViewGroup.setAdapter(adapter);
     }
@@ -94,9 +98,7 @@ public class Fragment_GroupList extends Fragment implements NavigationView.OnNav
                 group.setGroup_image(c.getBlob(c.getColumnIndex(GroupContract.GroupEntry.COL_GROUP_IMAGE)));
 
                 List<String> members = getAllGroupMember(c.getString(c.getColumnIndex(GroupContract.GroupEntry._ID)));
-//                List<byte[]> memberPics = getAllGroupMemberPic(c.getString(c.getColumnIndex(UserContract.UserEntry.COL_PICTURE)));
                 group.setGroup_members(members);
-//                group.setGroup_memberPics(memberPics);
 
                 // adding to group list
                 groups.add(group);
@@ -129,32 +131,6 @@ public class Fragment_GroupList extends Fragment implements NavigationView.OnNav
             do {
                 members.add(c.getString(c.getColumnIndex(UserContract.UserEntry.COL_FULLNAME)));
             } while (c.moveToNext());
-        }
-
-        return members;
-    }
-
-    public List<byte[]> getAllGroupMemberPic(String group_id) {
-        List<byte[]> members = new ArrayList<byte[]>();
-        int max = 4;
-        String selectQuery = "SELECT  * FROM " + GroupContract.GroupEntry.TABLE_NAME + " g, "
-                + UserContract.UserEntry.TABLE_NAME + " u, " + UserGroupContract.UserGroupEntry.TABLE_NAME
-                + " ug WHERE g." + GroupContract.GroupEntry._ID + " = '" + group_id + "'" + " AND g."
-                + GroupContract.GroupEntry._ID + " = " + "ug." + UserGroupContract.UserGroupEntry.COL_GROUP_ID
-                + " AND u." + UserGroupContract.UserGroupEntry._ID + " = " + "ug."
-                + UserGroupContract.UserGroupEntry.COL_USER_ID;
-
-        Log.e("USERGROUP", selectQuery);
-
-        SQLiteDatabase db = databaseHelper.getReadableDatabase();
-        Cursor c = db.rawQuery(selectQuery, null);
-
-        // looping through all rows and adding to list
-        if (c.moveToFirst()) {
-            do {
-                members.add(c.getBlob(c.getColumnIndex(UserContract.UserEntry.COL_PICTURE)));
-                max--;
-            } while (c.moveToNext() && max > 0);
         }
 
         return members;

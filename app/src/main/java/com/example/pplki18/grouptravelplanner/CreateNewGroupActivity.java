@@ -142,7 +142,7 @@ public class CreateNewGroupActivity extends AppCompatActivity {
     //Todo: refactor? exactly the same code as the one in CreateNewGroup
     private void populateUserRecyclerView(final List<User> users) {
         Log.d(TAG, "populateUserRecyclerView: Displaying list of groups in the ListView.");
-    // TODO user_adapter????????
+
         RVAdapter_User adapter = new RVAdapter_User(users, user_ids, new RVAdapter_User.ClickListener() {
             @Override public void onClick(View v, int position) {
                 ImageView button = (ImageView) v.findViewById(R.id.button);

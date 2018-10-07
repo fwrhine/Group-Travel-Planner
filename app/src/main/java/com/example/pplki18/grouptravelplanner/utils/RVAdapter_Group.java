@@ -1,6 +1,8 @@
 package com.example.pplki18.grouptravelplanner.utils;
 
+import android.app.Activity;
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v7.widget.CardView;
@@ -12,12 +14,18 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.pplki18.grouptravelplanner.R;
+import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
+import com.example.pplki18.grouptravelplanner.utils.SessionManager;
+
+import org.w3c.dom.Text;
 
 import java.util.List;
 
 public class RVAdapter_Group extends RecyclerView.Adapter<RVAdapter_Group.GroupViewHolder>{
 
     List<Group> groups;
+    DatabaseHelper myDb;
+    SessionManager sessionManager;
     Context context;
 
     public RVAdapter_Group(List<Group> groups, Context context){
@@ -56,26 +64,10 @@ public class RVAdapter_Group extends RecyclerView.Adapter<RVAdapter_Group.GroupV
         db.execSQL(getFirstUserImg);
         groupViewHolder.memberImg1.setImageBitmap();*/
 
-/*        groupViewHolder.memberImg1.setImageResource(R.drawable.user_pic);
+        groupViewHolder.memberImg1.setImageResource(R.drawable.user_pic);
         groupViewHolder.memberImg2.setImageResource(R.drawable.user_pic);
         groupViewHolder.memberImg3.setImageResource(R.drawable.user_pic);
-        groupViewHolder.memberImg4.setImageResource(R.drawable.user_pic);*/
-
-//        byte[] member1 = groups.get(i).getGroup_memberPics().get(0);
-//        byte[] member2 = groups.get(i).getGroup_memberPics().get(0);
-//        byte[] member3 = groups.get(i).getGroup_memberPics().get(0);
-//        byte[] member4 = groups.get(i).getGroup_memberPics().get(0);
-//        Bitmap bmp1 = BitmapFactory.decodeByteArray(member1, 0, byteArray.length);
-//        Bitmap bmp2 = BitmapFactory.decodeByteArray(member2, 0, byteArray.length);
-//        Bitmap bmp3 = BitmapFactory.decodeByteArray(member3, 0, byteArray.length);
-//        Bitmap bmp4 = BitmapFactory.decodeByteArray(member4, 0, byteArray.length);
-//
-//        String memberSize = "" + groups.get(i).getGroup_members().size();
-//
-//        groupViewHolder.memberImg1.setImageBitmap(bmp1);
-//        groupViewHolder.memberImg2.setImageBitmap(bmp2);
-//        groupViewHolder.memberImg3.setImageBitmap(bmp3);
-//        groupViewHolder.memberImg4.setImageBitmap(bmp4);
+        groupViewHolder.memberImg4.setImageResource(R.drawable.user_pic);
     }
 
     @Override

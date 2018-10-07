@@ -23,7 +23,7 @@ import com.example.pplki18.grouptravelplanner.data.PlanContract;
 import com.example.pplki18.grouptravelplanner.data.PlanContract.PlanEntry;
 import com.example.pplki18.grouptravelplanner.data.UserContract;
 import com.example.pplki18.grouptravelplanner.utils.Event;
-import com.example.pplki18.grouptravelplanner.utils.Plan;
+//import com.example.pplki18.grouptravelplanner.utils.Plan;
 import com.example.pplki18.grouptravelplanner.utils.RVAdapter_NewPlan;
 import com.example.pplki18.grouptravelplanner.utils.RVAdapter_Plan;
 
