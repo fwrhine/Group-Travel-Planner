@@ -340,13 +340,10 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
         day.setText(new SimpleDateFormat("EEEE").format(date_start));
         day.setTextColor(getResources().getColor(R.color.colorBlack));
 
-        button_left.setEnabled(false);
-        button_right.setEnabled(false);
-//        button_right.setBackgroundResource(R.drawable.ripple_oval);
-
         Date start_pin = dateFormatter2.parse(dateFormatter2.format(date_start));
         final Calendar c_start_pin = Calendar.getInstance();
         c_start_pin.setTime(start_pin);
+
         Date end_pin = dateFormatter2.parse(dateFormatter2.format(date_end));
         final Calendar c_end_pin = Calendar.getInstance();
         c_end_pin.setTime(end_pin);
@@ -355,16 +352,15 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
         final Calendar c_cur_date = Calendar.getInstance();
         c_cur_date.setTime(cur_date);
 
-//        button_left.setEnabled(false);
-//
         if (c_cur_date.getTime().getTime() != c_end_pin.getTime().getTime()) {
             button_right.setEnabled(true);
             button_right.setBackgroundResource(R.drawable.ripple_oval);
+        } else {
+            button_right.setEnabled(false);
+            button_right.setBackgroundResource(R.drawable.ripple_oval_off);
+            button_left.setEnabled(false);
+            button_left.setBackgroundResource(R.drawable.ripple_oval_off);
         }
-//        else {
-//            button_right.setEnabled(true);
-//            button_right.setBackgroundResource(R.drawable.ripple_oval);
-//        }
 
         button_left.setOnClickListener(
                 new View.OnClickListener() {
