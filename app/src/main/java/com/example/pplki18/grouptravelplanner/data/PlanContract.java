@@ -18,6 +18,7 @@ public class PlanContract {
 
         public static final String _ID = BaseColumns._ID;
         public static final String COL_PLAN_NAME = "plan_name";
+        public static final String COL_DESCRIPTION = "plan_description";
         public static final String COL_USER_ID = "user_id";
         public static final String COL_TOTAL_DAY = "total_day";
         public static final String COL_START_DAY = "start_day";

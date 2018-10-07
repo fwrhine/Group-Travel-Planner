@@ -162,6 +162,7 @@ public class Fragment_PlanList extends Fragment {
             do {
                 Plan plan = new Plan();
                 plan.setPlan_name((c.getString(c.getColumnIndex(PlanEntry.COL_PLAN_NAME))));
+                plan.setPlan_overview(c.getString(c.getColumnIndex(PlanEntry.COL_DESCRIPTION)));
                 plan.setPlan_start_date((c.getString(c.getColumnIndex(PlanEntry.COL_START_DAY))));
                 plan.setPlan_end_date((c.getString(c.getColumnIndex(PlanEntry.COL_END_DAY))));
                 plan.setPlan_total_days((c.getInt(c.getColumnIndex(PlanEntry.COL_TOTAL_DAY))));
@@ -171,26 +172,6 @@ public class Fragment_PlanList extends Fragment {
                 plans.add(plan);
             } while (c.moveToNext());
         }
-
-        Plan plan = new Plan();
-        plan.setPlan_name("Sample Plan");
-        plan.setPlan_start_date("Mon, 1 Oct");
-        plan.setPlan_end_date("Mon, 8 Oct");
-        plan.setPlan_total_days(7);
-        plan.setPlan_overview("Mon, 1 Oct (09:00): Soekarno-Hatta International Airport\n" + "...");
-        plan.setPlan_modified("Sep 29, 2018");
-        plan.setPlan_created("Sep 29, 2018");
-        plans.add(plan);
-
-        Plan plan2 = new Plan();
-        plan2.setPlan_name("Sample Plan 2");
-        plan2.setPlan_start_date("Mon, 1 Oct");
-        plan2.setPlan_end_date("Mon, 8 Oct");
-        plan2.setPlan_total_days(7);
-        plan2.setPlan_overview("Mon, 1 Oct (09:00): Soekarno-Hatta International Airport\n" + "...");
-        plan2.setPlan_modified("Sep 29, 2018");
-        plan2.setPlan_created("Sep 29, 2018");
-        plans.add(plan2);
 
         return plans;
     }
