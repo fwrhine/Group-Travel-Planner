@@ -251,7 +251,7 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
                     @Override
                     public void onClick(View view) {
                         String date = date_month_year.getText().toString();
-//                        Intent myIntent = new Intent(CreateNewPlanActivity.this, Activity_ChooseEvent.class);
+//                        Intent myIntent = new Intent(CreateNewPlanActivity.this, ChooseEventActivity.class);
 //                        myIntent.putExtra("plan_id", intent.getStringExtra("plan_id"));
 //                        myIntent.putExtra("date", date);
 //
