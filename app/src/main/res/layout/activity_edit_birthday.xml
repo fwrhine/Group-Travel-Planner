@@ -23,7 +23,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:elevation="8dp"
-                app:navigationIcon="@drawable/ic_navigate_before_black_24dp">
+                app:navigationIcon="@drawable/ic_navigate_before_green_24dp">
 
                 <ImageButton
                     android:id="@+id/save_birthday_button"
@@ -34,7 +34,7 @@
                     android:layout_marginEnd="10dp"
                     android:backgroundTint="@color/colorWhite"
                     android:clickable="true"
-                    android:src="@drawable/ic_check_black_24dp"/>
+                    android:src="@drawable/ic_check_green_24dp"/>
 
             </android.support.v7.widget.Toolbar>
 

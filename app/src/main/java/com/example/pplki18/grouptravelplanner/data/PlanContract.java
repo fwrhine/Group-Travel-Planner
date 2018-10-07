@@ -11,7 +11,7 @@ public class PlanContract {
     /**
      * Inner class that defines constant values for the plan table.
      */
-    public static final class RundownEntry implements BaseColumns {
+    public static final class PlanEntry implements BaseColumns {
 
         /** Name of database table for user-friend relation */
         public static final String TABLE_NAME = "plans";

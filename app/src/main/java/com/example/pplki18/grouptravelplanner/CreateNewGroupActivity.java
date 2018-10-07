@@ -43,8 +43,8 @@ import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class Activity_CreateNewGroup extends AppCompatActivity {
-    private static final String TAG = "Activity_CreateNewGroup";
+public class CreateNewGroupActivity extends AppCompatActivity {
+    private static final String TAG = "CreateNewGroupActivity";
 
     DatabaseHelper databaseHelper;
     private Button btnCreate;
@@ -97,8 +97,8 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
 //                    Log.d("CURRENT ID", currId + Integer.parseInt(currId));
                     user_ids.add(Integer.parseInt(currId));
                     CreateGroup(newGroup, user_ids);
-                    Intent myIntent = new Intent(Activity_CreateNewGroup.this, Activity_InGroup.class);
-                    Activity_CreateNewGroup.this.startActivity(myIntent);
+                    Intent myIntent = new Intent(CreateNewGroupActivity.this, InGroupActivity.class);
+                    CreateNewGroupActivity.this.startActivity(myIntent);
 
 //                    //empty name and image input
 //                    editText.setText("");
@@ -116,7 +116,7 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                List<User> result = searchUser(newText.toString());
+                List<User> result = searchUser(newText);
 
                 Log.d("QUERY", "START_SEARCH");
                 populateUserRecyclerView(result);
@@ -222,7 +222,7 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
 
                 } catch (IOException e) {
                     e.printStackTrace();
-                    Toast.makeText(Activity_CreateNewGroup.this, "Failed!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(CreateNewGroupActivity.this, "Failed!", Toast.LENGTH_SHORT).show();
                 }
             }
 

@@ -42,11 +42,10 @@
         <activity android:name=".UserProfileActivity" />
         <activity android:name=".SearchBarActivity" />
         <activity
-            android:name=".Activity_InGroup"
+            android:name=".InGroupActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-
-            android:name=".Activity_CreateNewGroup"
+            android:name=".CreateNewGroupActivity"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <meta-data
@@ -55,7 +54,9 @@
 
         <activity android:name=".EditPhoneNoActivity" />
         <activity android:name=".EditBirthdayActivity" />
-        <activity android:name=".Activity_InHome"></activity>
+        <activity android:name=".InHomeActivity" />
+        <activity android:name=".CreateNewPlanActivity" />
+        <activity android:name=".EditPlanActivity"></activity>
     </application>
 
 </manifest>
