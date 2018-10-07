@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
+import com.example.pplki18.grouptravelplanner.Fragment_CustomEvent;
 import com.example.pplki18.grouptravelplanner.Fragment_PlaceList;
 import com.google.android.gms.maps.model.LatLng;
 
@@ -30,6 +31,9 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
             case 1:
                 Fragment_PlaceList tab2 = newInstance("attractions");
                 return tab2;
+            case 2:
+                Fragment_CustomEvent tab3 = new Fragment_CustomEvent();
+                return tab3;
             default:
                 return null;
         }

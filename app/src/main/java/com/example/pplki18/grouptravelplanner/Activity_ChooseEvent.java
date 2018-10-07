@@ -91,6 +91,7 @@ public class Activity_ChooseEvent extends AppCompatActivity {
 
         tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_restaurant));
         tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_sunny));
+        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_add_white));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
 
@@ -98,6 +99,7 @@ public class Activity_ChooseEvent extends AppCompatActivity {
                 (getSupportFragmentManager(), tabLayout.getTabCount(), sessionManager.getCurrentRegion(), regionCoor);
 
         viewPager.setAdapter(adapter);
+        viewPager.setOffscreenPageLimit(2);
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
