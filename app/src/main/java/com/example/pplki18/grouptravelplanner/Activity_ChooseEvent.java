@@ -1,17 +1,12 @@
 package com.example.pplki18.grouptravelplanner;
 
 import android.content.Intent;
-import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -27,8 +22,6 @@ import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.maps.model.LatLng;
-
-import org.w3c.dom.Text;
 
 public class Activity_ChooseEvent extends AppCompatActivity {
 
@@ -137,33 +130,6 @@ public class Activity_ChooseEvent extends AppCompatActivity {
             }
         });
 
-//        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-//            @Override
-//            public boolean onQueryTextSubmit(String query) {
-//
-//                return false;
-//            }
-//
-//            @Override
-//            public boolean onQueryTextChange(String newText) {
-//                try {
-//                    AutocompleteFilter typeFilter = new AutocompleteFilter.Builder()
-//                            .setTypeFilter(AutocompleteFilter.TYPE_FILTER_REGIONS)
-//                            .build();
-//
-//                    Intent intent =
-//                            new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY)
-//                                    .setFilter(typeFilter)
-//                                    .setBoundsBias(region_bounds)
-//                                    .build(Activity_ChooseEvent.this);
-//                    startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
-//                } catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e) {
-//                    e.printStackTrace();
-//                }
-//
-//                return true;
-//            }
-//        });
     }
 
     @Override
@@ -172,40 +138,6 @@ public class Activity_ChooseEvent extends AppCompatActivity {
         sessionManager.setCurrentRegion("Jakarta");
         return true;
     }
-
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        MenuInflater inflater = getMenuInflater();
-//        inflater.inflate(R.menu.choose_event, menu);
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        switch (item.getItemId()) {
-//            case R.id.action_search:
-//                try {
-//                    AutocompleteFilter typeFilter = new AutocompleteFilter.Builder()
-//                            .setTypeFilter(AutocompleteFilter.TYPE_FILTER_REGIONS)
-//                            .build();
-//
-//                    Intent intent =
-//                            new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY)
-//                                    .setFilter(typeFilter)
-//                                    .build(Activity_ChooseEvent.this);
-//                    startActivityForResult(intent, REGION_AUTOCOMPLETE_REQUEST_CODE);
-//                } catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e) {
-//                    e.printStackTrace();
-//                }
-//
-//                return true;
-//
-//            default:
-//                // If we got here, the user's action was not recognized.
-//                // Invoke the superclass to handle it.
-//                return super.onOptionsItemSelected(item);
-//        }
-//    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

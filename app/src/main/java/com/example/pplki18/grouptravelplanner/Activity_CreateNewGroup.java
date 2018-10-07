@@ -222,7 +222,7 @@ public class Activity_CreateNewGroup extends AppCompatActivity {
 
                 } catch (IOException e) {
                     e.printStackTrace();
-                    Toast.makeText(Activity_CreateNewGroup.this, "Failed!", Toast.LENGTH_SHORT).show();
+                    toastMessage("Failed!");
                 }
             }
 

@@ -10,6 +10,7 @@ public class Place {
 //    String opening_hours;
     String website;
     String photo;
+    String url;
 
 
     public Place() {
@@ -44,6 +45,10 @@ public class Place {
         this.photo = photo;
     }
 
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
     public String getPlace_id() {
         return place_id;
     }
@@ -71,6 +76,11 @@ public class Place {
     public String getPhoto() {
         return photo;
     }
+
+    public String getUrl() {
+        return url;
+    }
+
 
     @Override
     public String toString() {

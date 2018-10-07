@@ -1,13 +1,16 @@
 package com.example.pplki18.grouptravelplanner;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.Image;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -20,6 +23,10 @@ import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.pplki18.grouptravelplanner.utils.Place;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.location.places.AutocompleteFilter;
+import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -40,6 +47,7 @@ public class Activity_Place extends AppCompatActivity {
     TextView phone;
     TextView website;
     ImageView image;
+    Button google_button;
 //    ProgressBar progressBar;
 
     @Override
@@ -57,7 +65,7 @@ public class Activity_Place extends AppCompatActivity {
         // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(this);
         String url = "https://maps.googleapis.com/maps/api/place/details/json?placeid="
-                + place_id + "&fields=name,formatted_address,rating,formatted_phone_number,photo,opening_hours,website&key="
+                + place_id + "&fields=name,formatted_address,rating,formatted_phone_number,photo,opening_hours,website,url&key="
                 + getString(R.string.api_key);
 
 
@@ -91,11 +99,11 @@ public class Activity_Place extends AppCompatActivity {
             place.setAddress(results.optString("formatted_address"));
             place.setPhone_number(results.optString("formatted_phone_number"));
             place.setWebsite(results.optString("website"));
+            place.setUrl(results.optString("url"));
 
             JSONArray photos = results.getJSONArray("photos");
 
             JSONObject first = new JSONObject(photos.get(0).toString());
-            Log.d("PHOTOS", first.optString("photo_reference"));
 
             place.setPhoto(first.optString("photo_reference"));
 
@@ -107,12 +115,19 @@ public class Activity_Place extends AppCompatActivity {
         return place;
     }
 
-    public void populatePlaceView(Place place) {
+    public void populatePlaceView(final Place place) {
         title.setText(place.getName());
         rating.setText(place.getRating() + "/5");
         address.setText(place.getAddress());
         phone.setText(place.getPhone_number());
         website.setText(place.getWebsite());
+        google_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(place.getUrl()));
+                startActivity(browserIntent);
+            }
+        });
 
         Log.d("populate", place.getPhoto());
         getPhoto(place.getPhoto());
@@ -152,6 +167,7 @@ public class Activity_Place extends AppCompatActivity {
         phone = (TextView) findViewById(R.id.phone);
         website = (TextView) findViewById(R.id.website);
         image = (ImageView) findViewById(R.id.image);
+        google_button = (Button) findViewById(R.id.google_button);
 //        progressBar = (ProgressBar) findViewById(R.id.progress);
     }
 }

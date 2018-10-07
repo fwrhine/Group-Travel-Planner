@@ -1,10 +1,13 @@
 package com.example.pplki18.grouptravelplanner;
 
+import android.app.TimePickerDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,6 +18,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -32,6 +37,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class Fragment_PlaceList extends Fragment {
@@ -214,12 +220,37 @@ public class Fragment_PlaceList extends Fragment {
         Log.d("POPULATE LIST", "Displaying list of places.");
 
         RVAdapter_Place.ClickListener clickListener = new RVAdapter_Place.ClickListener() {
-            @Override public void onClick(View v, int position) {
+            @Override public void cardViewOnClick(View v, int position) {
                 Log.d("SELECTED PLACE ID", String.valueOf(places.get(position).getPlace_id()));
 
                 Intent intent = new Intent(getActivity(), Activity_Place.class);
                 intent.putExtra("PLACE_ID", String.valueOf(places.get(position).getPlace_id()));
                 startActivity(intent);
+            }
+
+            @Override public void addImageOnClick(View v, int position) {
+
+                setTime();
+//                // Get Current Time
+//                final Calendar c = Calendar.getInstance();
+//                int currentHour = c.get(Calendar.HOUR_OF_DAY);
+//                int currentMinute = c.get(Calendar.MINUTE);
+//
+//                // Launch Time Picker Dialog
+//                final TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(),
+//                        new TimePickerDialog.OnTimeSetListener() {
+//
+//                            @Override
+//                            public void onTimeSet(TimePicker view, int hourOfDay,
+//                                                  int minute) {
+//
+//                                toastMessage(hourOfDay + ":" + minute);
+//                            }
+//                        }, currentHour, currentMinute, false);
+//
+//
+//                timePickerDialog.setTitle("what");
+//                timePickerDialog.show();
             }
         };
 
@@ -230,6 +261,38 @@ public class Fragment_PlaceList extends Fragment {
         recyclerViewPlace.setAdapter(adapter);
 
         if (!isLastPage) adapter.addLoadingFooter();
+    }
+
+
+    public void setTime() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogLayout = inflater.inflate(R.layout.set_time_dialog, null);
+        final TimePicker startTime = dialogLayout.findViewById(R.id.start_time);
+        final TimePicker endTime = dialogLayout.findViewById(R.id.end_time);
+
+        builder.setTitle("Set time");
+        builder.setView(dialogLayout);
+
+        builder.setPositiveButton("OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        toastMessage("Start " + startTime.getCurrentHour() + ":" + startTime.getCurrentMinute()
+                                + " End " + endTime.getCurrentHour() + ":" + endTime.getCurrentMinute());
+                    }
+                });
+        builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+               dialog.cancel();
+            }
+        });
+        builder.show();
+    }
+
+
+
+    private void toastMessage(String message) {
+        Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
     }
 
     private void init() {

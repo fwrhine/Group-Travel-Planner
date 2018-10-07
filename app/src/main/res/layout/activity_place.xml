@@ -30,6 +30,7 @@
             app:layout_constraintEnd_toEndOf="parent" />
 
         <android.support.constraint.ConstraintLayout
+            android:id="@+id/constraintLayout"
             android:layout_width="367dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
@@ -64,7 +65,8 @@
                 android:layout_marginEnd="4dp"
                 android:layout_marginTop="18dp"
                 android:src="@drawable/ic_add"
-                app1:layout_constraintEnd_toEndOf="parent" />
+                app1:layout_constraintEnd_toEndOf="parent"
+                app1:layout_constraintLeft_toRightOf="@+id/title" />
 
             <ImageView
                 android:id="@+id/ic_location"
@@ -123,6 +125,18 @@
                 app1:layout_constraintTop_toBottomOf="@+id/website" />
 
         </android.support.constraint.ConstraintLayout>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/google_button"
+            android:layout_marginTop="40dp"
+            app1:layout_constraintEnd_toEndOf="parent"
+            app1:layout_constraintStart_toStartOf="parent"
+            android:text="Open in Google"
+            android:drawableRight="@drawable/ic_google"
+            android:drawablePadding="5dp"
+            app1:layout_constraintTop_toBottomOf="@+id/constraintLayout" />
 
     </android.support.constraint.ConstraintLayout>
 </ScrollView>

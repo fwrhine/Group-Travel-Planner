@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.Image;
+import android.provider.ContactsContract;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -66,7 +67,7 @@ public class RVAdapter_Place extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int i) {
+    public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, final int i) {
 
         switch (getItemViewType(i)) {
             case ITEM:
@@ -74,6 +75,12 @@ public class RVAdapter_Place extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 placeViewHolder.placeName.setText(places.get(i).getName());
                 placeViewHolder.placeAddress.setText(places.get(i).getAddress());
                 placeViewHolder.placeRating.setText(String.valueOf(places.get(i).getRating()) + "/5");
+                placeViewHolder.addIcon.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        listener.addImageOnClick(v, i);
+                    }
+                });
 
                 if (places.get(i).getPhoto() != null) {
                     getPhoto(placeViewHolder, places.get(i).getPhoto());
@@ -189,6 +196,7 @@ public class RVAdapter_Place extends RecyclerView.Adapter<RecyclerView.ViewHolde
         private TextView placeAddress;
         private TextView placeRating;
         private ImageView placeImage;
+        private ImageView addIcon;
         private WeakReference<ClickListener> listenerRef;
 
 
@@ -199,6 +207,8 @@ public class RVAdapter_Place extends RecyclerView.Adapter<RecyclerView.ViewHolde
             placeAddress = (TextView)itemView.findViewById(R.id.place_address);
             placeRating = (TextView)itemView.findViewById(R.id.place_rating);
             placeImage = (ImageView)itemView.findViewById(R.id.place_image);
+            addIcon = (ImageView)itemView.findViewById(R.id.ic_add);
+
             listenerRef = new WeakReference<>(listener);
 
             cardView.setOnClickListener(this);
@@ -207,7 +217,7 @@ public class RVAdapter_Place extends RecyclerView.Adapter<RecyclerView.ViewHolde
         // onClick Listener for view
         @Override
         public void onClick(View v) {
-            listenerRef.get().onClick(v, getAdapterPosition());
+            listenerRef.get().cardViewOnClick(v, getAdapterPosition());
         }
 
     }
@@ -220,7 +230,8 @@ public class RVAdapter_Place extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     public interface ClickListener {
-        void onClick(View v, int position);
+        void cardViewOnClick(View v, int position);
+        void addImageOnClick(View v, int position);
     }
 }
 

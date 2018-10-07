@@ -72,6 +72,7 @@
             android:value="@string/api_key" />
 
         <activity android:name=".Activity_Place"></activity>
+
     </application>
 
 </manifest>
