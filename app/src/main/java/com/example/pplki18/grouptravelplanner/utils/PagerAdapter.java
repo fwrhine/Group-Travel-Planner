@@ -1,9 +1,13 @@
 package com.example.pplki18.grouptravelplanner.utils;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.util.Log;
 
 import com.example.pplki18.grouptravelplanner.BookPlaneFragment;
 import com.example.pplki18.grouptravelplanner.BookTrainFragment;
@@ -17,12 +21,14 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
     int mNumOfTabs;
     String region;
     LatLng region_coor;
+    Bundle bundle;
 
-    public PagerAdapter(FragmentManager fm, int NumOfTabs, String region, LatLng region_coor) {
+    public PagerAdapter(FragmentManager fm, int NumOfTabs, String region, LatLng region_coor, Bundle bundle) {
         super(fm);
         this.mNumOfTabs = NumOfTabs;
         this.region = region;
         this.region_coor = region_coor;
+        this.bundle = bundle;
     }
 
     @Override
@@ -69,6 +75,12 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
         args.putString("REGION", region);
         args.putString("LATITUDE", String.valueOf(region_coor.latitude));
         args.putString("LONGITUDE", String.valueOf(region_coor.longitude));
+
+        int plan_id = bundle.getInt("plan_id");
+        String date = bundle.getString("date");
+//        Log.d("PLANID", plan_id+ "");
+        args.putInt("plan_id", plan_id);
+        args.putString("date", date);
 
         myFragment.setArguments(args);
 

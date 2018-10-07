@@ -43,6 +43,8 @@ public class Fragment_EventList extends Fragment {
     private LinearLayoutManager linearLayoutManager;
     private Intent intent;
     private SimpleDateFormat dateFormatter;
+    private List<Event> events;
+    RVAdapter_NewPlan adapter;
     DatabaseHelper myDb;
 
     @Nullable
@@ -64,6 +66,17 @@ public class Fragment_EventList extends Fragment {
         populateEventRecyclerView(date);
     }
 
+    @Override
+    public void onResume() {  // After a pause OR at startup
+        Log.d("RESUME", "masuk resume");
+        super.onResume();
+        Date date = (Date) intent.getExtras().get("date");
+        events = getAllEvents(date);
+        adapter = new RVAdapter_NewPlan(events, getActivity());
+        rvNewPlan.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
+    }
+
     //Todo: refactor? exactly the same code as the one in CreateNewGroup
     private void populateEventRecyclerView(Date date) {
         Log.d(TAG, "populateEventRecyclerView: Displaying list of events in the ListView.");
@@ -81,9 +94,10 @@ public class Fragment_EventList extends Fragment {
         List<Event> events = new ArrayList<Event>();
         int plan_id = getActivity().getIntent().getIntExtra("plan_id", 0);
         String str_cur_date = dateFormatter.format(cur_date);
+        Log.d("CUR_DATE", str_cur_date);
 
         String selectQuery = "SELECT * FROM " + EventContract.EventEntry.TABLE_NAME +
-                " WHERE " + PlanContract.PlanEntry._ID + " = " + plan_id + " AND " + "( " +
+                " WHERE " + EventContract.EventEntry.COL_PLAN_ID + " = " + plan_id + " AND " + "( " +
                 EventContract.EventEntry.COL_DATE + " = " + "\"" + str_cur_date + "\"" + " OR " +
                 EventContract.EventEntry.COL_DATE_CHECK_IN + " = " + "\"" + str_cur_date + "\"" + " OR " +
                 EventContract.EventEntry.COL_DATE_CHECK_OUT + " = " + "\"" + str_cur_date + "\"" + " OR " +
@@ -101,100 +115,21 @@ public class Fragment_EventList extends Fragment {
                 String time_start = c.getString(c.getColumnIndex(EventContract.EventEntry.COL_TIME_START));
                 String time_end = c.getString(c.getColumnIndex(EventContract.EventEntry.COL_TIME_END));
                 String type = c.getString(c.getColumnIndex(EventContract.EventEntry.COL_TYPE));
+                String description = c.getString(c.getColumnIndex(EventContract.EventEntry.COL_DESCRIPTION));
 
                 try {
                     Date time1 = format.parse(time_start);
                     Date time2 = format.parse(time_end);
                     Event event = new Event(title, time1, time2, type);
-
-                    String total_time = event.getTotal_time();
-
-//                List<byte[]> memberPics = getAllGroupMemberPic(c.getString(c.getColumnIndex(UserContract.UserEntry.COL_PICTURE)));
-//                group.setGroup_memberPics(memberPics);
-
-                    // adding to group list
+                    event.setDescription(description);
+//                    if (event.getDate().equals(str_cur_date)){
                     events.add(event);
+//                    }
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             } while (c.moveToNext());
-        }
-
-        try {
-            List<Event> temp = new ArrayList<>();
-            Event event = new Event();
-            Event event2 = new Event();
-            Event event3 = new Event();
-            Event event4 = new Event();
-            Event event5 = new Event();
-            Event event6 = new Event();
-            Event event7 = new Event();
-            Event event8 = new Event();
-
-            event.setTitle("Sample Event 1");
-            event.setTime_start(format.parse("08:00"));
-            event.setTime_end(format.parse("10:00"));
-            event.setDate("5 October 2018");
-            event.setType("others");
-
-            event2.setTitle("Sample Event 2");
-            event2.setTime_start(format.parse("11:15"));
-            event2.setTime_end(format.parse("13:30"));
-            event2.setDate("5 October 2018");
-            event2.setType("others");
-
-            event3.setTitle("Sample Event 2");
-            event3.setTime_start(format.parse("11:15"));
-            event3.setTime_end(format.parse("13:30"));
-            event3.setDate("6 October 2018");
-            event3.setType("others");
-
-            event4.setTitle("Sample Event 2");
-            event4.setTime_start(format.parse("11:15"));
-            event4.setTime_end(format.parse("13:30"));
-            event4.setDate("6 October 2018");
-            event4.setType("others");
-
-            event5.setTitle("Sample Event 2");
-            event5.setTime_start(format.parse("11:15"));
-            event5.setTime_end(format.parse("13:30"));
-            event5.setDate("6 October 2018");
-            event5.setType("others");
-
-            event6.setTitle("Sample Event 2");
-            event6.setTime_start(format.parse("11:15"));
-            event6.setTime_end(format.parse("13:30"));
-            event6.setDate("7 October 2018");
-            event6.setType("others");
-
-            event7.setTitle("Sample Event 2");
-            event7.setTime_start(format.parse("11:15"));
-            event7.setTime_end(format.parse("13:30"));
-            event7.setDate("8 October 2018");
-            event7.setType("others");
-
-            event8.setTitle("Sample Event 2");
-            event8.setTime_start(format.parse("11:15"));
-            event8.setTime_end(format.parse("13:30"));
-            event8.setDate("8 October 2018");
-            event8.setType("others");
-
-            temp.add(event);
-            temp.add(event2);
-            temp.add(event3);
-            temp.add(event4);
-            temp.add(event5);
-            temp.add(event6);
-            temp.add(event7);
-            temp.add(event8);
-
-            for(Event e : temp) {
-                if (e.getDate().equals(str_cur_date)){
-                    events.add(e);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
 
         return events;

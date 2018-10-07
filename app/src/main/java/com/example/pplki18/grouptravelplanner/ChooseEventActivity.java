@@ -33,6 +33,7 @@ public class ChooseEventActivity extends AppCompatActivity {
     TextView textRegion;
     LinearLayout pickDestination;
 //    SearchView searchView;
+    Bundle plan_bundle;
 
     LatLng regionCoor;
 
@@ -100,8 +101,10 @@ public class ChooseEventActivity extends AppCompatActivity {
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
 
+
         final PagerAdapter adapter = new PagerAdapter
-                (getSupportFragmentManager(), tabLayout.getTabCount(), sessionManager.getCurrentRegion(), regionCoor);
+                (getSupportFragmentManager(), tabLayout.getTabCount(),
+                        sessionManager.getCurrentRegion(), regionCoor, plan_bundle);
 
         viewPager.setAdapter(adapter);
         viewPager.setOffscreenPageLimit(2);
@@ -159,7 +162,8 @@ public class ChooseEventActivity extends AppCompatActivity {
 //                region_bounds = builder.build();
 
                 final PagerAdapter adapter = new PagerAdapter
-                        (getSupportFragmentManager(), tabLayout.getTabCount(), sessionManager.getCurrentRegion(), regionCoor);
+                        (getSupportFragmentManager(), tabLayout.getTabCount(),
+                                sessionManager.getCurrentRegion(), regionCoor, plan_bundle);
 
                 viewPager.setAdapter(adapter);
                 Log.d("COOR", regionCoor.toString());
@@ -200,6 +204,6 @@ public class ChooseEventActivity extends AppCompatActivity {
         regionCoor = new LatLng(-6.17511, 106.8650395);
         sessionManager = new SessionManager(getApplicationContext());
         sessionManager.setCurrentRegion("Jakarta");
-
+        plan_bundle = getIntent().getExtras();
     }
 }
