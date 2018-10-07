@@ -123,11 +123,13 @@ public class BookPlaneFragment extends Fragment {
                                 getFlightData(token, start, end, depart);
                             }
                             else {
-                                Log.d("NAME", "No Airports are in the arrival area");
+                                Toast.makeText(BookPlaneFragment.this.getActivity(), "No Airports are in the arrival area",
+                                        Toast.LENGTH_LONG).show();
                             }
                         }
                         else {
-                            Log.d("NAME", "No Airports are in the departure area");
+                            Toast.makeText(BookPlaneFragment.this.getActivity(), "No Airports are in the departure area",
+                                    Toast.LENGTH_LONG).show();
                         }
                     }
                 }
@@ -314,7 +316,7 @@ public class BookPlaneFragment extends Fragment {
         completeFlightData(startLoc, endLoc, flightConnect);
     }
 
-    public void completeFlightData (String startLoc, String endLoc,
+    public void completeFlightData (final String startLoc, String endLoc,
                                     HashMap<String, ArrayList<String>> map) {
 
         Log.d("FILL", "Start filling list");
@@ -368,13 +370,11 @@ public class BookPlaneFragment extends Fragment {
                         }
                 );
 
-                //TextView tvAirlineName = (TextView) view.findViewById(R.id.airlineName);
                 final TextView tvFlightNum = (TextView) view.findViewById(R.id.flightNumber);
-                //TextView tvDepartCity = (TextView) view.findViewById(R.id.departCity);
-                //TextView tvArriveCity = (TextView) view.findViewById(R.id.arriveCity);
-                //TextView tvDepartTime = (TextView) view.findViewById(R.id.departTime);
-                //TextView tvArriveTime = (TextView) view.findViewById(R.id.arriveTime);
-                //TextView tvPrice = (TextView) view.findViewById(R.id.price);
+                //final TextView tvDepartCity = (TextView) view.findViewById(R.id.departCity);
+                //final TextView tvArriveCity = (TextView) view.findViewById(R.id.arriveCity);
+                //final TextView tvDepartTime = (TextView) view.findViewById(R.id.departTime);
+                //final TextView tvArriveTime = (TextView) view.findViewById(R.id.arriveTime);
 
                 yesButton.setOnClickListener(
                         new View.OnClickListener() {
@@ -382,14 +382,19 @@ public class BookPlaneFragment extends Fragment {
                             @Override
                             public void onClick(View view) {
 
+                                /*
+                                DatabaseHelper myDb = new DatabaseHelper(BookPlaneFragment.this.getActivity());
+                                SQLiteDatabase db = myDb.getReadableDatabase();
+                                String sql = "INSERT INTO "+ EventContract.EventEntry.TABLE_NAME +"(origin, destination, departure_time, arrival_time, transport_number) VALUES ("+ tvDepartCity.getText() +", "+ tvArriveCity.getText() +", "+ tvDepartTime.getText() +", "+ tvArriveTime.getText() +", "+ tvFlightNum.getText() +")";
+                                db.execSQL(sql);
+                                */
+
                                 Toast.makeText(BookPlaneFragment.this.getActivity(), "Selected Flight : "
                                                 + tvFlightNum.getText() , Toast.LENGTH_LONG).show();
                                 dialog.dismiss();
                             }
                         }
                 );
-
-
             }
         });
         Log.d("DONE", "ListView populated");
@@ -420,7 +425,8 @@ public class BookPlaneFragment extends Fragment {
                                 getFlightData(token, start, end, depart);
                             }
                             else {
-                                Log.d("UPDATE", "update fail");
+                                Toast.makeText(BookPlaneFragment.this.getActivity(), "No flights are available",
+                                        Toast.LENGTH_LONG).show();
                                 countUpdate = 0;
                             }
 

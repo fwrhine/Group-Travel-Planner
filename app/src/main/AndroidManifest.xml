@@ -60,16 +60,6 @@
         <activity android:name=".EditPhoneNoActivity" />
         <activity android:name=".EditBirthdayActivity" />
         <activity android:name=".ChooseEventActivity">
-            <!--
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-            -->
-        </activity>
-
-        <activity android:name=".PagerBooking">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

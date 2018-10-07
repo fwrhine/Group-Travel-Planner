@@ -38,8 +38,7 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
                 return tab2;
             case 2: return new BookPlaneFragment();
             case 3: return new BookTrainFragment();
-            case 4:
-                Fragment_CustomEvent tab3 = new Fragment_CustomEvent();
+            case 4: Fragment_CustomEvent tab3 = new Fragment_CustomEvent();
                 return tab3;
             default:
                 return null;
@@ -61,7 +60,6 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
             default: return null;
         }
     }
-
 
     public Fragment_PlaceList newInstance(String type) {
         Fragment_PlaceList myFragment = new Fragment_PlaceList();
