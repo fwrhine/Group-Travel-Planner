@@ -100,53 +100,59 @@ public class LoginActivity extends AppCompatActivity {
                 final String password = getPasswordFromEditText();
                 progressBar.setVisibility(View.VISIBLE);
                 //authenticate user
-                mAuth.signInWithEmailAndPassword(email, password)
-                        .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                // If sign in fails, display a message to the user. If sign in succeeds
-                                // the auth state listener will be notified and logic to handle the
-                                // signed in user can be handled in the listener.
-                                if (!task.isSuccessful()) {
-                                    progressBar.setVisibility(View.INVISIBLE);
-                                    // there was an error
-                                    if (password.length() < 6) {
-                                        edit_password.setError("Minimum password length is 6");
+                if(email.length() == 0 || password.length() == 0){
+                    Toast.makeText(LoginActivity.this, "Please insert email and password", Toast.LENGTH_SHORT).show();
+                    progressBar.setVisibility(View.INVISIBLE);
+                }
+                else {
+                    mAuth.signInWithEmailAndPassword(email, password)
+                            .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AuthResult> task) {
+                                    // If sign in fails, display a message to the user. If sign in succeeds
+                                    // the auth state listener will be notified and logic to handle the
+                                    // signed in user can be handled in the listener.
+                                    if (!task.isSuccessful()) {
+                                        progressBar.setVisibility(View.INVISIBLE);
+                                        // there was an error
+                                        if (password.length() < 6) {
+                                            edit_password.setError("Minimum password length is 6");
+                                        } else {
+                                            Toast.makeText(LoginActivity.this, "Login Failed", Toast.LENGTH_LONG).show();
+                                        }
                                     } else {
-                                        Toast.makeText(LoginActivity.this, "Login Failed", Toast.LENGTH_LONG).show();
+                                        firebaseUser = mAuth.getCurrentUser();
+                                        Log.d("UID", firebaseUser.getUid());
+                                        DatabaseReference userRef = firebaseDatabase.getReference().child("users").child(firebaseUser.getUid());
+                                        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                User user = dataSnapshot.getValue(User.class);
+
+                                                // Saves the login information to the session
+                                                sessionManager.createLoginSession(firebaseUser.getUid(), user.fullName, user.username, getEmailFromEditText(), user.gender, user.phone, user.birthday, user.photoUrl);
+                                                progressBar.setVisibility(View.INVISIBLE);
+                                                Log.d("PHOTO_URL", user.photoUrl);
+                                                // Send success message to the user
+                                                Toast.makeText(LoginActivity.this, "Sign-in success!",
+                                                        Toast.LENGTH_SHORT).show();
+
+                                                // Redirect to ProfileActivity and forget the previous activities
+                                                intent = new Intent(LoginActivity.this, InHomeActivity.class);
+                                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                                startActivity(intent);
+                                                Log.d("SIGN-IN", "SUCCESS");
+                                            }
+
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                            }
+                                        });
                                     }
-                                } else {
-                                    firebaseUser = mAuth.getCurrentUser();
-                                    Log.d("UID", firebaseUser.getUid());
-                                    DatabaseReference userRef = firebaseDatabase.getReference().child("users").child(firebaseUser.getUid());
-                                    userRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                            User user = dataSnapshot.getValue(User.class);
-
-                                            // Saves the login information to the session
-                                            sessionManager.createLoginSession(firebaseUser.getUid(), user.fullName, user.username, getEmailFromEditText(), user.gender, user.phone, user.birthday, user.photoUrl);
-                                            progressBar.setVisibility(View.INVISIBLE);
-                                            Log.d("PHOTO_URL", user.photoUrl);
-                                            // Send success message to the user
-                                            Toast.makeText(LoginActivity.this, "Sign-in success!",
-                                                    Toast.LENGTH_SHORT).show();
-
-                                            // Redirect to ProfileActivity and forget the previous activities
-                                            intent = new Intent(LoginActivity.this, InHomeActivity.class);
-                                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                            startActivity(intent);
-                                            Log.d("SIGN-IN", "SUCCESS");
-                                        }
-
-                                        @Override
-                                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                        }
-                                    });
                                 }
-                            }
-                        });
+                            });
+                }
             }
         });
     }

@@ -19,7 +19,7 @@ import java.util.HashMap;
  */
 
 // TODO: Tambahin group sama friend ke session pake GSON
-public class SessionManager {
+public class    SessionManager {
 
     // Shared Preferences
     SharedPreferences pref;

@@ -119,7 +119,6 @@ public class InHomeActivity extends AppCompatActivity implements NavigationView.
 
         // set profile picture
         String photoUrl = sessionManager.getUserDetails().get(sessionManager.KEY_PHOTO_URL);
-        Log.d("PHOTO_URL", photoUrl);
         Uri uri = Uri.parse(photoUrl);
         GlideApp.with(this)
                 .load(uri)
