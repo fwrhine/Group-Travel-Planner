@@ -107,11 +107,7 @@ public class Activity_CreateReminder extends AppCompatActivity implements DatePi
 //                createNotification(dest, notificationTxt);
 //                generalCreateNotification("event", "detail", Integer i);
 
-//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-//                    insertEntry("Test", notificationTxt, dest);
-//                }
-
-                insertNoti("Test", "OCT25");
+                generalInsertNotifier(destText, notificationTxt, yearFinal, monthFinal, dayFinal, hourFinal, minuteFinal);
             }
         });
     }
@@ -133,69 +129,22 @@ public class Activity_CreateReminder extends AppCompatActivity implements DatePi
                 startTime.getTimeInMillis());
         calIntent.putExtra(CalendarContract.EXTRA_EVENT_END_TIME,
                 endTime.getTimeInMillis());
-        calIntent.putExtra(CalendarContract.Events.DTSTART, 20181212);
-        calIntent.putExtra(CalendarContract.Events.DTEND, 20181213);
 
         startActivity(calIntent);
 
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    private void insertEntry(String pTitle, String pDescription, String pLocation) {
-        Log.v("calender", "entered insertEntry");
-        ContentValues values = new ContentValues();
-        ContentResolver mContentResolver = getContentResolver();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            values.put(CalendarContract.Events.CALENDAR_ID, 3);
-        } else {
-            values.put(CalendarContract.Events.CALENDAR_ID, 1);
-        }
 
-        values.put(CalendarContract.Events.TITLE, pTitle);
-        values.put(CalendarContract.Events.DESCRIPTION, pDescription);
-        values.put(CalendarContract.Events.EVENT_LOCATION, pLocation);
-        //
-        Calendar startTime = Calendar.getInstance();
-        startTime.set(yearFinal, monthFinal, dayFinal, hourFinal - 1, minuteFinal);
-        Calendar endTime = Calendar.getInstance();
-        endTime.set(yearFinal, monthFinal, dayFinal, hourFinal, minuteFinal);
-//        values.put(CalendarContract.EXTRA_EVENT_BEGIN_TIME,
-//                startTime.getTimeInMillis());
-//        values.put(CalendarContract.EXTRA_EVENT_END_TIME,
-//                endTime.getTimeInMillis());
-        Log.v("calenderYear", yearFinal + "");
-        Log.v("calenderMonth", monthFinal + "");
-        Log.v("calenderDay", dayFinal + "");
-        String pStartTimestamp = yearFinal + monthFinal + dayFinal + "";
-        //DTSTART YEAR+MONTH+DAY
-        values.put(CalendarContract.Events.DTSTART, Integer.parseInt(pStartTimestamp));
-        values.put(CalendarContract.Events.DTEND, Integer.parseInt(pStartTimestamp) + 1);
-        values.put(CalendarContract.Events.HAS_ALARM, 1); // 0 for false, 1 for true
-        values.put(CalendarContract.Events.EVENT_TIMEZONE, Time.getCurrentTimezone()); //get the Timezone
-        Log.v("calenderIF", "before if");
-        if (ContextCompat.checkSelfPermission(this, WRITE_CALENDAR)
-                == PackageManager.PERMISSION_GRANTED) {
-            Log.v("calenderPer", "inside if");
-            // Permission is not granted
-            // Ask for permision
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_CALENDAR}, 1);
-            Log.v("calenderPer", "after request per");
-            Uri uri = getContentResolver().insert(CalendarContract.Events.CONTENT_URI, values);
-            uri.buildUpon();
-            Log.v("calender", "calendar entry inserted");
-        }
-
-    }
-
-    public void insertNoti(String title, String description) {
-
+    public void generalInsertNotifier(String title, String description, Integer year, Integer month,
+                           Integer day, Integer hour, Integer minute) {
+        //TODO error handling, numbers must be within limit
         ContentValues event = new ContentValues();
         ContentResolver cr = getContentResolver();
         Calendar startTime = Calendar.getInstance();
-        Integer adjstedHour = hourFinal - 1;
-        startTime.set(yearFinal, monthFinal, dayFinal, hourFinal - 1, minuteFinal);
+        Integer adjustedHour = hour - 1;
+        startTime.set(year, month, day, adjustedHour, minute);
         Calendar endTime = Calendar.getInstance();
-        endTime.set(yearFinal, monthFinal, dayFinal, hourFinal + 1, minuteFinal);
+        endTime.set(year, month, day, hour + 1, minute);
 
         // TODO might not work, with all phones. ID is set to 1 for my phone, 3 is likely the other likely possibility
         event.put(CalendarContract.Events.CALENDAR_ID, 1);
