@@ -1,5 +1,7 @@
 package com.example.pplki18.grouptravelplanner.utils;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Group {
@@ -7,7 +9,6 @@ public class Group {
     String group_name;
     byte[] group_image;
     List<String> group_members;
-    List<byte[]> group_memberPics;
 
     //constructor
     public Group() {
@@ -31,10 +32,6 @@ public class Group {
         this.group_members = group_members;
     }
 
-    public void setGroup_memberPics(List<byte[]> group_memberPics) {
-        this.group_memberPics = group_memberPics;
-    }
-
     //getters
     public String getGroup_name() {
         return group_name;
@@ -46,7 +43,4 @@ public class Group {
 
     public List<String> getGroup_members() { return group_members; }
 
-    public List<byte[]> getGroup_memberPics() {
-        return group_memberPics;
-    }
 }
