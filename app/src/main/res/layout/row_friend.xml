@@ -19,6 +19,7 @@
                 android:id="@+id/friend_image"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
+                android:src="@drawable/group_pic"
                 android:layout_alignParentTop="true"
                 android:layout_centerHorizontal="true"/>
 
