@@ -13,13 +13,12 @@
     <string name="title_activity_friends">Friends</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="title_activity_pager_book_plane">PagerBookPlane</string>
-    <string name="tab_text_1">Tab 1</string>
-    <string name="tab_text_2">Tab 2</string>
-    <string name="tab_text_3">Tab 3</string>
-    <string name="action_settings">Settings</string>
-    <string name="section_format">Hello World from section: %1$d</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
+    <string name="api_key">AIzaSyB4QT2f2fyMQ8gDILgUEi5xBl_NKiGt_fo</string>
+    <string name="title_activity__in_places">Activity_InPlaces</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="action_search">Search</string>
+    <string name="action_settings">Setting</string>
+    <string name="plan_overview_sample">Mon, 1 Oct (09:00) : Soekarno-Hatta International Airport \n...</string>
+
+
 </resources>
