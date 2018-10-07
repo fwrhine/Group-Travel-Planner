@@ -62,6 +62,7 @@ public class Activity_CreateReminder extends AppCompatActivity implements DatePi
     Integer currChannel;
     int day, month, year, hour, minute;
     int dayFinal, monthFinal, yearFinal, hourFinal, minuteFinal;
+    Integer WRITE_CALENDER;
 
 
     public Activity_CreateReminder() {
@@ -71,11 +72,14 @@ public class Activity_CreateReminder extends AppCompatActivity implements DatePi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_reminder);
+        WRITE_CALENDER = 4;
         btn_pick = (Button) findViewById(R.id.button_pick_notification);
         resultYear = (TextView) findViewById(R.id.notifaction_resultYear);
         resultMonth = (TextView) findViewById(R.id.notifaction_resultMonth);
         resultDay = (TextView) findViewById(R.id.notifaction_resultDay);
         resultTime = (TextView) findViewById(R.id.notifaction_resultTime);
+        ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.WRITE_CALENDAR}, WRITE_CALENDER);
+
 
         reminders = new ArrayList<Reminder>();
         // Waits for you to click the button
@@ -168,8 +172,13 @@ public class Activity_CreateReminder extends AppCompatActivity implements DatePi
         event.put("eventStatus", 1); // 0 for tentative, 1 for confirmed, 2 for canceled
         event.put(CalendarContract.Events.HAS_ALARM, 1); // 0 for false, 1 for true
         event.put(CalendarContract.Events.EVENT_TIMEZONE, Time.getCurrentTimezone());
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_CALENDAR) == PackageManager.PERMISSION_GRANTED) {
+
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
             Log.v("calenderIF", "inside if");
+            Uri url = cr.insert(CalendarContract.Events.CONTENT_URI, event);
+        }
+        else {
             Uri url = cr.insert(CalendarContract.Events.CONTENT_URI, event);
         }
         Log.v("calender", "calendar entry inserted");
