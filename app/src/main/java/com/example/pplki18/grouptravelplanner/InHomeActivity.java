@@ -52,12 +52,18 @@ public class InHomeActivity extends AppCompatActivity implements NavigationView.
             case R.id.nav_group_list:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container_home,
                         new Fragment_GroupList()).commit();
+                toolbar.setTitle("My Groups");
                 break;
             case R.id.nav_friend_list:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container_home,
                         new Fragment_Friends()).commit();
+                toolbar.setTitle("My Friends");
                 break;
-
+            case R.id.nav_plan_list:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container_home,
+                        new Fragment_PlanList()).commit();
+                toolbar.setTitle("My Plans");
+                break;
         }
         drawer.closeDrawer(GravityCompat.START);
         return true;
@@ -68,6 +74,7 @@ public class InHomeActivity extends AppCompatActivity implements NavigationView.
 
         drawer = findViewById(R.id.drawer_home);
         toolbar = findViewById(R.id.toolbar_home);
+        toolbar.setTitle("My Groups");
         navigationView = findViewById(R.id.nav_home);
         toggle = new ActionBarDrawerToggle(this, drawer, toolbar,
                 R.string.navigation_drawer_open, R.string.navigation_drawer_close);
