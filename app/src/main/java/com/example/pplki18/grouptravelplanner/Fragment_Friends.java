@@ -19,7 +19,7 @@ import android.view.ViewGroup;
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
 import com.example.pplki18.grouptravelplanner.data.FriendsContract;
 import com.example.pplki18.grouptravelplanner.data.UserContract;
-import com.example.pplki18.grouptravelplanner.Friend;
+import com.example.pplki18.grouptravelplanner.utils.Friend;
 import com.example.pplki18.grouptravelplanner.utils.RVAdapter_Friend;
 
 import java.util.ArrayList;

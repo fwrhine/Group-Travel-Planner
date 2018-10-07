@@ -29,12 +29,14 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
 
         switch (position) {
+
             case 0:
                 Fragment_PlaceList tab1 = newInstance("restaurants");
                 return tab1;
             case 1:
                 Fragment_PlaceList tab2 = newInstance("attractions");
                 return tab2;
+
             case 2:
                 Fragment_CustomEvent tab3 = new Fragment_CustomEvent();
                 return tab3;
@@ -59,6 +61,7 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
         }
     }
 
+
     public Fragment_PlaceList newInstance(String type) {
         Fragment_PlaceList myFragment = new Fragment_PlaceList();
 
@@ -72,4 +75,5 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
 
         return myFragment;
     }
+
 }
