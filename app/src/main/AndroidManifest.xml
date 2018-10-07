@@ -61,11 +61,11 @@
         <activity android:name=".EditPhoneNoActivity" />
         <activity android:name=".EditBirthdayActivity" />
         <activity android:name=".ChooseEventActivity">
-            <!--<intent-filter>-->
-            <!--<action android:name="android.intent.action.MAIN" />-->
+            <intent-filter>
+            <action android:name="android.intent.action.MAIN" />
 
-            <!--<category android:name="android.intent.category.LAUNCHER" />-->
-            <!--</intent-filter>-->
+            <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
 
         <meta-data
@@ -78,13 +78,9 @@
         <activity android:name=".CreateNewPlanActivity" />
         <activity android:name=".EditPlanActivity"></activity>
 
-        <activity android:name=".Activity_InHome"></activity>
+        <!--<activity android:name=".Activity_InHome"></activity>-->
         <activity android:name=".Activity_CreateReminder">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <receiver android:name=".AlertReciever"/>
         <!--<activity android:name=".Activity_ReminderList"/>-->

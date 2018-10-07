@@ -73,6 +73,7 @@ public class Activity_CreateReminder extends AppCompatActivity implements DatePi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_reminder);
         WRITE_CALENDER = 4;
+        currChannel = 1;
         btn_pick = (Button) findViewById(R.id.button_pick_notification);
         resultYear = (TextView) findViewById(R.id.notifaction_resultYear);
         resultMonth = (TextView) findViewById(R.id.notifaction_resultMonth);
@@ -112,6 +113,12 @@ public class Activity_CreateReminder extends AppCompatActivity implements DatePi
 //                generalCreateNotification("event", "detail", Integer i);
 
                 generalInsertNotifier(destText, notificationTxt, yearFinal, monthFinal, dayFinal, hourFinal, minuteFinal);
+
+
+                alarmCal.set(yearFinal, monthFinal, dayFinal, hourFinal, minuteFinal);
+                startAlarm(alarmCal);
+
+
             }
         });
     }
@@ -126,9 +133,9 @@ public class Activity_CreateReminder extends AppCompatActivity implements DatePi
         calIntent.putExtra(CalendarContract.Events.EVENT_LOCATION, event);
         calIntent.putExtra(CalendarContract.Events.DESCRIPTION, detail);
         Calendar startTime = Calendar.getInstance();
-        startTime.set(yearFinal, monthFinal, dayFinal, hourFinal - 1, minuteFinal);
+        startTime.set(yearFinal, monthFinal, dayFinal, hourFinal, minuteFinal);
         Calendar endTime = Calendar.getInstance();
-        endTime.set(yearFinal, monthFinal, dayFinal, hourFinal, minuteFinal);
+        endTime.set(yearFinal, monthFinal, dayFinal, hourFinal + 1, minuteFinal);
         calIntent.putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME,
                 startTime.getTimeInMillis());
         calIntent.putExtra(CalendarContract.EXTRA_EVENT_END_TIME,
