@@ -1,5 +1,8 @@
 package com.example.pplki18.grouptravelplanner.data;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class User {
 
     public String id;
@@ -11,6 +14,7 @@ public class User {
     public String birthday;
     public String photoUrl;
     public String status;
+    public List<String> friends;
 
     public User(){}
 
@@ -24,6 +28,7 @@ public class User {
         this.birthday = "none";
         this.photoUrl = "none";
         this.status = "0";
+        this.friends = new ArrayList<>();
     }
 
     public String getId() {

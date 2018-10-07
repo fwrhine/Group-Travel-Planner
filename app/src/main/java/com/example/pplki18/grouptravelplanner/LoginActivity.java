@@ -119,7 +119,7 @@ public class LoginActivity extends AppCompatActivity {
                                     firebaseUser = mAuth.getCurrentUser();
                                     Log.d("UID", firebaseUser.getUid());
                                     DatabaseReference userRef = firebaseDatabase.getReference().child("users").child(firebaseUser.getUid());
-                                    userRef.addValueEventListener(new ValueEventListener() {
+                                    userRef.addListenerForSingleValueEvent(new ValueEventListener() {
                                         @Override
                                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                             User user = dataSnapshot.getValue(User.class);

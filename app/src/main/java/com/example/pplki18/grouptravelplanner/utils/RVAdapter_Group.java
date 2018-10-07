@@ -5,20 +5,32 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.request.RequestOptions;
 import com.example.pplki18.grouptravelplanner.R;
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
+import com.example.pplki18.grouptravelplanner.data.Group;
+import com.example.pplki18.grouptravelplanner.data.User;
 import com.example.pplki18.grouptravelplanner.utils.SessionManager;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import org.w3c.dom.Text;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class RVAdapter_Group extends RecyclerView.Adapter<RVAdapter_Group.GroupViewHolder>{
@@ -44,28 +56,64 @@ public class RVAdapter_Group extends RecyclerView.Adapter<RVAdapter_Group.GroupV
     }
 
     @Override
-    public void onBindViewHolder(GroupViewHolder groupViewHolder, int i) {
-        groupViewHolder.groupName.setText(groups.get(i).getGroup_name());
+    public void onBindViewHolder(final GroupViewHolder groupViewHolder, int i) {
+        Group group = groups.get(i);
+        groupViewHolder.groupName.setText(group.getGroup_name());
 
-        byte[] byteArray = groups.get(i).getGroup_image();
-        Bitmap bmp = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
-        groupViewHolder.groupImage.setImageBitmap(bmp);
+        if(!group.getGroup_image_url().equals("none")) {
+            Uri uri = Uri.parse(group.group_image_url);
 
-//        groupViewHolder.groupMembers.setText(groups.get(i).getGroup_members().toString());
-        //TODO set image resource depending on user's profile image
-/*        SQLiteDatabase db = myDb.getReadableDatabase();
+            GlideApp.with(groupViewHolder.groupImage.getContext())
+                    .load(uri)
+                    .placeholder(R.mipmap.ic_launcher_round)
+                    .error(R.mipmap.ic_launcher_round)
+                    .centerCrop()
+                    .apply(new RequestOptions().override(300, 300))
+                    .apply(RequestOptions.circleCropTransform())
+                    .into(groupViewHolder.groupImage);
+        }
+        else{
+            groupViewHolder.groupImage.setImageResource(R.mipmap.ic_launcher);
+        }
 
-        sessionManager = new SessionManager(context.getApplicationContext());
+        final List<ImageView> memberImageViews = new ArrayList<>();
+        memberImageViews.add(groupViewHolder.memberImg1);
+        memberImageViews.add(groupViewHolder.memberImg2);
+        memberImageViews.add(groupViewHolder.memberImg3);
+        memberImageViews.add(groupViewHolder.memberImg4);
 
-        String getFirstUserImg = "SELECT user.picture FROM users as u, groups as g, userGroup as ug WHERE " +
-            "u._ID = ug.user_id AND ";
-        db.execSQL(getFirstUserImg);
-        groupViewHolder.memberImg1.setImageBitmap();*/
+        final int[] index = {0};
+        for(String memberID : group.getFirstMembers()){
+            final DatabaseReference userRef = FirebaseDatabase.getInstance().getReference().child("users").child(memberID);
+            userRef.child("fullName").getParent().addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    User user = dataSnapshot.getValue(User.class);
+                    if(!user.getPhotoUrl().equals("none")){
+                        Uri uri = Uri.parse(user.photoUrl);
 
-        groupViewHolder.memberImg1.setImageResource(R.drawable.user_pic);
-        groupViewHolder.memberImg2.setImageResource(R.drawable.user_pic);
-        groupViewHolder.memberImg3.setImageResource(R.drawable.user_pic);
-        groupViewHolder.memberImg4.setImageResource(R.drawable.user_pic);
+                        GlideApp.with(memberImageViews.get(index[0]).getContext())
+                                .load(uri)
+                                .placeholder(R.mipmap.ic_launcher_round)
+                                .error(R.mipmap.ic_launcher_round)
+                                .centerCrop()
+                                .apply(new RequestOptions().override(300, 300))
+                                .apply(RequestOptions.circleCropTransform())
+                                .into(memberImageViews.get(index[0]));
+                    }
+                    else{
+                        memberImageViews.get(index[0]).setImageResource(R.drawable.user_pic);
+                    }
+                    index[0]++;
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+        }
+
     }
 
     @Override

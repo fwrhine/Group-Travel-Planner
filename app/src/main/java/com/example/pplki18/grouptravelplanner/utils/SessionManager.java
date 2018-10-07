@@ -17,6 +17,8 @@ import java.util.HashMap;
  * for other activities that needs a quick reference
  * of the user's information (e.g. username, isLoggedIn).
  */
+
+// TODO: Tambahin group sama friend ke session pake GSON
 public class SessionManager {
 
     // Shared Preferences
