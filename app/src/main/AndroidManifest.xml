@@ -12,6 +12,8 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
 
     <application
         android:name=".TravelApplication"
@@ -43,10 +45,10 @@
         <activity android:name=".UserProfileActivity" />
         <activity android:name=".SearchBarActivity" />
         <activity
-            android:name=".Activity_InGroup"
+            android:name=".InGroupActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".Activity_CreateNewGroup"
+            android:name=".CreateNewGroupActivity"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <meta-data
@@ -55,22 +57,19 @@
 
         <activity android:name=".EditPhoneNoActivity" />
         <activity android:name=".EditBirthdayActivity" />
-        <activity android:name=".Activity_InHome" />
-        <activity android:name=".Activity_Places">
-            <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.MAIN" />-->
-
-                <!--<category android:name="android.intent.category.LAUNCHER" />-->
-            <!--</intent-filter>-->
-        </activity>
-
-        <activity android:name=".Activity_ChooseEvent">
-
+        <activity android:name=".ChooseEventActivity">
         </activity>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/api_key" />
+
+        <activity android:name=".PlaceActivity"></activity>
+
+        <activity android:name=".InHomeActivity" />
+        <activity android:name=".CreateNewPlanActivity" />
+        <activity android:name=".EditPlanActivity"></activity>
+
     </application>
 
 </manifest>

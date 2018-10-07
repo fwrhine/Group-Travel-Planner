@@ -68,6 +68,7 @@ public class UserProfileActivity extends AppCompatActivity {
     Uri mImageUri;
 
     TextView fullname_label, username_label, email_label, phone_label, birthday_label;
+//    Button buttonLogout;
     ImageButton buttonCheckFullname, buttonEditFullname;
     CircleImageView profile_image;
 
@@ -102,11 +103,16 @@ public class UserProfileActivity extends AppCompatActivity {
         storageReference = FirebaseStorage.getInstance().getReference();
 
         init();
+
+        setSupportActionBar(edit_profile_toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        setTitle("Edit Profile");
+
         editUsername();
         setSelectGender();
         editPhoneNo();
         editBirthday();
-        setUpToolbar();
         choosePicture();
 
         mAuthStateListener = new FirebaseAuth.AuthStateListener(){
@@ -150,6 +156,7 @@ public class UserProfileActivity extends AppCompatActivity {
 
         fab_pic_user = (FloatingActionButton) findViewById(R.id.fab_pic_user);
 
+//        buttonLogout = (Button) findViewById(R.id.buttonLogout);
         buttonEditFullname = (ImageButton) findViewById(R.id.buttonEditFullname);
         buttonCheckFullname = (ImageButton) findViewById(R.id.buttonCheckFullname);
         profile_image = (CircleImageView) findViewById(R.id.profile_image);
@@ -215,6 +222,20 @@ public class UserProfileActivity extends AppCompatActivity {
             birthday_label.setTypeface(birthday_label.getTypeface(), Typeface.NORMAL);
         }
 
+//        buttonLogout.setOnClickListener(
+//                new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View view) {
+//                        session.logoutUser();
+//                    }
+//                }
+//        );
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 
     public void editUsername() {
@@ -304,18 +325,18 @@ public class UserProfileActivity extends AppCompatActivity {
         );
     }
 
-    public void setUpToolbar() {
-        edit_profile_toolbar.setNavigationOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Intent intent = new Intent(UserProfileActivity.this, Activity_InHome.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        startActivity(intent);
-                    }
-                }
-        );
-    }
+//    public void setUpToolbar() {
+//        edit_profile_toolbar.setNavigationOnClickListener(
+//                new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View view) {
+//                        Intent intent = new Intent(UserProfileActivity.this, InHomeActivity.class);
+//                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                        startActivity(intent);
+//                    }
+//                }
+//        );
+//    }
 
     public void choosePicture() {
         fab_pic_user.setOnClickListener(new View.OnClickListener() {

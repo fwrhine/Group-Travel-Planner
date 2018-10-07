@@ -1,13 +1,24 @@
 package com.example.pplki18.grouptravelplanner.utils;
 
+import java.util.List;
+
 public class Place {
 
     String place_id;
     String name;
     String address;
-    int rating;
+    String rating;
+    String phone_number;
+//    String opening_hours;
+    String website;
+    String photo;
+    String url;
+    Boolean open_now;
+    List<String> weekday_text;
+
 
     public Place() {
+
     }
 
     public void setPlace_id(String place_id) {
@@ -22,9 +33,35 @@ public class Place {
         this.address = address;
     }
 
-    public void setRating(int rating) {
+    public void setPhone_number(String phone_number) {
+        this.phone_number = phone_number;
+    }
+
+    public void setWebsite(String website) {
+        this.website = website;
+    }
+
+    public void setRating(String rating) {
         this.rating = rating;
     }
+
+    public void setPhoto(String photo) {
+        this.photo = photo;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public void setOpen_now(Boolean open_now) {
+        this.open_now = open_now;
+    }
+
+    public void setWeekday_text(List<String> weekday_text) {
+        this.weekday_text = weekday_text;
+    }
+
+
 
     public String getPlace_id() {
         return place_id;
@@ -38,7 +75,37 @@ public class Place {
         return address;
     }
 
-    public int getRating() {
+    public String getRating() {
         return rating;
+    }
+
+    public String getWebsite() {
+        return website;
+    }
+
+    public String getPhone_number() {
+        return phone_number;
+    }
+
+    public String getPhoto() {
+        return photo;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public Boolean getOpen_now() {
+        return open_now;
+    }
+
+    public List<String> getWeekday_text() {
+        return weekday_text;
+    }
+
+
+    @Override
+    public String toString() {
+        return this.name;
     }
 }

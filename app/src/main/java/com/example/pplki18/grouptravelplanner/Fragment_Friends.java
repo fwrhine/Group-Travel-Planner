@@ -1,6 +1,3 @@
-/**
- * CHANGED FROM ACTIVITY TO FRAGMENT
- */
 package com.example.pplki18.grouptravelplanner;
 
 import android.content.Intent;

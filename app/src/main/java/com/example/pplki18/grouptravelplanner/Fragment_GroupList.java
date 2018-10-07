@@ -74,7 +74,7 @@ public class Fragment_GroupList extends Fragment implements NavigationView.OnNav
             @Override
             public void onClick(View view) {
                 Log.v("fab", "FAB Clicked");
-                Intent myIntent = new Intent(getActivity(), Activity_CreateNewGroup.class);
+                Intent myIntent = new Intent(getActivity(), CreateNewGroupActivity.class);
                 Fragment_GroupList.this.startActivity(myIntent);
             }
         });

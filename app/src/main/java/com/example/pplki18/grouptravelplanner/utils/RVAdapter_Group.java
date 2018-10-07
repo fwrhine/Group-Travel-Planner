@@ -1,8 +1,6 @@
 package com.example.pplki18.grouptravelplanner.utils;
 
-import android.app.Activity;
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;

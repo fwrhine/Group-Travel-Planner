@@ -10,7 +10,6 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/colorWhite"
         tools:context=".UserProfileActivity">
         
         <RelativeLayout
@@ -21,18 +20,11 @@
             <android.support.v7.widget.Toolbar
                 android:id="@+id/edit_profile_toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:navigationIcon="@drawable/ic_navigate_before_black_24dp">
+                android:layout_height="wrap_content"
+                android:background="?attr/colorPrimary"
+                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
-            </android.support.v7.widget.Toolbar>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:text="Edit Profile"
-                android:textColor="@color/colorBlack"
-                android:textSize="20dp" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -41,7 +33,7 @@
             android:layout_height="220dp"
             android:layout_alignParentStart="true"
             android:layout_below="@+id/topLayout"
-            android:background="@color/background_color2"
+            android:background="@color/colorWhite"
             android:gravity="top"
             android:orientation="horizontal">
 
@@ -93,8 +85,8 @@
                 android:layout_height="55dp"
                 android:layout_alignTop="@+id/fullname_label"
                 android:layout_toEndOf="@+id/fullname_label"
-                android:backgroundTint="@color/background_color2"
-                android:src="@drawable/ic_check_black_24dp" />
+                android:backgroundTint="@color/colorWhite"
+                android:src="@drawable/ic_check_green_24dp" />
 
             <ImageButton
                 android:id="@+id/buttonEditFullname"
@@ -103,14 +95,14 @@
                 android:layout_alignParentBottom="true"
                 android:layout_centerHorizontal="true"
                 android:layout_marginBottom="11dp"
-                android:backgroundTint="@color/background_color2"
+                android:backgroundTint="@color/colorWhite"
                 android:src="@drawable/ic_mode_edit_black_24dp" />
 
         </RelativeLayout>
 
         <LinearLayout
             android:id="@+id/dataLayout"
-            android:layout_marginLeft="15dp"
+            android:paddingLeft="15dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/midLayout"
@@ -274,5 +266,17 @@
             </RelativeLayout>
         </LinearLayout>
 
+        <!--<Button-->
+            <!--android:id="@+id/buttonLogout"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_below="@+id/dataLayout"-->
+            <!--android:drawableStart="@drawable/ic_exit_to_app_black_24dp"-->
+            <!--android:layout_centerHorizontal="true"-->
+            <!--android:backgroundTint="@color/background_color2"-->
+            <!--android:layout_marginTop="30dp"-->
+            <!--android:layout_marginBottom="30dp"-->
+            <!--android:text="Logout"-->
+            <!--/>-->
     </RelativeLayout>
 </ScrollView>

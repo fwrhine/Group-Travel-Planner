@@ -69,6 +69,9 @@ public class SessionManager {
     // Trip status
     public static final String IS_ON_TRIP = "isOnTrip";
 
+    // Current recommendation region
+    public static final String REGION = "region";
+
     // Constructor
     public SessionManager(Context context){
         this._context = context;
@@ -216,5 +219,14 @@ public class SessionManager {
         editor.putString(key, value);
         // commit changes
         editor.commit();
+    }
+
+    public void setCurrentRegion(String region) {
+        editor.putString(REGION, region);
+        editor.commit();
+    }
+
+    public String getCurrentRegion() {
+        return pref.getString(REGION, null) ;
     }
 }

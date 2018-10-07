@@ -63,7 +63,10 @@ public class SearchBarActivity extends AppCompatActivity {
         SearchView searchView = (SearchView) findViewById(R.id.search);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setUpToolbar();
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        setTitle("Add Friend");
 
         linearLayoutManager = new LinearLayoutManager(this);
         searchItems.setHasFixedSize(true);
