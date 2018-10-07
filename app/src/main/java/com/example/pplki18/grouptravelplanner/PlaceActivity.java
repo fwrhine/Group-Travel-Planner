@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.media.Image;
 import android.media.Rating;
 import android.net.Uri;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -51,14 +52,14 @@ public class PlaceActivity extends AppCompatActivity {
     ImageView image;
     TextView open_now;
     TextView open_hours;
-    ImageView ic_add;
+    FloatingActionButton ic_add;
 //    Button google_button;
     ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_place);
+        setContentView(R.layout.activity_place_new_ui);
 
         init();
 
@@ -258,7 +259,7 @@ public class PlaceActivity extends AppCompatActivity {
         image = (ImageView) findViewById(R.id.image);
         open_now = (TextView) findViewById(R.id.open_now);
         open_hours = (TextView) findViewById(R.id.open_hours);
-        ic_add = (ImageView) findViewById(R.id.ic_add);
+        ic_add = (FloatingActionButton) findViewById(R.id.ic_add);
 //        google_button = (Button) findViewById(R.id.google_button);
         progressBar = (ProgressBar) findViewById(R.id.main_progress);
     }
