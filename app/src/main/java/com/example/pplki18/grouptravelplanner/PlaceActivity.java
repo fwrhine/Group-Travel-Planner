@@ -1,7 +1,9 @@
 package com.example.pplki18.grouptravelplanner;
 
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.media.Image;
 import android.media.Rating;
@@ -28,6 +30,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
+import com.example.pplki18.grouptravelplanner.data.EventContract;
 import com.example.pplki18.grouptravelplanner.utils.Place;
 
 import org.json.JSONArray;
@@ -39,6 +43,8 @@ import java.util.List;
 
 public class PlaceActivity extends AppCompatActivity {
     private static final String TAG = "RestaurantList";
+
+    private DatabaseHelper databaseHelper;
 
     String place_id;
     Toolbar toolbar;
@@ -232,6 +238,10 @@ public class PlaceActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         toastMessage("Start " + startTime.getCurrentHour() + ":" + startTime.getCurrentMinute()
                                 + " End " + endTime.getCurrentHour() + ":" + endTime.getCurrentMinute());
+                        String start_time = startTime.getCurrentHour() + ":" + startTime.getCurrentMinute();
+                        String end_time = endTime.getCurrentHour() + ":" + endTime.getCurrentMinute();
+                        saveEventToPlan(start_time, end_time);
+                        PlaceActivity.this.finish();
                     }
                 });
         builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
@@ -240,6 +250,25 @@ public class PlaceActivity extends AppCompatActivity {
             }
         });
         builder.show();
+    }
+
+    private void saveEventToPlan(String start_time, String end_time) {
+        Log.d("SAVEVENT", "MASUK");
+        SQLiteDatabase db = databaseHelper.getWritableDatabase();
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(EventContract.EventEntry.COL_PLAN_ID, getIntent().getIntExtra("plan_id", -1));
+        contentValues.put(EventContract.EventEntry.COL_TITLE, title.getText().toString());
+        contentValues.put(EventContract.EventEntry.COL_LOCATION, address.getText().toString());
+        contentValues.put(EventContract.EventEntry.COL_DESCRIPTION, website.getText().toString());
+        contentValues.put(EventContract.EventEntry.COL_DATE, getIntent().getStringExtra("date"));
+        contentValues.put(EventContract.EventEntry.COL_TIME_START, start_time);
+        contentValues.put(EventContract.EventEntry.COL_TIME_END, end_time);
+        contentValues.put(EventContract.EventEntry.COL_PHONE, phone.getText().toString());
+        contentValues.put(EventContract.EventEntry.COL_TYPE, getIntent().getStringExtra("query"));
+        contentValues.put(EventContract.EventEntry.COL_RATING, rating_num.getText().toString());
+        long event_id = db.insert(EventContract.EventEntry.TABLE_NAME, null, contentValues);
+
     }
 
     private void toastMessage(String message) {
@@ -261,5 +290,7 @@ public class PlaceActivity extends AppCompatActivity {
         ic_add = (ImageView) findViewById(R.id.ic_add);
 //        google_button = (Button) findViewById(R.id.google_button);
         progressBar = (ProgressBar) findViewById(R.id.main_progress);
+
+        databaseHelper = new DatabaseHelper(this);
     }
 }

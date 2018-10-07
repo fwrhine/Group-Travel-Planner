@@ -219,11 +219,12 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
                     @Override
                     public void onClick(View view) {
                         String date = date_month_year.getText().toString();
-//                        Intent myIntent = new Intent(CreateNewPlanActivity.this, ChooseEventActivity.class);
-//                        myIntent.putExtra("plan_id", intent.getStringExtra("plan_id"));
-//                        myIntent.putExtra("date", date);
-//
-//                        CreateNewPlanActivity.this.startActivity(myIntent);
+                        Intent myIntent = new Intent(EditPlanActivity.this, ChooseEventActivity.class);
+//                        Log.d("IDDDDD", plan_id + "");
+                        myIntent.putExtra("plan_id", plan_id);
+                        myIntent.putExtra("date", date);
+
+                        EditPlanActivity.this.startActivity(myIntent);
                         Toast.makeText(EditPlanActivity.this, "Add Event", Toast.LENGTH_SHORT).show();
                     }
                 }

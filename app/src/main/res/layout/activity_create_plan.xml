@@ -157,6 +157,7 @@
                     android:layout_marginBottom="5dp"
                     android:background="@drawable/ripple_oval_off"
                     android:elevation="4dp"
+                    android:clickable="false"
                     android:src="@drawable/ic_navigate_before_white_24dp" />
             </RelativeLayout>
 
@@ -204,6 +205,7 @@
                     android:layout_marginBottom="5dp"
                     android:background="@drawable/ripple_oval_off"
                     android:elevation="4dp"
+                    android:clickable="false"
                     android:rotation="180"
                     android:src="@drawable/ic_navigate_before_white_24dp" />
             </RelativeLayout>
@@ -229,21 +231,13 @@
             android:layout_below="@id/sep_line2"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-            <!--<android.support.v7.widget.RecyclerView-->
-                <!--android:id="@+id/rvNewPlan"-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_alignParentStart="true"-->
-                <!--android:layout_alignParentTop="true"-->
-                <!--android:clipToPadding="false"-->
-                <!--tools:listitem="@layout/item_timeline" />-->
-
             <ImageButton
                 android:id="@+id/add_event"
                 android:layout_width="70dp"
                 android:layout_height="70dp"
                 android:layout_alignParentBottom="true"
                 android:src="@drawable/ic_add_big"
+                android:elevation="3dp"
                 android:background="@color/colorPrimary"/>
         </RelativeLayout>
 

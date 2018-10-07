@@ -18,11 +18,15 @@
                                 <PersistentState>
                                   <option name="values">
                                     <map>
+<<<<<<< Updated upstream
 <<<<<<< HEAD
                                       <entry key="url" value="jar:file:/Applications/Android%20Studio.app/Contents/plugins/android/lib/android.jar!/images/material_design_icons/content/ic_add_black_24dp.xml" />
 =======
                                       <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/alert/ic_error_black_24dp.xml" />
 >>>>>>> 0528538feeb0ad02fa9ecb263b0c45ac305049a3
+=======
+                                      <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/content/ic_save_black_24dp.xml" />
+>>>>>>> Stashed changes
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -32,12 +36,16 @@
                         </option>
                         <option name="values">
                           <map>
+<<<<<<< Updated upstream
 <<<<<<< HEAD
                             <entry key="color" value="ffffff" />
                             <entry key="outputName" value="ic_add_white" />
                             <entry key="sourceFile" value="$USER_HOME$" />
 =======
                             <entry key="outputName" value="ic_error_black_24dp" />
+=======
+                            <entry key="outputName" value="ic_save_black_24dp" />
+>>>>>>> Stashed changes
                             <entry key="sourceFile" value="C:\Users\vasun" />
 >>>>>>> 0528538feeb0ad02fa9ecb263b0c45ac305049a3
                           </map>
