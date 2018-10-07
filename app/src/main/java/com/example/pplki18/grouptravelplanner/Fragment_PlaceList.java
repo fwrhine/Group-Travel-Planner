@@ -229,28 +229,7 @@ public class Fragment_PlaceList extends Fragment {
             }
 
             @Override public void addImageOnClick(View v, int position) {
-
                 setTime();
-//                // Get Current Time
-//                final Calendar c = Calendar.getInstance();
-//                int currentHour = c.get(Calendar.HOUR_OF_DAY);
-//                int currentMinute = c.get(Calendar.MINUTE);
-//
-//                // Launch Time Picker Dialog
-//                final TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(),
-//                        new TimePickerDialog.OnTimeSetListener() {
-//
-//                            @Override
-//                            public void onTimeSet(TimePicker view, int hourOfDay,
-//                                                  int minute) {
-//
-//                                toastMessage(hourOfDay + ":" + minute);
-//                            }
-//                        }, currentHour, currentMinute, false);
-//
-//
-//                timePickerDialog.setTitle("what");
-//                timePickerDialog.show();
             }
         };
 

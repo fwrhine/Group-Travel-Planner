@@ -89,8 +89,8 @@ public class Activity_ChooseEvent extends AppCompatActivity {
         _________________________________________________________________________________________________
         */
 
-        tabLayout.addTab(tabLayout.newTab().setText("Restaurants"));
-        tabLayout.addTab(tabLayout.newTab().setText("Attractions"));
+        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_restaurant));
+        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_sunny));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
 

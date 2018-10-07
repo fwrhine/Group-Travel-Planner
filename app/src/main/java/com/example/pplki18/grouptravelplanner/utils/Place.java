@@ -1,5 +1,7 @@
 package com.example.pplki18.grouptravelplanner.utils;
 
+import java.util.List;
+
 public class Place {
 
     String place_id;
@@ -11,6 +13,8 @@ public class Place {
     String website;
     String photo;
     String url;
+    Boolean open_now;
+    List<String> weekday_text;
 
 
     public Place() {
@@ -49,6 +53,16 @@ public class Place {
         this.url = url;
     }
 
+    public void setOpen_now(Boolean open_now) {
+        this.open_now = open_now;
+    }
+
+    public void setWeekday_text(List<String> weekday_text) {
+        this.weekday_text = weekday_text;
+    }
+
+
+
     public String getPlace_id() {
         return place_id;
     }
@@ -79,6 +93,14 @@ public class Place {
 
     public String getUrl() {
         return url;
+    }
+
+    public Boolean getOpen_now() {
+        return open_now;
+    }
+
+    public List<String> getWeekday_text() {
+        return weekday_text;
     }
 
 
