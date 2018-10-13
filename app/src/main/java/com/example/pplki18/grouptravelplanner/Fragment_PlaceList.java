@@ -1,10 +1,12 @@
 package com.example.pplki18.grouptravelplanner;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -31,8 +33,10 @@ import com.android.volley.toolbox.Volley;
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
 import com.example.pplki18.grouptravelplanner.data.EventContract;
 import com.example.pplki18.grouptravelplanner.data.PlanContract;
+import com.example.pplki18.grouptravelplanner.utils.Event;
 import com.example.pplki18.grouptravelplanner.utils.PaginationScrollListener;
 import com.example.pplki18.grouptravelplanner.utils.Place;
+import com.example.pplki18.grouptravelplanner.utils.Plan;
 import com.example.pplki18.grouptravelplanner.utils.RVAdapter_Place;
 import com.example.pplki18.grouptravelplanner.utils.SessionManager;
 
@@ -269,8 +273,23 @@ public class Fragment_PlaceList extends Fragment {
                                 + " End " + endTime.getCurrentHour() + ":" + endTime.getCurrentMinute());
                         String start_time = startTime.getCurrentHour() + ":" + startTime.getCurrentMinute();
                         String end_time = endTime.getCurrentHour() + ":" + endTime.getCurrentMinute();
-                        saveEventToPlan(places, position, start_time, end_time);
-                        getActivity().finish();
+                        String prevActivity = getActivity().getIntent().getStringExtra("ACTIVITY");
+                        Log.d("prev_activity", prevActivity);
+                        if (prevActivity.equals("CreateNewPlanActivity")) {
+                            List<Event> events = getActivity().getIntent().getParcelableArrayListExtra("events");
+                            Event anEvent = saveEventLocally(places, position, start_time, end_time);
+                            events.add(anEvent);
+
+                            Intent intent = new Intent(getActivity(), CreateNewPlanActivity.class);
+                            intent.putParcelableArrayListExtra("events", (ArrayList<? extends Parcelable>) events);
+                            intent.putExtra("ACTIVITY", "Fragment_PlaceList");
+                            Log.d("prev activity", "createnewplan");
+                            getActivity().setResult(Activity.RESULT_OK, intent);
+                            getActivity().finish();
+                        } else {
+                            saveEventToPlan(places, position, start_time, end_time);
+                            getActivity().finish();
+                        }
                     }
                 });
         builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
@@ -279,6 +298,23 @@ public class Fragment_PlaceList extends Fragment {
             }
         });
         builder.show();
+    }
+
+    private Event saveEventLocally(List<Place> places, int position, String start_time, String end_time) {
+        Event anEvent = new Event();
+        anEvent.setTitle(places.get(position).getName());
+        anEvent.setLocation(places.get(position).getAddress());
+        anEvent.setDescription(places.get(position).getWebsite());
+        anEvent.setDate(event_date);
+        Log.d("event date", event_date);
+        Log.d("plan_id", plan_id+"");
+        anEvent.setTime_start(start_time);
+        anEvent.setTime_end(end_time);
+        anEvent.setPhone(places.get(position).getPhone_number());
+        anEvent.setType(query);
+        anEvent.setRating(places.get(position).getRating());
+
+        return anEvent;
     }
 
     private void saveEventToPlan(List<Place> places, int position, String start_time, String end_time) {
@@ -291,8 +327,8 @@ public class Fragment_PlaceList extends Fragment {
         contentValues.put(EventContract.EventEntry.COL_LOCATION, places.get(position).getAddress());
         contentValues.put(EventContract.EventEntry.COL_DESCRIPTION, places.get(position).getWebsite());
         contentValues.put(EventContract.EventEntry.COL_DATE, event_date);
-        Log.d("event date", event_date);
-        Log.d("plan_id", plan_id+"");
+//        Log.d("event date", event_date);
+//        Log.d("plan_id", plan_id+"");
         contentValues.put(EventContract.EventEntry.COL_TIME_START, start_time);
         contentValues.put(EventContract.EventEntry.COL_TIME_END, end_time);
         contentValues.put(EventContract.EventEntry.COL_PHONE, places.get(position).getPhone_number());

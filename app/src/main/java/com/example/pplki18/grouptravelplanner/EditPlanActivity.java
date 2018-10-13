@@ -185,6 +185,7 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
         return myQuittingDialogBox;
     }
 
+    // TODO set the triple dot more button
     private void setMoreButton() {
         save_plan.setOnClickListener(
                 new View.OnClickListener() {
@@ -220,7 +221,8 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
                     public void onClick(View view) {
                         String date = date_month_year.getText().toString();
                         Intent myIntent = new Intent(EditPlanActivity.this, ChooseEventActivity.class);
-//                        Log.d("IDDDDD", plan_id + "");
+
+                        myIntent.putExtra("ACTIVITY", "EditPlanActivity");
                         myIntent.putExtra("plan_id", plan_id);
                         myIntent.putExtra("date", date);
 
@@ -260,8 +262,7 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
                     trip_days.setText(total_days + "");
                     intent.putExtra("date", date_start_temp);
                     setDateChanger();
-                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment_timeline_activity,
-                            new Fragment_EventList()).commit();
+                    beginFragmentEventList();
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
@@ -283,8 +284,7 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
                     trip_days.setText(total_days + "");
                     intent.putExtra("date", date_start_temp);
                     setDateChanger();
-                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment_timeline_activity,
-                            new Fragment_EventList()).commit();
+                    beginFragmentEventList();
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
@@ -325,8 +325,7 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
         }
 
         intent.putExtra("date", c_cur_date.getTime());
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_timeline_activity,
-                new Fragment_EventList()).commit();
+        beginFragmentEventList();
 
         button_left.setOnClickListener(
                 new View.OnClickListener() {
@@ -352,8 +351,7 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
                         }
 
                         intent.putExtra("date", c_cur_date.getTime());
-                        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_timeline_activity,
-                                new Fragment_EventList()).commit();
+                        beginFragmentEventList();
                     }
                 }
         );
@@ -378,13 +376,14 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
                         }
 
                         intent.putExtra("date", c_cur_date.getTime());
-                        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_timeline_activity,
-                                new Fragment_EventList()).commit();
+                        beginFragmentEventList();
                     }
                 }
         );
+    }
 
-
-
+    public void beginFragmentEventList() {
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_timeline_activity,
+                new Fragment_EventList()).commit();
     }
 }

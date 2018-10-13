@@ -1,39 +1,81 @@
 package com.example.pplki18.grouptravelplanner.utils;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import java.io.Serializable;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class Event {
+public class Event implements Parcelable {
     private String title;
     private String location;
     private String description;
     private String date;
-    private Date time_start;
-    private Date time_end;
+    private String time_start;
+    private String time_end;
     private String phone;
     private String type;
+    private String rating;
 
-    public String origin;
-    public String destination;
-    public String departure_time;
-    public String arrival_time;
-    public String transport_number;
+    private String origin;
+    private String destination;
+    private String departure_time;
+    private String arrival_time;
+    private String transport_number;
 
     // for hotel
-    public String date_check_in;
-    public String date_check_out;
-    public String time_check_in;
-    public String time_check_out;
+    private String date_check_in;
+    private String date_check_out;
+    private String time_check_in;
+    private String time_check_out;
+
+    private String plan_name;
 
     // empty constructor
     public Event() {}
 
-    public Event(String title, Date time_start, Date time_end, String type) {
+    public Event(String title, String time_start, String time_end, String type) {
         this.title = title;
         this.time_start = time_start;
         this.time_end = time_end;
         this.type = type;
     }
+
+    protected Event(Parcel in) {
+        title = in.readString();
+        location = in.readString();
+        description = in.readString();
+        date = in.readString();
+        time_start = in.readString();
+        time_end = in.readString();
+        phone = in.readString();
+        type = in.readString();
+        rating = in.readString();
+        origin = in.readString();
+        destination = in.readString();
+        departure_time = in.readString();
+        arrival_time = in.readString();
+        transport_number = in.readString();
+        date_check_in = in.readString();
+        date_check_out = in.readString();
+        time_check_in = in.readString();
+        time_check_out = in.readString();
+        plan_name = in.readString();
+    }
+
+    public static final Creator<Event> CREATOR = new Creator<Event>() {
+        @Override
+        public Event createFromParcel(Parcel in) {
+            return new Event(in);
+        }
+
+        @Override
+        public Event[] newArray(int size) {
+            return new Event[size];
+        }
+    };
 
     public String getTitle() {
         return title;
@@ -67,24 +109,31 @@ public class Event {
         this.date = date;
     }
 
-    public Date getTime_start() {
+    public String getTime_start() {
         return time_start;
     }
 
-    public void setTime_start(Date time_start) {
+    public void setTime_start(String time_start) {
         this.time_start = time_start;
     }
 
-    public Date getTime_end() {
+    public String getTime_end() {
         return time_end;
     }
 
-    public void setTime_end(Date time_end) {
+    public void setTime_end(String time_end) {
         this.time_end = time_end;
     }
 
     public String getTotal_time() {
-        long diff = time_end.getTime() - time_start.getTime();
+        SimpleDateFormat format = new SimpleDateFormat("HH:mm");
+        long diff = 0;
+
+        try {
+            diff = format.parse(time_end).getTime() - format.parse(time_start).getTime();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
         long diffMinutes = diff / (60 * 1000) % 60;
         long diffHours = diff / (60 * 60 * 1000) % 24;
@@ -179,5 +228,49 @@ public class Event {
 
     public void setTime_check_out(String time_check_out) {
         this.time_check_out = time_check_out;
+    }
+
+    public String getPlan_name() {
+        return plan_name;
+    }
+
+    public void setPlan_name(String plan_name) {
+        this.plan_name = plan_name;
+    }
+
+    public String getRating() {
+        return rating;
+    }
+
+    public void setRating(String rating) {
+        this.rating = rating;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(title);
+        parcel.writeString(location);
+        parcel.writeString(description);
+        parcel.writeString(date);
+        parcel.writeString(time_start);
+        parcel.writeString(time_end);
+        parcel.writeString(phone);
+        parcel.writeString(type);
+        parcel.writeString(rating);
+        parcel.writeString(origin);
+        parcel.writeString(destination);
+        parcel.writeString(departure_time);
+        parcel.writeString(arrival_time);
+        parcel.writeString(transport_number);
+        parcel.writeString(date_check_in);
+        parcel.writeString(date_check_out);
+        parcel.writeString(time_check_in);
+        parcel.writeString(time_check_out);
+        parcel.writeString(plan_name);
     }
 }
