@@ -1,5 +1,6 @@
 package com.example.pplki18.grouptravelplanner;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -8,6 +9,7 @@ import android.graphics.Bitmap;
 import android.media.Image;
 import android.media.Rating;
 import android.net.Uri;
+import android.os.Parcelable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -33,6 +35,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
 import com.example.pplki18.grouptravelplanner.data.EventContract;
+import com.example.pplki18.grouptravelplanner.utils.Event;
 import com.example.pplki18.grouptravelplanner.utils.Place;
 
 import org.json.JSONArray;
@@ -241,8 +244,22 @@ public class PlaceActivity extends AppCompatActivity {
                                 + " End " + endTime.getCurrentHour() + ":" + endTime.getCurrentMinute());
                         String start_time = startTime.getCurrentHour() + ":" + startTime.getCurrentMinute();
                         String end_time = endTime.getCurrentHour() + ":" + endTime.getCurrentMinute();
-                        saveEventToPlan(start_time, end_time);
-                        PlaceActivity.this.finish();
+                        String prevActivity = getIntent().getStringExtra("ACTIVITY");
+
+                        if (prevActivity != null && prevActivity.equals("CreateNewPlanActivity")) {
+                            List<Event> events = getIntent().getParcelableArrayListExtra("events");
+                            Event anEvent = saveEventLocally(start_time, end_time);
+                            events.add(anEvent);
+
+                            Intent intent = new Intent(PlaceActivity.this, Fragment_PlaceList.class);
+                            intent.putParcelableArrayListExtra("events", (ArrayList<? extends Parcelable>) events);
+
+                            setResult(Activity.RESULT_OK, intent);
+                            finish();
+                        } else {
+                            saveEventToPlan(start_time, end_time);
+                            finish();
+                        }
                     }
                 });
         builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
@@ -251,6 +268,21 @@ public class PlaceActivity extends AppCompatActivity {
             }
         });
         builder.show();
+    }
+
+    private Event saveEventLocally(String start_time, String end_time) {
+        Event anEvent = new Event();
+        anEvent.setTitle(title.getText().toString());
+        anEvent.setLocation(address.getText().toString());
+        anEvent.setDescription(website.getText().toString());
+        anEvent.setDate(getIntent().getStringExtra("date"));
+        anEvent.setTime_start(start_time);
+        anEvent.setTime_end(end_time);
+        anEvent.setPhone(phone.getText().toString());
+        anEvent.setType(getIntent().getStringExtra("type"));
+        anEvent.setRating(rating_num.getText().toString());
+
+        return anEvent;
     }
 
     private void saveEventToPlan(String start_time, String end_time) {
@@ -266,7 +298,7 @@ public class PlaceActivity extends AppCompatActivity {
         contentValues.put(EventContract.EventEntry.COL_TIME_START, start_time);
         contentValues.put(EventContract.EventEntry.COL_TIME_END, end_time);
         contentValues.put(EventContract.EventEntry.COL_PHONE, phone.getText().toString());
-        contentValues.put(EventContract.EventEntry.COL_TYPE, getIntent().getStringExtra("query"));
+        contentValues.put(EventContract.EventEntry.COL_TYPE, getIntent().getStringExtra("type"));
         contentValues.put(EventContract.EventEntry.COL_RATING, rating_num.getText().toString());
         long event_id = db.insert(EventContract.EventEntry.TABLE_NAME, null, contentValues);
 

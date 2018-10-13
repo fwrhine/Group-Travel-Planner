@@ -66,10 +66,10 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
         if (requestCode == 1) {
             if(resultCode == RESULT_OK) {
                 events = data.getParcelableArrayListExtra("events");
-//                for(Event e : events) {
-//                    Log.d("testtt", e.getTitle());
-//                }
-//                Log.d("RESULT_OK", "masuk sini");
+                for(Event e : events) {
+                    Log.d("testtt", e.getTitle());
+                }
+                Log.d("RESULT_OK", "masuk sini");
                 getIntent().putParcelableArrayListExtra("events", (ArrayList<? extends Parcelable>) events);
                 getIntent().putExtra("ACTIVITY", "CreateNewPlanActivity");
                 beginFragmentEventList();
@@ -95,11 +95,15 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
         events = new ArrayList<>();
 
         intent = getIntent();
-//        intent.putExtra("ACTIVITY", "CreateNewPlanActivity");
-//        if (intent.getStringExtra("ACTIVITY").equals("Fragment_PlaceList")) {
-//            events = intent.getParcelableArrayListExtra("events");
-//
-//        }
+
+        String prevActivity = intent.getStringExtra("ACTIVITY");
+        if (prevActivity != null && prevActivity.equals("PlaceActivity")) {
+            events = intent.getParcelableArrayListExtra("events");
+            for(Event e : events) {
+                Log.d("testtt2", e.getTitle());
+            }
+            beginFragmentEventList();
+        }
 
         databaseHelper = new DatabaseHelper(CreateNewPlanActivity.this);
         session = new SessionManager(getApplicationContext());

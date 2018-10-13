@@ -47,6 +47,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.app.Activity.RESULT_OK;
+
 public class Fragment_PlaceList extends Fragment {
 
     private RecyclerView recyclerViewPlace;
@@ -65,6 +67,8 @@ public class Fragment_PlaceList extends Fragment {
 
     private int plan_id;
     private String event_date;
+    private String prevActivity;
+    private List<Event> events;
 
     private boolean isLoading = false;
     private boolean isLastPage = false;
@@ -73,6 +77,26 @@ public class Fragment_PlaceList extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_place_list, container, false);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 3) {
+            if(resultCode == RESULT_OK) {
+                events = data.getParcelableArrayListExtra("events");
+
+                for(Event e : events) {
+                    Log.d("testtt", e.getTitle());
+                }
+
+                Intent intent = new Intent(getActivity(), CreateNewPlanActivity.class);
+                intent.putParcelableArrayListExtra("events", (ArrayList<? extends Parcelable>) events);
+
+                getActivity().setResult(RESULT_OK, intent);
+                getActivity().finish();
+            }
+        }
     }
 
     @Override
@@ -239,7 +263,11 @@ public class Fragment_PlaceList extends Fragment {
                 intent.putExtra("plan_id", plan_id);
                 intent.putExtra("date", event_date);
                 intent.putExtra("type", query);
-                startActivity(intent);
+                intent.putParcelableArrayListExtra("events", (ArrayList<? extends Parcelable>) events);
+                if (prevActivity.equals("CreateNewPlanActivity")) {
+                    intent.putExtra("ACTIVITY", "CreateNewPlanActivity");
+                }
+                getActivity().startActivityForResult(intent, 3);
             }
 
             @Override public void addImageOnClick(View v, int position) {
@@ -273,10 +301,9 @@ public class Fragment_PlaceList extends Fragment {
                                 + " End " + endTime.getCurrentHour() + ":" + endTime.getCurrentMinute());
                         String start_time = startTime.getCurrentHour() + ":" + startTime.getCurrentMinute();
                         String end_time = endTime.getCurrentHour() + ":" + endTime.getCurrentMinute();
-                        String prevActivity = getActivity().getIntent().getStringExtra("ACTIVITY");
+
                         Log.d("prev_activity", prevActivity);
                         if (prevActivity.equals("CreateNewPlanActivity")) {
-                            List<Event> events = getActivity().getIntent().getParcelableArrayListExtra("events");
                             Event anEvent = saveEventLocally(places, position, start_time, end_time);
                             events.add(anEvent);
 
@@ -284,7 +311,7 @@ public class Fragment_PlaceList extends Fragment {
                             intent.putParcelableArrayListExtra("events", (ArrayList<? extends Parcelable>) events);
                             intent.putExtra("ACTIVITY", "Fragment_PlaceList");
                             Log.d("prev activity", "createnewplan");
-                            getActivity().setResult(Activity.RESULT_OK, intent);
+                            getActivity().setResult(RESULT_OK, intent);
                             getActivity().finish();
                         } else {
                             saveEventToPlan(places, position, start_time, end_time);
@@ -356,5 +383,10 @@ public class Fragment_PlaceList extends Fragment {
         plan_id = getArguments().getInt("plan_id");
         event_date = getArguments().getString("date");
         databaseHelper = new DatabaseHelper(getActivity());
+
+        prevActivity = getActivity().getIntent().getStringExtra("ACTIVITY");
+        if (prevActivity.equals("CreateNewPlanActivity")) {
+            events = getActivity().getIntent().getParcelableArrayListExtra("events");
+        }
     }
 }

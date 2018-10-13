@@ -51,7 +51,6 @@ public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.Ne
         SimpleDateFormat format = new SimpleDateFormat("HH:mm");
 
         String time_start = event.getTime_start();
-
         String timeString = time_start + " - " + event.getTime_end() +
                 " (" + event.getTotal_time() + ")";
         if (event.getType().equals("restaurants")) {
