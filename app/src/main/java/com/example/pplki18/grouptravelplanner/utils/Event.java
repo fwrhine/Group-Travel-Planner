@@ -2,13 +2,14 @@ package com.example.pplki18.grouptravelplanner.utils;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
 import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class Event implements Parcelable {
+public class Event implements Parcelable, Comparable<Event> {
     private String title;
     private String location;
     private String description;
@@ -272,5 +273,27 @@ public class Event implements Parcelable {
         parcel.writeString(time_check_in);
         parcel.writeString(time_check_out);
         parcel.writeString(plan_name);
+    }
+
+    @Override
+    public int compareTo(@NonNull Event event) {
+        SimpleDateFormat format = new SimpleDateFormat("HH:mm");
+        try {
+            Date this_start = format.parse(this.getTime_start());
+            Date this_end = format.parse(this.getTime_end());
+            Date event_start = format.parse(event.getTime_start());
+            Date event_end = format.parse(event.getTime_end());
+
+            if (this_start.getTime() > event_start.getTime()) {
+                return 1;
+            } else if (this_start.getTime() < event_start.getTime()) {
+                return -1;
+            } else {
+                return (int) (this_end.getTime() - event_end.getTime());
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 }

@@ -258,6 +258,9 @@ public class PlaceActivity extends AppCompatActivity {
                             finish();
                         } else {
                             saveEventToPlan(start_time, end_time);
+                            Intent intent = new Intent(PlaceActivity.this, Fragment_PlaceList.class);
+                            intent.putExtra("ACTIVITY", "EditPlanActivity");
+                            setResult(Activity.RESULT_OK, intent);
                             finish();
                         }
                     }

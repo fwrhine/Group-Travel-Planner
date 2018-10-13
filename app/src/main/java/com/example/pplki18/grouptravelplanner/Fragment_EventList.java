@@ -29,6 +29,7 @@ import com.example.pplki18.grouptravelplanner.utils.RVAdapter_Plan;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -144,7 +145,7 @@ public class Fragment_EventList extends Fragment {
                 }
             } while (c.moveToNext());
         }
-
+        Collections.sort(all_event);
         return all_event;
     }
 
@@ -160,6 +161,7 @@ public class Fragment_EventList extends Fragment {
             }
         }
 
+        Collections.sort(some_event);
         return some_event;
     }
 

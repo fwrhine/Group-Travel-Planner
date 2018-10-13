@@ -83,18 +83,24 @@ public class Fragment_PlaceList extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 3) {
-            if(resultCode == RESULT_OK) {
-                events = data.getParcelableArrayListExtra("events");
+            if (resultCode == RESULT_OK) {
+                String prevActivity = data.getStringExtra("ACTIVITY");
+                if (prevActivity != null && prevActivity.equals("EditPlanActivity")) {
+                    getActivity().finish();
+                } else {
+                    events = data.getParcelableArrayListExtra("events");
 
-                for(Event e : events) {
-                    Log.d("testtt", e.getTitle());
+                    for (Event e : events) {
+                        Log.d("testtt", e.getTitle());
+                    }
+
+                    Intent intent = new Intent(getActivity(), CreateNewPlanActivity.class);
+                    intent.putParcelableArrayListExtra("events", (ArrayList<? extends Parcelable>) events);
+
+                    getActivity().setResult(RESULT_OK, intent);
+                    getActivity().finish();
                 }
 
-                Intent intent = new Intent(getActivity(), CreateNewPlanActivity.class);
-                intent.putParcelableArrayListExtra("events", (ArrayList<? extends Parcelable>) events);
-
-                getActivity().setResult(RESULT_OK, intent);
-                getActivity().finish();
             }
         }
     }
@@ -266,8 +272,14 @@ public class Fragment_PlaceList extends Fragment {
                 intent.putParcelableArrayListExtra("events", (ArrayList<? extends Parcelable>) events);
                 if (prevActivity.equals("CreateNewPlanActivity")) {
                     intent.putExtra("ACTIVITY", "CreateNewPlanActivity");
+                    getActivity().startActivityForResult(intent, 3);
+                } else if (prevActivity.equals("EditPlanActivity")){
+                    intent.putExtra("ACTIVITY", "EditPlanActivity");
+                    getActivity().startActivityForResult(intent, 3);
+                } else {
+                    startActivity(intent);
                 }
-                getActivity().startActivityForResult(intent, 3);
+
             }
 
             @Override public void addImageOnClick(View v, int position) {
