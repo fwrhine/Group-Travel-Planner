@@ -1,14 +1,22 @@
 package com.example.pplki18.grouptravelplanner.utils;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.pplki18.grouptravelplanner.R;
+import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
+import com.example.pplki18.grouptravelplanner.data.EventContract;
+import com.example.pplki18.grouptravelplanner.data.PlanContract;
 import com.github.vipulasri.timelineview.TimelineView;
 
 import java.text.SimpleDateFormat;
@@ -62,22 +70,78 @@ public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.Ne
         holder.eventTitle.setText(event.getTitle());
         holder.eventTimeDetail.setText(timeString);
 
-//        if(timeLineModel.getStatus() == OrderStatus.INACTIVE) {
-//            holder.mTimelineView.setMarker(VectorDrawableUtils.getDrawable(mContext, R.drawable.ic_marker_inactive, android.R.color.darker_gray));
-//        } else if(timeLineModel.getStatus() == OrderStatus.ACTIVE) {
-//            holder.mTimelineView.setMarker(VectorDrawableUtils.getDrawable(mContext, R.drawable.ic_marker_active, R.color.colorPrimary));
-//        } else {
-//            holder.mTimelineView.setMarker(ContextCompat.getDrawable(mContext, R.drawable.ic_marker), ContextCompat.getColor(mContext, R.color.colorPrimary));
-//        }
-//
-//        if(!timeLineModel.getDate().isEmpty()) {
-//            holder.mDate.setVisibility(View.VISIBLE);
-//            holder.mDate.setText(DateTimeUtils.parseDateTime(timeLineModel.getDate(), "yyyy-MM-dd HH:mm", "hh:mm a, dd-MMM-yyyy"));
-//        }
-//        else
-//            holder.mDate.setVisibility(View.GONE);
-//
-//        holder.mMessage.setText(timeLineModel.getMessage());
+        setCardViewLongClick(holder, position, event.getTitle());
+    }
+
+    public void setCardViewLongClick(final NewPlanViewHolder holder, final int position,
+                                     final String title) {
+        holder.cardView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                //creating a popup menu
+                PopupMenu popup = new PopupMenu(mContext, holder.cardView);
+                //inflating menu from xml resource
+                popup.inflate(R.menu.event_menu);
+                //adding click listener
+                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        AlertDialog box;
+                        switch (item.getItemId()) {
+                            case R.id.delete_event:
+                                box = deleteConfirmation(position, title);
+                                box.show();
+                                break;
+                        }
+                        return false;
+                    }
+                });
+                //displaying the popup
+                popup.show();
+                return true;
+            }
+        });
+    }
+
+    private AlertDialog deleteConfirmation(final int position, String title) {
+        AlertDialog myQuittingDialogBox = new AlertDialog.Builder(mContext)
+                //set message, title, and icon
+                .setTitle("Delete")
+                .setMessage("Do you want to delete " + title + "?")
+
+                .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        //your deleting code
+                        deleteEvent(events.get(position));
+                        events.remove(position);
+                        notifyDataSetChanged();
+                        dialog.dismiss();
+                    }
+
+                })
+
+                .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        dialog.dismiss();
+
+                    }
+                })
+                .create();
+        return myQuittingDialogBox;
+    }
+
+    private void deleteEvent(Event event) {
+        DatabaseHelper myDb = new DatabaseHelper(mContext);
+        SQLiteDatabase db = myDb.getWritableDatabase();
+
+        String deleteQuery = "DELETE FROM " + EventContract.EventEntry.TABLE_NAME + " WHERE " +
+                EventContract.EventEntry._ID + " = " + event.getEvent_id();
+
+        db.execSQL(deleteQuery);
+        db.close();
+        notifyDataSetChanged();
     }
 
     @Override

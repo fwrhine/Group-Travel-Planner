@@ -10,6 +10,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Event implements Parcelable, Comparable<Event> {
+    public int event_id;
+
     private String title;
     private String location;
     private String description;
@@ -45,6 +47,7 @@ public class Event implements Parcelable, Comparable<Event> {
     }
 
     protected Event(Parcel in) {
+        event_id = in.readInt();
         title = in.readString();
         location = in.readString();
         description = in.readString();
@@ -77,6 +80,18 @@ public class Event implements Parcelable, Comparable<Event> {
             return new Event[size];
         }
     };
+
+    public int getEvent_id() {
+        return event_id;
+    }
+
+    public void setEvent_id(int id) {
+        this.event_id = id;
+    }
+
+    public static Creator<Event> getCREATOR() {
+        return CREATOR;
+    }
 
     public String getTitle() {
         return title;
@@ -254,6 +269,7 @@ public class Event implements Parcelable, Comparable<Event> {
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeInt(event_id);
         parcel.writeString(title);
         parcel.writeString(location);
         parcel.writeString(description);

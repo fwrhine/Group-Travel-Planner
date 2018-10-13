@@ -279,7 +279,6 @@ public class Fragment_PlaceList extends Fragment {
                 } else {
                     startActivity(intent);
                 }
-
             }
 
             @Override public void addImageOnClick(View v, int position) {
@@ -345,8 +344,6 @@ public class Fragment_PlaceList extends Fragment {
         anEvent.setLocation(places.get(position).getAddress());
         anEvent.setDescription(places.get(position).getWebsite());
         anEvent.setDate(event_date);
-        Log.d("event date", event_date);
-        Log.d("plan_id", plan_id+"");
         anEvent.setTime_start(start_time);
         anEvent.setTime_end(end_time);
         anEvent.setPhone(places.get(position).getPhone_number());
