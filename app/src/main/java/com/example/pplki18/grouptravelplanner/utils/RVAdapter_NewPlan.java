@@ -6,7 +6,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.example.pplki18.grouptravelplanner.R;
@@ -51,10 +50,15 @@ public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.Ne
         Event event = events.get(position);
         SimpleDateFormat format = new SimpleDateFormat("HH:mm");
 
-        String time_start = format.format(event.getTime_start());
+        String time_start = event.getTime_start();
 
-        String timeString = time_start + " - " + format.format(event.getTime_end()) +
+        String timeString = time_start + " - " + event.getTime_end() +
                 " (" + event.getTotal_time() + ")";
+        if (event.getType().equals("restaurants")) {
+            holder.eventIcon.setMarker(mContext.getDrawable(R.drawable.ic_restaurant_black));
+        } else if (event.getType().equals("attractions")) {
+            holder.eventIcon.setMarker(mContext.getDrawable(R.drawable.ic_sunny_black));
+        }
         holder.eventTime.setText(time_start);
         holder.eventTitle.setText(event.getTitle());
         holder.eventTimeDetail.setText(timeString);
@@ -87,6 +91,7 @@ public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.Ne
         TextView eventTitle;
         TextView eventTimeDetail;
         TextView eventTime;
+        TimelineView eventIcon;
 
         NewPlanViewHolder(View itemView) {
             super(itemView);
@@ -94,6 +99,7 @@ public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.Ne
             eventTitle = (TextView) itemView.findViewById(R.id.item_title);
             eventTime = (TextView) itemView.findViewById(R.id.item_time);
             eventTimeDetail = (TextView) itemView.findViewById(R.id.item_time_detail);
+            eventIcon = (TimelineView) itemView.findViewById(R.id.time_marker);
         }
     }
 
