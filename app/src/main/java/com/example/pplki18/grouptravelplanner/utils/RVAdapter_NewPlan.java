@@ -136,11 +136,13 @@ public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.Ne
         DatabaseHelper myDb = new DatabaseHelper(mContext);
         SQLiteDatabase db = myDb.getWritableDatabase();
 
-        String deleteQuery = "DELETE FROM " + EventContract.EventEntry.TABLE_NAME + " WHERE " +
-                EventContract.EventEntry._ID + " = " + event.getEvent_id();
+        if(event.getEvent_id() != 0) {
+            String deleteQuery = "DELETE FROM " + EventContract.EventEntry.TABLE_NAME + " WHERE " +
+                    EventContract.EventEntry._ID + " = " + event.getEvent_id();
+            db.execSQL(deleteQuery);
+            db.close();
+        }
 
-        db.execSQL(deleteQuery);
-        db.close();
         notifyDataSetChanged();
     }
 
