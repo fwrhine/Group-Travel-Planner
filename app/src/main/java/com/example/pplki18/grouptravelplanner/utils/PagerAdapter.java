@@ -42,8 +42,14 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
             case 1:
                 Fragment_PlaceList tab2 = newInstance("attractions");
                 return tab2;
-            case 2: return new BookPlaneFragment();
-            case 3: return new BookTrainFragment();
+            case 2:
+                BookPlaneFragment myFragment = new BookPlaneFragment();
+                myFragment.setArguments(bundle);
+                return myFragment;
+            case 3:
+                BookTrainFragment myFragment2 = new BookTrainFragment();
+                myFragment2.setArguments(bundle);
+                return myFragment2;
             case 4: Fragment_CustomEvent tab3 = new Fragment_CustomEvent();
                 return tab3;
             default:

@@ -352,7 +352,7 @@ public class BookPlaneFragment extends Fragment {
         listTravel.setAdapter(adapter);
         listTravel.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+            public void onItemClick(AdapterView<?> adapterView, final View viewItem, int i, long l) {
 
                 final Dialog dialog = new Dialog(BookPlaneFragment.this.getActivity());
 
@@ -379,11 +379,11 @@ public class BookPlaneFragment extends Fragment {
                             @Override
                             public void onClick(View view) {
 
-                                final TextView tvFlightNum = view.findViewById(R.id.flightNumber);
-                                final TextView tvDepartCity = view.findViewById(R.id.departCity);
-                                final TextView tvArriveCity = view.findViewById(R.id.arriveCity);
-                                final TextView tvDepartTime = view.findViewById(R.id.departTime);
-                                final TextView tvArriveTime = view.findViewById(R.id.arriveTime);
+                                final TextView tvFlightNum = viewItem.findViewById(R.id.flightNumber);
+                                final TextView tvDepartCity = viewItem.findViewById(R.id.departCity);
+                                final TextView tvArriveCity = viewItem.findViewById(R.id.arriveCity);
+                                final TextView tvDepartTime = viewItem.findViewById(R.id.departTime);
+                                final TextView tvArriveTime = viewItem.findViewById(R.id.arriveTime);
 
                                 DatabaseHelper myDb = new DatabaseHelper(BookPlaneFragment.this.getActivity());
                                 SQLiteDatabase db = myDb.getReadableDatabase();
