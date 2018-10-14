@@ -9,15 +9,26 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:app1="http://schemas.android.com/apk/res-auto">
 
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:gravity="center"
+            android:minHeight="?attr/actionBarSize"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <ImageView
             android:id="@+id/image"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:layout_marginTop="30dp"
             android:scaleType="centerCrop"
             app1:layout_constraintDimensionRatio="H, 3:2"
             app:layout_constraintBottom_toTopOf="@id/guideline"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0" />
 

@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.media.Image;
 import android.media.Rating;
 import android.net.Uri;
@@ -68,6 +69,12 @@ public class PlaceActivity extends AppCompatActivity {
         setContentView(R.layout.activity_place);
 
         init();
+
+        // Toolbar :: Transparent
+        toolbar.setBackgroundColor(Color.TRANSPARENT);
+
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         ic_add.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -78,7 +78,6 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
 
         int plan_id = bundle.getInt("plan_id");
         String date = bundle.getString("date");
-//        Log.d("PLANID", plan_id+ "");
         args.putInt("plan_id", plan_id);
         args.putString("date", date);
 

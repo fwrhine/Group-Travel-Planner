@@ -30,7 +30,6 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
 import com.example.pplki18.grouptravelplanner.data.EventContract;
-import com.example.pplki18.grouptravelplanner.data.PlanContract;
 import com.example.pplki18.grouptravelplanner.utils.PaginationScrollListener;
 import com.example.pplki18.grouptravelplanner.utils.Place;
 import com.example.pplki18.grouptravelplanner.utils.RVAdapter_Place;
@@ -53,7 +52,7 @@ public class Fragment_PlaceList extends Fragment {
     private SessionManager sessionManager;
     private DatabaseHelper databaseHelper;
 
-    private String query;
+    private String type;
     private String region;
     private String latitude;
     private String longitude;
@@ -102,7 +101,7 @@ public class Fragment_PlaceList extends Fragment {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String newQuery) {
-                sendRequest(newQuery);
+                sendRequest(newQuery + " " + type);
                 adapter.clear();
                 progressBar.setVisibility(View.VISIBLE);
 
@@ -112,7 +111,7 @@ public class Fragment_PlaceList extends Fragment {
             @Override
             public boolean onQueryTextChange(String newQuery) {
                 if (TextUtils.isEmpty(newQuery)){
-                    sendRequest(query);
+                    sendRequest(type);
                     adapter.clear();
                     progressBar.setVisibility(View.VISIBLE);
                 }
@@ -120,18 +119,18 @@ public class Fragment_PlaceList extends Fragment {
             }
         });
 
-        sendRequest(query);
+        sendRequest(type);
     }
 
     public void sendRequest(String query) {
         // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(getActivity());
-        String url ="https://maps.googleapis.com/maps/api/place/textsearch/json?query=" + query + "+in+" + region
-                + "&fields=id,name,types,rating,formatted_address&key=" + getString(R.string.api_key);
 
-//        String url ="https://maps.googleapis.com/maps/api/place/textsearch/json?query=" + query
-//                + "&locationbias=circle:5000@" + latitude + "," + longitude
-//                + "&fields=id,name,types,rating,formatted_address&key=" + getString(R.string.api_key);
+        String url ="https://maps.googleapis.com/maps/api/place/textsearch/json?query=" + query +
+                "+in+" + region + "&fields=id,name,types,rating,formatted_address" +
+                "&key=" + getString(R.string.api_key);
+
+        Log.d("REQUEST", url);
 
         // Request a string response from the provided URL.
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
@@ -234,7 +233,7 @@ public class Fragment_PlaceList extends Fragment {
                 intent.putExtra("PLACE_ID", String.valueOf(places.get(position).getPlace_id()));
                 intent.putExtra("plan_id", plan_id);
                 intent.putExtra("date", event_date);
-                intent.putExtra("type", query);
+                intent.putExtra("type", type);
                 startActivity(intent);
             }
 
@@ -296,7 +295,7 @@ public class Fragment_PlaceList extends Fragment {
         contentValues.put(EventContract.EventEntry.COL_TIME_START, start_time);
         contentValues.put(EventContract.EventEntry.COL_TIME_END, end_time);
         contentValues.put(EventContract.EventEntry.COL_PHONE, places.get(position).getPhone_number());
-        contentValues.put(EventContract.EventEntry.COL_TYPE, query);
+        contentValues.put(EventContract.EventEntry.COL_TYPE, type);
         contentValues.put(EventContract.EventEntry.COL_RATING, places.get(position).getRating());
         long event_id = db.insert(EventContract.EventEntry.TABLE_NAME, null, contentValues);
 
@@ -311,7 +310,7 @@ public class Fragment_PlaceList extends Fragment {
         progressBar = (ProgressBar) getView().findViewById(R.id.main_progress);
         searchView = (SearchView) getView().findViewById(R.id.search_place);
         linearLayoutManager = new LinearLayoutManager(getActivity());
-        query = getArguments().getString("QUERY");
+        type = getArguments().getString("QUERY");
         sessionManager = new SessionManager(getActivity().getApplicationContext());
         region = sessionManager.getCurrentRegion();
         latitude = getArguments().getString("LATITUDE");

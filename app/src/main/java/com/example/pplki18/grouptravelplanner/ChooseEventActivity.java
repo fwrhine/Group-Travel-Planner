@@ -43,7 +43,6 @@ public class ChooseEventActivity extends AppCompatActivity {
 //        PlaceLikelihoodBufferResponse currentPlace = PlaceDetectionClient.getCurrentPlace();
 
     int REGION_AUTOCOMPLETE_REQUEST_CODE = 1;
-    int PLACE_AUTOCOMPLETE_REQUEST_CODE = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -169,18 +168,6 @@ public class ChooseEventActivity extends AppCompatActivity {
                 Log.d("COOR", regionCoor.toString());
 
                 textRegion.setText(place.getName());
-            } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
-                Status status = PlaceAutocomplete.getStatus(this, data);
-                // TODO: Handle the error.
-                Log.i("AFTER CLICK", status.getStatusMessage());
-
-            } else if (resultCode == RESULT_CANCELED) {
-                // The user canceled the operation.
-            }
-        } else if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
-            if (resultCode == RESULT_OK) {
-                Place place = PlaceAutocomplete.getPlace(this, data);
-                Log.d("PLACE ONE", place.getName().toString());
             } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
                 Status status = PlaceAutocomplete.getStatus(this, data);
                 // TODO: Handle the error.

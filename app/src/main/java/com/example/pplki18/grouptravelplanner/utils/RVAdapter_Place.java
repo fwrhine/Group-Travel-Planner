@@ -162,7 +162,7 @@ public class RVAdapter_Place extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public void getPhoto(final PlaceViewHolder placeViewHolder, String photo_reference) {
         // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(context);
-        String url = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=900&photoreference="
+        String url = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=300&photoreference="
                 + photo_reference + "&key=" + context.getString(R.string.api_key);
 
 

@@ -72,7 +72,8 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/api_key" />
 
-        <activity android:name=".PlaceActivity"></activity>
+        <activity android:name=".PlaceActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity android:name=".InHomeActivity" />
         <activity android:name=".CreateNewPlanActivity" />
