@@ -36,20 +36,21 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 
 public class BookPlaneFragment extends Fragment {
 
-    EditText origin, destination;
-    EditText departureDay, departureMonth, departureYear;
-    Button searchButton;
+    private EditText origin, destination;
+    private EditText departureDay, departureMonth, departureYear;
+    private Button searchButton;
 
-    int plan_id;
-    String token;
-    HashMap<String, String> availableAirports;
+    private int plan_id;
+    private String token;
+    private HashMap<String, String> availableAirports;
 
-    RequestQueue queue;
-    int countUpdate;
-    ListView listTravel;
+    private RequestQueue queue;
+    private int countUpdate;
+    private ListView listTravel;
 
     @Nullable
     @Override
@@ -62,7 +63,7 @@ public class BookPlaneFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        origin = getView().findViewById(R.id.origin);
+        origin = Objects.requireNonNull(getView()).findViewById(R.id.origin);
         destination = getView().findViewById(R.id.destination);
 
         departureDay = getView().findViewById(R.id.departureDay);
@@ -82,7 +83,7 @@ public class BookPlaneFragment extends Fragment {
         initSearch();
     }
 
-    public void initSearch() {
+    private void initSearch() {
 
         String secretKey = "6c484049beacda6541bf40c90e62e8e5";
         String tokenUrl = "https://api-sandbox.tiket.com/apiv1/payexpress"
@@ -108,41 +109,41 @@ public class BookPlaneFragment extends Fragment {
 
                     @Override
                     public void onClick(View view) {
-                        if (!validate()) {
-                            return;
-                        }
+                        if (validate()) {
 
-                        // TODO CHANGE VAR NAME LATER M8
-                        String startLoc = origin.getText().toString();
-                        String endLoc = destination.getText().toString();
-                        final String depart = departureYear.getText().toString()
-                                + "-" + departureMonth.getText().toString() + "-"
-                                + departureDay.getText().toString();
+                            // TODO CHANGE VAR NAME LATER M8
+                            String startLoc = origin.getText().toString();
+                            String endLoc = destination.getText().toString();
+                            final String depart = departureYear.getText().toString()
+                                    + "-" + departureMonth.getText().toString() + "-"
+                                    + departureDay.getText().toString();
 
-                        Log.d("SIZE-MAP", availableAirports.size()+"");
+                            Log.d("SIZE-MAP", availableAirports.size()+"");
 
-                        if(availableAirports.containsKey(startLoc)) {
-                            if(availableAirports.containsKey(endLoc)) {
+                            if(availableAirports.containsKey(startLoc)) {
 
-                                final String start = availableAirports.get(startLoc);
-                                final String end = availableAirports.get(endLoc);
-                                flightApiCall(token, start, end, depart);
+                                if(availableAirports.containsKey(endLoc)) {
+
+                                    final String start = availableAirports.get(startLoc);
+                                    final String end = availableAirports.get(endLoc);
+                                    flightApiCall(token, start, end, depart);
+                                } else {
+                                    Toast.makeText(BookPlaneFragment.this.getActivity()
+                                            , "No Airports are in the arrival area"
+                                            , Toast.LENGTH_LONG).show();
+                                }
+                            } else {
+                                Toast.makeText(BookPlaneFragment.this.getActivity()
+                                        , "No Airports are in the departure area"
+                                        , Toast.LENGTH_LONG).show();
                             }
-                            else {
-                                Toast.makeText(BookPlaneFragment.this.getActivity(), "No Airports are in the arrival area",
-                                        Toast.LENGTH_LONG).show();
-                            }
-                        }
-                        else {
-                            Toast.makeText(BookPlaneFragment.this.getActivity(), "No Airports are in the departure area",
-                                    Toast.LENGTH_LONG).show();
                         }
                     }
                 }
         );
     }
 
-    public void generateToken(String url, final TokenCallback callback) {
+    private void generateToken(String url, final TokenCallback callback) {
         // Request a string response from the provided URL.
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
@@ -170,7 +171,7 @@ public class BookPlaneFragment extends Fragment {
         queue.add(stringRequest);
     }
 
-    public void fillAirportList(final AirportCallback callback) {
+    private void fillAirportList(final AirportCallback callback) {
         String url = "https://api-sandbox.tiket.com/flight_api/all_airport?token=" + token + "&output=json";
 
         Log.d("FILL-MAP", "url -> " + url);
@@ -224,7 +225,7 @@ public class BookPlaneFragment extends Fragment {
         queue.add(stringRequest);
     }
 
-    public void flightApiCall (final String token, final String start, final String end,
+    private void flightApiCall (final String token, final String start, final String end,
                               final String depart) {
         // Request a string response from the provided URL.
 
@@ -288,7 +289,7 @@ public class BookPlaneFragment extends Fragment {
         queue.add(stringRequest);
     }
 
-    public void getFlightData (String startLoc, String endLoc, JSONArray departure)
+    private void getFlightData (String startLoc, String endLoc, JSONArray departure)
             throws JSONException {
         // TODO retrieve flight data
         Log.d("SUCCESS", "Correct response accepted");
@@ -320,7 +321,7 @@ public class BookPlaneFragment extends Fragment {
         setFlightList(startLoc, endLoc, flightConnect);
     }
 
-    public void setFlightList (final String startLoc, final String endLoc,
+    private void setFlightList (final String startLoc, final String endLoc,
                               HashMap<String, ArrayList<String>> map) {
 
         Log.d("FILL", "Start filling list");
@@ -426,7 +427,7 @@ public class BookPlaneFragment extends Fragment {
         Log.d("DONE", "ListView populated");
     }
 
-    public void checkUpdate (final String token, final String start, final String end,
+    private void checkUpdate (final String token, final String start, final String end,
                              final String depart) {
         String url = "https://api-sandbox.tiket.com/ajax/mCheckFlightUpdated?token=" + token
                 + "&d=" + start + "&a=" + end + "&date=" + depart + "&time=134078435&output=json";
@@ -466,7 +467,7 @@ public class BookPlaneFragment extends Fragment {
         queue.add(stringRequest);
     }
 
-    public boolean validate() {
+    private boolean validate() {
         boolean valid = true;
 
         String startLoc = origin.getText().toString();

@@ -16,7 +16,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="From:"
+            android:text="@string/bookFrom"
             android:layout_margin="8dp" />
 
         <EditText
@@ -25,16 +25,17 @@
             android:layout_height="wrap_content"
             android:layout_weight="4"
             android:background="@android:color/darker_gray"
-            android:hint="Origin"
+            android:hint="@string/bookOrigin"
             android:layout_marginBottom="8dp"
             android:layout_marginEnd="8dp"
-            android:layout_marginTop="8dp" />
+            android:layout_marginTop="8dp"
+            android:inputType="text" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="To:"
+            android:text="@string/bookTo"
             android:layout_marginBottom="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginTop="8dp" />
@@ -45,10 +46,11 @@
             android:layout_height="wrap_content"
             android:layout_weight="4"
             android:background="@android:color/darker_gray"
-            android:hint="Destination"
+            android:hint="@string/bookDestination"
             android:layout_marginBottom="8dp"
             android:layout_marginEnd="8dp"
-            android:layout_marginTop="8dp" />
+            android:layout_marginTop="8dp"
+            android:inputType="text" />
 
     </LinearLayout>
 
@@ -63,7 +65,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Date:"
+            android:text="@string/bookDate"
             android:layout_margin="8dp"/>
 
         <EditText
@@ -72,7 +74,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="4"
             android:background="@android:color/darker_gray"
-            android:hint="Day"
+            android:hint="@string/bookDay"
             android:inputType="number"
             android:maxLength="2"
             android:layout_marginTop="8dp"
@@ -85,7 +87,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="4"
             android:background="@android:color/darker_gray"
-            android:hint="Month"
+            android:hint="@string/bookMonth"
             android:inputType="number"
             android:maxLength="2"
             android:layout_marginTop="8dp"
@@ -98,7 +100,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="4"
             android:background="@android:color/darker_gray"
-            android:hint="Year"
+            android:hint="@string/bookYear"
             android:inputType="number"
             android:maxLength="4"
             android:layout_marginTop="8dp"
@@ -118,7 +120,7 @@
             android:background="@color/background_color"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="FIND FLIGHT"
+            android:text="@string/buttonFindFlight"
             android:layout_margin="8dp"/>
 
         <ListView
