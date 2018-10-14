@@ -20,7 +20,7 @@ public class EventContract {
         public static final String _ID = BaseColumns._ID;
         public static final String COL_PLAN_ID = "plan_id";
         public static final String COL_TITLE = "event_title";
-        public static final String COL_LOCATION = "event_location";
+        public static final String COL_LOCATION = "event_location";     // GAK USAH
         public static final String COL_DESCRIPTION = "event_description";
         public static final String COL_DATE = "event_date";
         public static final String COL_TIME_START = "event_time_start";

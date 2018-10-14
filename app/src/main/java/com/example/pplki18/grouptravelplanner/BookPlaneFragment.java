@@ -1,6 +1,8 @@
 package com.example.pplki18.grouptravelplanner;
 
 import android.app.Dialog;
+import android.content.ContentValues;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -23,6 +25,8 @@ import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
+import com.example.pplki18.grouptravelplanner.data.EventContract;
 import com.example.pplki18.grouptravelplanner.utils.Flight;
 import com.example.pplki18.grouptravelplanner.utils.FlightAdapter;
 
@@ -39,6 +43,7 @@ public class BookPlaneFragment extends Fragment {
     EditText departureDay, departureMonth, departureYear;
     Button searchButton;
 
+    int plan_id;
     String token;
     HashMap<String, String> availableAirports;
 
@@ -67,6 +72,7 @@ public class BookPlaneFragment extends Fragment {
         searchButton = getView().findViewById(R.id.searchButton);
         listTravel = getView().findViewById(R.id.listTravel);
 
+        plan_id = getArguments().getInt("plan_id");
         token = "";
         countUpdate = 0;
         queue = Volley.newRequestQueue(this.getActivity());
@@ -120,7 +126,7 @@ public class BookPlaneFragment extends Fragment {
 
                                 final String start = availableAirports.get(startLoc);
                                 final String end = availableAirports.get(endLoc);
-                                getFlightData(token, start, end, depart);
+                                flightApiCall(token, start, end, depart);
                             }
                             else {
                                 Toast.makeText(BookPlaneFragment.this.getActivity(), "No Airports are in the arrival area",
@@ -146,9 +152,8 @@ public class BookPlaneFragment extends Fragment {
 
                         try {
                             JSONObject json = new JSONObject(response);
-                            String strToken = json.getString("token");
 
-                            token = strToken;
+                            token = json.getString("token");
                             callback.onCallback(token);
 
                         } catch (JSONException e) {
@@ -166,7 +171,6 @@ public class BookPlaneFragment extends Fragment {
     }
 
     public void fillAirportList(final AirportCallback callback) {
-
         String url = "https://api-sandbox.tiket.com/flight_api/all_airport?token=" + token + "&output=json";
 
         Log.d("FILL-MAP", "url -> " + url);
@@ -220,7 +224,7 @@ public class BookPlaneFragment extends Fragment {
         queue.add(stringRequest);
     }
 
-    public void getFlightData(final String token, final String start, final String end,
+    public void flightApiCall (final String token, final String start, final String end,
                               final String depart) {
         // Request a string response from the provided URL.
 
@@ -243,7 +247,7 @@ public class BookPlaneFragment extends Fragment {
                             if (!testResponse.isNull("departures")) {
                                 JSONObject results = testResponse.getJSONObject("departures");
                                 JSONArray departure = results.getJSONArray("result");
-                                retrieveFlights(start, end, departure);
+                                getFlightData(start, end, departure);
                             }
 
                             else {
@@ -284,7 +288,7 @@ public class BookPlaneFragment extends Fragment {
         queue.add(stringRequest);
     }
 
-    public void retrieveFlights (String startLoc, String endLoc, JSONArray departure)
+    public void getFlightData (String startLoc, String endLoc, JSONArray departure)
             throws JSONException {
         // TODO retrieve flight data
         Log.d("SUCCESS", "Correct response accepted");
@@ -313,18 +317,16 @@ public class BookPlaneFragment extends Fragment {
 
         }
         Log.d("FLIGHT-LIST", "List size: " + flightConnect.size());
-        completeFlightData(startLoc, endLoc, flightConnect);
+        setFlightList(startLoc, endLoc, flightConnect);
     }
 
-    public void completeFlightData (final String startLoc, String endLoc,
-                                    HashMap<String, ArrayList<String>> map) {
+    public void setFlightList (final String startLoc, final String endLoc,
+                              HashMap<String, ArrayList<String>> map) {
 
         Log.d("FILL", "Start filling list");
-        ArrayList<String> keyArray = new ArrayList<>();
+        Log.d("plan_id", plan_id+"");
 
-        for (String key : map.keySet()) {
-            keyArray.add(key);
-        }
+        ArrayList<String> keyArray = new ArrayList<>(map.keySet());
 
         ArrayList<Flight> availableFlights = new ArrayList<>();
 
@@ -370,42 +372,62 @@ public class BookPlaneFragment extends Fragment {
                         }
                 );
 
-                final TextView tvFlightNum = (TextView) view.findViewById(R.id.flightNumber);
-                //final TextView tvDepartCity = (TextView) view.findViewById(R.id.departCity);
-                //final TextView tvArriveCity = (TextView) view.findViewById(R.id.arriveCity);
-                //final TextView tvDepartTime = (TextView) view.findViewById(R.id.departTime);
-                //final TextView tvArriveTime = (TextView) view.findViewById(R.id.arriveTime);
-
                 yesButton.setOnClickListener(
                         new View.OnClickListener() {
 
                             @Override
                             public void onClick(View view) {
 
-                                /*
+                                final TextView tvFlightNum = view.findViewById(R.id.flightNumber);
+                                final TextView tvDepartCity = view.findViewById(R.id.departCity);
+                                final TextView tvArriveCity = view.findViewById(R.id.arriveCity);
+                                final TextView tvDepartTime = view.findViewById(R.id.departTime);
+                                final TextView tvArriveTime = view.findViewById(R.id.arriveTime);
+
                                 DatabaseHelper myDb = new DatabaseHelper(BookPlaneFragment.this.getActivity());
                                 SQLiteDatabase db = myDb.getReadableDatabase();
-                                String sql = "INSERT INTO "+ EventContract.EventEntry.TABLE_NAME +"(origin, destination, departure_time, arrival_time, transport_number) VALUES ("+ tvDepartCity.getText() +", "+ tvArriveCity.getText() +", "+ tvDepartTime.getText() +", "+ tvArriveTime.getText() +", "+ tvFlightNum.getText() +")";
-                                db.execSQL(sql);
-                                */
 
-                                Toast.makeText(BookPlaneFragment.this.getActivity(), "Selected Flight : "
-                                                + tvFlightNum.getText() , Toast.LENGTH_LONG).show();
-                                dialog.dismiss();
+                                final String date = departureYear.getText().toString()
+                                        + "-" + departureMonth.getText().toString() + "-"
+                                        + departureDay.getText().toString();
+
+                                ContentValues values = new ContentValues();
+
+                                values.put(EventContract.EventEntry.COL_PLAN_ID, plan_id);
+                                values.put(EventContract.EventEntry.COL_TITLE, "Travel Plan");
+                                values.put(EventContract.EventEntry.COL_DESCRIPTION, "Flight for Transport");
+                                values.put(EventContract.EventEntry.COL_DATE, date);
+                                values.put(EventContract.EventEntry.COL_TYPE, "Transport");
+
+                                values.put(EventContract.EventEntry.COL_ORIGIN, tvDepartCity.getText().toString());
+                                values.put(EventContract.EventEntry.COL_DESTINATION, tvArriveCity.getText().toString());
+                                values.put(EventContract.EventEntry.COL_DEPARTURE_TIME, tvDepartTime.getText().toString());
+                                values.put(EventContract.EventEntry.COL_ARRIVAL_TIME, tvArriveTime.getText().toString());
+                                values.put(EventContract.EventEntry.COL_TRANS_NUMBER, tvFlightNum.getText().toString());
+
+                                long newRowId = db.insert(EventContract.EventEntry.TABLE_NAME, null, values);
+
+                                if (newRowId != -1) {
+                                    Toast.makeText(BookPlaneFragment.this.getActivity(), "Selected Flight : "
+                                            + tvFlightNum.getText() , Toast.LENGTH_LONG).show();
+                                    dialog.dismiss();
+                                }
+
+                                else {
+                                    Toast.makeText(BookPlaneFragment.this.getActivity(),
+                                            "Selection Failed!", Toast.LENGTH_LONG).show();
+                                    dialog.dismiss();
+                                }
                             }
                         }
                 );
             }
         });
         Log.d("DONE", "ListView populated");
-
     }
 
     public void checkUpdate (final String token, final String start, final String end,
                              final String depart) {
-        // TODO check update
-        // Request a string response from the provided URL.
-
         String url = "https://api-sandbox.tiket.com/ajax/mCheckFlightUpdated?token=" + token
                 + "&d=" + start + "&a=" + end + "&date=" + depart + "&time=134078435&output=json";
 
@@ -422,7 +444,7 @@ public class BookPlaneFragment extends Fragment {
                             if (countUpdate < 3 && update != 0) {
                                 Log.d("UPDATE", "update complete");
                                 countUpdate++;
-                                getFlightData(token, start, end, depart);
+                                flightApiCall(token, start, end, depart);
                             }
                             else {
                                 Toast.makeText(BookPlaneFragment.this.getActivity(), "No flights are available",
@@ -465,8 +487,7 @@ public class BookPlaneFragment extends Fragment {
             valid = false;
         }
 
-        else if ((startDay.isEmpty() && startDay.length() != 2) && (startMonth.isEmpty()
-                && startMonth.length() != 2) && (startYear.isEmpty() && startYear.length() != 4)) {
+        else if (startDay.isEmpty() && startMonth.isEmpty() && startYear.isEmpty()) {
             Toast.makeText(BookPlaneFragment.this.getActivity(), "Please complete the departure date",
                     Toast.LENGTH_LONG).show();
             valid = false;

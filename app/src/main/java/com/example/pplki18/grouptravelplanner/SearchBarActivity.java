@@ -164,7 +164,7 @@ public class SearchBarActivity extends AppCompatActivity {
         public Integer findFriendId(String username1){
             Integer friendID;
             String selectQuery = "SELECT * FROM " + UserContract.UserEntry.TABLE_NAME +
-                    " WHERE " + UserContract.UserEntry.COL_USERNAME + " = " +  username1;
+                    " WHERE " + UserContract.UserEntry.COL_USERNAME + " = " + "\"" + username1 + "\"";
 
             Log.e("USERS", selectQuery);
 
@@ -184,6 +184,7 @@ public class SearchBarActivity extends AppCompatActivity {
 
             TextView friendUsername = findViewById(R.id.username);
             String friendUsername2 = friendUsername.getText().toString();
+            friendUsername2 = friendUsername2.substring(1, friendUsername2.length());
 
             ContentValues values = new ContentValues();
             values.put(FriendsContract.FriendsEntry.COL_USER_ID, user.get(sessionManager.KEY_ID));
