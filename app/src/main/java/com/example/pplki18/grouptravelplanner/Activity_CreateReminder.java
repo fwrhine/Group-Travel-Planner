@@ -10,18 +10,10 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteException;
-import android.icu.text.SimpleDateFormat;
-import android.icu.util.TimeZone;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.RemoteException;
 import android.provider.CalendarContract;
-import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.format.Time;
 import android.util.Log;
@@ -41,8 +33,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-
-import butterknife.Optional;
+import java.util.Objects;
 
 import static android.Manifest.permission.WRITE_CALENDAR;
 
@@ -73,15 +64,17 @@ public class Activity_CreateReminder extends AppCompatActivity implements DatePi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_reminder);
         WRITE_CALENDER = 4;
+        currChannel = 1;
         btn_pick = (Button) findViewById(R.id.button_pick_notification);
         resultYear = (TextView) findViewById(R.id.notifaction_resultYear);
         resultMonth = (TextView) findViewById(R.id.notifaction_resultMonth);
         resultDay = (TextView) findViewById(R.id.notifaction_resultDay);
         resultTime = (TextView) findViewById(R.id.notifaction_resultTime);
-        ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.WRITE_CALENDAR}, WRITE_CALENDER);
 
-
-        reminders = new ArrayList<Reminder>();
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_CALENDAR}, WRITE_CALENDER);
+        }
+        reminders = new ArrayList<>();
         // Waits for you to click the button
         btn_pick.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -112,6 +105,12 @@ public class Activity_CreateReminder extends AppCompatActivity implements DatePi
 //                generalCreateNotification("event", "detail", Integer i);
 
                 generalInsertNotifier(destText, notificationTxt, yearFinal, monthFinal, dayFinal, hourFinal, minuteFinal);
+
+
+                alarmCal.set(yearFinal, monthFinal, dayFinal, hourFinal, minuteFinal);
+                startAlarm(alarmCal);
+
+
             }
         });
     }
@@ -126,9 +125,9 @@ public class Activity_CreateReminder extends AppCompatActivity implements DatePi
         calIntent.putExtra(CalendarContract.Events.EVENT_LOCATION, event);
         calIntent.putExtra(CalendarContract.Events.DESCRIPTION, detail);
         Calendar startTime = Calendar.getInstance();
-        startTime.set(yearFinal, monthFinal, dayFinal, hourFinal - 1, minuteFinal);
+        startTime.set(yearFinal, monthFinal, dayFinal, hourFinal, minuteFinal);
         Calendar endTime = Calendar.getInstance();
-        endTime.set(yearFinal, monthFinal, dayFinal, hourFinal, minuteFinal);
+        endTime.set(yearFinal, monthFinal, dayFinal, hourFinal + 1, minuteFinal);
         calIntent.putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME,
                 startTime.getTimeInMillis());
         calIntent.putExtra(CalendarContract.EXTRA_EVENT_END_TIME,
@@ -140,7 +139,7 @@ public class Activity_CreateReminder extends AppCompatActivity implements DatePi
 
 
     public void generalInsertNotifier(String title, String description, Integer year, Integer month,
-                           Integer day, Integer hour, Integer minute) {
+                                      Integer day, Integer hour, Integer minute) {
         //TODO error handling, numbers must be within limit
         ContentValues event = new ContentValues();
         ContentResolver cr = getContentResolver();
@@ -174,7 +173,7 @@ public class Activity_CreateReminder extends AppCompatActivity implements DatePi
         event.put(CalendarContract.Events.EVENT_TIMEZONE, Time.getCurrentTimezone());
 
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_CALENDAR) == PackageManager.PERMISSION_GRANTED) {
             Log.v("calenderIF", "inside if");
             Uri url = cr.insert(CalendarContract.Events.CONTENT_URI, event);
         }
@@ -188,7 +187,7 @@ public class Activity_CreateReminder extends AppCompatActivity implements DatePi
 
 
     public void generalCreateNotification(String event, String detail, Integer year, Integer month,
-            Integer day, Integer hour, Integer minute){
+                                          Integer day, Integer hour, Integer minute){
         Intent calIntent = new Intent(Intent.ACTION_INSERT);
         calIntent.setData(CalendarContract.Events.CONTENT_URI);
         calIntent.putExtra(CalendarContract.Events.TITLE, event);
@@ -205,6 +204,7 @@ public class Activity_CreateReminder extends AppCompatActivity implements DatePi
         startActivity(calIntent);
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
         hourFinal = hourOfDay;
@@ -242,7 +242,11 @@ public class Activity_CreateReminder extends AppCompatActivity implements DatePi
         currChannel++;
         //TODO need to get time
         Log.v("check calender", alarmCal.getTimeInMillis() + "");
-        alarmManager.setExact(AlarmManager.RTC_WAKEUP, alarmCal.getTimeInMillis(), pendingIntent );
+
+        //
+        //added Objects.requireNonNull
+        //
+        Objects.requireNonNull(alarmManager).setExact(AlarmManager.RTC_WAKEUP, alarmCal.getTimeInMillis(), pendingIntent );
     }
 
     private void cancelAlarm(){
@@ -251,7 +255,7 @@ public class Activity_CreateReminder extends AppCompatActivity implements DatePi
         // requestCodeList size will increase to allow the setting of multiple alarms
         PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), currChannel, intent, 0);
 
-        alarmManager.cancel(pendingIntent);
+        Objects.requireNonNull(alarmManager).cancel(pendingIntent);
         Toast.makeText(getApplicationContext(), "Alarm notification canceled", Toast.LENGTH_SHORT).show();
     }
 

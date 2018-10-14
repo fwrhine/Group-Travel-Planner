@@ -43,7 +43,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/button_pick_notification"
-            android:text="Year: " />
+            android:text="Year: "
+            android:paddingRight="20dp"/>
 
         <TextView
             android:id="@+id/notifaction_resultYear"
@@ -57,7 +58,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/text_resultYear"
-            android:text="Month: " />
+            android:text="Month: "
+            android:paddingRight="20dp"/>
 
         <TextView
             android:id="@+id/notifaction_resultMonth"
@@ -71,7 +73,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/text_resultMonth"
-            android:text="Day :" />
+            android:text="Day : "
+            android:paddingRight="20dp"/>
 
         <TextView
             android:id="@+id/notifaction_resultDay"
@@ -85,7 +88,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/text_resultDay"
-            android:text="Time: "/>
+            android:text="Time: "
+            android:paddingRight="20dp"/>
 
         <TextView
             android:id="@+id/notifaction_resultTime"

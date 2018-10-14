@@ -11,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.example.pplki18.grouptravelplanner.Reminder;
 import com.example.pplki18.grouptravelplanner.data.UserContract.UserEntry;
 import com.example.pplki18.grouptravelplanner.data.GroupContract.GroupEntry;
 import com.example.pplki18.grouptravelplanner.data.UserGroupContract.UserGroupEntry;
@@ -22,6 +23,7 @@ import com.example.pplki18.grouptravelplanner.data.EntertainmentContract.Enterta
 import com.example.pplki18.grouptravelplanner.data.FlightContract.FlightEntry;
 import com.example.pplki18.grouptravelplanner.data.TrainContract.TrainEntry;
 import com.example.pplki18.grouptravelplanner.data.OtherEventContract.OtherEventEntry;
+import com.example.pplki18.grouptravelplanner.data.ReminderContract.ReminderEntry;
 
 import java.io.ByteArrayOutputStream;
 
@@ -182,6 +184,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + "FOREIGN KEY(" + OtherEventEntry.COL_PLAN_ID + ")"
                 + " REFERENCES " + RundownEntry.TABLE_NAME + "(" + RundownEntry._ID + "));";
 
+        //create notification table
+
+        String SQL_CREATE_REMINDER_TABLE = "CREATE TABLE " + ReminderEntry.TABLE_NAME + " ("
+                + ReminderEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + ReminderEntry.COL_USER_ID + " INTEGER, "
+                + ReminderEntry.COL_CHANNEL_ID + " INTEGER, "
+
+
+                + "FOREIGN KEY(" + ReminderEntry.COL_USER_ID + ")"
+                + " REFERENCES " + UserEntry.TABLE_NAME + "(" + UserEntry._ID + "), "
+                + "FOREIGN KEY(" + ReminderEntry.COL_USER_ID + ")"
+                + " REFERENCES " + UserEntry.TABLE_NAME + "(" + UserEntry._ID + "));";
+
         // Execute the SQL statements
         db.execSQL(SQL_CREATE_USER_TABLE);
         db.execSQL(SQL_CREATE_GROUP_TABLE);
@@ -194,6 +209,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(SQL_CREATE_FLIGHT_TABLE);
         db.execSQL(SQL_CREATE_TRAIN_TABLE);
         db.execSQL(SQL_CREATE_OTHER_EVENT_TABLE);
+        db.execSQL(SQL_CREATE_REMINDER_TABLE);
     }
 
     @Override

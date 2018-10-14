@@ -1,6 +1,9 @@
 package com.example.pplki18.grouptravelplanner;
 
+import android.app.Notification;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -16,6 +19,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
+import com.example.pplki18.grouptravelplanner.data.GroupContract;
+import com.example.pplki18.grouptravelplanner.data.ReminderContract;
+import com.example.pplki18.grouptravelplanner.utils.Group;
 import com.example.pplki18.grouptravelplanner.utils.RVAdapter_Reminder;
 
 import java.util.ArrayList;
@@ -86,6 +92,36 @@ public class Fragment_Reminder extends Fragment implements NavigationView.OnNavi
         linearLayoutManager = new LinearLayoutManager(getActivity());
         databaseHelper = new DatabaseHelper(getActivity());
         fab = getView().findViewById(R.id.fab2);
+    }
+
+    public List<Reminder> getAllNotifications() {
+        List<Reminder> groups = new ArrayList<Reminder>();
+        String selectQuery = "SELECT * FROM " + ReminderContract.ReminderEntry.TABLE_NAME +
+                " WHERE " + ReminderContract.ReminderEntry.COL_USER_ID;
+
+        Log.e("NOTIFICATIONS", selectQuery);
+
+        SQLiteDatabase db = databaseHelper.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+//        if (c.moveToFirst()) {
+//            do {
+//                Group group = new Group();
+//                group.setGroup_name((c.getString(c.getColumnIndex(GroupContract.GroupEntry.COL_GROUP_NAME))));
+//                group.setGroup_image(c.getBlob(c.getColumnIndex(GroupContract.GroupEntry.COL_GROUP_IMAGE)));
+
+//                List<String> members = getAllGroupMember(c.getString(c.getColumnIndex(GroupContract.GroupEntry._ID)));
+//                List<byte[]> memberPics = getAllGroupMemberPic(c.getString(c.getColumnIndex(UserContract.UserEntry.COL_PICTURE)));
+//                group.setGroup_members(members);
+//                group.setGroup_memberPics(memberPics);
+
+                // adding to group list
+//                groups.add(group);
+//            } while (c.moveToNext());
+//        }
+
+        return groups;
     }
 
 
