@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LinearLayout
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:padding="10dp"
+    android:id="@+id/save_plan_dialog"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <TextView
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:id="@+id/textView_planName"
+        android:text="Plan Name:"
+        android:textStyle="bold" />
+    <EditText
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:id="@+id/editText_planName"/>
+    <TextView
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:id="@+id/textView_planDesc"
+        android:text="Plan Description:"
+        android:textStyle="bold" />
+    <EditText
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:id="@+id/editText_planDesc"
+        android:hint="Your trip description"/>
+</LinearLayout>
