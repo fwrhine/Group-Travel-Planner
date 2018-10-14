@@ -3,6 +3,7 @@ package com.example.pplki18.grouptravelplanner.utils;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.PopupMenu;
@@ -13,6 +14,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.pplki18.grouptravelplanner.EventDetailActivity;
+import com.example.pplki18.grouptravelplanner.PlaceActivity;
 import com.example.pplki18.grouptravelplanner.R;
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
 import com.example.pplki18.grouptravelplanner.data.EventContract;
@@ -61,16 +64,32 @@ public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.Ne
         String time_start = event.getTime_start();
         String timeString = time_start + " - " + event.getTime_end() +
                 " (" + event.getTotal_time() + ")";
-        if (event.getType().equals("restaurants")) {
-            holder.eventIcon.setMarker(mContext.getDrawable(R.drawable.ic_restaurant_black));
-        } else if (event.getType().equals("attractions")) {
-            holder.eventIcon.setMarker(mContext.getDrawable(R.drawable.ic_sunny_black));
+        if(event.getType() != null) {
+            if (event.getType().equals("restaurants")) {
+                holder.eventIcon.setMarker(mContext.getDrawable(R.drawable.ic_restaurant_black));
+            } else if (event.getType().equals("attractions")) {
+                holder.eventIcon.setMarker(mContext.getDrawable(R.drawable.ic_sunny_black));
+            }
         }
+
         holder.eventTime.setText(time_start);
         holder.eventTitle.setText(event.getTitle());
         holder.eventTimeDetail.setText(timeString);
 
+        setEventDetailOnClick(holder, position);
         setCardViewLongClick(holder, position, event.getTitle());
+    }
+
+    public void setEventDetailOnClick(final NewPlanViewHolder holder, final int position) {
+        holder.eventDetail.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(mContext, EventDetailActivity.class);
+                Event anEvent = events.get(position);
+                intent.putExtra("event_id", anEvent.getEvent_id());
+                mContext.startActivity(intent);
+            }
+        });
     }
 
     public void setCardViewLongClick(final NewPlanViewHolder holder, final int position,
@@ -156,6 +175,7 @@ public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.Ne
         TextView eventTitle;
         TextView eventTimeDetail;
         TextView eventTime;
+        TextView eventDetail;
         TimelineView eventIcon;
 
         NewPlanViewHolder(View itemView) {
@@ -164,6 +184,7 @@ public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.Ne
             eventTitle = (TextView) itemView.findViewById(R.id.item_title);
             eventTime = (TextView) itemView.findViewById(R.id.item_time);
             eventTimeDetail = (TextView) itemView.findViewById(R.id.item_time_detail);
+            eventDetail = (TextView) itemView.findViewById(R.id.item_detail);
             eventIcon = (TimelineView) itemView.findViewById(R.id.time_marker);
         }
     }

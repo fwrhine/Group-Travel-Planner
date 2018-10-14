@@ -26,7 +26,6 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -59,23 +58,24 @@
         <activity android:name=".EditPhoneNoActivity" />
         <activity android:name=".EditBirthdayActivity" />
         <activity android:name=".ChooseEventActivity">
-            <!--<intent-filter>-->
-            <!--<action android:name="android.intent.action.MAIN" />-->
 
-            <!--<category android:name="android.intent.category.LAUNCHER" />-->
-            <!--</intent-filter>-->
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.MAIN" /> -->
+
+
+            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+            <!-- </intent-filter> -->
         </activity>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/api_key" />
 
-        <activity android:name=".PlaceActivity"></activity>
-
+        <activity android:name=".PlaceActivity" />
         <activity android:name=".InHomeActivity" />
         <activity android:name=".CreateNewPlanActivity" />
-        <activity android:name=".EditPlanActivity"></activity>
-
+        <activity android:name=".EditPlanActivity" />
+        <activity android:name=".EventDetailActivity"></activity>
     </application>
 
 </manifest>

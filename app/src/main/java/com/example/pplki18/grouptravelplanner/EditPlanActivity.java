@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -384,6 +385,7 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
 
     public void beginFragmentEventList() {
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_timeline_activity,
-                new Fragment_EventList()).commit();
+                new Fragment_EventList()).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .show(new Fragment_EventList()).commit();
     }
 }
