@@ -1,9 +1,12 @@
 package com.example.pplki18.grouptravelplanner;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -19,12 +22,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.android.volley.NetworkError;
+import com.android.volley.NoConnectionError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
@@ -38,6 +45,7 @@ import com.example.pplki18.grouptravelplanner.utils.SessionManager;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +55,7 @@ public class Fragment_PlaceList extends Fragment {
     private RecyclerView recyclerViewPlace;
     private LinearLayoutManager linearLayoutManager;
     private SearchView searchView;
+    private TextView textView;
     private RVAdapter_Place adapter;
     private ProgressBar progressBar;
     private SessionManager sessionManager;
@@ -74,6 +83,8 @@ public class Fragment_PlaceList extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         init();
+
+        textView.setVisibility(View.GONE);
 
         recyclerViewPlace.setHasFixedSize(true);
         recyclerViewPlace.setLayoutManager(linearLayoutManager);
@@ -122,7 +133,23 @@ public class Fragment_PlaceList extends Fragment {
         sendRequest(type);
     }
 
+    public void noConnection(VolleyError volleyError) {
+        String message = null;
+        if (volleyError instanceof NetworkError) {
+            message = "No internet connection.";
+        } else if (volleyError instanceof NoConnectionError) {
+            message = "No internet connection.";
+        } else if (volleyError instanceof TimeoutError) {
+            message = "Connection timeout.";
+        }
+
+        progressBar.setVisibility(View.GONE);
+        textView.setVisibility(View.VISIBLE);
+        toastMessage(message);
+    }
+
     public void sendRequest(String query) {
+        Log.d("MASUK SINI", "holiday");
         // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(getActivity());
 
@@ -144,6 +171,7 @@ public class Fragment_PlaceList extends Fragment {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.d("LIST REQUEST ERROR", error.toString());
+                noConnection(error);
             }
         });
 
@@ -173,6 +201,7 @@ public class Fragment_PlaceList extends Fragment {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.d("NEXT PAGE REQUEST ERROR", error.toString());
+                noConnection(error);
             }
         });
 
@@ -309,6 +338,7 @@ public class Fragment_PlaceList extends Fragment {
         recyclerViewPlace = (RecyclerView) getView().findViewById(R.id.rv);
         progressBar = (ProgressBar) getView().findViewById(R.id.main_progress);
         searchView = (SearchView) getView().findViewById(R.id.search_place);
+        textView = (TextView) getView().findViewById(R.id.connection);
         linearLayoutManager = new LinearLayoutManager(getActivity());
         type = getArguments().getString("QUERY");
         sessionManager = new SessionManager(getActivity().getApplicationContext());
