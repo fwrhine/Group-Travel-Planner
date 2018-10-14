@@ -178,7 +178,7 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
                 .setIcon(R.drawable.ic_error_black_24dp)
                 .setNeutralButton("Ok", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        ;
+
                     }
                 });
         AlertDialog alert = builder.create();
@@ -213,7 +213,6 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
-                        ;
                     }
                 });
         AlertDialog alert = builder.create();

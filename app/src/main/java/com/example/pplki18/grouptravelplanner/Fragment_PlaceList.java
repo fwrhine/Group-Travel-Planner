@@ -1,12 +1,9 @@
 package com.example.pplki18.grouptravelplanner;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -45,7 +42,6 @@ import com.example.pplki18.grouptravelplanner.utils.SessionManager;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -133,7 +129,7 @@ public class Fragment_PlaceList extends Fragment {
         sendRequest(type);
     }
 
-    public void noConnection(VolleyError volleyError) {
+    private void noConnection(VolleyError volleyError) {
         String message = null;
         if (volleyError instanceof NetworkError) {
             message = "No internet connection.";
@@ -148,8 +144,7 @@ public class Fragment_PlaceList extends Fragment {
         toastMessage(message);
     }
 
-    public void sendRequest(String query) {
-        Log.d("MASUK SINI", "holiday");
+    private void sendRequest(String query) {
         // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(getActivity());
 
@@ -179,7 +174,7 @@ public class Fragment_PlaceList extends Fragment {
         queue.add(stringRequest);
     }
 
-    public void loadMorePlaces() {
+    private void loadMorePlaces() {
         RequestQueue queue = Volley.newRequestQueue(getActivity());
         String url = "https://maps.googleapis.com/maps/api/place/textsearch/json?pagetoken="
                 + next_token + "&key=AIzaSyB4QT2f2fyMQ8gDILgUEi5xBl_NKiGt_fo";
@@ -209,7 +204,7 @@ public class Fragment_PlaceList extends Fragment {
         queue.add(stringRequest);
     }
 
-    public List<Place> getPlaces(String response) {
+    private List<Place> getPlaces(String response) {
         ArrayList<Place> places = new ArrayList<>();
         try {
             JSONObject obj = new JSONObject(response);
@@ -280,7 +275,7 @@ public class Fragment_PlaceList extends Fragment {
         if (!isLastPage) adapter.addLoadingFooter();
     }
 
-    public void setTime(final List<Place> places, final int position) {
+    private void setTime(final List<Place> places, final int position) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getLayoutInflater();
         View dialogLayout = inflater.inflate(R.layout.set_time_dialog, null);

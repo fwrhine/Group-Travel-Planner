@@ -471,10 +471,7 @@ public class UserProfileActivity extends AppCompatActivity {
         final String whereArgs[] = {username_str};
 
         long result = db.update(UserContract.UserEntry.TABLE_NAME, contentValues, whereClause, whereArgs);
-        if(result == -1)
-            return false;
-        else
-            return true;
+        return result != -1;
     }
 
 }

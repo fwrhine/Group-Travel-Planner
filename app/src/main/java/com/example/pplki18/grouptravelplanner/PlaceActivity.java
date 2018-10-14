@@ -1,16 +1,11 @@
 package com.example.pplki18.grouptravelplanner;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.media.Image;
-import android.media.Rating;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
@@ -21,7 +16,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -54,20 +48,20 @@ public class PlaceActivity extends AppCompatActivity {
 
     private DatabaseHelper databaseHelper;
 
-    String place_id;
-    Toolbar toolbar;
-    TextView title;
-    TextView rating_num;
-    RatingBar rating;
-    TextView address;
-    TextView phone;
-    TextView website;
-    ImageView image;
-    TextView open_now;
-    TextView open_hours;
-    FloatingActionButton ic_add;
+    private String place_id;
+    private Toolbar toolbar;
+    private TextView title;
+    private TextView rating_num;
+    private RatingBar rating;
+    private TextView address;
+    private TextView phone;
+    private TextView website;
+    private ImageView image;
+    private TextView open_now;
+    private TextView open_hours;
+    private FloatingActionButton ic_add;
 //    Button google_button;
-    ProgressBar progressBar;
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,7 +93,7 @@ public class PlaceActivity extends AppCompatActivity {
         return true;
     }
 
-    public void noConnection(VolleyError volleyError) {
+    private void noConnection(VolleyError volleyError) {
         String message = null;
         if (volleyError instanceof NetworkError) {
             message = "No internet connection.";
@@ -113,7 +107,7 @@ public class PlaceActivity extends AppCompatActivity {
         toastMessage(message);
     }
 
-    public void sendRequest() {
+    private void sendRequest() {
         // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(this);
         String url = "https://maps.googleapis.com/maps/api/place/details/json?placeid="
@@ -142,7 +136,7 @@ public class PlaceActivity extends AppCompatActivity {
         queue.add(stringRequest);
     }
 
-    public Place getPlace(String response) {
+    private Place getPlace(String response) {
         Place place = new Place();
         try {
             JSONObject obj = new JSONObject(response);
@@ -160,7 +154,7 @@ public class PlaceActivity extends AppCompatActivity {
                 place.setOpen_now(opening_hours.optBoolean("open_now"));
                 JSONArray weekday_text = opening_hours.optJSONArray("weekday_text");
                 if (weekday_text != null) {
-                    ArrayList<String> listdata = new ArrayList<String>();
+                    ArrayList<String> listdata = new ArrayList<>();
                     for (int i=0;i<weekday_text.length();i++){
                         listdata.add(weekday_text.getString(i));
                     }
@@ -183,7 +177,7 @@ public class PlaceActivity extends AppCompatActivity {
         return place;
     }
 
-    public void populatePlaceView(final Place place) {
+    private void populatePlaceView(final Place place) {
         title.setText(place.getName());
         rating_num.setText(place.getRating());
         rating.setRating(Float.valueOf(place.getRating()));
@@ -202,10 +196,10 @@ public class PlaceActivity extends AppCompatActivity {
 
         if (place.getOpen_now() != null) {
             if (place.getOpen_now()) {
-                open_now.setText("Open Now");
+                open_now.setText(R.string.open_now);
             } else {
                 open_now.setTextColor(getResources().getColor(R.color.red));
-                open_now.setText("Closed");
+                open_now.setText(R.string.closed);
             }
 
             List<String> weekday_text = place.getWeekday_text();
@@ -233,7 +227,7 @@ public class PlaceActivity extends AppCompatActivity {
         getPhoto(place.getPhoto());
     }
 
-    public void getPhoto(String photo_reference) {
+    private void getPhoto(String photo_reference) {
         // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(this);
         String url = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=900&photoreference="
@@ -258,7 +252,7 @@ public class PlaceActivity extends AppCompatActivity {
         queue.add(imageRequest);
     }
 
-    public void setTime() {
+    private void setTime() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = getLayoutInflater();
         View dialogLayout = inflater.inflate(R.layout.set_time_dialog, null);
@@ -310,7 +304,7 @@ public class PlaceActivity extends AppCompatActivity {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
-    public void init() {
+    private void init() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         place_id = getIntent().getStringExtra("PLACE_ID");
         title = (TextView) findViewById(R.id.title);

@@ -1,13 +1,9 @@
 package com.example.pplki18.grouptravelplanner.utils;
 
-import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.util.Log;
 
 import com.example.pplki18.grouptravelplanner.BookPlaneFragment;
 import com.example.pplki18.grouptravelplanner.BookTrainFragment;
@@ -18,10 +14,10 @@ import com.example.pplki18.grouptravelplanner.Fragment_PlaceList;
 import com.google.android.gms.maps.model.LatLng;
 
 public class PagerAdapter extends FragmentStatePagerAdapter {
-    int mNumOfTabs;
-    String region;
-    LatLng region_coor;
-    Bundle bundle;
+    private int mNumOfTabs;
+    private String region;
+    private LatLng region_coor;
+    private Bundle bundle;
 
     public PagerAdapter(FragmentManager fm, int NumOfTabs, String region, LatLng region_coor, Bundle bundle) {
         super(fm);
@@ -67,7 +63,7 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
         }
     }
 
-    public Fragment_PlaceList newInstance(String type) {
+    private Fragment_PlaceList newInstance(String type) {
         Fragment_PlaceList myFragment = new Fragment_PlaceList();
 
         Bundle args = new Bundle();

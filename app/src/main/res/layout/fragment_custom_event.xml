@@ -62,6 +62,14 @@
             android:textColorHint="#8c8c8c"
             android:scrollbars="vertical"
             android:inputType="textMultiLine"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add"
+            android:layout_marginTop="20dp"
+            android:layout_below="@+id/event_notes"
+            android:layout_centerHorizontal="true"/>
     </RelativeLayout>
 
 </ScrollView>

@@ -25,24 +25,24 @@ import com.google.android.gms.maps.model.LatLng;
 
 public class ChooseEventActivity extends AppCompatActivity {
 
-    Toolbar toolbar;
-    TabLayout tabLayout;
-    ViewPager viewPager;
-    PlaceAutocompleteFragment autocompleteFragment;
-    SessionManager sessionManager;
-    TextView textRegion;
-    LinearLayout pickDestination;
+    private Toolbar toolbar;
+    private TabLayout tabLayout;
+    private ViewPager viewPager;
+    private PlaceAutocompleteFragment autocompleteFragment;
+    private SessionManager sessionManager;
+    private TextView textRegion;
+    private LinearLayout pickDestination;
 //    SearchView searchView;
-    Bundle plan_bundle;
+    private Bundle plan_bundle;
 
-    LatLng regionCoor;
+    private LatLng regionCoor;
 
     //
 //    if(ContextCompat.checkSelfPermission(mActivity,Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED){
 //        // Camera permission granted
 //        PlaceLikelihoodBufferResponse currentPlace = PlaceDetectionClient.getCurrentPlace();
 
-    int REGION_AUTOCOMPLETE_REQUEST_CODE = 1;
+    private final int REGION_AUTOCOMPLETE_REQUEST_CODE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +62,7 @@ public class ChooseEventActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowCustomEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-        textRegion.setText("Pick destination");
+        textRegion.setText(R.string.pick_destination);
         pickDestination.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
