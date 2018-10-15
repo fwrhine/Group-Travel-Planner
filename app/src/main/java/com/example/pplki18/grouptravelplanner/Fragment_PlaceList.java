@@ -62,7 +62,6 @@ public class Fragment_PlaceList extends Fragment {
     private String latitude;
     private String longitude;
     private String next_token;
-    private ArrayList<Place> allPlaces;
 
     private int plan_id;
     private String event_date;
@@ -111,7 +110,6 @@ public class Fragment_PlaceList extends Fragment {
             public boolean onQueryTextSubmit(String newQuery) {
                 sendRequest(newQuery + " " + type);
                 adapter.clear();
-                allPlaces.clear();
                 progressBar.setVisibility(View.VISIBLE);
 
                 return true;
@@ -122,7 +120,6 @@ public class Fragment_PlaceList extends Fragment {
                 if (TextUtils.isEmpty(newQuery)){
                     sendRequest(type);
                     adapter.clear();
-                    allPlaces.clear();
                     progressBar.setVisibility(View.VISIBLE);
                 }
                 return false;
@@ -246,7 +243,7 @@ public class Fragment_PlaceList extends Fragment {
 
 
         Log.d("LIST OF PLACES", places.toString());
-        allPlaces.addAll(places);
+//        allPlaces.addAll(places);
         return places;
     }
 
@@ -255,10 +252,10 @@ public class Fragment_PlaceList extends Fragment {
 
         RVAdapter_Place.ClickListener clickListener = new RVAdapter_Place.ClickListener() {
             @Override public void cardViewOnClick(View v, int position) {
-                Log.d("SELECTED PLACE ID", String.valueOf(allPlaces.get(position).getPlace_id()));
+                Log.d("SELECTED PLACE ID", String.valueOf(adapter.getAll().get(position).getPlace_id()));
 
                 Intent intent = new Intent(getActivity(), PlaceActivity.class);
-                intent.putExtra("PLACE_ID", String.valueOf(allPlaces.get(position).getPlace_id()));
+                intent.putExtra("PLACE_ID", String.valueOf(adapter.getAll().get(position).getPlace_id()));
                 intent.putExtra("plan_id", plan_id);
                 intent.putExtra("date", event_date);
                 intent.putExtra("type", type);
@@ -266,7 +263,7 @@ public class Fragment_PlaceList extends Fragment {
             }
 
             @Override public void addImageOnClick(View v, int position) {
-                setTime(allPlaces.get(position));
+                setTime(adapter.getAll().get(position));
             }
         };
 
@@ -348,6 +345,5 @@ public class Fragment_PlaceList extends Fragment {
         plan_id = getArguments().getInt("plan_id");
         event_date = getArguments().getString("date");
         databaseHelper = new DatabaseHelper(getActivity());
-        allPlaces = new ArrayList<>();
     }
 }

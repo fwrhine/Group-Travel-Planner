@@ -118,6 +118,10 @@ public class RVAdapter_Place extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
     }
 
+    public List<Place> getAll() {
+        return places;
+    }
+
     private void remove(Place city) {
         int position = places.indexOf(city);
         if (position > -1) {
