@@ -62,6 +62,7 @@ public class Fragment_PlaceList extends Fragment {
     private String latitude;
     private String longitude;
     private String next_token;
+    private ArrayList<Place> allPlaces;
 
     private int plan_id;
     private String event_date;
@@ -110,6 +111,7 @@ public class Fragment_PlaceList extends Fragment {
             public boolean onQueryTextSubmit(String newQuery) {
                 sendRequest(newQuery + " " + type);
                 adapter.clear();
+                allPlaces.clear();
                 progressBar.setVisibility(View.VISIBLE);
 
                 return true;
@@ -120,6 +122,7 @@ public class Fragment_PlaceList extends Fragment {
                 if (TextUtils.isEmpty(newQuery)){
                     sendRequest(type);
                     adapter.clear();
+                    allPlaces.clear();
                     progressBar.setVisibility(View.VISIBLE);
                 }
                 return false;
@@ -243,6 +246,7 @@ public class Fragment_PlaceList extends Fragment {
 
 
         Log.d("LIST OF PLACES", places.toString());
+        allPlaces.addAll(places);
         return places;
     }
 
@@ -251,10 +255,10 @@ public class Fragment_PlaceList extends Fragment {
 
         RVAdapter_Place.ClickListener clickListener = new RVAdapter_Place.ClickListener() {
             @Override public void cardViewOnClick(View v, int position) {
-                Log.d("SELECTED PLACE ID", String.valueOf(places.get(position).getPlace_id()));
+                Log.d("SELECTED PLACE ID", String.valueOf(allPlaces.get(position).getPlace_id()));
 
                 Intent intent = new Intent(getActivity(), PlaceActivity.class);
-                intent.putExtra("PLACE_ID", String.valueOf(places.get(position).getPlace_id()));
+                intent.putExtra("PLACE_ID", String.valueOf(allPlaces.get(position).getPlace_id()));
                 intent.putExtra("plan_id", plan_id);
                 intent.putExtra("date", event_date);
                 intent.putExtra("type", type);
@@ -262,7 +266,7 @@ public class Fragment_PlaceList extends Fragment {
             }
 
             @Override public void addImageOnClick(View v, int position) {
-                setTime(places, position);
+                setTime(allPlaces.get(position));
             }
         };
 
@@ -275,7 +279,7 @@ public class Fragment_PlaceList extends Fragment {
         if (!isLastPage) adapter.addLoadingFooter();
     }
 
-    private void setTime(final List<Place> places, final int position) {
+    private void setTime(final Place place) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getLayoutInflater();
         View dialogLayout = inflater.inflate(R.layout.set_time_dialog, null);
@@ -292,7 +296,7 @@ public class Fragment_PlaceList extends Fragment {
                                 + " End " + endTime.getCurrentHour() + ":" + endTime.getCurrentMinute());
                         String start_time = startTime.getCurrentHour() + ":" + startTime.getCurrentMinute();
                         String end_time = endTime.getCurrentHour() + ":" + endTime.getCurrentMinute();
-                        saveEventToPlan(places, position, start_time, end_time);
+                        saveEventToPlan(place, start_time, end_time);
                         getActivity().finish();
                     }
                 });
@@ -304,23 +308,23 @@ public class Fragment_PlaceList extends Fragment {
         builder.show();
     }
 
-    private void saveEventToPlan(List<Place> places, int position, String start_time, String end_time) {
+    private void saveEventToPlan(Place place, String start_time, String end_time) {
         Log.d("SAVEVENT", "MASUK");
         SQLiteDatabase db = databaseHelper.getWritableDatabase();
 
         ContentValues contentValues = new ContentValues();
         contentValues.put(EventContract.EventEntry.COL_PLAN_ID, plan_id);
-        contentValues.put(EventContract.EventEntry.COL_TITLE, places.get(position).getName());
-        contentValues.put(EventContract.EventEntry.COL_LOCATION, places.get(position).getAddress());
-        contentValues.put(EventContract.EventEntry.COL_DESCRIPTION, places.get(position).getWebsite());
+        contentValues.put(EventContract.EventEntry.COL_TITLE, place.getName());
+        contentValues.put(EventContract.EventEntry.COL_LOCATION, place.getAddress());
+        contentValues.put(EventContract.EventEntry.COL_DESCRIPTION, place.getWebsite());
         contentValues.put(EventContract.EventEntry.COL_DATE, event_date);
         Log.d("event date", event_date);
         Log.d("plan_id", plan_id+"");
         contentValues.put(EventContract.EventEntry.COL_TIME_START, start_time);
         contentValues.put(EventContract.EventEntry.COL_TIME_END, end_time);
-        contentValues.put(EventContract.EventEntry.COL_PHONE, places.get(position).getPhone_number());
+        contentValues.put(EventContract.EventEntry.COL_PHONE, place.getPhone_number());
         contentValues.put(EventContract.EventEntry.COL_TYPE, type);
-        contentValues.put(EventContract.EventEntry.COL_RATING, places.get(position).getRating());
+        contentValues.put(EventContract.EventEntry.COL_RATING, place.getRating());
         long event_id = db.insert(EventContract.EventEntry.TABLE_NAME, null, contentValues);
 
     }
@@ -344,5 +348,6 @@ public class Fragment_PlaceList extends Fragment {
         plan_id = getArguments().getInt("plan_id");
         event_date = getArguments().getString("date");
         databaseHelper = new DatabaseHelper(getActivity());
+        allPlaces = new ArrayList<>();
     }
 }
