@@ -50,7 +50,6 @@ public class PlaceActivity extends AppCompatActivity {
 
     private String place_id;
     private Toolbar toolbar;
-//    private ImageView back_button;
     private TextView title;
     private TextView rating_num;
     private RatingBar rating;
@@ -70,9 +69,6 @@ public class PlaceActivity extends AppCompatActivity {
         setContentView(R.layout.activity_place);
 
         init();
-
-        // Toolbar :: Transparent
-//        toolbar.setBackgroundColor(Color.TRANSPARENT);
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -308,7 +304,6 @@ public class PlaceActivity extends AppCompatActivity {
 
     private void init() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-//        back_button = (ImageView) findViewById(R.id.back_button);
         place_id = getIntent().getStringExtra("PLACE_ID");
         title = (TextView) findViewById(R.id.title);
         rating_num = (TextView) findViewById(R.id.rating_num);
