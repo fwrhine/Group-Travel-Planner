@@ -61,19 +61,19 @@
         <activity android:name=".EditPhoneNoActivity" />
         <activity android:name=".EditBirthdayActivity" />
         <activity android:name=".ChooseEventActivity">
-            <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN" />-->
 
-            <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
         </activity>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/api_key" />
 
-        <activity android:name=".PlaceActivity"
-            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity android:name=".PlaceActivity">
+        </activity>
 
         <activity android:name=".InHomeActivity" />
         <activity android:name=".CreateNewPlanActivity" />
