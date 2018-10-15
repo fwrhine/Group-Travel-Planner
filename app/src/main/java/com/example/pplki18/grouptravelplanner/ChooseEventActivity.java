@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.pplki18.grouptravelplanner.utils.CustomTabLayout;
 import com.example.pplki18.grouptravelplanner.utils.PagerAdapter;
 import com.example.pplki18.grouptravelplanner.utils.SessionManager;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
@@ -93,8 +94,8 @@ public class ChooseEventActivity extends AppCompatActivity {
         tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_sunny));
 
 
-        tabLayout.addTab(tabLayout.newTab().setText("Airplane"));
-        tabLayout.addTab(tabLayout.newTab().setText("Train"));
+        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_airplane));
+        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_train));
         tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_add_white));
 
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
