@@ -1,6 +1,5 @@
 package com.example.pplki18.grouptravelplanner;
 
-import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -9,22 +8,15 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
-import com.example.pplki18.grouptravelplanner.data.EventContract;
-import com.example.pplki18.grouptravelplanner.data.PlanContract;
 import com.example.pplki18.grouptravelplanner.data.PlanContract.PlanEntry;
-import com.example.pplki18.grouptravelplanner.data.UserContract;
-import com.example.pplki18.grouptravelplanner.utils.Friend;
 import com.example.pplki18.grouptravelplanner.utils.Plan;
 import com.example.pplki18.grouptravelplanner.utils.RVAdapter_Plan;
 import com.example.pplki18.grouptravelplanner.utils.SessionManager;
@@ -83,7 +75,7 @@ public class Fragment_PlanList extends Fragment {
     }
 
     public void setPlanName() {
-        String planName = "dummy";
+        //TODO: FIREBASE
 //        SQLiteDatabase db = databaseHelper.getReadableDatabase();
 //
 //        String query = "SELECT * FROM " + PlanEntry.TABLE_NAME + " WHERE " + PlanEntry.COL_USER_ID +
@@ -91,6 +83,7 @@ public class Fragment_PlanList extends Fragment {
 //                " LIKE \'New Plan (%)\' ";
 //
 //        Cursor cursor = db.rawQuery(query, null);
+//        String planName;
 //        int idx;
 //
 //        if(cursor.getCount() > 0) {
@@ -104,8 +97,8 @@ public class Fragment_PlanList extends Fragment {
 //            planName = "New Plan (1)";
 //            cursor.close();
 //        }
-
-        myIntent.putExtra("plan_name", planName);
+//
+//        myIntent.putExtra("plan_name", planName);
 //        ContentValues contentValues = new ContentValues();
 //        contentValues.put(PlanEntry.COL_PLAN_NAME, planName);
 //        contentValues.put(PlanEntry.COL_USER_ID, user.get(SessionManager.KEY_ID));
@@ -150,8 +143,9 @@ public class Fragment_PlanList extends Fragment {
      * Get all groups
      * */
     public List<Plan> getAllPlans() {
+        //TODO: FIREBASE
         List<Plan> plans = new ArrayList<Plan>();
-
+//
 //        String selectQuery = " SELECT * FROM " + PlanEntry.TABLE_NAME + " WHERE " +
 //                PlanEntry.COL_USER_ID + " = " + user.get(SessionManager.KEY_ID);
 //
@@ -162,6 +156,7 @@ public class Fragment_PlanList extends Fragment {
 //            do {
 //                Plan plan = new Plan();
 //                plan.setPlan_name((c.getString(c.getColumnIndex(PlanEntry.COL_PLAN_NAME))));
+//                plan.setPlan_overview(c.getString(c.getColumnIndex(PlanEntry.COL_DESCRIPTION)));
 //                plan.setPlan_start_date((c.getString(c.getColumnIndex(PlanEntry.COL_START_DAY))));
 //                plan.setPlan_end_date((c.getString(c.getColumnIndex(PlanEntry.COL_END_DAY))));
 //                plan.setPlan_total_days((c.getInt(c.getColumnIndex(PlanEntry.COL_TOTAL_DAY))));
@@ -171,26 +166,6 @@ public class Fragment_PlanList extends Fragment {
 //                plans.add(plan);
 //            } while (c.moveToNext());
 //        }
-
-        Plan plan = new Plan();
-        plan.setPlan_name("Sample Plan");
-        plan.setPlan_start_date("Mon, 1 Oct");
-        plan.setPlan_end_date("Mon, 8 Oct");
-        plan.setPlan_total_days(7);
-        plan.setPlan_overview("Mon, 1 Oct (09:00): Soekarno-Hatta International Airport\n" + "...");
-        plan.setPlan_modified("Sep 29, 2018");
-        plan.setPlan_created("Sep 29, 2018");
-        plans.add(plan);
-
-        Plan plan2 = new Plan();
-        plan2.setPlan_name("Sample Plan 2");
-        plan2.setPlan_start_date("Mon, 1 Oct");
-        plan2.setPlan_end_date("Mon, 8 Oct");
-        plan2.setPlan_total_days(7);
-        plan2.setPlan_overview("Mon, 1 Oct (09:00): Soekarno-Hatta International Airport\n" + "...");
-        plan2.setPlan_modified("Sep 29, 2018");
-        plan2.setPlan_created("Sep 29, 2018");
-        plans.add(plan2);
 
         return plans;
     }

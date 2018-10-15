@@ -219,11 +219,12 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
                     @Override
                     public void onClick(View view) {
                         String date = date_month_year.getText().toString();
-//                        Intent myIntent = new Intent(CreateNewPlanActivity.this, ChooseEventActivity.class);
-//                        myIntent.putExtra("plan_id", intent.getStringExtra("plan_id"));
-//                        myIntent.putExtra("date", date);
-//
-//                        CreateNewPlanActivity.this.startActivity(myIntent);
+                        Intent myIntent = new Intent(EditPlanActivity.this, ChooseEventActivity.class);
+//                        Log.d("IDDDDD", plan_id + "");
+                        myIntent.putExtra("plan_id", plan_id);
+                        myIntent.putExtra("date", date);
+
+                        EditPlanActivity.this.startActivity(myIntent);
                         Toast.makeText(EditPlanActivity.this, "Add Event", Toast.LENGTH_SHORT).show();
                     }
                 }
@@ -296,25 +297,32 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
     }
 
     public void setDateChanger() throws ParseException {
-        date_month_year.setText(dateFormatter2.format(date_start.getTime()));
+        date_month_year.setText(dateFormatter2.format(date_start_temp));
         date_month_year.setTextColor(getResources().getColor(R.color.colorBlack));
-        day.setText(new SimpleDateFormat("EEEE").format(date_start));
+        day.setText(new SimpleDateFormat("EEEE").format(date_start_temp));
         day.setTextColor(getResources().getColor(R.color.colorBlack));
 
-        button_left.setClickable(false);
-        button_right.setClickable(true);
-        button_right.setBackgroundResource(R.drawable.ripple_oval);
-
-        Date start_pin = dateFormatter2.parse(dateFormatter2.format(date_start));
+        Date start_pin = dateFormatter2.parse(dateFormatter2.format(date_start_temp));
         final Calendar c_start_pin = Calendar.getInstance();
         c_start_pin.setTime(start_pin);
-        Date end_pin = dateFormatter2.parse(dateFormatter2.format(date_end));
+
+        Date end_pin = dateFormatter2.parse(dateFormatter2.format(date_end_temp));
         final Calendar c_end_pin = Calendar.getInstance();
         c_end_pin.setTime(end_pin);
 
         Date cur_date = dateFormatter2.parse(date_month_year.getText().toString());
         final Calendar c_cur_date = Calendar.getInstance();
         c_cur_date.setTime(cur_date);
+
+        if (c_cur_date.getTime().getTime() != c_end_pin.getTime().getTime()) {
+            button_right.setEnabled(true);
+            button_right.setBackgroundResource(R.drawable.ripple_oval);
+        } else {
+            button_right.setEnabled(false);
+            button_right.setBackgroundResource(R.drawable.ripple_oval_off);
+            button_left.setEnabled(false);
+            button_left.setBackgroundResource(R.drawable.ripple_oval_off);
+        }
 
         intent.putExtra("date", c_cur_date.getTime());
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_timeline_activity,
@@ -333,12 +341,12 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
                         day.setText(new SimpleDateFormat("EEEE").format(c_cur_date.getTime()));
 
                         if (c_cur_date.getTime().getTime() == c_start_pin.getTime().getTime()) {
-                            button_left.setClickable(false);
+                            button_left.setEnabled(false);
                             button_left.setBackgroundResource(R.drawable.ripple_oval_off);
-                            button_right.setClickable(true);
+                            button_right.setEnabled(true);
                             button_right.setBackgroundResource(R.drawable.ripple_oval);
                         } else {
-                            button_right.setClickable(true);
+                            button_right.setEnabled(true);
                             button_right.setBackgroundResource(R.drawable.ripple_oval);
                             button_left.setBackgroundResource(R.drawable.ripple_oval);
                         }
@@ -359,12 +367,12 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
                         day.setText(new SimpleDateFormat("EEEE").format(c_cur_date.getTime()));
 
                         if (c_cur_date.getTime().getTime() == c_end_pin.getTime().getTime()) {
-                            button_left.setClickable(true);
+                            button_left.setEnabled(true);
                             button_left.setBackgroundResource(R.drawable.ripple_oval);
-                            button_right.setClickable(false);
+                            button_right.setEnabled(false);
                             button_right.setBackgroundResource(R.drawable.ripple_oval_off);
                         } else {
-                            button_left.setClickable(true);
+                            button_left.setEnabled(true);
                             button_right.setBackgroundResource(R.drawable.ripple_oval);
                             button_left.setBackgroundResource(R.drawable.ripple_oval);
                         }

@@ -1,6 +1,8 @@
 package com.example.pplki18.grouptravelplanner.utils;
 
+import android.app.Activity;
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -34,6 +36,8 @@ import java.util.List;
 public class RVAdapter_Group extends RecyclerView.Adapter<RVAdapter_Group.GroupViewHolder>{
 
     List<Group> groups;
+    DatabaseHelper myDb;
+    SessionManager sessionManager;
     Context context;
 
     public RVAdapter_Group(List<Group> groups, Context context){

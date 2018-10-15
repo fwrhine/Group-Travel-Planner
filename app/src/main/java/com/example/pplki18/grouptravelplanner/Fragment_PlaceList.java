@@ -1,7 +1,9 @@
 package com.example.pplki18.grouptravelplanner;
 
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -26,6 +28,9 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
+import com.example.pplki18.grouptravelplanner.data.EventContract;
+import com.example.pplki18.grouptravelplanner.data.PlanContract;
 import com.example.pplki18.grouptravelplanner.utils.PaginationScrollListener;
 import com.example.pplki18.grouptravelplanner.utils.Place;
 import com.example.pplki18.grouptravelplanner.utils.RVAdapter_Place;
@@ -46,12 +51,16 @@ public class Fragment_PlaceList extends Fragment {
     private RVAdapter_Place adapter;
     private ProgressBar progressBar;
     private SessionManager sessionManager;
+    private DatabaseHelper databaseHelper;
 
     private String query;
     private String region;
     private String latitude;
     private String longitude;
     private String next_token;
+
+    private int plan_id;
+    private String event_date;
 
     private boolean isLoading = false;
     private boolean isLastPage = false;
@@ -223,11 +232,14 @@ public class Fragment_PlaceList extends Fragment {
 
                 Intent intent = new Intent(getActivity(), PlaceActivity.class);
                 intent.putExtra("PLACE_ID", String.valueOf(places.get(position).getPlace_id()));
+                intent.putExtra("plan_id", plan_id);
+                intent.putExtra("date", event_date);
+                intent.putExtra("type", query);
                 startActivity(intent);
             }
 
             @Override public void addImageOnClick(View v, int position) {
-                setTime();
+                setTime(places, position);
             }
         };
 
@@ -240,8 +252,7 @@ public class Fragment_PlaceList extends Fragment {
         if (!isLastPage) adapter.addLoadingFooter();
     }
 
-
-    public void setTime() {
+    public void setTime(final List<Place> places, final int position) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getLayoutInflater();
         View dialogLayout = inflater.inflate(R.layout.set_time_dialog, null);
@@ -256,6 +267,10 @@ public class Fragment_PlaceList extends Fragment {
                     public void onClick(DialogInterface dialog, int which) {
                         toastMessage("Start " + startTime.getCurrentHour() + ":" + startTime.getCurrentMinute()
                                 + " End " + endTime.getCurrentHour() + ":" + endTime.getCurrentMinute());
+                        String start_time = startTime.getCurrentHour() + ":" + startTime.getCurrentMinute();
+                        String end_time = endTime.getCurrentHour() + ":" + endTime.getCurrentMinute();
+                        saveEventToPlan(places, position, start_time, end_time);
+                        getActivity().finish();
                     }
                 });
         builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
@@ -266,7 +281,26 @@ public class Fragment_PlaceList extends Fragment {
         builder.show();
     }
 
+    private void saveEventToPlan(List<Place> places, int position, String start_time, String end_time) {
+        Log.d("SAVEVENT", "MASUK");
+        SQLiteDatabase db = databaseHelper.getWritableDatabase();
 
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(EventContract.EventEntry.COL_PLAN_ID, plan_id);
+        contentValues.put(EventContract.EventEntry.COL_TITLE, places.get(position).getName());
+        contentValues.put(EventContract.EventEntry.COL_LOCATION, places.get(position).getAddress());
+        contentValues.put(EventContract.EventEntry.COL_DESCRIPTION, places.get(position).getWebsite());
+        contentValues.put(EventContract.EventEntry.COL_DATE, event_date);
+        Log.d("event date", event_date);
+        Log.d("plan_id", plan_id+"");
+        contentValues.put(EventContract.EventEntry.COL_TIME_START, start_time);
+        contentValues.put(EventContract.EventEntry.COL_TIME_END, end_time);
+        contentValues.put(EventContract.EventEntry.COL_PHONE, places.get(position).getPhone_number());
+        contentValues.put(EventContract.EventEntry.COL_TYPE, query);
+        contentValues.put(EventContract.EventEntry.COL_RATING, places.get(position).getRating());
+        long event_id = db.insert(EventContract.EventEntry.TABLE_NAME, null, contentValues);
+
+    }
 
     private void toastMessage(String message) {
         Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
@@ -283,5 +317,8 @@ public class Fragment_PlaceList extends Fragment {
         latitude = getArguments().getString("LATITUDE");
         longitude = getArguments().getString("LONGITUDE");
         adapter = new RVAdapter_Place(getContext());
+        plan_id = getArguments().getInt("plan_id");
+        event_date = getArguments().getString("date");
+        databaseHelper = new DatabaseHelper(getActivity());
     }
 }

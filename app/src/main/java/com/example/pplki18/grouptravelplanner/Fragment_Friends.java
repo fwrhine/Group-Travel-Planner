@@ -13,14 +13,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ProgressBar;
 
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
-import com.example.pplki18.grouptravelplanner.data.Group;
 import com.example.pplki18.grouptravelplanner.data.User;
 import com.example.pplki18.grouptravelplanner.utils.RVAdapter_Friend;
-import com.example.pplki18.grouptravelplanner.utils.RVAdapter_Group;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -28,8 +25,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
+import com.example.pplki18.grouptravelplanner.utils.SessionManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,6 +50,8 @@ public class Fragment_Friends extends Fragment {
 
     List<User> friends = new ArrayList<>();
     List<String> friendIDs = new ArrayList<>();
+    DatabaseHelper myDb;
+    SessionManager sessionManager;
 
     @Nullable
     @Override
@@ -72,6 +70,7 @@ public class Fragment_Friends extends Fragment {
 
         init();
         setAddFriendButton();
+
 
         recyclerViewGroup.setHasFixedSize(true);
         recyclerViewGroup.setLayoutManager(linearLayoutManager);

@@ -17,6 +17,7 @@
     <string name="title_activity__in_places">Activity_InPlaces</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="action_search">Search</string>
+    <string name="action_settings">Setting</string>
     <string name="plan_overview_sample">Mon, 1 Oct (09:00) : Soekarno-Hatta International Airport \n...</string>
 
 

@@ -27,6 +27,7 @@ public class EventContract {
         public static final String COL_TIME_END = "event_time_end";
         public static final String COL_PHONE = "event_phone";
         public static final String COL_TYPE = "event_type";
+        public static final String COL_RATING = "event_rating";
 
         // for flight and train
         public static final String COL_ORIGIN = "origin";

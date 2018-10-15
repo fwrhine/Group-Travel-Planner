@@ -28,7 +28,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     /**
      * Database version. If you change the database schema, you must increment the database version.
      */
-    private static final int DATABASE_VERSION = 6;
+    private static final int DATABASE_VERSION = 8;
     private Context c2;
     /**
      * Constructs a new instance of {@link DatabaseHelper}.
@@ -93,6 +93,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String SQL_CREATE_PLAN_TABLE = "CREATE TABLE " + PlanEntry.TABLE_NAME + " ("
                 + PlanEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + PlanEntry.COL_PLAN_NAME + " TEXT NOT NULL, "
+                + PlanEntry.COL_DESCRIPTION + " TEXT, "
                 + PlanEntry.COL_USER_ID + " INTEGER, "
                 + PlanEntry.COL_START_DAY + " TEXT, "
                 + PlanEntry.COL_END_DAY + " TEXT, "
@@ -112,6 +113,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + EventEntry.COL_TIME_END + " TEXT, "
                 + EventEntry.COL_PHONE + " TEXT, "
                 + EventEntry.COL_TYPE + " TEXT, "
+                + EventEntry.COL_RATING + " TEXT, "
 
                 + EventEntry.COL_ORIGIN + " TEXT, "
                 + EventEntry.COL_DESTINATION + " TEXT, "
@@ -125,7 +127,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + EventEntry.COL_TIME_CHECK_OUT + " TEXT, "
 
                 + "FOREIGN KEY(" + EventEntry.COL_PLAN_ID + ")"
-                + " REFERENCES " + PlanEntry.TABLE_NAME + "(" + PlanEntry._ID + "));";
+                + " REFERENCES " + PlanEntry.TABLE_NAME + "(" + PlanEntry._ID + ")"
+                + " ON DELETE CASCADE);";
 
         // Execute the SQL statements
         db.execSQL(SQL_CREATE_USER_TABLE);
