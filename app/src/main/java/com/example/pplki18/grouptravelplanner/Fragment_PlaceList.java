@@ -1,6 +1,5 @@
 package com.example.pplki18.grouptravelplanner;
 
-import android.app.Activity;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -32,11 +31,9 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
 import com.example.pplki18.grouptravelplanner.data.EventContract;
-import com.example.pplki18.grouptravelplanner.data.PlanContract;
 import com.example.pplki18.grouptravelplanner.utils.Event;
 import com.example.pplki18.grouptravelplanner.utils.PaginationScrollListener;
 import com.example.pplki18.grouptravelplanner.utils.Place;
-import com.example.pplki18.grouptravelplanner.utils.Plan;
 import com.example.pplki18.grouptravelplanner.utils.RVAdapter_Place;
 import com.example.pplki18.grouptravelplanner.utils.SessionManager;
 
@@ -340,6 +337,7 @@ public class Fragment_PlaceList extends Fragment {
 
     private Event saveEventLocally(List<Place> places, int position, String start_time, String end_time) {
         Event anEvent = new Event();
+        anEvent.setQuery_id(places.get(position).getPlace_id());
         anEvent.setTitle(places.get(position).getName());
         anEvent.setLocation(places.get(position).getAddress());
         anEvent.setDescription(places.get(position).getWebsite());
@@ -358,6 +356,7 @@ public class Fragment_PlaceList extends Fragment {
         SQLiteDatabase db = databaseHelper.getWritableDatabase();
 
         ContentValues contentValues = new ContentValues();
+        contentValues.put(EventContract.EventEntry.COL_QUERY_ID, places.get(position).getPlace_id());
         contentValues.put(EventContract.EventEntry.COL_PLAN_ID, plan_id);
         contentValues.put(EventContract.EventEntry.COL_TITLE, places.get(position).getName());
         contentValues.put(EventContract.EventEntry.COL_LOCATION, places.get(position).getAddress());

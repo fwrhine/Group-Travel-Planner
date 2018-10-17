@@ -283,6 +283,7 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
 //            Log.d("testtt", e.getTitle() + ", " + e.getDate());
             contentValues = new ContentValues();
             contentValues.put(EventContract.EventEntry.COL_PLAN_ID, plan_id);
+            contentValues.put(EventContract.EventEntry.COL_QUERY_ID, e.getQuery_id());
             contentValues.put(EventContract.EventEntry.COL_TITLE, e.getTitle());
             contentValues.put(EventContract.EventEntry.COL_LOCATION, e.getLocation());
             contentValues.put(EventContract.EventEntry.COL_DESCRIPTION, e.getDescription());

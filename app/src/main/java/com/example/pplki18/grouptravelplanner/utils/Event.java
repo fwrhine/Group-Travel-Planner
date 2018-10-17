@@ -4,14 +4,14 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
-import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Event implements Parcelable, Comparable<Event> {
-    public int event_id;
+    private int event_id;
 
+    private String query_id;
     private String title;
     private String location;
     private String description;
@@ -39,8 +39,9 @@ public class Event implements Parcelable, Comparable<Event> {
     // empty constructor
     public Event() {}
 
-    public Event(String title, String time_start, String time_end, String type) {
+    public Event(String title, String date, String time_start, String time_end, String type) {
         this.title = title;
+        this.date = date;
         this.time_start = time_start;
         this.time_end = time_end;
         this.type = type;
@@ -48,6 +49,7 @@ public class Event implements Parcelable, Comparable<Event> {
 
     protected Event(Parcel in) {
         event_id = in.readInt();
+        query_id = in.readString();
         title = in.readString();
         location = in.readString();
         description = in.readString();
@@ -91,6 +93,14 @@ public class Event implements Parcelable, Comparable<Event> {
 
     public static Creator<Event> getCREATOR() {
         return CREATOR;
+    }
+
+    public String getQuery_id() {
+        return query_id;
+    }
+
+    public void setQuery_id(String query_id) {
+        this.query_id = query_id;
     }
 
     public String getTitle() {
@@ -270,6 +280,7 @@ public class Event implements Parcelable, Comparable<Event> {
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeInt(event_id);
+        parcel.writeString(query_id);
         parcel.writeString(title);
         parcel.writeString(location);
         parcel.writeString(description);

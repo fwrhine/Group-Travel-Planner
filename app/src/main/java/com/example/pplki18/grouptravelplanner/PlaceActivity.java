@@ -22,6 +22,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RatingBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -64,6 +65,11 @@ public class PlaceActivity extends AppCompatActivity {
     FloatingActionButton ic_add;
 //    Button google_button;
     ProgressBar progressBar;
+
+    TextView eventDate;
+    TextView eventTime;
+    TextView eventDuration;
+    RelativeLayout detailLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -242,6 +248,7 @@ public class PlaceActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         toastMessage("Start " + startTime.getCurrentHour() + ":" + startTime.getCurrentMinute()
                                 + " End " + endTime.getCurrentHour() + ":" + endTime.getCurrentMinute());
+
                         String start_time = startTime.getCurrentHour() + ":" + startTime.getCurrentMinute();
                         String end_time = endTime.getCurrentHour() + ":" + endTime.getCurrentMinute();
                         String prevActivity = getIntent().getStringExtra("ACTIVITY");
@@ -275,6 +282,7 @@ public class PlaceActivity extends AppCompatActivity {
 
     private Event saveEventLocally(String start_time, String end_time) {
         Event anEvent = new Event();
+        anEvent.setQuery_id(place_id);
         anEvent.setTitle(title.getText().toString());
         anEvent.setLocation(address.getText().toString());
         anEvent.setDescription(website.getText().toString());
@@ -293,6 +301,7 @@ public class PlaceActivity extends AppCompatActivity {
         SQLiteDatabase db = databaseHelper.getWritableDatabase();
 
         ContentValues contentValues = new ContentValues();
+        contentValues.put(EventContract.EventEntry.COL_QUERY_ID, place_id);
         contentValues.put(EventContract.EventEntry.COL_PLAN_ID, getIntent().getIntExtra("plan_id", -1));
         contentValues.put(EventContract.EventEntry.COL_TITLE, title.getText().toString());
         contentValues.put(EventContract.EventEntry.COL_LOCATION, address.getText().toString());
@@ -309,6 +318,32 @@ public class PlaceActivity extends AppCompatActivity {
 
     private void toastMessage(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    private void setEventDetail() {
+//        intent.putExtra("PLACE_ID", String.valueOf(anEvent.getQuery_id()));
+        String date = getIntent().getStringExtra("date");
+        String start = getIntent().getStringExtra("time_start");
+        String end = getIntent().getStringExtra("time_end");
+        String duration = getIntent().getStringExtra("duration");
+        int event_id = getIntent().getIntExtra("event_id", -1);
+
+        String timeStr = start + " - " + end;
+
+        eventDate.setText(date);
+        eventTime.setText(timeStr);
+        eventDuration.setText(duration);
+
+        String type = getIntent().getStringExtra("type");
+        ic_add.setEnabled(false);
+        if (type.equals("restaurants")) {
+            ic_add.setImageResource(R.drawable.ic_restaurant_black);
+        } else if (type.equals("attractions")) {
+            ic_add.setImageResource(R.drawable.ic_sunny_black);
+        } else {
+            ic_add.setImageResource(R.drawable.ic_event_note_black_24dp);
+        }
+
     }
 
     public void init() {
@@ -328,5 +363,17 @@ public class PlaceActivity extends AppCompatActivity {
         progressBar = (ProgressBar) findViewById(R.id.main_progress);
 
         databaseHelper = new DatabaseHelper(this);
+        String prevActivity = getIntent().getStringExtra("ACTIVITY");
+
+        eventDate = (TextView) findViewById(R.id.event_detail_date);
+        eventTime = (TextView) findViewById(R.id.event_detail_time);
+        eventDuration = (TextView) findViewById(R.id.event_detail_duration);
+        detailLayout = (RelativeLayout) findViewById(R.id.detail_layout);
+
+        if (prevActivity != null && (prevActivity.equals("PlanActivity"))) {
+            setEventDetail();
+        } else {
+            detailLayout.setVisibility(View.GONE);
+        }
     }
 }
