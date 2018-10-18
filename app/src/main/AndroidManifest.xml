@@ -61,13 +61,6 @@
         <activity android:name=".EditPhoneNoActivity" />
         <activity android:name=".EditBirthdayActivity" />
         <activity android:name=".ChooseEventActivity">
-<<<<<<< HEAD
-            <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
-
-            <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-=======
 
             <!-- <intent-filter> -->
             <!-- <action android:name="android.intent.action.MAIN" /> -->
@@ -75,7 +68,6 @@
 
             <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
             <!-- </intent-filter> -->
->>>>>>> vincent
         </activity>
 
         <meta-data
@@ -85,7 +77,6 @@
         <activity android:name=".PlaceActivity" />
         <activity android:name=".InHomeActivity" />
         <activity android:name=".CreateNewPlanActivity" />
-<<<<<<< HEAD
         <activity android:name=".EditPlanActivity"></activity>
 
         <!--<activity android:name=".Activity_InHome"></activity>-->
@@ -94,9 +85,6 @@
         </activity>
         <receiver android:name=".AlertReciever"/>
         <!--<activity android:name=".Activity_ReminderList"/>-->
-=======
-        <activity android:name=".EditPlanActivity" />
->>>>>>> vincent
     </application>
 
 </manifest>
