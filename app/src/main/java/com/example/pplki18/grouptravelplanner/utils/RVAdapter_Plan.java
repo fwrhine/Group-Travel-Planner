@@ -69,12 +69,12 @@ public class RVAdapter_Plan extends RecyclerView.Adapter<RVAdapter_Plan.PlanView
 
         String start_date = plan.getPlan_start_date();
         String end_date = plan.getPlan_end_date();
-        try {
-            start_date = dateFormatter1.format(dateFormatter1.parse(start_date));
-            end_date = dateFormatter1.format(dateFormatter1.parse(end_date));
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            start_date = dateFormatter1.format(dateFormatter1.parse(start_date));
+//            end_date = dateFormatter1.format(dateFormatter1.parse(end_date));
+//        } catch (ParseException e) {
+//            e.printStackTrace();
+//        }
 
         String dateString = start_date + " - " + end_date
                 + total_day_str;

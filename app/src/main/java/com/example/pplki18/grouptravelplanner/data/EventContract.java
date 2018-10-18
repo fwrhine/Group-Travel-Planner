@@ -18,6 +18,7 @@ public class EventContract {
 
         // for all
         public static final String _ID = BaseColumns._ID;
+        public static final String COL_QUERY_ID = "query_id";
         public static final String COL_PLAN_ID = "plan_id";
         public static final String COL_TITLE = "event_title";
         public static final String COL_LOCATION = "event_location";

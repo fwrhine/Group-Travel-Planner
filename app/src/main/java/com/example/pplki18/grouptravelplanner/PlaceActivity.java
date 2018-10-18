@@ -1,5 +1,6 @@
 package com.example.pplki18.grouptravelplanner;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -8,6 +9,7 @@ import android.graphics.Bitmap;
 import android.media.Image;
 import android.media.Rating;
 import android.net.Uri;
+import android.os.Parcelable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -16,10 +18,12 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RatingBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -33,6 +37,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
 import com.example.pplki18.grouptravelplanner.data.EventContract;
+import com.example.pplki18.grouptravelplanner.utils.Event;
 import com.example.pplki18.grouptravelplanner.utils.Place;
 
 import org.json.JSONArray;
@@ -61,6 +66,12 @@ public class PlaceActivity extends AppCompatActivity {
     FloatingActionButton ic_add;
 //    Button google_button;
     ProgressBar progressBar;
+
+    TextView eventDate;
+    TextView eventTime;
+    TextView eventDuration;
+    RelativeLayout detailLayout;
+    ImageButton editEvent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -239,10 +250,28 @@ public class PlaceActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         toastMessage("Start " + startTime.getCurrentHour() + ":" + startTime.getCurrentMinute()
                                 + " End " + endTime.getCurrentHour() + ":" + endTime.getCurrentMinute());
+
                         String start_time = startTime.getCurrentHour() + ":" + startTime.getCurrentMinute();
                         String end_time = endTime.getCurrentHour() + ":" + endTime.getCurrentMinute();
-                        saveEventToPlan(start_time, end_time);
-                        PlaceActivity.this.finish();
+                        String prevActivity = getIntent().getStringExtra("ACTIVITY");
+
+                        if (prevActivity != null && prevActivity.equals("CreateNewPlanActivity")) {
+                            List<Event> events = getIntent().getParcelableArrayListExtra("events");
+                            Event anEvent = saveEventLocally(start_time, end_time);
+                            events.add(anEvent);
+
+                            Intent intent = new Intent(PlaceActivity.this, Fragment_PlaceList.class);
+                            intent.putParcelableArrayListExtra("events", (ArrayList<? extends Parcelable>) events);
+
+                            setResult(Activity.RESULT_OK, intent);
+                            finish();
+                        } else {
+                            saveEventToPlan(start_time, end_time);
+                            Intent intent = new Intent(PlaceActivity.this, Fragment_PlaceList.class);
+                            intent.putExtra("ACTIVITY", "EditPlanActivity");
+                            setResult(Activity.RESULT_OK, intent);
+                            finish();
+                        }
                     }
                 });
         builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
@@ -253,11 +282,28 @@ public class PlaceActivity extends AppCompatActivity {
         builder.show();
     }
 
+    private Event saveEventLocally(String start_time, String end_time) {
+        Event anEvent = new Event();
+        anEvent.setQuery_id(place_id);
+        anEvent.setTitle(title.getText().toString());
+        anEvent.setLocation(address.getText().toString());
+        anEvent.setDescription(website.getText().toString());
+        anEvent.setDate(getIntent().getStringExtra("date"));
+        anEvent.setTime_start(start_time);
+        anEvent.setTime_end(end_time);
+        anEvent.setPhone(phone.getText().toString());
+        anEvent.setType(getIntent().getStringExtra("type"));
+        anEvent.setRating(rating_num.getText().toString());
+
+        return anEvent;
+    }
+
     private void saveEventToPlan(String start_time, String end_time) {
         Log.d("SAVEVENT", "MASUK");
         SQLiteDatabase db = databaseHelper.getWritableDatabase();
 
         ContentValues contentValues = new ContentValues();
+        contentValues.put(EventContract.EventEntry.COL_QUERY_ID, place_id);
         contentValues.put(EventContract.EventEntry.COL_PLAN_ID, getIntent().getIntExtra("plan_id", -1));
         contentValues.put(EventContract.EventEntry.COL_TITLE, title.getText().toString());
         contentValues.put(EventContract.EventEntry.COL_LOCATION, address.getText().toString());
@@ -266,7 +312,7 @@ public class PlaceActivity extends AppCompatActivity {
         contentValues.put(EventContract.EventEntry.COL_TIME_START, start_time);
         contentValues.put(EventContract.EventEntry.COL_TIME_END, end_time);
         contentValues.put(EventContract.EventEntry.COL_PHONE, phone.getText().toString());
-        contentValues.put(EventContract.EventEntry.COL_TYPE, getIntent().getStringExtra("query"));
+        contentValues.put(EventContract.EventEntry.COL_TYPE, getIntent().getStringExtra("type"));
         contentValues.put(EventContract.EventEntry.COL_RATING, rating_num.getText().toString());
         long event_id = db.insert(EventContract.EventEntry.TABLE_NAME, null, contentValues);
 
@@ -274,6 +320,42 @@ public class PlaceActivity extends AppCompatActivity {
 
     private void toastMessage(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    private void setEventDetail() {
+//        intent.putExtra("PLACE_ID", String.valueOf(anEvent.getQuery_id()));
+        String date = getIntent().getStringExtra("date");
+        String start = getIntent().getStringExtra("time_start");
+        String end = getIntent().getStringExtra("time_end");
+        String duration = getIntent().getStringExtra("duration");
+        int event_id = getIntent().getIntExtra("event_id", -1);
+
+        String timeStr = start + " - " + end;
+
+        eventDate.setText(date);
+        eventTime.setText(timeStr);
+        eventDuration.setText(duration);
+
+        String type = getIntent().getStringExtra("type");
+        ic_add.setEnabled(false);
+        if (type.equals("restaurants")) {
+            ic_add.setImageResource(R.drawable.ic_restaurant_black);
+        } else if (type.equals("attractions")) {
+            ic_add.setImageResource(R.drawable.ic_sunny_black);
+        } else {
+            ic_add.setImageResource(R.drawable.ic_event_note_black_24dp);
+        }
+        setEditEventButton();
+    }
+
+    public void setEditEventButton() {
+        editEvent.setColorFilter(R.color.colorRipple);
+        editEvent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(PlaceActivity.this, "EDIT", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     public void init() {
@@ -293,5 +375,18 @@ public class PlaceActivity extends AppCompatActivity {
         progressBar = (ProgressBar) findViewById(R.id.main_progress);
 
         databaseHelper = new DatabaseHelper(this);
+        String prevActivity = getIntent().getStringExtra("ACTIVITY");
+
+        eventDate = (TextView) findViewById(R.id.event_detail_date);
+        eventTime = (TextView) findViewById(R.id.event_detail_time);
+        eventDuration = (TextView) findViewById(R.id.event_detail_duration);
+        detailLayout = (RelativeLayout) findViewById(R.id.detail_layout);
+        editEvent = (ImageButton) findViewById(R.id.edit_event);
+
+        if (prevActivity != null && (prevActivity.equals("PlanActivity"))) {
+            setEventDetail();
+        } else {
+            detailLayout.setVisibility(View.GONE);
+        }
     }
 }

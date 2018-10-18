@@ -2,6 +2,7 @@ package com.example.pplki18.grouptravelplanner;
 
 import android.content.Intent;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -44,6 +45,7 @@ public class ChooseEventActivity extends AppCompatActivity {
 
     int REGION_AUTOCOMPLETE_REQUEST_CODE = 1;
     int PLACE_AUTOCOMPLETE_REQUEST_CODE = 2;
+    int REQUEST_FROM_PLACE_ACTIVITY = 3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -151,6 +153,7 @@ public class ChooseEventActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REGION_AUTOCOMPLETE_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 Place place = PlaceAutocomplete.getPlace(this, data);
@@ -188,6 +191,10 @@ public class ChooseEventActivity extends AppCompatActivity {
 
             } else if (resultCode == RESULT_CANCELED) {
                 // The user canceled the operation.
+            }
+        } else if (requestCode == REQUEST_FROM_PLACE_ACTIVITY) {
+            for (Fragment fragment : getSupportFragmentManager().getFragments()) {
+                fragment.onActivityResult(requestCode, resultCode, data);
             }
         }
     }
