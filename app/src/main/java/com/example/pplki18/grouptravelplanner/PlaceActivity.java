@@ -18,6 +18,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -70,6 +71,7 @@ public class PlaceActivity extends AppCompatActivity {
     TextView eventTime;
     TextView eventDuration;
     RelativeLayout detailLayout;
+    ImageButton editEvent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -343,7 +345,17 @@ public class PlaceActivity extends AppCompatActivity {
         } else {
             ic_add.setImageResource(R.drawable.ic_event_note_black_24dp);
         }
+        setEditEventButton();
+    }
 
+    public void setEditEventButton() {
+        editEvent.setColorFilter(R.color.colorRipple);
+        editEvent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(PlaceActivity.this, "EDIT", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     public void init() {
@@ -369,6 +381,7 @@ public class PlaceActivity extends AppCompatActivity {
         eventTime = (TextView) findViewById(R.id.event_detail_time);
         eventDuration = (TextView) findViewById(R.id.event_detail_duration);
         detailLayout = (RelativeLayout) findViewById(R.id.detail_layout);
+        editEvent = (ImageButton) findViewById(R.id.edit_event);
 
         if (prevActivity != null && (prevActivity.equals("PlanActivity"))) {
             setEventDetail();
