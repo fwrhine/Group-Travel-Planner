@@ -289,8 +289,6 @@ public class Fragment_PlaceList extends Fragment {
         builder.setPositiveButton("OK",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        toastMessage("Start " + startTime.getCurrentHour() + ":" + startTime.getCurrentMinute()
-                                + " End " + endTime.getCurrentHour() + ":" + endTime.getCurrentMinute());
                         String start_time = startTime.getCurrentHour() + ":" + startTime.getCurrentMinute();
                         String end_time = endTime.getCurrentHour() + ":" + endTime.getCurrentMinute();
                         saveEventToPlan(place, start_time, end_time);

@@ -33,14 +33,14 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
         switch (position) {
 
             case 0:
-                Fragment_PlaceList tab1 = newInstance("restaurants");
+                Fragment_PlaceList tab1 = newPlaceListInstance("restaurants");
                 return tab1;
             case 1:
-                Fragment_PlaceList tab2 = newInstance("attractions");
+                Fragment_PlaceList tab2 = newPlaceListInstance("attractions");
                 return tab2;
             case 2: return new BookPlaneFragment();
             case 3: return new BookTrainFragment();
-            case 4: Fragment_CustomEvent tab3 = new Fragment_CustomEvent();
+            case 4: Fragment_CustomEvent tab3 = newCustomEventInstance();
                 return tab3;
             default:
                 return null;
@@ -63,7 +63,7 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
         }
     }
 
-    private Fragment_PlaceList newInstance(String type) {
+    private Fragment_PlaceList newPlaceListInstance(String type) {
         Fragment_PlaceList myFragment = new Fragment_PlaceList();
 
         Bundle args = new Bundle();
@@ -71,6 +71,21 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
         args.putString("REGION", region);
         args.putString("LATITUDE", String.valueOf(region_coor.latitude));
         args.putString("LONGITUDE", String.valueOf(region_coor.longitude));
+
+        int plan_id = bundle.getInt("plan_id");
+        String date = bundle.getString("date");
+        args.putInt("plan_id", plan_id);
+        args.putString("date", date);
+
+        myFragment.setArguments(args);
+
+        return myFragment;
+    }
+
+    private Fragment_CustomEvent newCustomEventInstance() {
+        Fragment_CustomEvent myFragment = new Fragment_CustomEvent();
+
+        Bundle args = new Bundle();
 
         int plan_id = bundle.getInt("plan_id");
         String date = bundle.getString("date");
