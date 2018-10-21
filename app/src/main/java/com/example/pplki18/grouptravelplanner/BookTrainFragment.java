@@ -205,7 +205,7 @@ public class BookTrainFragment extends Fragment {
 
                                 JSONObject stationData = stationList.getJSONObject(i);
 
-                                String stationLoc = stationData.getString("city_name");
+                                String stationLoc = stationData.getString("station_name");
                                 String stationCode = stationData.getString("station_code");
 
                                 if (stationLoc.contains(" - ")) {

@@ -37,6 +37,7 @@
     <string name="bookArriveCity">Arrive City</string>
     <string name="bookArriveTime">Arrive Time</string>
     <string name="bookPrice">Price</string>
+    <string name="buttonFindTrain">FIND TRAIN</string>
 
 
 </resources>

@@ -65,7 +65,7 @@
             android:background="@color/background_color"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/buttonFindFlight"
+            android:text="@string/buttonFindTrain"
             android:layout_margin="8dp"/>
 
         <ListView
