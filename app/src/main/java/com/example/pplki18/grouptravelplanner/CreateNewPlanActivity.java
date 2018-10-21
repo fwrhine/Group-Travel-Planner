@@ -3,7 +3,6 @@ package com.example.pplki18.grouptravelplanner;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
@@ -12,13 +11,11 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -275,13 +272,13 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
         contentValues.put(PlanContract.PlanEntry.COL_DESCRIPTION, plan_desc);
         long plan_id = db.insert(PlanContract.PlanEntry.TABLE_NAME, null, contentValues);
 
-        saveEventToDB(db, contentValues, (int) plan_id);
+        saveEventToDB(db, (int) plan_id);
     }
 
-    private void saveEventToDB(SQLiteDatabase db, ContentValues contentValues, int plan_id) {
+    private void saveEventToDB(SQLiteDatabase db, int plan_id) {
         for(Event e : events) {
 //            Log.d("testtt", e.getTitle() + ", " + e.getDate());
-            contentValues = new ContentValues();
+            ContentValues contentValues = new ContentValues();
             contentValues.put(EventContract.EventEntry.COL_PLAN_ID, plan_id);
             contentValues.put(EventContract.EventEntry.COL_QUERY_ID, e.getQuery_id());
             contentValues.put(EventContract.EventEntry.COL_TITLE, e.getTitle());

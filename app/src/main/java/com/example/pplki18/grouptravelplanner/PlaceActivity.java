@@ -353,7 +353,9 @@ public class PlaceActivity extends AppCompatActivity {
         editEvent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(PlaceActivity.this, "EDIT", Toast.LENGTH_SHORT).show();
+                Toast.makeText(PlaceActivity.this, "edit event", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(PlaceActivity.this, EditEventActivity.class);
+                startActivity(intent);
             }
         });
     }
