@@ -13,7 +13,7 @@
         android:orientation="horizontal" >
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="94dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/bookFrom"
@@ -21,7 +21,7 @@
 
         <EditText
             android:id="@+id/origin"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="4"
             android:background="@android:color/darker_gray"
@@ -32,7 +32,7 @@
             android:inputType="text" />
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="78dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/bookTo"
@@ -42,7 +42,7 @@
 
         <EditText
             android:id="@+id/destination"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="4"
             android:background="@android:color/darker_gray"
@@ -54,66 +54,11 @@
 
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/editDate"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/editPlace"
-        android:orientation="horizontal" >
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/bookDate"
-            android:layout_margin="8dp"/>
-
-        <EditText
-            android:id="@+id/departureDay"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="4"
-            android:background="@android:color/darker_gray"
-            android:hint="@string/bookDay"
-            android:inputType="number"
-            android:maxLength="2"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp" />
-
-        <EditText
-            android:id="@+id/departureMonth"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="4"
-            android:background="@android:color/darker_gray"
-            android:hint="@string/bookMonth"
-            android:inputType="number"
-            android:maxLength="2"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp" />
-
-        <EditText
-            android:id="@+id/departureYear"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="4"
-            android:background="@android:color/darker_gray"
-            android:hint="@string/bookYear"
-            android:inputType="number"
-            android:maxLength="4"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp" />
-
-    </LinearLayout>
-
     <RelativeLayout
         android:id="@+id/resultList"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/editDate">
+        android:layout_below="@+id/editPlace">
 
         <Button
             android:id="@+id/searchButton"
