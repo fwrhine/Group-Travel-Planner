@@ -18,13 +18,13 @@ import com.example.pplki18.grouptravelplanner.data.UserGroupContract.UserGroupEn
 import com.example.pplki18.grouptravelplanner.data.FriendsContract.FriendsEntry;
 import com.example.pplki18.grouptravelplanner.data.PlanContract.PlanEntry;
 import com.example.pplki18.grouptravelplanner.data.EventContract.EventEntry;
-import com.example.pplki18.grouptravelplanner.data.PlanContract.RundownEntry;
-import com.example.pplki18.grouptravelplanner.data.HotelContract.HotelEntry;
-import com.example.pplki18.grouptravelplanner.data.RestaurantContract.RestaurantEntry;
-import com.example.pplki18.grouptravelplanner.data.EntertainmentContract.EntertainmentEntry;
-import com.example.pplki18.grouptravelplanner.data.FlightContract.FlightEntry;
-import com.example.pplki18.grouptravelplanner.data.TrainContract.TrainEntry;
-import com.example.pplki18.grouptravelplanner.data.OtherEventContract.OtherEventEntry;
+//import com.example.pplki18.grouptravelplanner.data.PlanContract.RundownEntry;
+//import com.example.pplki18.grouptravelplanner.data.HotelContract.HotelEntry;
+//import com.example.pplki18.grouptravelplanner.data.RestaurantContract.RestaurantEntry;
+//import com.example.pplki18.grouptravelplanner.data.EntertainmentContract.EntertainmentEntry;
+//import com.example.pplki18.grouptravelplanner.data.FlightContract.FlightEntry;
+//import com.example.pplki18.grouptravelplanner.data.TrainContract.TrainEntry;
+//import com.example.pplki18.grouptravelplanner.data.OtherEventContract.OtherEventEntry;
 import com.example.pplki18.grouptravelplanner.data.ReminderContract.ReminderEntry;
 
 import java.io.ByteArrayOutputStream;
@@ -144,7 +144,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String SQL_CREATE_REMINDER_TABLE = "CREATE TABLE " + ReminderEntry.TABLE_NAME + " ("
                 + ReminderEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + ReminderEntry.COL_USER_ID + " INTEGER, "
-                + ReminderEntry.COL_CHANNEL_ID + " INTEGER, "
+                + ReminderEntry.COL_EVENT_ID + " INTEGER, "
+                + ReminderEntry.COL_ALARM_CHANNEL + " INTEGER, "
 
 
                 + "FOREIGN KEY(" + ReminderEntry.COL_USER_ID + ")"
@@ -159,12 +160,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(SQL_CREATE_FRIENDS_REL);
         db.execSQL(SQL_CREATE_PLAN_TABLE);
         db.execSQL(SQL_CREATE_EVENT_TABLE);
-        db.execSQL(SQL_CREATE_HOTEL_TABLE);
-        db.execSQL(SQL_CREATE_RESTAURANT_TABLE);
-        db.execSQL(SQL_CREATE_ENTERTAINMENT_TABLE);
-        db.execSQL(SQL_CREATE_FLIGHT_TABLE);
-        db.execSQL(SQL_CREATE_TRAIN_TABLE);
-        db.execSQL(SQL_CREATE_OTHER_EVENT_TABLE);
+//        db.execSQL(SQL_CREATE_HOTEL_TABLE);
+//        db.execSQL(SQL_CREATE_RESTAURANT_TABLE);
+//        db.execSQL(SQL_CREATE_ENTERTAINMENT_TABLE);
+//        db.execSQL(SQL_CREATE_FLIGHT_TABLE);
+//        db.execSQL(SQL_CREATE_TRAIN_TABLE);
+//        db.execSQL(SQL_CREATE_OTHER_EVENT_TABLE);
         db.execSQL(SQL_CREATE_REMINDER_TABLE);
     }
 

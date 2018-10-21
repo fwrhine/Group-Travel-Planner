@@ -17,6 +17,7 @@ public class ReminderContract {
 
         public static final String _ID = BaseColumns._ID;
         public static final String COL_USER_ID = "user_id";
-        public static final String COL_CHANNEL_ID = "channel_id";
+        public static final String COL_EVENT_ID = "event_id";
+        public static final String COL_ALARM_CHANNEL = "alarm_channel";
     }
 }

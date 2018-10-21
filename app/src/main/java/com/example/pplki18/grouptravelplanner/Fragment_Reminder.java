@@ -48,7 +48,7 @@ public class Fragment_Reminder extends Fragment implements NavigationView.OnNavi
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         init();
-        r = new Reminder("2001/9/11", "New York", 0);
+        r = new Reminder("2001/9/11", "New York", Long.parseLong("0"), 0);
 //        r.setDate("2001/9/11");
 //        r.setDestination("New York");
 //        r.setChannel(0);

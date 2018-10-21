@@ -6,14 +6,16 @@ public class Reminder {
 
     String destination;
     String date;
-    Integer channel;
+    Long eventID;
+    Integer alarmChannel;
 
     //constructor
 
-    public Reminder(String destination, String date, Integer channel) {
+    public Reminder(String destination, String date, Long id, Integer channel) {
         this.destination = destination;
         this.date = date;
-        this.channel = channel;
+        this.eventID = id;
+        this.alarmChannel = channel;
     }
 
     //setters
@@ -26,7 +28,11 @@ public class Reminder {
     }
 
     public void setChannel(Integer c) {
-        this.channel = c;
+        this.alarmChannel = c;
+    }
+
+    public void setEventID(Long eventID) {
+        this.eventID = eventID;
     }
 
     //getters
@@ -38,4 +44,11 @@ public class Reminder {
         return date;
     }
 
+    public Integer getAlarmChannel() {
+        return alarmChannel;
+    }
+
+    public Long getEventID() {
+        return eventID;
+    }
 }

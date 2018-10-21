@@ -19,18 +19,49 @@
                 android:id="@+id/destination_adap"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="t1"
                 android:layout_below="@id/user_image2"
                 android:textSize="30sp"
-                android:layout_centerHorizontal="true"/>
+                android:layout_alignParentLeft="true"/>
+
 
             <TextView
-            android:id="@+id/date_adap"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="30sp"
-            android:layout_centerHorizontal="true"
-            android:layout_below="@+id/destination_adap"
+                android:id="@+id/alarmchannel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="30sp"
+                android:layout_toRightOf="@id/destination_adap"
+                android:visibility="gone"
                 />
+
+            <TextView
+                android:id="@+id/date_adap"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="test"
+                android:textSize="30sp"
+                android:layout_below="@+id/destination_adap"
+                />
+
+            <TextView
+                android:id="@+id/event_id2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="30sp"
+                android:layout_below="@id/alarmchannel"
+                android:layout_toRightOf="@id/date_adap"
+                android:visibility="gone"
+                />
+
+            <Button
+                android:id="@+id/edit_notification"
+                android:text="EDIT"
+                android:background="#D50000"
+                android:textColor="@android:color/white"
+                android:layout_margin="8dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toLeftOf="@id/remove_notification" />
 
             <Button
                 android:id="@+id/remove_notification"
