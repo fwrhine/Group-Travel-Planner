@@ -46,7 +46,7 @@ public class Activity_CreateReminder extends AppCompatActivity implements DatePi
         TimePickerDialog.OnTimeSetListener {
     Button btn_pick;
     Button btn_create;
-    Button btn_del_alarm;
+    Button btn_goto_cal;
     Button btn_del_event;
     public TextView resultYear;
     public TextView resultMonth;
@@ -87,7 +87,7 @@ public class Activity_CreateReminder extends AppCompatActivity implements DatePi
 
         //=================
         btn_pick = (Button) findViewById(R.id.button_pick_notification);
-        btn_del_alarm = (Button) findViewById(R.id.button_del_alarm);
+        btn_goto_cal = (Button) findViewById(R.id.button_goto_cal);
         btn_del_event = (Button) findViewById(R.id.button_del_event);
         resultYear = (TextView) findViewById(R.id.notifaction_resultYear);
         resultMonth = (TextView) findViewById(R.id.notifaction_resultMonth);
@@ -130,17 +130,17 @@ public class Activity_CreateReminder extends AppCompatActivity implements DatePi
                 eventID2 = generalInsertNotifier(destText, notificationTxt, yearFinal, monthFinal, dayFinal, hourFinal, minuteFinal);
 
 
-                alarmCal.set(yearFinal, monthFinal, dayFinal, hourFinal, minuteFinal);
-                startAlarm(alarmCal);
+//                alarmCal.set(yearFinal, monthFinal, dayFinal, hourFinal, minuteFinal);
+//                startAlarm(alarmCal);
                 Toast.makeText(getApplicationContext(), "notification added", Toast.LENGTH_SHORT).show();
 
 
             }
         });
-        btn_del_alarm.setOnClickListener(new View.OnClickListener() {
+        btn_goto_cal.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                cancelAlarm(1);
+                gotoCalendar();
             }
         });
 
@@ -157,7 +157,6 @@ public class Activity_CreateReminder extends AppCompatActivity implements DatePi
         calIntent.setData(CalendarContract.Events.CONTENT_URI);
         startActivity(calIntent);
 
-
     }
 
 
@@ -171,8 +170,8 @@ public class Activity_CreateReminder extends AppCompatActivity implements DatePi
         String date = day + month + year + "";
 
         Calendar startTime = Calendar.getInstance();
-        Integer adjustedHour = hour - 1;
-        startTime.set(year, month, day, adjustedHour, minute);
+//        Integer adjustedHour = hour - 1;
+        startTime.set(year, month, day, hour, minute);
         Calendar endTime = Calendar.getInstance();
         endTime.set(year, month, day, hour + 1, minute);
 
@@ -188,7 +187,7 @@ public class Activity_CreateReminder extends AppCompatActivity implements DatePi
 
         Log.v("calenderData", title);
         Log.v("calenderData", description);
-        Log.v("calenderData", destination.getText().toString());
+        Log.v("calenderData", destination.getText().toString() + "in 1 hour");
         Log.v("calenderData", startTime.getTimeInMillis() +  "");
         Log.v("calenderData", endTime.getTimeInMillis() + "");
         Log.v("calenderData", Time.getCurrentTimezone());
@@ -211,10 +210,24 @@ public class Activity_CreateReminder extends AppCompatActivity implements DatePi
         }
         Log.v("calender", "EVENT ID:  " + eventID);
         Log.v("calender", "calendar entry inserted");
-        Reminder newReminder = new Reminder(destinationStr,date, eventID, currChannel);
-        return eventID;
+//        Reminder newReminder = new Reminder(destinationStr,date, eventID, currChannel);
+//        return eventID;
 
+        startAlarm(eventID);
+
+        //eventID2 depends on
+        return eventID;
     }
+
+//    public void CalendarReminder(){
+//        ContentResolver cr = getContentResolver();
+//        Uri REMINDERS_URI = Uri.parse(getCalendarUriBase(this) + "reminders");
+//        values = new ContentValues();
+//        values.put( "event_id", Long.parseLong(event.getLastPathSegment()));
+//        values.put( "method", 1 );
+//        values.put( "minutes", 10 );
+//        cr.insert( REMINDERS_URI, values );
+//    }
 
     public void remToDatabase(Integer eventID){
         myDb = new DatabaseHelper(getApplicationContext());
@@ -263,18 +276,19 @@ public class Activity_CreateReminder extends AppCompatActivity implements DatePi
         timePickerDialog.show();
     }
 
-    private void startAlarm(Calendar c){
-        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        Intent intent = new Intent(this, AlertReciever.class);
-        // requestCodeList size will increase to allow the setting of multiple alarms
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), currChannel, intent, 0);
-        currChannel++;
-        //TODO need to get time
-        Log.v("check calender", alarmCal.getTimeInMillis() + "");
-        //
-        //added Objects.requireNonNull
-        //
-        Objects.requireNonNull(alarmManager).setExact(AlarmManager.RTC_WAKEUP, alarmCal.getTimeInMillis(), pendingIntent );
+    private void startAlarm(long eventID){
+        // reminder insert
+        String reminderUriString = "content://com.android.calendar/reminders";
+
+        ContentValues reminderValues = new ContentValues();
+
+        reminderValues.put("event_id", eventID);
+        reminderValues.put("minutes", 60);
+        // method 0 default, 1 alert, 2 email, 3 sms
+        reminderValues.put("method", 1);
+
+        Uri reminderUri = getContentResolver().insert(Uri.parse(reminderUriString), reminderValues);
+        Log.v("calender", "return REMINDER:  " + Long.parseLong(reminderUri.getLastPathSegment()));
     }
 
     private void cancelAlarm(Integer channel){
@@ -288,14 +302,22 @@ public class Activity_CreateReminder extends AppCompatActivity implements DatePi
         Toast.makeText(getApplicationContext(), "Alarm notification canceled", Toast.LENGTH_SHORT).show();
     }
 
-    /** user defined method to delete the event based on id*/
-    private void deleteEventFromCalendar(long id){
+    public void deleteEventFromCalendar(long eventID){
         ContentResolver cr = getContentResolver();
         Uri deleteUri = null;
-        deleteUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, id);
+        deleteUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventID);
         cr.delete(deleteUri, null, null);
         Log.v("CALENDAR DELETE", "Event deleted");
         Toast.makeText(getApplicationContext(), "Removed Event", Toast.LENGTH_SHORT).show();
+    }
+
+    public void updateEvent(long eventID){
+        ContentResolver cr = getContentResolver();
+        Uri eventUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventID);
+        ContentValues event = new ContentValues();
+        event.put(CalendarContract.Events.TITLE, "new title");
+        event.put(CalendarContract.Events.DESCRIPTION, "My cool event!");
+        cr.update(eventUri, event, null, null);
     }
 
 

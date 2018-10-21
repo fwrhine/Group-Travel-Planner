@@ -1,6 +1,7 @@
 package com.example.pplki18.grouptravelplanner;
 
 import android.app.Notification;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -19,9 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
-import com.example.pplki18.grouptravelplanner.data.GroupContract;
 import com.example.pplki18.grouptravelplanner.data.ReminderContract;
-import com.example.pplki18.grouptravelplanner.utils.Group;
 import com.example.pplki18.grouptravelplanner.utils.RVAdapter_Reminder;
 
 import java.util.ArrayList;
@@ -37,6 +36,7 @@ public class Fragment_Reminder extends Fragment implements NavigationView.OnNavi
     private FloatingActionButton fab;
     List<Reminder> channelList;
     Reminder r;
+    Context context;
 
     @Nullable
     @Override
@@ -48,17 +48,20 @@ public class Fragment_Reminder extends Fragment implements NavigationView.OnNavi
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         init();
-        r = new Reminder("2001/9/11", "New York", Long.parseLong("0"), 0);
+        long i = Long.parseLong("1");
+        r = new Reminder("New York", "2001/9/11", i, 0);
 //        r.setDate("2001/9/11");
 //        r.setDestination("New York");
 //        r.setChannel(0);
+        context = getActivity().getApplicationContext();
+
 
         //FAB: when clicked, open create new group interface
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Log.v("fab", "FAB Clicked");
-                Intent myIntent = new Intent(getActivity(), Activity_CreateReminder.class);
+                Intent myIntent = new Intent(getActivity(), Activity_EditReminder.class);
                 Fragment_Reminder.this.startActivity(myIntent);
             }
         });
@@ -66,7 +69,11 @@ public class Fragment_Reminder extends Fragment implements NavigationView.OnNavi
 
         recyclerViewGroup.setHasFixedSize(true);
         recyclerViewGroup.setLayoutManager(linearLayoutManager);
-
+        if(context instanceof Activity_CreateReminder){
+            Log.v("RemList", "adding if to add calender");
+            ((Activity_CreateReminder)context).generalInsertNotifier("test",
+                    "destination", 2018, 10, 22, 10, 0);
+        }
         populateReminderRecyclerView();
     }
 
@@ -129,5 +136,6 @@ public class Fragment_Reminder extends Fragment implements NavigationView.OnNavi
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         return false;
     }
+
 
 }

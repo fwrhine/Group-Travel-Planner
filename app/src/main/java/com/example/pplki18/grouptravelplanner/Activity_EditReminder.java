@@ -7,6 +7,7 @@ import android.app.DatePickerDialog;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -76,7 +77,7 @@ public class Activity_EditReminder  extends AppCompatActivity implements DatePic
         myDb = new DatabaseHelper(this);
         session = new SessionManager(getApplicationContext());
 
-        long id = getIntent().getLongExtra("event_id", -1);
+        final long event_id = getIntent().getLongExtra("event_id", -1);
 
         //=================
         btn_pick = (Button) findViewById(R.id.button_pick_notification);
@@ -118,16 +119,12 @@ public class Activity_EditReminder  extends AppCompatActivity implements DatePic
 //                createNotification(dest, notificationTxt);
 //                generalCreateNotification("event", "detail", Integer i);
 
-                //TODO set event ID
-                Integer eventID = 8;
                 //=================
-                changeNotifier(destText, notificationTxt, yearFinal, monthFinal, dayFinal, hourFinal, minuteFinal,eventID);
+                changeNotifier(destText, notificationTxt, yearFinal, monthFinal, dayFinal, hourFinal, minuteFinal, event_id);
 
                 //TODO set channel for alarm
                 Integer channel = 9;
                 //=================
-                alarmCal.set(yearFinal, monthFinal, dayFinal, hourFinal, minuteFinal);
-                startAlarm(alarmCal, channel);
                 Toast.makeText(getApplicationContext(), "notification added", Toast.LENGTH_SHORT).show();
 
 
@@ -140,12 +137,11 @@ public class Activity_EditReminder  extends AppCompatActivity implements DatePic
         calIntent.setData(CalendarContract.Events.CONTENT_URI);
         startActivity(calIntent);
 
-
     }
 
 
     public void changeNotifier(String title, String description, Integer year, Integer month,
-                                      Integer day, Integer hour, Integer minute, Integer event_id) {
+                                      Integer day, Integer hour, Integer minute, long event_id) {
         //TODO error handling, numbers must be within limit
         ContentValues event = new ContentValues();
         ContentResolver cr = getContentResolver();
@@ -157,7 +153,7 @@ public class Activity_EditReminder  extends AppCompatActivity implements DatePic
 
         // TODO might not work, with all phones. ID is set to 1 for my phone, 3 is likely the other likely possibility
         event.put(CalendarContract.Events.CALENDAR_ID, 1);
-
+        event.put(CalendarContract.Events._ID, event_id);
 
         event.put(CalendarContract.Events.TITLE, title);
         event.put(CalendarContract.Events.DESCRIPTION, description);
@@ -208,23 +204,77 @@ public class Activity_EditReminder  extends AppCompatActivity implements DatePic
 
 
 
-    public void generalCreateNotification(String event, String detail, Integer year, Integer month,
-                                          Integer day, Integer hour, Integer minute){
-        Intent calIntent = new Intent(Intent.ACTION_INSERT);
-        calIntent.setData(CalendarContract.Events.CONTENT_URI);
-        calIntent.putExtra(CalendarContract.Events.TITLE, event);
-        calIntent.putExtra(CalendarContract.Events.EVENT_LOCATION, event);
-        calIntent.putExtra(CalendarContract.Events.DESCRIPTION, detail);
+    public long generalInsertNotifier(String title, String description, Integer year, Integer month,
+                                      Integer day, Integer hour, Integer minute) {
+        //TODO error handling, numbers must be within limit
+        ContentValues event = new ContentValues();
+        ContentResolver cr = getContentResolver();
+        Long eventID;
+        String destinationStr = destination.getText().toString();
+        String date = day + month + year + "";
+
         Calendar startTime = Calendar.getInstance();
+//        Integer adjustedHour = hour - 1;
         startTime.set(year, month, day, hour, minute);
         Calendar endTime = Calendar.getInstance();
         endTime.set(year, month, day, hour + 1, minute);
-        calIntent.putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME,
-                startTime.getTimeInMillis());
-        calIntent.putExtra(CalendarContract.EXTRA_EVENT_END_TIME,
-                endTime.getTimeInMillis());
-        startActivity(calIntent);
+
+        // TODO might not work, with all phones. ID is set to 1 for my phone, 3 is likely the other likely possibility
+        event.put(CalendarContract.Events.CALENDAR_ID, 1);
+
+        event.put(CalendarContract.Events.TITLE, title);
+        event.put(CalendarContract.Events.DESCRIPTION, description);
+        event.put(CalendarContract.Events.EVENT_LOCATION, destinationStr);
+
+        event.put(CalendarContract.Events.DTSTART, startTime.getTimeInMillis());
+        event.put(CalendarContract.Events.DTEND, endTime.getTimeInMillis());
+
+        Log.v("calenderData", title);
+        Log.v("calenderData", description);
+        Log.v("calenderData", destination.getText().toString() + "in 1 hour");
+        Log.v("calenderData", startTime.getTimeInMillis() +  "");
+        Log.v("calenderData", endTime.getTimeInMillis() + "");
+        Log.v("calenderData", Time.getCurrentTimezone());
+
+        event.put(CalendarContract.Events.ALL_DAY, 0);   // 0 for false, 1 for true
+        event.put("eventStatus", 1); // 0 for tentative, 1 for confirmed, 2 for canceled
+        event.put(CalendarContract.Events.HAS_ALARM, 1); // 0 for false, 1 for true
+        event.put(CalendarContract.Events.EVENT_TIMEZONE, Time.getCurrentTimezone());
+
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_CALENDAR) == PackageManager.PERMISSION_GRANTED) {
+            Log.v("calenderIF", "inside if");
+            Uri eventUri = cr.insert(CalendarContract.Events.CONTENT_URI, event);
+            eventID = Long.parseLong(eventUri.getLastPathSegment());
+
+        }
+        else {
+            Uri eventUri = cr.insert(CalendarContract.Events.CONTENT_URI, event);
+            eventID = Long.parseLong(eventUri.getLastPathSegment());
+        }
+        Log.v("calender", "EVENT ID:  " + eventID);
+        Log.v("calender", "calendar entry inserted");
+//        Reminder newReminder = new Reminder(destinationStr,date, eventID, currChannel);
+//        return eventID;
+
+        startAlarm(eventID);
+
+        //eventID2 depends on
+        return eventID;
     }
+
+//    public void CalendarReminder(){
+//        ContentResolver cr = getContentResolver();
+//        Uri REMINDERS_URI = Uri.parse(getCalendarUriBase(this) + "reminders");
+//        values = new ContentValues();
+//        values.put( "event_id", Long.parseLong(event.getLastPathSegment()));
+//        values.put( "method", 1 );
+//        values.put( "minutes", 10 );
+//        cr.insert( REMINDERS_URI, values );
+//    }
+
+
+
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -256,21 +306,30 @@ public class Activity_EditReminder  extends AppCompatActivity implements DatePic
         timePickerDialog.show();
     }
 
-    private void startAlarm(Calendar c, int channel){
-        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        Intent intent = new Intent(this, AlertReciever.class);
-        // requestCodeList size will increase to allow the setting of multiple alarms
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), channel, intent, 0);
-        currChannel++;
-        //TODO need to get time
-        Log.v("check calender", alarmCal.getTimeInMillis() + "");
-        //
-        //added Objects.requireNonNull
-        //
-        Objects.requireNonNull(alarmManager).setExact(AlarmManager.RTC_WAKEUP, alarmCal.getTimeInMillis(), pendingIntent );
+
+
+    public void updateEvent(long eventID){
+        ContentResolver cr = getContentResolver();
+        Uri eventUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventID);
+        ContentValues event = new ContentValues();
+        event.put(CalendarContract.Events.TITLE, "new title");
+        event.put(CalendarContract.Events.DESCRIPTION, "My cool event!");
+        cr.update(eventUri, event, null, null);
     }
 
+    private void startAlarm(long eventID){
+        // reminder insert
+        String reminderUriString = "content://com.android.calendar/reminders";
 
+        ContentValues reminderValues = new ContentValues();
 
+        reminderValues.put("event_id", eventID);
+        reminderValues.put("minutes", 60);
+        // method 0 default, 1 alert, 2 email, 3 sms
+        reminderValues.put("method", 1);
+
+        Uri reminderUri = getContentResolver().insert(Uri.parse(reminderUriString), reminderValues);
+        Log.v("calender", "return REMINDER:  " + Long.parseLong(reminderUri.getLastPathSegment()));
+    }
 
 }

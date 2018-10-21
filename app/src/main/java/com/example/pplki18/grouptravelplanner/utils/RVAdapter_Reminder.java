@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.CalendarContract;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -20,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.pplki18.grouptravelplanner.Activity_CreateReminder;
 import com.example.pplki18.grouptravelplanner.Activity_EditReminder;
 import com.example.pplki18.grouptravelplanner.Fragment_Reminder;
 import com.example.pplki18.grouptravelplanner.R;
@@ -59,10 +61,11 @@ public class RVAdapter_Reminder extends RecyclerView.Adapter<RVAdapter_Reminder.
     @Override
     public void onBindViewHolder(final RVAdapter_Reminder.ReminderViewHolder reminderViewHolder, int i) {
         //TRYING TO USE CALENDAR EVENT TABLE
-//        reminderViewHolder.destination.setText(reminderList.get(i).getDestination());
-//        reminderViewHolder.date.setText((reminderList.get(i).getDate()));
-//        reminderViewHolder.eventid.setText(reminderList.get(i).getEventID().toString());
+        reminderViewHolder.destination.setText(reminderList.get(i).getDestination());
+        reminderViewHolder.date.setText((reminderList.get(i).getDate()));
+        reminderViewHolder.eventid.setText(reminderList.get(i).getEventID().toString());
 //        reminderViewHolder.alarmchannel.setText(reminderList.get(i).getAlarmChannel());
+
 
 /*        Calendar cal = Calendar.getInstance();
         Uri eventUri = CalendarContract.Events.CONTENT_URI;
@@ -80,9 +83,13 @@ public class RVAdapter_Reminder extends RecyclerView.Adapter<RVAdapter_Reminder.
             @Override
             public void onClick(View v) {
                 //TODO method to remove from calendar
-
+                long eventID = Long.parseLong(reminderViewHolder.eventid.getText().toString());
+                if(context instanceof Activity_CreateReminder){
+                    ((Activity_CreateReminder)context).deleteEventFromCalendar(eventID);
+                }
+                Toast.makeText(context, "Deleted event", Toast.LENGTH_SHORT).show();
                 //====================================
-                removeRem(reminderViewHolder);
+//                removeRem(reminderViewHolder);
             }
         });
     }
@@ -109,6 +116,7 @@ public class RVAdapter_Reminder extends RecyclerView.Adapter<RVAdapter_Reminder.
 // System.out.println("Rows deleted: " + rows);
         return rows;
     }
+
 
     public void editRem(ReminderViewHolder viewHolder) {
         //TODO go to edit page
@@ -160,6 +168,7 @@ public class RVAdapter_Reminder extends RecyclerView.Adapter<RVAdapter_Reminder.
             alarmchannel = (TextView)itemView.findViewById(R.id.alarmchannel);
             delete = (Button)itemView.findViewById(R.id.remove_notification);
             edit = (Button)itemView.findViewById(R.id.edit_notification);
+
         }
 
     }
