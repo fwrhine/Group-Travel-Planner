@@ -62,6 +62,7 @@ public class PlaceActivity extends AppCompatActivity {
     private FloatingActionButton ic_add;
 //    Button google_button;
     private ProgressBar progressBar;
+    private RequestQueue queue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,8 +107,6 @@ public class PlaceActivity extends AppCompatActivity {
     }
 
     private void sendRequest() {
-        // Instantiate the RequestQueue.
-        RequestQueue queue = Volley.newRequestQueue(this);
         String url = "https://maps.googleapis.com/maps/api/place/details/json?placeid="
                 + place_id + "&fields=name,formatted_address,rating,photo," +
                 "opening_hours,website,international_phone_number,url&key="
@@ -226,8 +225,6 @@ public class PlaceActivity extends AppCompatActivity {
     }
 
     private void getPhoto(String photo_reference) {
-        // Instantiate the RequestQueue.
-        RequestQueue queue = Volley.newRequestQueue(this);
         String url = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=900&photoreference="
                 + photo_reference + "&key=" + getString(R.string.api_key);
 
@@ -317,7 +314,7 @@ public class PlaceActivity extends AppCompatActivity {
         ic_add = (FloatingActionButton) findViewById(R.id.ic_add);
 //        google_button = (Button) findViewById(R.id.google_button);
         progressBar = (ProgressBar) findViewById(R.id.main_progress);
-
+        queue = Volley.newRequestQueue(this);
         databaseHelper = new DatabaseHelper(this);
     }
 }

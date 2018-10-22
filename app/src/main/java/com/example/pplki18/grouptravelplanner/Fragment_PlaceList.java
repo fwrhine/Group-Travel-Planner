@@ -62,6 +62,7 @@ public class Fragment_PlaceList extends Fragment {
     private String latitude;
     private String longitude;
     private String next_token;
+    private RequestQueue queue;
 
     private int plan_id;
     private String event_date;
@@ -145,9 +146,6 @@ public class Fragment_PlaceList extends Fragment {
     }
 
     private void sendRequest(String query) {
-        // Instantiate the RequestQueue.
-        RequestQueue queue = Volley.newRequestQueue(getActivity());
-
         String url ="https://maps.googleapis.com/maps/api/place/textsearch/json?query=" + query +
                 "+in+" + region + "&fields=id,name,types,rating,formatted_address" +
                 "&key=" + getString(R.string.api_key);
@@ -175,7 +173,6 @@ public class Fragment_PlaceList extends Fragment {
     }
 
     private void loadMorePlaces() {
-        RequestQueue queue = Volley.newRequestQueue(getActivity());
         String url = "https://maps.googleapis.com/maps/api/place/textsearch/json?pagetoken="
                 + next_token + "&key=AIzaSyB4QT2f2fyMQ8gDILgUEi5xBl_NKiGt_fo";
 
@@ -343,5 +340,6 @@ public class Fragment_PlaceList extends Fragment {
         plan_id = getArguments().getInt("plan_id");
         event_date = getArguments().getString("date");
         databaseHelper = new DatabaseHelper(getActivity());
+        queue = Volley.newRequestQueue(getActivity());
     }
 }

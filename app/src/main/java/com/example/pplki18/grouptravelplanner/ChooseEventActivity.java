@@ -93,7 +93,7 @@ public class ChooseEventActivity extends AppCompatActivity {
         tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_restaurant));
         tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_sunny));
 
-
+        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_hotel));
         tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_airplane));
         tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_train));
         tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_add_white));
