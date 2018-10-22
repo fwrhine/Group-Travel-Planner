@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -22,7 +21,8 @@
         android:layout_height="match_parent"
         android:layout_marginLeft="10dp"
         app:markerInCenter="true"
-        app:markerSize="20dp"
+        app:markerSize="25dp"
+        app:marker="@drawable/ic_event_note_black_24dp"
         app:lineSize="3dp"
         app:line="@color/colorPrimary"/>
 

@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -30,7 +31,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
 import com.example.pplki18.grouptravelplanner.data.EventContract;
-import com.example.pplki18.grouptravelplanner.data.PlanContract;
+import com.example.pplki18.grouptravelplanner.utils.Event;
 import com.example.pplki18.grouptravelplanner.utils.PaginationScrollListener;
 import com.example.pplki18.grouptravelplanner.utils.Place;
 import com.example.pplki18.grouptravelplanner.utils.RVAdapter_Place;
@@ -42,6 +43,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static android.app.Activity.RESULT_OK;
 
 public class Fragment_PlaceList extends Fragment {
 
@@ -61,6 +64,8 @@ public class Fragment_PlaceList extends Fragment {
 
     private int plan_id;
     private String event_date;
+    private String prevActivity;
+    private List<Event> events;
 
     private boolean isLoading = false;
     private boolean isLastPage = false;
@@ -69,6 +74,32 @@ public class Fragment_PlaceList extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_place_list, container, false);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 3) {
+            if (resultCode == RESULT_OK) {
+                String prevActivity = data.getStringExtra("ACTIVITY");
+                if (prevActivity != null && prevActivity.equals("EditPlanActivity")) {
+                    getActivity().finish();
+                } else {
+                    events = data.getParcelableArrayListExtra("events");
+
+                    for (Event e : events) {
+                        Log.d("testtt", e.getTitle());
+                    }
+
+                    Intent intent = new Intent(getActivity(), CreateNewPlanActivity.class);
+                    intent.putParcelableArrayListExtra("events", (ArrayList<? extends Parcelable>) events);
+
+                    getActivity().setResult(RESULT_OK, intent);
+                    getActivity().finish();
+                }
+
+            }
+        }
     }
 
     @Override
@@ -235,7 +266,16 @@ public class Fragment_PlaceList extends Fragment {
                 intent.putExtra("plan_id", plan_id);
                 intent.putExtra("date", event_date);
                 intent.putExtra("type", query);
-                startActivity(intent);
+                intent.putParcelableArrayListExtra("events", (ArrayList<? extends Parcelable>) events);
+                if (prevActivity.equals("CreateNewPlanActivity")) {
+                    intent.putExtra("ACTIVITY", "CreateNewPlanActivity");
+                    getActivity().startActivityForResult(intent, 3);
+                } else if (prevActivity.equals("EditPlanActivity")){
+                    intent.putExtra("ACTIVITY", "EditPlanActivity");
+                    getActivity().startActivityForResult(intent, 3);
+                } else {
+                    startActivity(intent);
+                }
             }
 
             @Override public void addImageOnClick(View v, int position) {
@@ -269,8 +309,22 @@ public class Fragment_PlaceList extends Fragment {
                                 + " End " + endTime.getCurrentHour() + ":" + endTime.getCurrentMinute());
                         String start_time = startTime.getCurrentHour() + ":" + startTime.getCurrentMinute();
                         String end_time = endTime.getCurrentHour() + ":" + endTime.getCurrentMinute();
-                        saveEventToPlan(places, position, start_time, end_time);
-                        getActivity().finish();
+
+                        Log.d("prev_activity", prevActivity);
+                        if (prevActivity.equals("CreateNewPlanActivity")) {
+                            Event anEvent = saveEventLocally(places, position, start_time, end_time);
+                            events.add(anEvent);
+
+                            Intent intent = new Intent(getActivity(), CreateNewPlanActivity.class);
+                            intent.putParcelableArrayListExtra("events", (ArrayList<? extends Parcelable>) events);
+                            intent.putExtra("ACTIVITY", "Fragment_PlaceList");
+                            Log.d("prev activity", "createnewplan");
+                            getActivity().setResult(RESULT_OK, intent);
+                            getActivity().finish();
+                        } else {
+                            saveEventToPlan(places, position, start_time, end_time);
+                            getActivity().finish();
+                        }
                     }
                 });
         builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
@@ -281,18 +335,36 @@ public class Fragment_PlaceList extends Fragment {
         builder.show();
     }
 
+    private Event saveEventLocally(List<Place> places, int position, String start_time, String end_time) {
+        Event anEvent = new Event();
+        anEvent.setQuery_id(places.get(position).getPlace_id());
+        anEvent.setTitle(places.get(position).getName());
+        anEvent.setLocation(places.get(position).getAddress());
+        anEvent.setDescription(places.get(position).getWebsite());
+        anEvent.setDate(event_date);
+        anEvent.setTime_start(start_time);
+        anEvent.setTime_end(end_time);
+        anEvent.setPhone(places.get(position).getPhone_number());
+        anEvent.setType(query);
+        anEvent.setRating(places.get(position).getRating());
+
+        return anEvent;
+    }
+
     private void saveEventToPlan(List<Place> places, int position, String start_time, String end_time) {
         Log.d("SAVEVENT", "MASUK");
         SQLiteDatabase db = databaseHelper.getWritableDatabase();
 
         ContentValues contentValues = new ContentValues();
+        contentValues.put(EventContract.EventEntry.COL_QUERY_ID, places.get(position).getPlace_id());
         contentValues.put(EventContract.EventEntry.COL_PLAN_ID, plan_id);
         contentValues.put(EventContract.EventEntry.COL_TITLE, places.get(position).getName());
         contentValues.put(EventContract.EventEntry.COL_LOCATION, places.get(position).getAddress());
         contentValues.put(EventContract.EventEntry.COL_DESCRIPTION, places.get(position).getWebsite());
         contentValues.put(EventContract.EventEntry.COL_DATE, event_date);
-        Log.d("event date", event_date);
-        Log.d("plan_id", plan_id+"");
+        //TODO ERROR PLACES GADA ADDRESS DLL ??!!
+//        Log.d("event location", places.get(position).getAddress());
+//        Log.d("event desc", places.get(position).getWebsite());
         contentValues.put(EventContract.EventEntry.COL_TIME_START, start_time);
         contentValues.put(EventContract.EventEntry.COL_TIME_END, end_time);
         contentValues.put(EventContract.EventEntry.COL_PHONE, places.get(position).getPhone_number());
@@ -320,5 +392,10 @@ public class Fragment_PlaceList extends Fragment {
         plan_id = getArguments().getInt("plan_id");
         event_date = getArguments().getString("date");
         databaseHelper = new DatabaseHelper(getActivity());
+
+        prevActivity = getActivity().getIntent().getStringExtra("ACTIVITY");
+        if (prevActivity.equals("CreateNewPlanActivity")) {
+            events = getActivity().getIntent().getParcelableArrayListExtra("events");
+        }
     }
 }

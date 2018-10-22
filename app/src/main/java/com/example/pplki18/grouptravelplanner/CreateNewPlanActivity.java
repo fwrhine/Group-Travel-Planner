@@ -7,6 +7,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Parcelable;
+import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -21,14 +24,26 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
+import com.example.pplki18.grouptravelplanner.data.EventContract;
 import com.example.pplki18.grouptravelplanner.data.PlanContract;
+import com.example.pplki18.grouptravelplanner.utils.Event;
+import com.example.pplki18.grouptravelplanner.utils.Plan;
 import com.example.pplki18.grouptravelplanner.utils.SessionManager;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 
 public class CreateNewPlanActivity extends AppCompatActivity implements View.OnClickListener {
@@ -45,14 +60,36 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
     private SessionManager session;
     private HashMap<String, String> user;
 
+    private FirebaseAuth mAuth;
+    private FirebaseUser firebaseUser;
+    private FirebaseDatabase firebaseDatabase;
+
     private DatePickerDialog fromDatePickerDialog;
     private DatePickerDialog toDatePickerDialog;
     private SimpleDateFormat dateFormatter1;
     private SimpleDateFormat dateFormatter2;
     private Date date_start;
     private Date date_end;
-    private int plan_id;
     private String plan_name;
+
+    private List<Event> events;
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1) {
+            if(resultCode == RESULT_OK) {
+                events = data.getParcelableArrayListExtra("events");
+//                for(Event e : events) {
+//                    Log.d("testtt", e.getTitle());
+//                }
+//                Log.d("RESULT_OK", "masuk sini");
+                getIntent().putParcelableArrayListExtra("events", (ArrayList<? extends Parcelable>) events);
+                getIntent().putExtra("ACTIVITY", "CreateNewPlanActivity");
+                beginFragmentEventList();
+            }
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,22 +97,41 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
         setContentView(R.layout.activity_create_plan);
         findViewById();
 
-        intent = getIntent();
-        plan_id = intent.getIntExtra("plan_id", -1);
-        databaseHelper = new DatabaseHelper(CreateNewPlanActivity.this);
-        session = new SessionManager(getApplicationContext());
-        user = session.getUserDetails();
-
         setSupportActionBar(plan_toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         setTitle("Create Plan");
 
+        init();
+    }
+
+    public void init() {
+        events = new ArrayList<>();
+
+        intent = getIntent();
+
+//        String prevActivity = intent.getStringExtra("ACTIVITY");
+////        if (prevActivity != null && prevActivity.equals("PlaceActivity")) {
+////            events = intent.getParcelableArrayListExtra("events");
+//////            for(Event e : events) {
+//////                Log.d("testtt2", e.getTitle());
+//////            }
+////            beginFragmentEventList();
+////        }
+
+        databaseHelper = new DatabaseHelper(CreateNewPlanActivity.this);
+        session = new SessionManager(getApplicationContext());
+        user = session.getUserDetails();
+
+        mAuth = FirebaseAuth.getInstance();
+        firebaseUser = mAuth.getCurrentUser();
+        firebaseDatabase = FirebaseDatabase.getInstance();
+
         dateFormatter1 = new SimpleDateFormat("EEE, MMM d", Locale.US);
         dateFormatter2 = new SimpleDateFormat("d MMMM yyyy", Locale.US);
 
-        add_event.setVisibility(View.GONE);
-//        setAddEventButton();
+//        add_event.setVisibility(View.GONE);
+        setAddEventButton();
         setSavePlanButton();
         setDateTimeField();
     }
@@ -220,46 +276,74 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
         alert.show();
     }
 
-    private void savePlanToDB(String plan_name_fix, String plan_desc) {
-        //TODO: FIREBASE
-//        SQLiteDatabase db = databaseHelper.getWritableDatabase();
-//
-//        String start_day = dateFormatter2.format(date_start);
-//        String end_day = dateFormatter2.format(date_end);
-//        int total_days = Integer.parseInt(trip_days.getText().toString());
-//
-//        ContentValues contentValues = new ContentValues();
-//        contentValues.put(PlanContract.PlanEntry.COL_PLAN_NAME, plan_name_fix);
-//        contentValues.put(PlanContract.PlanEntry.COL_USER_ID, user.get(SessionManager.KEY_ID));
-//        contentValues.put(PlanContract.PlanEntry.COL_START_DAY, start_day);
-//        contentValues.put(PlanContract.PlanEntry.COL_END_DAY, end_day);
-//        contentValues.put(PlanContract.PlanEntry.COL_TOTAL_DAY, total_days);
-//        contentValues.put(PlanContract.PlanEntry.COL_DESCRIPTION, plan_desc);
-//        long plan_id = db.insert(PlanContract.PlanEntry.TABLE_NAME, null, contentValues);
+    private void savePlanToDB(final String plan_name_fix, final String plan_desc) {
+        final String start_day = dateFormatter2.format(date_start);
+        final String end_day = dateFormatter2.format(date_end);
+        final int total_days = Integer.parseInt(trip_days.getText().toString());
+
+        final DatabaseReference planRef = firebaseDatabase.getReference().child("plans");
+
+        final String planId = planRef.push().getKey();
+        planRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Plan plan = new Plan(planId, plan_name_fix, mAuth.getCurrentUser().getUid());
+                plan.setPlan_start_date(start_day);
+                plan.setPlan_end_date(end_day);
+                plan.setPlan_total_days(total_days);
+                plan.setPlan_overview(plan_desc);
+                planRef.child(planId).setValue(plan);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+        saveEventToDB(planId);
     }
 
-//    private void setAddEventButton() {
-//        add_event.setOnClickListener(
-//                new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View view) {
-//                        if (trip_start_date.getText().toString().equals("Date") ||
-//                                trip_end_date.getText().toString().equals("Date")) {
-//                            saveAlertDialog();
-//                        } else {
-//                            String date = date_month_year.getText().toString();
-//                            Intent myIntent = new Intent(CreateNewPlanActivity.this, ChooseEventActivity.class);
-////                        Log.d("IDDDDD", plan_id + "");
-//                            myIntent.putExtra("plan_id", plan_id);
-//                            myIntent.putExtra("date", date);
-//
+    private void saveEventToDB(String plan_id) {
+        final DatabaseReference eventRef = firebaseDatabase.getReference().child("events");
+
+        eventRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                eventRef.setValue(events);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void setAddEventButton() {
+        add_event.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (trip_start_date.getText().toString().equals("Date") ||
+                                trip_end_date.getText().toString().equals("Date")) {
+                            saveAlertDialog();
+                        } else {
+                            String date = date_month_year.getText().toString();
+                            Intent myIntent = new Intent(CreateNewPlanActivity.this, ChooseEventActivity.class);
+
+                            myIntent.putExtra("ACTIVITY", "CreateNewPlanActivity");
+                            myIntent.putExtra("plan_name", plan_name);
+                            myIntent.putExtra("date", date);
+                            myIntent.putParcelableArrayListExtra("events", (ArrayList<? extends Parcelable>) events);
+
 //                            CreateNewPlanActivity.this.startActivity(myIntent);
-//                            Toast.makeText(CreateNewPlanActivity.this, "Add Event", Toast.LENGTH_SHORT).show();
-//                        }
-//                    }
-//                }
-//        );
-//    }
+                            startActivityForResult(myIntent, 1);
+                            Toast.makeText(CreateNewPlanActivity.this, "Add Event", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+        );
+    }
 
     private void setDateTimeField() {
         trip_start_date.setOnClickListener(this);
@@ -274,8 +358,6 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
                 date_start = newDate.getTime();
                 trip_start_date.setText(dateFormatter1.format(date_start));
                 trip_start_date.setTextColor(getResources().getColor(R.color.colorBlack));
-                //toDatePickerDialog.getDatePicker().setMinDate(newDate.getTimeInMillis()); // trying to limit trip end date
-                //picker from date start
 
                 if (!trip_start_date.getText().toString().equals("Date") &&
                         !trip_end_date.getText().toString().equals("Date")) {
@@ -303,8 +385,6 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
                 trip_end_date.setText(dateFormatter1.format(date_end));
                 trip_end_date.setTextColor(getResources().getColor(R.color.colorBlack));
 
-                Log.d("testtttt", (!trip_start_date.getText().toString().equals("Date") &&
-                        !trip_end_date.getText().toString().equals("Date")) + "");
                 if (!trip_start_date.getText().toString().equals("Date") &&
                         !trip_end_date.getText().toString().equals("Date")) {
                     try {
@@ -384,8 +464,7 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
                         }
 
                         intent.putExtra("date", c_cur_date.getTime());
-                        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_timeline_activity,
-                                new Fragment_EventList()).commit();
+                        beginFragmentEventList();
                     }
                 }
         );
@@ -410,11 +489,15 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
                         }
 
                         intent.putExtra("date", c_cur_date.getTime());
-                        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_timeline_activity,
-                                new Fragment_EventList()).commit();
+                        beginFragmentEventList();
                     }
                 }
         );
+    }
+
+    public void beginFragmentEventList() {
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_timeline_activity,
+                new Fragment_EventList()).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN).commit();
     }
 
 }

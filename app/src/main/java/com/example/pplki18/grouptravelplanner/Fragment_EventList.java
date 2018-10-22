@@ -29,6 +29,7 @@ import com.example.pplki18.grouptravelplanner.utils.RVAdapter_Plan;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -71,7 +72,13 @@ public class Fragment_EventList extends Fragment {
         Log.d("RESUME", "masuk resume");
         super.onResume();
         Date date = (Date) intent.getExtras().get("date");
-        events = getAllEvents(date);
+        String prevActivity = getActivity().getIntent().getStringExtra("ACTIVITY");
+        if (prevActivity != null && prevActivity.equals("CreateNewPlanActivity")) {
+            Log.d("prevActivity", "bener");
+            events = getAllEventsTemp(date);
+        } else {
+            events = getAllEvents(date);
+        }
         adapter = new RVAdapter_NewPlan(events, getActivity());
         rvNewPlan.setAdapter(adapter);
         adapter.notifyDataSetChanged();
@@ -82,7 +89,14 @@ public class Fragment_EventList extends Fragment {
         Log.d(TAG, "populateEventRecyclerView: Displaying list of events in the ListView.");
 
         //get data and append to list
-        List<Event> events = getAllEvents(date);
+        String prevActivity = getActivity().getIntent().getStringExtra("ACTIVITY");
+        if (prevActivity != null && prevActivity.equals("CreateNewPlanActivity")) {
+            Log.d("prevActivity", "bener");
+            events = getAllEventsTemp(date);
+        } else {
+            events = getAllEvents(date);
+        }
+
         RVAdapter_NewPlan adapter = new RVAdapter_NewPlan(events, getActivity());
         rvNewPlan.setAdapter(adapter);
     }
@@ -91,7 +105,7 @@ public class Fragment_EventList extends Fragment {
      * Get all event with the selected date
      * */
     public List<Event> getAllEvents(Date cur_date) {
-        List<Event> events = new ArrayList<Event>();
+        List<Event> all_event = new ArrayList<Event>();
         int plan_id = getActivity().getIntent().getIntExtra("plan_id", 0);
         String str_cur_date = dateFormatter.format(cur_date);
         Log.d("CUR_DATE", str_cur_date);
@@ -111,6 +125,9 @@ public class Fragment_EventList extends Fragment {
         // looping through all rows and adding to list
         if (c.moveToFirst()) {
             do {
+                long event_id = c.getLong(c.getColumnIndex(EventContract.EventEntry._ID));
+                String query_id = c.getString(c.getColumnIndex(EventContract.EventEntry.COL_QUERY_ID));
+                String date = c.getString(c.getColumnIndex(EventContract.EventEntry.COL_DATE));
                 String title = c.getString(c.getColumnIndex(EventContract.EventEntry.COL_TITLE));
                 String time_start = c.getString(c.getColumnIndex(EventContract.EventEntry.COL_TIME_START));
                 String time_end = c.getString(c.getColumnIndex(EventContract.EventEntry.COL_TIME_END));
@@ -118,12 +135,15 @@ public class Fragment_EventList extends Fragment {
                 String description = c.getString(c.getColumnIndex(EventContract.EventEntry.COL_DESCRIPTION));
 
                 try {
-                    Date time1 = format.parse(time_start);
-                    Date time2 = format.parse(time_end);
-                    Event event = new Event(title, time1, time2, type);
+                    String time1 = format.format(format.parse(time_start));
+                    Log.d("time1", time1);
+                    String time2 = format.format(format.parse(time_end));
+                    Event event = new Event(title, date, time1, time2, type);
+                    event.setQuery_id(query_id);
                     event.setDescription(description);
+                    event.setEvent_id((int) event_id);
 //                    if (event.getDate().equals(str_cur_date)){
-                    events.add(event);
+                    all_event.add(event);
 //                    }
 
                 } catch (Exception e) {
@@ -131,8 +151,24 @@ public class Fragment_EventList extends Fragment {
                 }
             } while (c.moveToNext());
         }
+        Collections.sort(all_event);
+        return all_event;
+    }
 
-        return events;
+    public List<Event> getAllEventsTemp(Date date) {
+        List<Event> all_event;
+        all_event = intent.getParcelableArrayListExtra("events");
+        List<Event> some_event = new ArrayList<Event>();
+
+        String str_cur_date = dateFormatter.format(date);
+        for (Event e : all_event) {
+            if (e.getDate().equals(str_cur_date)) {
+                some_event.add(e);
+            }
+        }
+
+        Collections.sort(some_event);
+        return some_event;
     }
 
     private void init() {

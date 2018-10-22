@@ -77,6 +77,7 @@ public class    SessionManager {
         this._context = context;
         pref = _context.getSharedPreferences(PREF_NAME, PRIVATE_MODE);
         editor = pref.edit();
+        editor.commit();
     }
 
     /**
