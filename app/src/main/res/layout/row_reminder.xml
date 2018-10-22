@@ -39,7 +39,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="test"
-                android:textSize="30sp"
+                android:textSize="20sp"
                 android:layout_below="@+id/destination_adap"
                 />
 
@@ -47,7 +47,7 @@
                 android:id="@+id/event_id2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="30sp"
+                android:textSize="20sp"
                 android:layout_below="@id/alarmchannel"
                 android:layout_toRightOf="@id/date_adap"
                 android:visibility="gone"
@@ -61,7 +61,8 @@
                 android:layout_margin="8dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toLeftOf="@id/remove_notification" />
+                android:layout_below="@id/remove_notification"
+                android:layout_alignParentRight="true"/>
 
             <Button
                 android:id="@+id/remove_notification"

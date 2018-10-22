@@ -125,6 +125,7 @@ public class RVAdapter_Reminder extends RecyclerView.Adapter<RVAdapter_Reminder.
         Long id = Long.parseLong(viewHolder.eventid.getText().toString());
         myIntent.putExtra("event_id", id);
         context.startActivity(myIntent);
+
 /*        String evId = viewHolder.eventid.getText().toString();
         long id = Long.parseLong(evId);
 

@@ -61,7 +61,7 @@ public class Fragment_Reminder extends Fragment implements NavigationView.OnNavi
             @Override
             public void onClick(View view) {
                 Log.v("fab", "FAB Clicked");
-                Intent myIntent = new Intent(getActivity(), Activity_EditReminder.class);
+                Intent myIntent = new Intent(getActivity(), Activity_CreateReminder.class);
                 Fragment_Reminder.this.startActivity(myIntent);
             }
         });

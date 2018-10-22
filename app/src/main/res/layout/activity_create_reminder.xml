@@ -128,7 +128,8 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/button_goto_cal"
             android:layout_centerHorizontal="true"
-            android:text="Delete a Event" />
+            android:text="Cancel"
+            android:enabled="false"/>
 
 
     </RelativeLayout>

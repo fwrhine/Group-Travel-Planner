@@ -26,7 +26,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".SplashScreenActivity">
+    <intent-filter>
+            <action android:name="android.intent.action.MAIN" />
 
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent-filter>
         </activity>
         <activity android:name=".SignUpActivity" />
         <activity android:name=".LoginActivity">
@@ -72,12 +76,10 @@
 
         <!--<activity android:name=".Activity_InHome"></activity>-->
         <activity android:name=".Activity_CreateReminder">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
+        <activity android:name=".Activity_EditReminder" />
+
         <receiver android:name=".AlertReciever"/>
         <!--<activity android:name=".Activity_ReminderList"/>-->
     </application>

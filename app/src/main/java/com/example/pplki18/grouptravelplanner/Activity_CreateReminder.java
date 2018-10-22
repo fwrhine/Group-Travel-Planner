@@ -89,6 +89,8 @@ public class Activity_CreateReminder extends AppCompatActivity implements DatePi
         btn_pick = (Button) findViewById(R.id.button_pick_notification);
         btn_goto_cal = (Button) findViewById(R.id.button_goto_cal);
         btn_del_event = (Button) findViewById(R.id.button_del_event);
+        btn_create = findViewById(R.id.button_create_notification);
+
         resultYear = (TextView) findViewById(R.id.notifaction_resultYear);
         resultMonth = (TextView) findViewById(R.id.notifaction_resultMonth);
         resultDay = (TextView) findViewById(R.id.notifaction_resultDay);
@@ -113,7 +115,6 @@ public class Activity_CreateReminder extends AppCompatActivity implements DatePi
                 datePickerDialog.show();
             }
         });
-        btn_create = findViewById(R.id.button_create_notification);
         btn_create.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -132,6 +133,7 @@ public class Activity_CreateReminder extends AppCompatActivity implements DatePi
 
 //                alarmCal.set(yearFinal, monthFinal, dayFinal, hourFinal, minuteFinal);
 //                startAlarm(alarmCal);
+                btn_del_event.setEnabled(true);
                 Toast.makeText(getApplicationContext(), "notification added", Toast.LENGTH_SHORT).show();
 
 
@@ -148,6 +150,7 @@ public class Activity_CreateReminder extends AppCompatActivity implements DatePi
             @Override
             public void onClick(View v) {
                 deleteEventFromCalendar(eventID2);
+                btn_del_event.setEnabled(false);
             }
         });
     }

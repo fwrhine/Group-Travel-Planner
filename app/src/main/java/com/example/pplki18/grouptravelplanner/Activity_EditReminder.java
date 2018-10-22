@@ -44,6 +44,8 @@ public class Activity_EditReminder  extends AppCompatActivity implements DatePic
         TimePickerDialog.OnTimeSetListener {
     Button btn_pick;
     Button btn_create;
+    Button btn_goto_cal;
+    Button btn_del_event;
     public TextView resultYear;
     public TextView resultMonth;
     public TextView resultDay;
@@ -70,7 +72,7 @@ public class Activity_EditReminder  extends AppCompatActivity implements DatePic
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_create_reminder);
+        setContentView(R.layout.activity_edit_reminder);
         WRITE_CALENDER = 4;
         //TODO currChannel should be by number of alarms
         currChannel = 1;
@@ -80,11 +82,15 @@ public class Activity_EditReminder  extends AppCompatActivity implements DatePic
         final long event_id = getIntent().getLongExtra("event_id", -1);
 
         //=================
-        btn_pick = (Button) findViewById(R.id.button_pick_notification);
-        resultYear = (TextView) findViewById(R.id.notifaction_resultYear);
-        resultMonth = (TextView) findViewById(R.id.notifaction_resultMonth);
-        resultDay = (TextView) findViewById(R.id.notifaction_resultDay);
-        resultTime = (TextView) findViewById(R.id.notifaction_resultTime);
+        btn_pick = (Button) findViewById(R.id.button_pick_notification2);
+        btn_goto_cal = (Button) findViewById(R.id.button_goto_cal2);
+        btn_del_event = (Button) findViewById(R.id.button_cancel2);
+        btn_create = findViewById(R.id.button_update_notification2);
+
+        resultYear = (TextView) findViewById(R.id.notifaction_resultYear2);
+        resultMonth = (TextView) findViewById(R.id.notifaction_resultMonth2);
+        resultDay = (TextView) findViewById(R.id.notifaction_resultDay2);
+        resultTime = (TextView) findViewById(R.id.notifaction_resultTime2);
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_CALENDAR}, WRITE_CALENDER);
@@ -105,12 +111,11 @@ public class Activity_EditReminder  extends AppCompatActivity implements DatePic
                 datePickerDialog.show();
             }
         });
-        btn_create = findViewById(R.id.button_create_notification);
         btn_create.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // TODO message will be storing event time and location
-                destination = findViewById(R.id.notification_destination);
+                destination = findViewById(R.id.notification_destination2);
                 String dest = destination.getText().toString();
                 destText = dest;
                 notificationTxt = resultDay.getText().toString() + "/" + resultMonth.getText().toString() +
@@ -122,12 +127,26 @@ public class Activity_EditReminder  extends AppCompatActivity implements DatePic
                 //=================
                 changeNotifier(destText, notificationTxt, yearFinal, monthFinal, dayFinal, hourFinal, minuteFinal, event_id);
 
-                //TODO set channel for alarm
-                Integer channel = 9;
+
                 //=================
-                Toast.makeText(getApplicationContext(), "notification added", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "notification updated", Toast.LENGTH_SHORT).show();
 
 
+            }
+        });
+        btn_goto_cal.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Starts the function below
+                gotoCalendar();
+            }
+        });
+
+        btn_del_event.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Starts the function below
+                deleteEventFromCalendar(event_id);
             }
         });
     }
@@ -330,6 +349,15 @@ public class Activity_EditReminder  extends AppCompatActivity implements DatePic
 
         Uri reminderUri = getContentResolver().insert(Uri.parse(reminderUriString), reminderValues);
         Log.v("calender", "return REMINDER:  " + Long.parseLong(reminderUri.getLastPathSegment()));
+    }
+
+    public void deleteEventFromCalendar(long eventID){
+        ContentResolver cr = getContentResolver();
+        Uri deleteUri = null;
+        deleteUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventID);
+        cr.delete(deleteUri, null, null);
+        Log.v("CALENDAR DELETE", "Event deleted");
+        Toast.makeText(getApplicationContext(), "Removed Event", Toast.LENGTH_SHORT).show();
     }
 
 }
