@@ -1,5 +1,9 @@
 package com.example.pplki18.grouptravelplanner;
 
+import android.annotation.SuppressLint;
+import android.app.Dialog;
+import android.content.ContentValues;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -8,9 +12,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -20,8 +26,8 @@ import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.example.pplki18.grouptravelplanner.utils.Flight;
-import com.example.pplki18.grouptravelplanner.utils.FlightAdapter;
+import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
+import com.example.pplki18.grouptravelplanner.data.EventContract;
 import com.example.pplki18.grouptravelplanner.utils.Train;
 import com.example.pplki18.grouptravelplanner.utils.TrainAdapter;
 
@@ -29,20 +35,28 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Objects;
 
 public class BookTrainFragment extends Fragment {
 
-    EditText origin, destination;
-    EditText departureDay, departureMonth, departureYear;
-    Button searchButton;
+    private EditText origin, destination;
+    private Button searchButton;
 
-    String token;
+    private int plan_id;
 
-    RequestQueue queue;
-    int countUpdate;
-    ListView listTravel;
+    private String date;
+    private String startDate;
+
+    private String token;
+    private HashMap<String, String> availableStation;
+
+    private RequestQueue queue;
+    private ListView listTravel;
 
     @Nullable
     @Override
@@ -55,56 +69,92 @@ public class BookTrainFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        origin = (EditText) getView().findViewById(R.id.origin);
-        destination = (EditText) getView().findViewById(R.id.destination);
+        origin = Objects.requireNonNull(getView()).findViewById(R.id.origin);
+        destination = getView().findViewById(R.id.destination);
 
-        departureDay = (EditText) getView().findViewById(R.id.departureDay);
-        departureMonth = (EditText) getView().findViewById(R.id.departureMonth);
-        departureYear = (EditText) getView().findViewById(R.id.departureYear);
+        searchButton = getView().findViewById(R.id.searchButton);
+        listTravel = getView().findViewById(R.id.listTravel);
 
-        searchButton = (Button) getView().findViewById(R.id.searchButton);
-        listTravel = (ListView) getView().findViewById(R.id.listTravel);
+        plan_id = getArguments().getInt("plan_id");
+
+        date = getArguments().getString("date");
 
         token = "";
-        countUpdate = 0;
         queue = Volley.newRequestQueue(this.getActivity());
+
+        availableStation = new HashMap<>();
 
         initSearch();
     }
 
-    public void initSearch() {
+    private void initSearch() {
+
+        String secretKey = "6c484049beacda6541bf40c90e62e8e5";
+        String tokenUrl = "https://api-sandbox.tiket.com/apiv1/payexpress"
+                + "?method=getToken&secretkey=" + secretKey + "&output=json";
+
+        generateToken(tokenUrl, new TokenCallback() {
+            @Override
+            public void onCallback(String tokenStr) {
+                token = tokenStr;
+
+                fillStationList(new StationCallback() {
+                    @Override
+                    public void onCallback(HashMap<String, String> map) {
+                        Log.d("MAP-FINAL", "map size: "+ map.size());
+                        availableStation = map;
+                    }
+                });
+            }
+        });
+
+        try {
+
+            @SuppressLint("SimpleDateFormat") SimpleDateFormat date1 = new SimpleDateFormat("dd MMMM yyyy");
+            Date date2 = date1.parse(date);
+
+            @SuppressLint("SimpleDateFormat") SimpleDateFormat date3 = new SimpleDateFormat("yyyy-MM-dd");
+            startDate = date3.format(date2);
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
         searchButton.setOnClickListener(
                 new View.OnClickListener() {
 
                     @Override
                     public void onClick(View view) {
-                        if (!validate()) {
-                            return;
+                        if (validate()) {
+
+                            String startLoc = origin.getText().toString();
+                            String endLoc = destination.getText().toString();
+                            final String departDate = startDate;
+
+                            if(availableStation.containsKey(startLoc)) {
+
+                                if(availableStation.containsKey(endLoc)) {
+
+                                    final String start = availableStation.get(startLoc);
+                                    final String end = availableStation.get(endLoc);
+                                    trainApiCall(token, start, end, departDate);
+                                } else {
+                                    Toast.makeText(BookTrainFragment.this.getActivity()
+                                            , "No Stations are in the arrival area"
+                                            , Toast.LENGTH_LONG).show();
+                                }
+                            } else {
+                                Toast.makeText(BookTrainFragment.this.getActivity()
+                                        , "No Stations are in the departure area"
+                                        , Toast.LENGTH_LONG).show();
+                            }
                         }
-
-                        // TODO CHANGE VAR NAME LATER M8
-                        final String start = origin.getText().toString();
-                        final String end = destination.getText().toString();
-                        final String depart = departureYear.getText().toString()
-                                + "-" + departureMonth.getText().toString() + "-"
-                                + departureDay.getText().toString();
-
-                        String secretKey = "6c484049beacda6541bf40c90e62e8e5";
-                        String tokenUrl = "https://api-sandbox.tiket.com/apiv1/payexpress"
-                                + "?method=getToken&secretkey=" + secretKey + "&output=json";
-                        generateToken(tokenUrl, start, end, depart);
                     }
                 }
         );
     }
 
-    public void setToken (String strToken) {
-        token = strToken;
-    }
-
-    public void generateToken(String url, final String start, final String end,
-                              final String depart) {
+    private void generateToken(String url, final TokenCallback callback) {
         // Request a string response from the provided URL.
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
@@ -114,9 +164,9 @@ public class BookTrainFragment extends Fragment {
 
                         try {
                             JSONObject json = new JSONObject(response);
-                            String token = json.getString("token");
-                            getTrainData(token, start, end, depart);
-                            setToken(token);
+
+                            token = json.getString("token");
+                            callback.onCallback(token);
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -125,21 +175,76 @@ public class BookTrainFragment extends Fragment {
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.d("ERROR", "API call fail");
+                Log.d("ERROR", error.toString());
             }
         });
 
         queue.add(stringRequest);
     }
 
-    public void getTrainData(final String token, final String start, final String end,
-                              final String depart) {
+    private void fillStationList(final StationCallback callback) {
+        String url = "https://api-sandbox.tiket.com/train_api/train_station?token="+ token +"&output=json";
+
+        Log.d("FILL-MAP", "url -> " + url);
+
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+                        try {
+                            Log.d("FILL-MAP", "start -> " + response);
+                            JSONObject json = new JSONObject(response);
+
+                            JSONObject allStation = json.getJSONObject("stations");
+                            JSONArray stationList = allStation.getJSONArray("station");
+
+                            HashMap<String, String> stationMap = new HashMap<>();
+
+                            for (int i = 0; i < stationList.length(); i++) {
+
+                                JSONObject stationData = stationList.getJSONObject(i);
+
+                                String stationLoc = stationData.getString("station_name");
+                                String stationCode = stationData.getString("station_code");
+
+                                if (stationLoc.contains(" - ")) {
+                                    String[] splitLoc = stationLoc.split(" - ");
+                                    stationMap.put(splitLoc[1], stationCode);
+                                }
+
+                                else {
+                                    stationMap.put(stationLoc, stationCode);
+                                }
+                            }
+                            availableStation = stationMap;
+
+                            callback.onCallback(availableStation);
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("ERROR", error.toString());
+            }
+        });
+
+        queue.add(stringRequest);
+    }
+
+    private void trainApiCall (final String token, final String start, final String end,
+                                final String depart) {
         // Request a string response from the provided URL.
 
         //final String url = "http://api-sandbox.tiket.com/search/train?d="
           //      + start + "&a=" + end + "&date=" + depart + "&token=" + token + "&output=json";
 
-        final String url = "https://api-sandbox.tiket.com/search/train?d="+start+"&a="+end+"&date="+depart+"&ret_date=&adult=1&child=0&class=all&token="+token+"&output=json";
+        final String url = "https://api-sandbox.tiket.com/search/train?d=" + start + "&a=" + end
+                + "&date=" + depart + "&ret_date=&adult=1&child=0&class=all&token=" + token
+                + "&output=json";
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
@@ -160,7 +265,7 @@ public class BookTrainFragment extends Fragment {
                                 Log.d("TRUE", "there is train data");
                                 JSONObject results = testResponse.getJSONObject("departures");
                                 JSONArray departure = results.getJSONArray("result");
-                                retrieveTrains(start, end, departure);
+                                getTrainData(start, end, departure);
                             }
 
                             else {
@@ -201,9 +306,9 @@ public class BookTrainFragment extends Fragment {
         queue.add(stringRequest);
     }
 
-    public void retrieveTrains (String startLoc, String endLoc, JSONArray departure)
+    private void getTrainData (String startLoc, String endLoc, JSONArray departure)
             throws JSONException {
-        // TODO retrieve flight data
+
         Log.d("SUCCESS", "Correct response accepted");
 
         HashMap<String, ArrayList<String>> trainConnect = new HashMap<>();
@@ -211,7 +316,6 @@ public class BookTrainFragment extends Fragment {
         for (int i = 0; i < departure.length(); i++) {
             JSONObject train = (JSONObject) departure.get(i);
 
-            // TODO Assume that only show flights without transit
             String id = train.getString("train_id");
             String name = train.getString("train_name");
             String price = train.getString("price_adult");
@@ -229,18 +333,15 @@ public class BookTrainFragment extends Fragment {
         }
 
         Log.d("TRAIN-LIST", "List size: " + trainConnect.size());
-        completeFlightData(startLoc, endLoc, trainConnect);
+        setTrainList(startLoc, endLoc, trainConnect);
     }
 
-    public void completeFlightData (String startLoc, String endLoc,
-                                    HashMap<String, ArrayList<String>> map) {
+    private void setTrainList (final String startLoc, final String endLoc,
+                                HashMap<String, ArrayList<String>> map) {
 
         Log.d("FILL", "Start filling list");
-        ArrayList<String> keyArray = new ArrayList<>();
 
-        for (String key : map.keySet()) {
-            keyArray.add(key);
-        }
+        ArrayList<String> keyArray = new ArrayList<>(map.keySet());
 
         ArrayList<Train> availableTrains = new ArrayList<>();
 
@@ -261,7 +362,81 @@ public class BookTrainFragment extends Fragment {
 
         Log.d("ALMOST", "Almost finished");
         TrainAdapter adapter = new TrainAdapter(this.getActivity(), availableTrains);
+
         listTravel.setAdapter(adapter);
+        listTravel.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, final View viewItem, int i, long l) {
+
+                final Dialog dialog = new Dialog(BookTrainFragment.this.getActivity());
+
+                dialog.setContentView(R.layout.popup_booking);
+
+                dialog.show();
+
+                Button noButton = dialog.findViewById(R.id.noButton);
+                Button yesButton = dialog.findViewById(R.id.yesButton);
+
+                noButton.setOnClickListener(
+                        new View.OnClickListener() {
+
+                            @Override
+                            public void onClick(View view) {
+                                dialog.dismiss();
+                            }
+                        }
+                );
+
+                yesButton.setOnClickListener(
+                        new View.OnClickListener() {
+
+                            @Override
+                            public void onClick(View view) {
+
+                                TextView tvTrainName = viewItem.findViewById(R.id.trainName);
+                                TextView tvDepartCity = viewItem.findViewById(R.id.departCity);
+                                TextView tvArriveCity = viewItem.findViewById(R.id.arriveCity);
+                                TextView tvDepartTime = viewItem.findViewById(R.id.departTime);
+                                TextView tvArriveTime = viewItem.findViewById(R.id.arriveTime);
+
+                                DatabaseHelper myDb = new DatabaseHelper(BookTrainFragment.this.getActivity());
+                                SQLiteDatabase db = myDb.getReadableDatabase();
+
+                                final String date = startDate;
+
+                                ContentValues values = new ContentValues();
+
+                                values.put(EventContract.EventEntry.COL_PLAN_ID, plan_id);
+                                values.put(EventContract.EventEntry.COL_TITLE, "Travel Plan");
+                                values.put(EventContract.EventEntry.COL_DESCRIPTION, "Train for Transport");
+                                values.put(EventContract.EventEntry.COL_DATE, date);
+                                values.put(EventContract.EventEntry.COL_TYPE, "Transport");
+
+                                values.put(EventContract.EventEntry.COL_ORIGIN, tvDepartCity.getText().toString());
+                                values.put(EventContract.EventEntry.COL_DESTINATION, tvArriveCity.getText().toString());
+                                values.put(EventContract.EventEntry.COL_DEPARTURE_TIME, tvDepartTime.getText().toString());
+                                values.put(EventContract.EventEntry.COL_ARRIVAL_TIME, tvArriveTime.getText().toString());
+                                values.put(EventContract.EventEntry.COL_TRANS_NUMBER, tvTrainName.getText().toString());
+
+                                long newRowId = db.insert(EventContract.EventEntry.TABLE_NAME, null, values);
+
+                                if (newRowId != -1) {
+                                    Toast.makeText(BookTrainFragment.this.getActivity(), "Selected Train : "
+                                            + tvTrainName.getText() , Toast.LENGTH_LONG).show();
+                                    dialog.dismiss();
+                                }
+
+                                else {
+                                    Toast.makeText(BookTrainFragment.this.getActivity(),
+                                            "Selection Failed!", Toast.LENGTH_LONG).show();
+                                    dialog.dismiss();
+                                }
+                            }
+                        }
+                );
+            }
+        });
+
         Log.d("DONE", "ListView populated");
 
     }
@@ -271,9 +446,6 @@ public class BookTrainFragment extends Fragment {
 
         String startLoc = origin.getText().toString();
         String endLoc = destination.getText().toString();
-        String startDay = departureDay.getText().toString();
-        String startMonth = departureMonth.getText().toString();
-        String startYear = departureYear.getText().toString();
 
         if (startLoc.isEmpty()) {
             Toast.makeText(BookTrainFragment.this.getActivity(), "Please write the origin",
@@ -287,13 +459,14 @@ public class BookTrainFragment extends Fragment {
             valid = false;
         }
 
-        else if ((startDay.isEmpty() && startDay.length() != 2) && (startMonth.isEmpty()
-                && startMonth.length() != 2) && (startYear.isEmpty() && startYear.length() != 4)) {
-            Toast.makeText(BookTrainFragment.this.getActivity(), "Please write the departure date",
-                    Toast.LENGTH_LONG).show();
-            valid = false;
-        }
-
         return valid;
+    }
+
+    private interface StationCallback {
+        void onCallback (HashMap<String, String> map);
+    }
+
+    private interface TokenCallback {
+        void onCallback (String tokenStr);
     }
 }
