@@ -64,6 +64,9 @@ public class Fragment_EventList extends Fragment {
         rvNewPlan.setHasFixedSize(true);
         rvNewPlan.setLayoutManager(linearLayoutManager);
 
+//        Date end_date = (Date) intent.getExtras().get("end_date");
+//        Log.d("fragment_end_date", end_date.toString());
+
         populateEventRecyclerView(date);
     }
 
@@ -74,7 +77,6 @@ public class Fragment_EventList extends Fragment {
         Date date = (Date) intent.getExtras().get("date");
         String prevActivity = getActivity().getIntent().getStringExtra("ACTIVITY");
         if (prevActivity != null && prevActivity.equals("CreateNewPlanActivity")) {
-            Log.d("prevActivity", "bener");
             events = getAllEventsTemp(date);
         } else {
             events = getAllEvents(date);

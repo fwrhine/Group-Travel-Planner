@@ -1,5 +1,6 @@
 package com.example.pplki18.grouptravelplanner.utils;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -22,6 +23,7 @@ import com.example.pplki18.grouptravelplanner.data.EventContract;
 import com.github.vipulasri.timelineview.TimelineView;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -83,18 +85,25 @@ public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.Ne
         holder.eventDetail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(mContext, PlaceActivity.class);
+                Intent myIntent = new Intent(mContext, PlaceActivity.class);
                 Event anEvent = events.get(position);
-                intent.putExtra("PLACE_ID", anEvent.getQuery_id());
+                myIntent.putExtra("PLACE_ID", anEvent.getQuery_id());
                 Log.d("DATE", anEvent.getDate());
-                intent.putExtra("ACTIVITY", "PlanActivity");
-                intent.putExtra("date", anEvent.getDate());
-                intent.putExtra("time_start", anEvent.getTime_start());
-                intent.putExtra("time_end", anEvent.getTime_end());
-                intent.putExtra("duration", anEvent.getTotal_time());
-                intent.putExtra("event_id", anEvent.getEvent_id());
-                intent.putExtra("type", anEvent.getType());
-                mContext.startActivity(intent);
+                myIntent.putExtra("ACTIVITY", "PlanActivity");
+                myIntent.putExtra("date", anEvent.getDate());
+                myIntent.putExtra("time_start", anEvent.getTime_start());
+                myIntent.putExtra("time_end", anEvent.getTime_end());
+                myIntent.putExtra("duration", anEvent.getTotal_time());
+                myIntent.putExtra("event_id", anEvent.getEvent_id());
+                myIntent.putExtra("type", anEvent.getType());
+
+                Intent intent =((Activity) mContext).getIntent();
+                Date date_start = (Date) intent.getExtras().get("start_date");
+                Date date_end = (Date) intent.getExtras().get("end_date");
+                myIntent.putExtra("start_date", date_start);
+                myIntent.putExtra("end_date", date_end);
+
+                mContext.startActivity(myIntent);
             }
         });
     }

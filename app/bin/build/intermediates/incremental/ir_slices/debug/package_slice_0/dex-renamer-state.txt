@@ -1,0 +1,4 @@
+#Mon Oct 22 10:30:52 ICT 2018
+base.0=V\:\\Vincent\\KULIAH\\KELAS\\SEM5\\PPL\\SPRINT\\GroupTravelPlanner\\app\\build\\intermediates\\transforms\\dexMerger\\debug\\0
+path.0=classes.dex
+renamed.0=classes.dex

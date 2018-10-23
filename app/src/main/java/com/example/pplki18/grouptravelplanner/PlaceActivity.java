@@ -44,8 +44,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class PlaceActivity extends AppCompatActivity {
     private static final String TAG = "RestaurantList";
@@ -353,8 +356,16 @@ public class PlaceActivity extends AppCompatActivity {
         editEvent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+//                SimpleDateFormat dateFormatter2 = new SimpleDateFormat("d MMMM yyyy", Locale.US);
+
+                Bundle bundle = getIntent().getExtras();
+                bundle.putString("address", address.getText().toString());
+                bundle.putString("name", title.getText().toString());
+
                 Toast.makeText(PlaceActivity.this, "edit event", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(PlaceActivity.this, EditEventActivity.class);
+                intent.putExtras(bundle);
+
                 startActivity(intent);
             }
         });

@@ -226,6 +226,8 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
                         myIntent.putExtra("ACTIVITY", "EditPlanActivity");
                         myIntent.putExtra("plan_id", plan_id);
                         myIntent.putExtra("date", date);
+                        myIntent.putExtra("date_start", date_start);
+                        myIntent.putExtra("date_end", date_end);
 
                         EditPlanActivity.this.startActivity(myIntent);
                         Toast.makeText(EditPlanActivity.this, "Add Event", Toast.LENGTH_SHORT).show();
@@ -262,6 +264,7 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
                     long total_days = diff / (24 * 60 * 60 * 1000) + 2;
                     trip_days.setText(total_days + "");
                     intent.putExtra("date", date_start_temp);
+                    putExtraPlanDateRange();
                     setDateChanger();
                     beginFragmentEventList();
                 } catch (ParseException e) {
@@ -284,6 +287,7 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
                     long total_days = diff / (24 * 60 * 60 * 1000) + 1;
                     trip_days.setText(total_days + "");
                     intent.putExtra("date", date_start_temp);
+                    putExtraPlanDateRange();
                     setDateChanger();
                     beginFragmentEventList();
                 } catch (ParseException e) {
@@ -326,6 +330,7 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
         }
 
         intent.putExtra("date", c_cur_date.getTime());
+        putExtraPlanDateRange();
         beginFragmentEventList();
 
         button_left.setOnClickListener(
@@ -352,6 +357,7 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
                         }
 
                         intent.putExtra("date", c_cur_date.getTime());
+                        putExtraPlanDateRange();
                         beginFragmentEventList();
                     }
                 }
@@ -377,10 +383,16 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
                         }
 
                         intent.putExtra("date", c_cur_date.getTime());
+                        putExtraPlanDateRange();
                         beginFragmentEventList();
                     }
                 }
         );
+    }
+
+    public void putExtraPlanDateRange() {
+        intent.putExtra("start_date", date_start);
+        intent.putExtra("end_date", date_end);
     }
 
     public void beginFragmentEventList() {

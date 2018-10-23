@@ -309,9 +309,11 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
                             myIntent.putExtra("ACTIVITY", "CreateNewPlanActivity");
                             myIntent.putExtra("plan_name", plan_name);
                             myIntent.putExtra("date", date);
+                            myIntent.putExtra("date_start", date_start);
+                            myIntent.putExtra("date_end", date_end);
+
                             myIntent.putParcelableArrayListExtra("events", (ArrayList<? extends Parcelable>) events);
 
-//                            CreateNewPlanActivity.this.startActivity(myIntent);
                             startActivityForResult(myIntent, 1);
                             Toast.makeText(CreateNewPlanActivity.this, "Add Event", Toast.LENGTH_SHORT).show();
                         }
@@ -341,9 +343,9 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
                         long total_days = diff / (24 * 60 * 60 * 1000) + 2;
                         trip_days.setText(total_days + "");
                         intent.putExtra("date", date_start);
+                        putExtraPlanDateRange();
                         setDateChanger();
-                        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_timeline_activity,
-                                new Fragment_EventList()).commit();
+                        beginFragmentEventList();
                     } catch (ParseException e) {
                         e.printStackTrace();
                     }
@@ -367,9 +369,9 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
                         long total_days = diff / (24 * 60 * 60 * 1000) + 1;
                         trip_days.setText(total_days + "");
                         intent.putExtra("date", date_start);
+                        putExtraPlanDateRange();
                         setDateChanger();
-                        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_timeline_activity,
-                                new Fragment_EventList()).commit();
+                        beginFragmentEventList();
                     } catch (ParseException e) {
                         e.printStackTrace();
                     }
@@ -439,6 +441,7 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
                         }
 
                         intent.putExtra("date", c_cur_date.getTime());
+                        putExtraPlanDateRange();
                         beginFragmentEventList();
                     }
                 }
@@ -464,10 +467,16 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
                         }
 
                         intent.putExtra("date", c_cur_date.getTime());
+                        putExtraPlanDateRange();
                         beginFragmentEventList();
                     }
                 }
         );
+    }
+
+    public void putExtraPlanDateRange() {
+        intent.putExtra("start_date", date_start);
+        intent.putExtra("end_date", date_end);
     }
 
     public void beginFragmentEventList() {

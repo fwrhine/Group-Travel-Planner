@@ -1,0 +1,366 @@
+-- Merging decision tree log ---
+manifest
+ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:2:1-81:12
+INJECTED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:2:1-81:12
+INJECTED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:2:1-81:12
+INJECTED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:2:1-81:12
+MERGED from [com.android.support:design:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\design-26.1.0.aar\50baec89952432fa8376379b4a6084d5\AndroidManifest.xml:17:1-31:12
+MERGED from [com.android.support:appcompat-v7:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\appcompat-v7-26.1.0.aar\f64973e98f875202bae0d48a7e0baf2d\AndroidManifest.xml:17:1-31:12
+MERGED from [com.android.support.constraint:constraint-layout:1.1.3] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\constraint-layout-1.1.3.aar\48e31391b4d748820d95bc9975cbafaf\AndroidManifest.xml:2:1-11:12
+MERGED from [com.android.support:transition:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\transition-26.1.0.aar\f6d64cb6e6a6229b24dac030f2f525b0\AndroidManifest.xml:17:1-28:12
+MERGED from [com.google.android.gms:play-services-places:16.0.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\play-services-places-16.0.0.aar\afd9bedab36e4fae1c2202ebbd20f562\AndroidManifest.xml:17:1-24:12
+MERGED from [com.google.android.gms:play-services-maps:16.0.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\play-services-maps-16.0.0.aar\09c6e7603b8ff1b7372ff82dac15d1f4\AndroidManifest.xml:17:1-32:12
+MERGED from [com.google.android.gms:play-services-base:16.0.1] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\play-services-base-16.0.1.aar\6a22788a2279503d3807c86f9caf673d\AndroidManifest.xml:17:1-29:12
+MERGED from [com.google.android.gms:play-services-places-placereport:16.0.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\play-services-places-placereport-16.0.0.aar\acdf5cc231c3c1713371e279e7d871e6\AndroidManifest.xml:17:1-24:12
+MERGED from [com.google.android.gms:play-services-tasks:16.0.1] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\play-services-tasks-16.0.1.aar\20932065de09e3217fe08902ad4da170\AndroidManifest.xml:2:1-9:12
+MERGED from [com.google.android.gms:play-services-basement:16.0.1] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\play-services-basement-16.0.1.aar\1e30f2126b818b25f7c96d7ed1423171\AndroidManifest.xml:17:1-28:12
+MERGED from [com.android.support:support-v4:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\support-v4-26.1.0.aar\9e92c2fa7810b39d5658250477ba0f30\AndroidManifest.xml:17:1-31:12
+MERGED from [com.jakewharton:butterknife:8.8.1] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\butterknife-8.8.1.aar\b2c578fddbf78f58f3e7afac1e6794a4\AndroidManifest.xml:2:1-7:12
+MERGED from [com.android.support:cardview-v7:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\cardview-v7-26.1.0.aar\12909559ccfd39084196912e5bf4778e\AndroidManifest.xml:17:1-28:12
+MERGED from [de.hdodenhof:circleimageview:2.2.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\circleimageview-2.2.0.aar\3af02e393bd46bcdd823f253ffd93027\AndroidManifest.xml:2:1-11:12
+MERGED from [com.android.volley:volley:1.1.1] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\volley-1.1.1.aar\6006ec8ebeee49a58b700b52733522f6\AndroidManifest.xml:2:1-11:12
+MERGED from [com.github.vipulasri:timelineview:1.0.6] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\timelineview-1.0.6.aar\e11d2da2a0d525475af953d39d7ecf18\AndroidManifest.xml:2:1-17:12
+MERGED from [com.android.support:animated-vector-drawable:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\animated-vector-drawable-26.1.0.aar\074c37a7a77dbd125784041a41475ba0\AndroidManifest.xml:17:1-28:12
+MERGED from [com.android.support:support-vector-drawable:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\support-vector-drawable-26.1.0.aar\edf5e42bb07ed201d77477dfef968d0d\AndroidManifest.xml:17:1-28:12
+MERGED from [com.android.support:support-media-compat:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\support-media-compat-26.1.0.aar\fb09ca2ad46cbce8dee93b821316ce7e\AndroidManifest.xml:17:1-31:12
+MERGED from [com.android.support:support-fragment:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\support-fragment-26.1.0.aar\314cdd4f7727f06527b621c7c92ec6e6\AndroidManifest.xml:17:1-31:12
+MERGED from [com.android.support:support-core-utils:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\support-core-utils-26.1.0.aar\2dd0b77f4bfbdf2b6dcc980a69a6e52a\AndroidManifest.xml:17:1-31:12
+MERGED from [com.android.support:recyclerview-v7:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\recyclerview-v7-26.1.0.aar\f91f767550b7e9cb6be7e1acb0f6f041\AndroidManifest.xml:17:1-28:12
+MERGED from [com.android.support:support-core-ui:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\support-core-ui-26.1.0.aar\7f0b16bbf387cd434d484a60ba237d08\AndroidManifest.xml:17:1-31:12
+MERGED from [com.android.support:support-compat:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\support-compat-26.1.0.aar\7e7306c5db7e72c11cad8ac8c300dcec\AndroidManifest.xml:17:1-31:12
+MERGED from [android.arch.lifecycle:runtime:1.0.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\runtime-1.0.0.aar\94a26dc902ad1343772ff95f396df13a\AndroidManifest.xml:17:1-30:12
+INJECTED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:2:1-81:12
+INJECTED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:2:1-81:12
+INJECTED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:2:1-81:12
+	package
+		ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:3:5-53
+		INJECTED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml
+		INJECTED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml
+	android:versionName
+		INJECTED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml
+		ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:2:1-81:12
+		INJECTED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml
+	android:versionCode
+		INJECTED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml
+		ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:2:1-81:12
+		INJECTED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml
+	xmlns:android
+		ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:2:11-69
+supports-screens
+ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:5:5-9:40
+	android:largeScreens
+		ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:6:9-36
+	android:smallScreens
+		ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:8:9-36
+	android:normalScreens
+		ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:7:9-37
+	android:xlargeScreens
+		ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:9:9-37
+uses-permission#android.permission.READ_EXTERNAL_STORAGE
+ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:11:5-80
+	android:name
+		ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:11:22-77
+uses-permission#android.permission.WRITE_EXTERNAL_STORAGE
+ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:12:5-81
+	android:name
+		ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:12:22-78
+uses-permission#android.permission.CAMERA
+ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:13:5-65
+	android:name
+		ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:13:22-62
+uses-permission#android.permission.INTERNET
+ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:14:5-67
+MERGED from [com.google.android.gms:play-services-maps:16.0.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\play-services-maps-16.0.0.aar\09c6e7603b8ff1b7372ff82dac15d1f4\AndroidManifest.xml:24:5-67
+MERGED from [com.google.android.gms:play-services-maps:16.0.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\play-services-maps-16.0.0.aar\09c6e7603b8ff1b7372ff82dac15d1f4\AndroidManifest.xml:24:5-67
+	android:name
+		ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:14:22-64
+uses-permission#android.permission.ACCESS_FINE_LOCATION
+ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:15:5-79
+	android:name
+		ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:15:22-76
+uses-permission#android.permission.CALL_PHONE
+ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:16:5-69
+	android:name
+		ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:16:22-66
+application
+ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:18:5-79:19
+MERGED from [com.android.support:design:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\design-26.1.0.aar\50baec89952432fa8376379b4a6084d5\AndroidManifest.xml:25:5-29:19
+MERGED from [com.android.support:design:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\design-26.1.0.aar\50baec89952432fa8376379b4a6084d5\AndroidManifest.xml:25:5-29:19
+MERGED from [com.android.support:appcompat-v7:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\appcompat-v7-26.1.0.aar\f64973e98f875202bae0d48a7e0baf2d\AndroidManifest.xml:25:5-29:19
+MERGED from [com.android.support:appcompat-v7:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\appcompat-v7-26.1.0.aar\f64973e98f875202bae0d48a7e0baf2d\AndroidManifest.xml:25:5-29:19
+MERGED from [com.android.support.constraint:constraint-layout:1.1.3] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\constraint-layout-1.1.3.aar\48e31391b4d748820d95bc9975cbafaf\AndroidManifest.xml:9:5-20
+MERGED from [com.android.support.constraint:constraint-layout:1.1.3] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\constraint-layout-1.1.3.aar\48e31391b4d748820d95bc9975cbafaf\AndroidManifest.xml:9:5-20
+MERGED from [com.android.support:transition:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\transition-26.1.0.aar\f6d64cb6e6a6229b24dac030f2f525b0\AndroidManifest.xml:22:5-26:19
+MERGED from [com.android.support:transition:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\transition-26.1.0.aar\f6d64cb6e6a6229b24dac030f2f525b0\AndroidManifest.xml:22:5-26:19
+MERGED from [com.google.android.gms:play-services-places:16.0.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\play-services-places-16.0.0.aar\afd9bedab36e4fae1c2202ebbd20f562\AndroidManifest.xml:22:5-20
+MERGED from [com.google.android.gms:play-services-places:16.0.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\play-services-places-16.0.0.aar\afd9bedab36e4fae1c2202ebbd20f562\AndroidManifest.xml:22:5-20
+MERGED from [com.google.android.gms:play-services-maps:16.0.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\play-services-maps-16.0.0.aar\09c6e7603b8ff1b7372ff82dac15d1f4\AndroidManifest.xml:30:5-20
+MERGED from [com.google.android.gms:play-services-maps:16.0.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\play-services-maps-16.0.0.aar\09c6e7603b8ff1b7372ff82dac15d1f4\AndroidManifest.xml:30:5-20
+MERGED from [com.google.android.gms:play-services-base:16.0.1] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\play-services-base-16.0.1.aar\6a22788a2279503d3807c86f9caf673d\AndroidManifest.xml:22:5-27:19
+MERGED from [com.google.android.gms:play-services-base:16.0.1] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\play-services-base-16.0.1.aar\6a22788a2279503d3807c86f9caf673d\AndroidManifest.xml:22:5-27:19
+MERGED from [com.google.android.gms:play-services-places-placereport:16.0.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\play-services-places-placereport-16.0.0.aar\acdf5cc231c3c1713371e279e7d871e6\AndroidManifest.xml:22:5-20
+MERGED from [com.google.android.gms:play-services-places-placereport:16.0.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\play-services-places-placereport-16.0.0.aar\acdf5cc231c3c1713371e279e7d871e6\AndroidManifest.xml:22:5-20
+MERGED from [com.google.android.gms:play-services-tasks:16.0.1] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\play-services-tasks-16.0.1.aar\20932065de09e3217fe08902ad4da170\AndroidManifest.xml:7:5-20
+MERGED from [com.google.android.gms:play-services-tasks:16.0.1] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\play-services-tasks-16.0.1.aar\20932065de09e3217fe08902ad4da170\AndroidManifest.xml:7:5-20
+MERGED from [com.google.android.gms:play-services-basement:16.0.1] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\play-services-basement-16.0.1.aar\1e30f2126b818b25f7c96d7ed1423171\AndroidManifest.xml:22:5-26:19
+MERGED from [com.google.android.gms:play-services-basement:16.0.1] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\play-services-basement-16.0.1.aar\1e30f2126b818b25f7c96d7ed1423171\AndroidManifest.xml:22:5-26:19
+MERGED from [com.android.support:support-v4:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\support-v4-26.1.0.aar\9e92c2fa7810b39d5658250477ba0f30\AndroidManifest.xml:25:5-29:19
+MERGED from [com.android.support:support-v4:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\support-v4-26.1.0.aar\9e92c2fa7810b39d5658250477ba0f30\AndroidManifest.xml:25:5-29:19
+MERGED from [com.android.support:cardview-v7:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\cardview-v7-26.1.0.aar\12909559ccfd39084196912e5bf4778e\AndroidManifest.xml:22:5-26:19
+MERGED from [com.android.support:cardview-v7:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\cardview-v7-26.1.0.aar\12909559ccfd39084196912e5bf4778e\AndroidManifest.xml:22:5-26:19
+MERGED from [de.hdodenhof:circleimageview:2.2.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\circleimageview-2.2.0.aar\3af02e393bd46bcdd823f253ffd93027\AndroidManifest.xml:9:5-20
+MERGED from [de.hdodenhof:circleimageview:2.2.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\circleimageview-2.2.0.aar\3af02e393bd46bcdd823f253ffd93027\AndroidManifest.xml:9:5-20
+MERGED from [com.android.volley:volley:1.1.1] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\volley-1.1.1.aar\6006ec8ebeee49a58b700b52733522f6\AndroidManifest.xml:9:5-20
+MERGED from [com.android.volley:volley:1.1.1] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\volley-1.1.1.aar\6006ec8ebeee49a58b700b52733522f6\AndroidManifest.xml:9:5-20
+MERGED from [com.github.vipulasri:timelineview:1.0.6] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\timelineview-1.0.6.aar\e11d2da2a0d525475af953d39d7ecf18\AndroidManifest.xml:11:5-15:19
+MERGED from [com.github.vipulasri:timelineview:1.0.6] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\timelineview-1.0.6.aar\e11d2da2a0d525475af953d39d7ecf18\AndroidManifest.xml:11:5-15:19
+MERGED from [com.android.support:animated-vector-drawable:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\animated-vector-drawable-26.1.0.aar\074c37a7a77dbd125784041a41475ba0\AndroidManifest.xml:22:5-26:19
+MERGED from [com.android.support:animated-vector-drawable:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\animated-vector-drawable-26.1.0.aar\074c37a7a77dbd125784041a41475ba0\AndroidManifest.xml:22:5-26:19
+MERGED from [com.android.support:support-vector-drawable:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\support-vector-drawable-26.1.0.aar\edf5e42bb07ed201d77477dfef968d0d\AndroidManifest.xml:22:5-26:19
+MERGED from [com.android.support:support-vector-drawable:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\support-vector-drawable-26.1.0.aar\edf5e42bb07ed201d77477dfef968d0d\AndroidManifest.xml:22:5-26:19
+MERGED from [com.android.support:support-media-compat:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\support-media-compat-26.1.0.aar\fb09ca2ad46cbce8dee93b821316ce7e\AndroidManifest.xml:25:5-29:19
+MERGED from [com.android.support:support-media-compat:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\support-media-compat-26.1.0.aar\fb09ca2ad46cbce8dee93b821316ce7e\AndroidManifest.xml:25:5-29:19
+MERGED from [com.android.support:support-fragment:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\support-fragment-26.1.0.aar\314cdd4f7727f06527b621c7c92ec6e6\AndroidManifest.xml:25:5-29:19
+MERGED from [com.android.support:support-fragment:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\support-fragment-26.1.0.aar\314cdd4f7727f06527b621c7c92ec6e6\AndroidManifest.xml:25:5-29:19
+MERGED from [com.android.support:support-core-utils:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\support-core-utils-26.1.0.aar\2dd0b77f4bfbdf2b6dcc980a69a6e52a\AndroidManifest.xml:25:5-29:19
+MERGED from [com.android.support:support-core-utils:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\support-core-utils-26.1.0.aar\2dd0b77f4bfbdf2b6dcc980a69a6e52a\AndroidManifest.xml:25:5-29:19
+MERGED from [com.android.support:recyclerview-v7:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\recyclerview-v7-26.1.0.aar\f91f767550b7e9cb6be7e1acb0f6f041\AndroidManifest.xml:22:5-26:19
+MERGED from [com.android.support:recyclerview-v7:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\recyclerview-v7-26.1.0.aar\f91f767550b7e9cb6be7e1acb0f6f041\AndroidManifest.xml:22:5-26:19
+MERGED from [com.android.support:support-core-ui:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\support-core-ui-26.1.0.aar\7f0b16bbf387cd434d484a60ba237d08\AndroidManifest.xml:25:5-29:19
+MERGED from [com.android.support:support-core-ui:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\support-core-ui-26.1.0.aar\7f0b16bbf387cd434d484a60ba237d08\AndroidManifest.xml:25:5-29:19
+MERGED from [com.android.support:support-compat:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\support-compat-26.1.0.aar\7e7306c5db7e72c11cad8ac8c300dcec\AndroidManifest.xml:25:5-29:19
+MERGED from [com.android.support:support-compat:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\support-compat-26.1.0.aar\7e7306c5db7e72c11cad8ac8c300dcec\AndroidManifest.xml:25:5-29:19
+MERGED from [android.arch.lifecycle:runtime:1.0.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\runtime-1.0.0.aar\94a26dc902ad1343772ff95f396df13a\AndroidManifest.xml:24:5-28:19
+MERGED from [android.arch.lifecycle:runtime:1.0.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\runtime-1.0.0.aar\94a26dc902ad1343772ff95f396df13a\AndroidManifest.xml:24:5-28:19
+	android:supportsRtl
+		ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:23:9-35
+	android:label
+		ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:21:9-41
+	android:roundIcon
+		ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:22:9-54
+	android:icon
+		ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:20:9-43
+	android:allowBackup
+		ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:19:9-35
+	android:theme
+		ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:24:9-40
+activity#com.example.pplki18.grouptravelplanner.SplashScreenActivity
+ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:25:9-31:20
+	android:name
+		ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:25:19-55
+intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
+ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:26:13-30:29
+action#android.intent.action.MAIN
+ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:27:17-69
+	android:name
+		ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:27:25-66
+category#android.intent.category.LAUNCHER
+ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:29:17-77
+	android:name
+		ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:29:27-74
+activity#com.example.pplki18.grouptravelplanner.SignUpActivity
+ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:32:9-52
+	android:name
+		ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:32:19-49
+activity#com.example.pplki18.grouptravelplanner.LoginActivity
+ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:33:9-42:20
+	android:name
+		ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:33:19-48
+activity#com.example.pplki18.grouptravelplanner.ForgotPasswordActivity
+ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:43:9-60
+	android:name
+		ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:43:19-57
+activity#com.example.pplki18.grouptravelplanner.RecoverPasswordActivity
+ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:44:9-61
+	android:name
+		ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:44:19-58
+activity#com.example.pplki18.grouptravelplanner.UserProfileActivity
+ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:45:9-57
+	android:name
+		ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:45:19-54
+activity#com.example.pplki18.grouptravelplanner.SearchBarActivity
+ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:46:9-55
+	android:name
+		ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:46:19-52
+activity#com.example.pplki18.grouptravelplanner.InGroupActivity
+ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:47:9-49:59
+	android:theme
+		ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:49:13-56
+	android:name
+		ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:48:13-44
+activity#com.example.pplki18.grouptravelplanner.CreateNewGroupActivity
+ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:50:9-52:59
+	android:theme
+		ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:52:13-56
+	android:name
+		ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:51:13-51
+meta-data#preloaded_fonts
+ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:54:9-56:57
+	android:resource
+		ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:56:13-54
+	android:name
+		ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:55:13-43
+activity#com.example.pplki18.grouptravelplanner.EditPhoneNoActivity
+ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:58:9-57
+	android:name
+		ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:58:19-54
+activity#com.example.pplki18.grouptravelplanner.EditBirthdayActivity
+ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:59:9-58
+	android:name
+		ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:59:19-55
+activity#com.example.pplki18.grouptravelplanner.ChooseEventActivity
+ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:60:9-68:20
+	android:name
+		ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:60:19-54
+meta-data#com.google.android.geo.API_KEY
+ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:70:9-72:47
+	android:value
+		ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:72:13-44
+	android:name
+		ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:71:13-58
+activity#com.example.pplki18.grouptravelplanner.PlaceActivity
+ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:74:9-51
+	android:name
+		ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:74:19-48
+activity#com.example.pplki18.grouptravelplanner.InHomeActivity
+ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:75:9-52
+	android:name
+		ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:75:19-49
+activity#com.example.pplki18.grouptravelplanner.CreateNewPlanActivity
+ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:76:9-59
+	android:name
+		ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:76:19-56
+activity#com.example.pplki18.grouptravelplanner.EditPlanActivity
+ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:77:9-54
+	android:name
+		ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:77:19-51
+activity#com.example.pplki18.grouptravelplanner.EventDetailActivity
+ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:78:9-66
+	android:name
+		ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml:78:19-54
+uses-sdk
+INJECTED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml
+INJECTED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml
+MERGED from [com.android.support:design:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\design-26.1.0.aar\50baec89952432fa8376379b4a6084d5\AndroidManifest.xml:21:5-23:62
+MERGED from [com.android.support:design:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\design-26.1.0.aar\50baec89952432fa8376379b4a6084d5\AndroidManifest.xml:21:5-23:62
+MERGED from [com.android.support:appcompat-v7:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\appcompat-v7-26.1.0.aar\f64973e98f875202bae0d48a7e0baf2d\AndroidManifest.xml:21:5-23:78
+MERGED from [com.android.support:appcompat-v7:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\appcompat-v7-26.1.0.aar\f64973e98f875202bae0d48a7e0baf2d\AndroidManifest.xml:21:5-23:78
+MERGED from [com.android.support.constraint:constraint-layout:1.1.3] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\constraint-layout-1.1.3.aar\48e31391b4d748820d95bc9975cbafaf\AndroidManifest.xml:5:5-7:41
+MERGED from [com.android.support.constraint:constraint-layout:1.1.3] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\constraint-layout-1.1.3.aar\48e31391b4d748820d95bc9975cbafaf\AndroidManifest.xml:5:5-7:41
+MERGED from [com.android.support:transition:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\transition-26.1.0.aar\f6d64cb6e6a6229b24dac030f2f525b0\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:transition:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\transition-26.1.0.aar\f6d64cb6e6a6229b24dac030f2f525b0\AndroidManifest.xml:20:5-44
+MERGED from [com.google.android.gms:play-services-places:16.0.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\play-services-places-16.0.0.aar\afd9bedab36e4fae1c2202ebbd20f562\AndroidManifest.xml:20:5-44
+MERGED from [com.google.android.gms:play-services-places:16.0.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\play-services-places-16.0.0.aar\afd9bedab36e4fae1c2202ebbd20f562\AndroidManifest.xml:20:5-44
+MERGED from [com.google.android.gms:play-services-maps:16.0.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\play-services-maps-16.0.0.aar\09c6e7603b8ff1b7372ff82dac15d1f4\AndroidManifest.xml:20:5-44
+MERGED from [com.google.android.gms:play-services-maps:16.0.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\play-services-maps-16.0.0.aar\09c6e7603b8ff1b7372ff82dac15d1f4\AndroidManifest.xml:20:5-44
+MERGED from [com.google.android.gms:play-services-base:16.0.1] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\play-services-base-16.0.1.aar\6a22788a2279503d3807c86f9caf673d\AndroidManifest.xml:20:5-44
+MERGED from [com.google.android.gms:play-services-base:16.0.1] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\play-services-base-16.0.1.aar\6a22788a2279503d3807c86f9caf673d\AndroidManifest.xml:20:5-44
+MERGED from [com.google.android.gms:play-services-places-placereport:16.0.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\play-services-places-placereport-16.0.0.aar\acdf5cc231c3c1713371e279e7d871e6\AndroidManifest.xml:20:5-44
+MERGED from [com.google.android.gms:play-services-places-placereport:16.0.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\play-services-places-placereport-16.0.0.aar\acdf5cc231c3c1713371e279e7d871e6\AndroidManifest.xml:20:5-44
+MERGED from [com.google.android.gms:play-services-tasks:16.0.1] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\play-services-tasks-16.0.1.aar\20932065de09e3217fe08902ad4da170\AndroidManifest.xml:5:5-44
+MERGED from [com.google.android.gms:play-services-tasks:16.0.1] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\play-services-tasks-16.0.1.aar\20932065de09e3217fe08902ad4da170\AndroidManifest.xml:5:5-44
+MERGED from [com.google.android.gms:play-services-basement:16.0.1] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\play-services-basement-16.0.1.aar\1e30f2126b818b25f7c96d7ed1423171\AndroidManifest.xml:20:5-44
+MERGED from [com.google.android.gms:play-services-basement:16.0.1] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\play-services-basement-16.0.1.aar\1e30f2126b818b25f7c96d7ed1423171\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-v4:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\support-v4-26.1.0.aar\9e92c2fa7810b39d5658250477ba0f30\AndroidManifest.xml:21:5-23:54
+MERGED from [com.android.support:support-v4:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\support-v4-26.1.0.aar\9e92c2fa7810b39d5658250477ba0f30\AndroidManifest.xml:21:5-23:54
+MERGED from [com.jakewharton:butterknife:8.8.1] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\butterknife-8.8.1.aar\b2c578fddbf78f58f3e7afac1e6794a4\AndroidManifest.xml:5:5-43
+MERGED from [com.jakewharton:butterknife:8.8.1] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\butterknife-8.8.1.aar\b2c578fddbf78f58f3e7afac1e6794a4\AndroidManifest.xml:5:5-43
+MERGED from [com.android.support:cardview-v7:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\cardview-v7-26.1.0.aar\12909559ccfd39084196912e5bf4778e\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:cardview-v7:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\cardview-v7-26.1.0.aar\12909559ccfd39084196912e5bf4778e\AndroidManifest.xml:20:5-44
+MERGED from [de.hdodenhof:circleimageview:2.2.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\circleimageview-2.2.0.aar\3af02e393bd46bcdd823f253ffd93027\AndroidManifest.xml:5:5-7:41
+MERGED from [de.hdodenhof:circleimageview:2.2.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\circleimageview-2.2.0.aar\3af02e393bd46bcdd823f253ffd93027\AndroidManifest.xml:5:5-7:41
+MERGED from [com.android.volley:volley:1.1.1] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\volley-1.1.1.aar\6006ec8ebeee49a58b700b52733522f6\AndroidManifest.xml:7:5-43
+MERGED from [com.android.volley:volley:1.1.1] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\volley-1.1.1.aar\6006ec8ebeee49a58b700b52733522f6\AndroidManifest.xml:7:5-43
+MERGED from [com.github.vipulasri:timelineview:1.0.6] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\timelineview-1.0.6.aar\e11d2da2a0d525475af953d39d7ecf18\AndroidManifest.xml:7:5-9:41
+MERGED from [com.github.vipulasri:timelineview:1.0.6] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\timelineview-1.0.6.aar\e11d2da2a0d525475af953d39d7ecf18\AndroidManifest.xml:7:5-9:41
+MERGED from [com.android.support:animated-vector-drawable:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\animated-vector-drawable-26.1.0.aar\074c37a7a77dbd125784041a41475ba0\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:animated-vector-drawable:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\animated-vector-drawable-26.1.0.aar\074c37a7a77dbd125784041a41475ba0\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-vector-drawable:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\support-vector-drawable-26.1.0.aar\edf5e42bb07ed201d77477dfef968d0d\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-vector-drawable:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\support-vector-drawable-26.1.0.aar\edf5e42bb07ed201d77477dfef968d0d\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-media-compat:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\support-media-compat-26.1.0.aar\fb09ca2ad46cbce8dee93b821316ce7e\AndroidManifest.xml:21:5-23:63
+MERGED from [com.android.support:support-media-compat:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\support-media-compat-26.1.0.aar\fb09ca2ad46cbce8dee93b821316ce7e\AndroidManifest.xml:21:5-23:63
+MERGED from [com.android.support:support-fragment:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\support-fragment-26.1.0.aar\314cdd4f7727f06527b621c7c92ec6e6\AndroidManifest.xml:21:5-23:60
+MERGED from [com.android.support:support-fragment:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\support-fragment-26.1.0.aar\314cdd4f7727f06527b621c7c92ec6e6\AndroidManifest.xml:21:5-23:60
+MERGED from [com.android.support:support-core-utils:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\support-core-utils-26.1.0.aar\2dd0b77f4bfbdf2b6dcc980a69a6e52a\AndroidManifest.xml:21:5-23:61
+MERGED from [com.android.support:support-core-utils:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\support-core-utils-26.1.0.aar\2dd0b77f4bfbdf2b6dcc980a69a6e52a\AndroidManifest.xml:21:5-23:61
+MERGED from [com.android.support:recyclerview-v7:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\recyclerview-v7-26.1.0.aar\f91f767550b7e9cb6be7e1acb0f6f041\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:recyclerview-v7:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\recyclerview-v7-26.1.0.aar\f91f767550b7e9cb6be7e1acb0f6f041\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-core-ui:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\support-core-ui-26.1.0.aar\7f0b16bbf387cd434d484a60ba237d08\AndroidManifest.xml:21:5-23:58
+MERGED from [com.android.support:support-core-ui:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\support-core-ui-26.1.0.aar\7f0b16bbf387cd434d484a60ba237d08\AndroidManifest.xml:21:5-23:58
+MERGED from [com.android.support:support-compat:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\support-compat-26.1.0.aar\7e7306c5db7e72c11cad8ac8c300dcec\AndroidManifest.xml:21:5-23:58
+MERGED from [com.android.support:support-compat:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\support-compat-26.1.0.aar\7e7306c5db7e72c11cad8ac8c300dcec\AndroidManifest.xml:21:5-23:58
+MERGED from [android.arch.lifecycle:runtime:1.0.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\runtime-1.0.0.aar\94a26dc902ad1343772ff95f396df13a\AndroidManifest.xml:20:5-22:41
+MERGED from [android.arch.lifecycle:runtime:1.0.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\runtime-1.0.0.aar\94a26dc902ad1343772ff95f396df13a\AndroidManifest.xml:20:5-22:41
+INJECTED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml
+INJECTED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml
+	tools:overrideLibrary
+		ADDED from [com.android.support:design:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\design-26.1.0.aar\50baec89952432fa8376379b4a6084d5\AndroidManifest.xml:23:9-59
+	android:targetSdkVersion
+		INJECTED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml
+		ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml
+		INJECTED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml
+		ADDED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml
+		INJECTED from V:\Vincent\KULIAH\KELAS\SEM5\PPL\SPRINT\GroupTravelPlanner\app\src\main\AndroidManifest.xml
+meta-data#android.support.VERSION
+ADDED from [com.android.support:design:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\design-26.1.0.aar\50baec89952432fa8376379b4a6084d5\AndroidManifest.xml:26:9-28:38
+MERGED from [com.android.support:appcompat-v7:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\appcompat-v7-26.1.0.aar\f64973e98f875202bae0d48a7e0baf2d\AndroidManifest.xml:26:9-28:38
+MERGED from [com.android.support:appcompat-v7:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\appcompat-v7-26.1.0.aar\f64973e98f875202bae0d48a7e0baf2d\AndroidManifest.xml:26:9-28:38
+MERGED from [com.android.support:transition:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\transition-26.1.0.aar\f6d64cb6e6a6229b24dac030f2f525b0\AndroidManifest.xml:23:9-25:38
+MERGED from [com.android.support:transition:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\transition-26.1.0.aar\f6d64cb6e6a6229b24dac030f2f525b0\AndroidManifest.xml:23:9-25:38
+MERGED from [com.android.support:support-v4:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\support-v4-26.1.0.aar\9e92c2fa7810b39d5658250477ba0f30\AndroidManifest.xml:26:9-28:38
+MERGED from [com.android.support:support-v4:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\support-v4-26.1.0.aar\9e92c2fa7810b39d5658250477ba0f30\AndroidManifest.xml:26:9-28:38
+MERGED from [com.android.support:cardview-v7:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\cardview-v7-26.1.0.aar\12909559ccfd39084196912e5bf4778e\AndroidManifest.xml:23:9-25:38
+MERGED from [com.android.support:cardview-v7:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\cardview-v7-26.1.0.aar\12909559ccfd39084196912e5bf4778e\AndroidManifest.xml:23:9-25:38
+MERGED from [com.android.support:animated-vector-drawable:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\animated-vector-drawable-26.1.0.aar\074c37a7a77dbd125784041a41475ba0\AndroidManifest.xml:23:9-25:38
+MERGED from [com.android.support:animated-vector-drawable:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\animated-vector-drawable-26.1.0.aar\074c37a7a77dbd125784041a41475ba0\AndroidManifest.xml:23:9-25:38
+MERGED from [com.android.support:support-vector-drawable:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\support-vector-drawable-26.1.0.aar\edf5e42bb07ed201d77477dfef968d0d\AndroidManifest.xml:23:9-25:38
+MERGED from [com.android.support:support-vector-drawable:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\support-vector-drawable-26.1.0.aar\edf5e42bb07ed201d77477dfef968d0d\AndroidManifest.xml:23:9-25:38
+MERGED from [com.android.support:support-media-compat:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\support-media-compat-26.1.0.aar\fb09ca2ad46cbce8dee93b821316ce7e\AndroidManifest.xml:26:9-28:38
+MERGED from [com.android.support:support-media-compat:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\support-media-compat-26.1.0.aar\fb09ca2ad46cbce8dee93b821316ce7e\AndroidManifest.xml:26:9-28:38
+MERGED from [com.android.support:support-fragment:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\support-fragment-26.1.0.aar\314cdd4f7727f06527b621c7c92ec6e6\AndroidManifest.xml:26:9-28:38
+MERGED from [com.android.support:support-fragment:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\support-fragment-26.1.0.aar\314cdd4f7727f06527b621c7c92ec6e6\AndroidManifest.xml:26:9-28:38
+MERGED from [com.android.support:support-core-utils:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\support-core-utils-26.1.0.aar\2dd0b77f4bfbdf2b6dcc980a69a6e52a\AndroidManifest.xml:26:9-28:38
+MERGED from [com.android.support:support-core-utils:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\support-core-utils-26.1.0.aar\2dd0b77f4bfbdf2b6dcc980a69a6e52a\AndroidManifest.xml:26:9-28:38
+MERGED from [com.android.support:recyclerview-v7:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\recyclerview-v7-26.1.0.aar\f91f767550b7e9cb6be7e1acb0f6f041\AndroidManifest.xml:23:9-25:38
+MERGED from [com.android.support:recyclerview-v7:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\recyclerview-v7-26.1.0.aar\f91f767550b7e9cb6be7e1acb0f6f041\AndroidManifest.xml:23:9-25:38
+MERGED from [com.android.support:support-core-ui:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\support-core-ui-26.1.0.aar\7f0b16bbf387cd434d484a60ba237d08\AndroidManifest.xml:26:9-28:38
+MERGED from [com.android.support:support-core-ui:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\support-core-ui-26.1.0.aar\7f0b16bbf387cd434d484a60ba237d08\AndroidManifest.xml:26:9-28:38
+MERGED from [com.android.support:support-compat:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\support-compat-26.1.0.aar\7e7306c5db7e72c11cad8ac8c300dcec\AndroidManifest.xml:26:9-28:38
+MERGED from [com.android.support:support-compat:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\support-compat-26.1.0.aar\7e7306c5db7e72c11cad8ac8c300dcec\AndroidManifest.xml:26:9-28:38
+	android:value
+		ADDED from [com.android.support:design:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\design-26.1.0.aar\50baec89952432fa8376379b4a6084d5\AndroidManifest.xml:28:13-35
+	android:name
+		ADDED from [com.android.support:design:26.1.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\design-26.1.0.aar\50baec89952432fa8376379b4a6084d5\AndroidManifest.xml:27:13-51
+uses-permission#android.permission.ACCESS_NETWORK_STATE
+ADDED from [com.google.android.gms:play-services-maps:16.0.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\play-services-maps-16.0.0.aar\09c6e7603b8ff1b7372ff82dac15d1f4\AndroidManifest.xml:23:5-79
+	android:name
+		ADDED from [com.google.android.gms:play-services-maps:16.0.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\play-services-maps-16.0.0.aar\09c6e7603b8ff1b7372ff82dac15d1f4\AndroidManifest.xml:23:22-76
+uses-feature#0x00020000
+ADDED from [com.google.android.gms:play-services-maps:16.0.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\play-services-maps-16.0.0.aar\09c6e7603b8ff1b7372ff82dac15d1f4\AndroidManifest.xml:26:5-28:35
+	android:glEsVersion
+		ADDED from [com.google.android.gms:play-services-maps:16.0.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\play-services-maps-16.0.0.aar\09c6e7603b8ff1b7372ff82dac15d1f4\AndroidManifest.xml:27:9-41
+	android:required
+		ADDED from [com.google.android.gms:play-services-maps:16.0.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\play-services-maps-16.0.0.aar\09c6e7603b8ff1b7372ff82dac15d1f4\AndroidManifest.xml:28:9-32
+activity#com.google.android.gms.common.api.GoogleApiActivity
+ADDED from [com.google.android.gms:play-services-base:16.0.1] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\play-services-base-16.0.1.aar\6a22788a2279503d3807c86f9caf673d\AndroidManifest.xml:23:9-26:75
+	android:exported
+		ADDED from [com.google.android.gms:play-services-base:16.0.1] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\play-services-base-16.0.1.aar\6a22788a2279503d3807c86f9caf673d\AndroidManifest.xml:25:13-37
+	android:theme
+		ADDED from [com.google.android.gms:play-services-base:16.0.1] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\play-services-base-16.0.1.aar\6a22788a2279503d3807c86f9caf673d\AndroidManifest.xml:26:13-72
+	android:name
+		ADDED from [com.google.android.gms:play-services-base:16.0.1] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\play-services-base-16.0.1.aar\6a22788a2279503d3807c86f9caf673d\AndroidManifest.xml:24:13-79
+meta-data#com.google.android.gms.version
+ADDED from [com.google.android.gms:play-services-basement:16.0.1] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\play-services-basement-16.0.1.aar\1e30f2126b818b25f7c96d7ed1423171\AndroidManifest.xml:23:9-25:69
+	android:value
+		ADDED from [com.google.android.gms:play-services-basement:16.0.1] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\play-services-basement-16.0.1.aar\1e30f2126b818b25f7c96d7ed1423171\AndroidManifest.xml:25:13-66
+	android:name
+		ADDED from [com.google.android.gms:play-services-basement:16.0.1] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\play-services-basement-16.0.1.aar\1e30f2126b818b25f7c96d7ed1423171\AndroidManifest.xml:24:13-58
+meta-data#android.arch.lifecycle.VERSION
+ADDED from [android.arch.lifecycle:runtime:1.0.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\runtime-1.0.0.aar\94a26dc902ad1343772ff95f396df13a\AndroidManifest.xml:25:9-27:47
+	android:value
+		ADDED from [android.arch.lifecycle:runtime:1.0.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\runtime-1.0.0.aar\94a26dc902ad1343772ff95f396df13a\AndroidManifest.xml:27:13-44
+	android:name
+		ADDED from [android.arch.lifecycle:runtime:1.0.0] C:\Users\vasun\.gradle\caches\transforms-1\files-1.1\runtime-1.0.0.aar\94a26dc902ad1343772ff95f396df13a\AndroidManifest.xml:26:13-58
