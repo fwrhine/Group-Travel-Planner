@@ -350,8 +350,23 @@ public class BookTrainFragment extends Fragment {
 
             ArrayList<String> moreTrainInfo = map.get(key);
 
+            String[] splitPrice = moreTrainInfo.get(1).split(",");
+            String[] addCommaPrice = splitPrice[0].split("");
+
+            StringBuilder editedPrice = new StringBuilder();
+
+            for(int j = 0; j < addCommaPrice.length; j++) {
+                if (addCommaPrice[j].equals(".")) {
+                    editedPrice.append(",");
+                }
+
+                else {
+                    editedPrice.append(addCommaPrice[j]);
+                }
+            }
+
             String airlineName = moreTrainInfo.get(0);
-            String priceValue = "IDR " + moreTrainInfo.get(1);
+            String priceValue = "Rp. " + editedPrice.toString();
             String departTime = moreTrainInfo.get(2);
             String arriveTime = moreTrainInfo.get(3);
 
