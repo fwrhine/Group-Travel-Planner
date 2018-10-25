@@ -15,8 +15,7 @@
             android:title="Plans" />
         <item android:id="@+id/nav_reminder_list"
             android:icon="@drawable/ic_timer"
-            android:title="Reminder"/>
-
+            android:title="Reminder" />
     </group>
 
 </menu>

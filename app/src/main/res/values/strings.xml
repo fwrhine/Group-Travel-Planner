@@ -19,6 +19,25 @@
     <string name="action_search">Search</string>
     <string name="action_settings">Setting</string>
     <string name="plan_overview_sample">Mon, 1 Oct (09:00) : Soekarno-Hatta International Airport \n...</string>
+    <string name="bookFrom">From:</string>
+    <string name="bookOrigin">Origin</string>
+    <string name="bookTo">To:</string>
+    <string name="bookDestination">Destination</string>
+    <string name="bookDate">Date:</string>
+    <string name="bookDay">Day</string>
+    <string name="bookMonth">Month</string>
+    <string name="bookYear">Year</string>
+    <string name="buttonFindFlight">FIND FLIGHT</string>
+    <string name="bookAirlineName">Airline Name</string>
+    <string name="bookDivider">-</string>
+    <string name="bookFlightNumber">Flight Number</string>
+    <string name="bookDepartCity">Depart City</string>
+    <string name="bookDepartTime">Depart Time</string>
+    <string name="bookArrow"><![CDATA[->]]></string>
+    <string name="bookArriveCity">Arrive City</string>
+    <string name="bookArriveTime">Arrive Time</string>
+    <string name="bookPrice">Price</string>
+    <string name="buttonFindTrain">FIND TRAIN</string>
 
 
 </resources>
