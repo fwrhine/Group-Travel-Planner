@@ -13,6 +13,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -40,11 +42,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Objects;
 
 public class BookPlaneFragment extends Fragment {
 
-    private EditText origin, destination;
+    private AutoCompleteTextView origin, destination;
     private Button searchButton;
 
     private int plan_id;
@@ -70,7 +71,7 @@ public class BookPlaneFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        origin = Objects.requireNonNull(getView()).findViewById(R.id.origin);
+        origin = getView().findViewById(R.id.origin);
         destination = getView().findViewById(R.id.destination);
 
         searchButton = getView().findViewById(R.id.searchButton);
@@ -105,6 +106,13 @@ public class BookPlaneFragment extends Fragment {
                     public void onCallback(HashMap<String, String> map) {
                         Log.d("MAP-FINAL", "map size: "+ map.size());
                         availableAirports = map;
+                        String[] airportKeyArray = availableAirports.keySet().toArray(new String[availableAirports.size()]);
+                        ArrayAdapter<String> adapter1 = new ArrayAdapter<>(BookPlaneFragment.this.getActivity(), R.layout.support_simple_spinner_dropdown_item, airportKeyArray);
+                        origin.setAdapter(adapter1);
+                        destination.setAdapter(adapter1);
+
+                        origin.setText(airportKeyArray[0]);
+                        destination.setText(airportKeyArray[1]);
                     }
                 });
             }
@@ -127,7 +135,6 @@ public class BookPlaneFragment extends Fragment {
 
                     @Override
                     public void onClick(View view) {
-                        if (validate()) {
 
                             String startLoc = origin.getText().toString();
                             String endLoc = destination.getText().toString();
@@ -151,7 +158,6 @@ public class BookPlaneFragment extends Fragment {
                                         , Toast.LENGTH_LONG).show();
                             }
                         }
-                    }
                 }
         );
     }
@@ -173,6 +179,7 @@ public class BookPlaneFragment extends Fragment {
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
+
                     }
                 }, new Response.ErrorListener() {
             @Override
@@ -367,7 +374,7 @@ public class BookPlaneFragment extends Fragment {
             }
 
             String airlineName = moreFlightInfo.get(0);
-            String priceValue = "Rp. " + editedPrice.reverse().toString();
+            String priceValue = "Rp " + editedPrice.reverse().toString();
             String flightNumber = moreFlightInfo.get(2);
             String departTime = moreFlightInfo.get(3);
             String arriveTime = moreFlightInfo.get(4);
@@ -493,27 +500,6 @@ public class BookPlaneFragment extends Fragment {
         });
 
         queue.add(stringRequest);
-    }
-
-    private boolean validate() {
-        boolean valid = true;
-
-        String startLoc = origin.getText().toString();
-        String endLoc = destination.getText().toString();
-
-        if (startLoc.isEmpty()) {
-            Toast.makeText(BookPlaneFragment.this.getActivity(), "Please write the origin",
-                    Toast.LENGTH_LONG).show();
-            valid = false;
-        }
-
-        else if (endLoc.isEmpty()) {
-            Toast.makeText(BookPlaneFragment.this.getActivity(), "Please write the destination",
-                    Toast.LENGTH_LONG).show();
-            valid = false;
-        }
-
-        return valid;
     }
 
     private interface AirportCallback {

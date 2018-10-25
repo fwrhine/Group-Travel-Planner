@@ -366,7 +366,7 @@ public class BookTrainFragment extends Fragment {
             }
 
             String airlineName = moreTrainInfo.get(0);
-            String priceValue = "Rp. " + editedPrice.toString();
+            String priceValue = "Rp " + editedPrice.toString();
             String departTime = moreTrainInfo.get(2);
             String arriveTime = moreTrainInfo.get(3);
 
