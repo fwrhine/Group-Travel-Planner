@@ -156,7 +156,7 @@ public class ChooseEventActivity extends AppCompatActivity {
         if (requestCode == REGION_AUTOCOMPLETE_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 Place place = PlaceAutocomplete.getPlace(this, data);
-                sessionManager.setCurrentRegion(place.getName().toString());
+                sessionManager.setCurrentRegion(place.getAddress().toString());
 //                region = place.getName().toString();
                 regionCoor = place.getLatLng();
 
