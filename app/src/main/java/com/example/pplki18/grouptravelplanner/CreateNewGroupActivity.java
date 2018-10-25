@@ -46,7 +46,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class CreateNewGroupActivity extends AppCompatActivity {
     private static final String TAG = "CreateNewGroupActivity";
 
-    DatabaseHelper databaseHelper;
+    private DatabaseHelper databaseHelper;
     private Button btnCreate;
     private FloatingActionButton fab_pic;
     private EditText editText;
@@ -59,7 +59,8 @@ public class CreateNewGroupActivity extends AppCompatActivity {
     private SearchView searchView;
     private HashMap<String, String> user;
     private String currId;
-    private int GALLERY = 1, CAMERA = 2;
+    private final int GALLERY = 1;
+    private final int CAMERA = 2;
 
 
     @Override
@@ -193,7 +194,7 @@ public class CreateNewGroupActivity extends AppCompatActivity {
         pictureDialog.show();
     }
 
-    public void choosePhotoFromGallery() {
+    private void choosePhotoFromGallery() {
         Intent galleryIntent = new Intent(Intent.ACTION_PICK,
                 android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
 
@@ -235,7 +236,7 @@ public class CreateNewGroupActivity extends AppCompatActivity {
     ///////////////////////////////////////////// convert image view to byte array /////////////////////////////////////////////
 
     //convert image view to byte array
-    public byte[] imageViewToByte(ImageView image) {
+    private byte[] imageViewToByte(ImageView image) {
         try {
             Bitmap bitmap = getBitmapFromDrawable(image.getDrawable());
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
@@ -259,7 +260,7 @@ public class CreateNewGroupActivity extends AppCompatActivity {
     }
 
     //get resized bitmap
-    public Bitmap getResizedBitmap(Bitmap image, int maxSize) {
+    private Bitmap getResizedBitmap(Bitmap image, int maxSize) {
         int width = image.getWidth();
         int height = image.getHeight();
 
@@ -277,7 +278,7 @@ public class CreateNewGroupActivity extends AppCompatActivity {
     ////////////////////////////////////////////// insert new group to database ////////////////////////////////////////////////
 
     //Todo: insert data to database, if success, open group chat
-    public void CreateGroup(Group group, ArrayList<Integer> user_ids) {
+    private void CreateGroup(Group group, ArrayList<Integer> user_ids) {
         long createGroup = insertGroup(group, user_ids);
 
         if (createGroup != -1) {
@@ -291,7 +292,7 @@ public class CreateNewGroupActivity extends AppCompatActivity {
 
     //////////////////////////////////////////////////// database functions ////////////////////////////////////////////////////
 
-    public long insertGroup(Group group, ArrayList<Integer> user_ids) {
+    private long insertGroup(Group group, ArrayList<Integer> user_ids) {
         sessionManager = new SessionManager(getApplicationContext());
         SQLiteDatabase db = databaseHelper.getWritableDatabase();
 
@@ -315,7 +316,7 @@ public class CreateNewGroupActivity extends AppCompatActivity {
         return group_id;
     }
 
-    public long insertUserGroup(long group_id, int user_id) {
+    private long insertUserGroup(long group_id, int user_id) {
         SQLiteDatabase db = databaseHelper.getWritableDatabase();
 
         ContentValues contentValues = new ContentValues();
@@ -330,7 +331,7 @@ public class CreateNewGroupActivity extends AppCompatActivity {
     /*
      * Get all users
      * */
-    public List<User> getAllUsers() {
+    private List<User> getAllUsers() {
         List<User> users = new ArrayList<User>();
         String selectQuery = "SELECT * FROM " + UserContract.UserEntry.TABLE_NAME + " WHERE "
                 + UserContract.UserEntry._ID + " != ?";
@@ -357,13 +358,15 @@ public class CreateNewGroupActivity extends AppCompatActivity {
             } while (c.moveToNext());
         }
 
+        c.close();
+
         return users;
     }
 
     /*
      * Search user by full name
      * */
-    public List<User> searchUser(String query) {
+    private List<User> searchUser(String query) {
         List<User> users = new ArrayList<User>();
 
         String selectQuery = "SELECT * FROM " + UserContract.UserEntry.TABLE_NAME + " WHERE "
@@ -387,6 +390,8 @@ public class CreateNewGroupActivity extends AppCompatActivity {
                 users.add(user);
             } while (c.moveToNext());
         }
+
+        c.close();
 
         return users;
     }

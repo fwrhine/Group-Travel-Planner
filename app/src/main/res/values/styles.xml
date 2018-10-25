@@ -7,7 +7,8 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorPrimaryDark2</item>
         <item name="android:statusBarColor">#74AE36</item>
-
+        <item name="windowActionBarOverlay">true</item>
+        <item name="android:windowActionBarOverlay">true</item>
         <item name="android:textColorHint">@color/colorWhite</item>
     </style>
 
@@ -47,8 +48,27 @@
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
-
     </style>
+
+    <!--<style name="AppTheme.TransparentActionBar" parent="Theme.AppCompat.Light.DarkActionBar">-->
+        <!--<item name="android:windowContentOverlay">@null</item>-->
+        <!--<item name="windowActionBarOverlay">true</item>-->
+        <!--<item name="android:windowActionBarOverlay">true</item>-->
+    <!--</style>-->
+
+
+    <!--<style name="Theme.Custom" parent="Theme.AppCompat.Light.DarkActionBar">-->
+        <!--<item name="windowActionBar">false</item>-->
+        <!--<item name="windowActionBarOverlay">true</item>-->
+        <!--<item name="android:windowActionBarOverlay">true</item>-->
+    <!--</style>-->
+
+    <style name="CustomActionBar" parent="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="android:windowActionBarOverlay">true</item>
+        <!-- Support library compatibility -->
+        <item name="windowActionBarOverlay">true</item>
+    </style>
+
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 

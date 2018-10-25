@@ -6,8 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
-import android.media.Image;
-import android.media.Rating;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Parcelable;
 import android.support.design.widget.FloatingActionButton;
@@ -20,7 +19,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.RelativeLayout;
@@ -28,9 +26,12 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.android.volley.NetworkError;
+import com.android.volley.NoConnectionError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.StringRequest;
@@ -52,20 +53,21 @@ public class PlaceActivity extends AppCompatActivity {
 
     private DatabaseHelper databaseHelper;
 
-    String place_id;
-    Toolbar toolbar;
-    TextView title;
-    TextView rating_num;
-    RatingBar rating;
-    TextView address;
-    TextView phone;
-    TextView website;
-    ImageView image;
-    TextView open_now;
-    TextView open_hours;
-    FloatingActionButton ic_add;
+    private String place_id;
+    private Toolbar toolbar;
+    private TextView title;
+    private TextView rating_num;
+    private RatingBar rating;
+    private TextView address;
+    private TextView phone;
+    private TextView website;
+    private ImageView image;
+    private TextView open_now;
+    private TextView open_hours;
+    private FloatingActionButton ic_add;
 //    Button google_button;
-    ProgressBar progressBar;
+    private ProgressBar progressBar;
+    private RequestQueue queue;
 
     TextView eventDate;
     TextView eventTime;
@@ -80,6 +82,10 @@ public class PlaceActivity extends AppCompatActivity {
 
         init();
 
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        setTitle("");
+
         ic_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -91,9 +97,27 @@ public class PlaceActivity extends AppCompatActivity {
 
     }
 
-    public void sendRequest() {
-        // Instantiate the RequestQueue.
-        RequestQueue queue = Volley.newRequestQueue(this);
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
+
+    private void noConnection(VolleyError volleyError) {
+        String message = null;
+        if (volleyError instanceof NetworkError) {
+            message = "No internet connection.";
+        } else if (volleyError instanceof NoConnectionError) {
+            message = "No internet connection.";
+        } else if (volleyError instanceof TimeoutError) {
+            message = "Connection timeout.";
+        }
+
+        progressBar.setVisibility(View.GONE);
+        toastMessage(message);
+    }
+
+    private void sendRequest() {
         String url = "https://maps.googleapis.com/maps/api/place/details/json?placeid="
                 + place_id + "&fields=name,formatted_address,rating,photo," +
                 "opening_hours,website,international_phone_number,url&key="
@@ -112,6 +136,7 @@ public class PlaceActivity extends AppCompatActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.d(TAG, "REQUEST ERROR");
+                noConnection(error);
             }
         });
 
@@ -119,7 +144,7 @@ public class PlaceActivity extends AppCompatActivity {
         queue.add(stringRequest);
     }
 
-    public Place getPlace(String response) {
+    private Place getPlace(String response) {
         Place place = new Place();
         try {
             JSONObject obj = new JSONObject(response);
@@ -137,7 +162,7 @@ public class PlaceActivity extends AppCompatActivity {
                 place.setOpen_now(opening_hours.optBoolean("open_now"));
                 JSONArray weekday_text = opening_hours.optJSONArray("weekday_text");
                 if (weekday_text != null) {
-                    ArrayList<String> listdata = new ArrayList<String>();
+                    ArrayList<String> listdata = new ArrayList<>();
                     for (int i=0;i<weekday_text.length();i++){
                         listdata.add(weekday_text.getString(i));
                     }
@@ -160,7 +185,7 @@ public class PlaceActivity extends AppCompatActivity {
         return place;
     }
 
-    public void populatePlaceView(final Place place) {
+    private void populatePlaceView(final Place place) {
         title.setText(place.getName());
         rating_num.setText(place.getRating());
         rating.setRating(Float.valueOf(place.getRating()));
@@ -179,10 +204,10 @@ public class PlaceActivity extends AppCompatActivity {
 
         if (place.getOpen_now() != null) {
             if (place.getOpen_now()) {
-                open_now.setText("Open Now");
+                open_now.setText(R.string.open_now);
             } else {
                 open_now.setTextColor(getResources().getColor(R.color.red));
-                open_now.setText("Closed");
+                open_now.setText(R.string.closed);
             }
 
             List<String> weekday_text = place.getWeekday_text();
@@ -210,9 +235,7 @@ public class PlaceActivity extends AppCompatActivity {
         getPhoto(place.getPhoto());
     }
 
-    public void getPhoto(String photo_reference) {
-        // Instantiate the RequestQueue.
-        RequestQueue queue = Volley.newRequestQueue(this);
+    private void getPhoto(String photo_reference) {
         String url = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=900&photoreference="
                 + photo_reference + "&key=" + getString(R.string.api_key);
 
@@ -235,7 +258,7 @@ public class PlaceActivity extends AppCompatActivity {
         queue.add(imageRequest);
     }
 
-    public void setTime() {
+    private void setTime() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = getLayoutInflater();
         View dialogLayout = inflater.inflate(R.layout.set_time_dialog, null);
@@ -358,7 +381,7 @@ public class PlaceActivity extends AppCompatActivity {
         });
     }
 
-    public void init() {
+    private void init() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         place_id = getIntent().getStringExtra("PLACE_ID");
         title = (TextView) findViewById(R.id.title);
@@ -373,7 +396,7 @@ public class PlaceActivity extends AppCompatActivity {
         ic_add = (FloatingActionButton) findViewById(R.id.ic_add);
 //        google_button = (Button) findViewById(R.id.google_button);
         progressBar = (ProgressBar) findViewById(R.id.main_progress);
-
+        queue = Volley.newRequestQueue(this);
         databaseHelper = new DatabaseHelper(this);
         String prevActivity = getIntent().getStringExtra("ACTIVITY");
 

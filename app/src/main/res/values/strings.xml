@@ -19,6 +19,7 @@
     <string name="action_search">Search</string>
     <string name="action_settings">Setting</string>
     <string name="plan_overview_sample">Mon, 1 Oct (09:00) : Soekarno-Hatta International Airport \n...</string>
+<<<<<<< HEAD
     <string name="bookFrom">From:</string>
     <string name="bookOrigin">Origin</string>
     <string name="bookTo">To:</string>
@@ -38,6 +39,11 @@
     <string name="bookArriveTime">Arrive Time</string>
     <string name="bookPrice">Price</string>
     <string name="buttonFindTrain">FIND TRAIN</string>
+=======
+    <string name="pick_destination">Pick Destination</string>
+    <string name="open_now">Open Now</string>
+    <string name="closed">Closed</string>
+>>>>>>> aghnia
 
 
 </resources>

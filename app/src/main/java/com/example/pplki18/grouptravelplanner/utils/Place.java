@@ -4,17 +4,17 @@ import java.util.List;
 
 public class Place {
 
-    String place_id;
-    String name;
-    String address;
-    String rating;
-    String phone_number;
+    private String place_id;
+    private String name;
+    private String address;
+    private String rating;
+    private String phone_number;
 //    String opening_hours;
-    String website;
-    String photo;
-    String url;
-    Boolean open_now;
-    List<String> weekday_text;
+    private String website;
+    private String photo;
+    private String url;
+    private Boolean open_now;
+    private List<String> weekday_text;
 
 
     public Place() {

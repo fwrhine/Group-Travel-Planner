@@ -105,6 +105,8 @@ public class Fragment_GroupList extends Fragment implements NavigationView.OnNav
             } while (c.moveToNext());
         }
 
+        c.close();
+
         return groups;
     }
 
@@ -132,6 +134,8 @@ public class Fragment_GroupList extends Fragment implements NavigationView.OnNav
                 members.add(c.getString(c.getColumnIndex(UserContract.UserEntry.COL_FULLNAME)));
             } while (c.moveToNext());
         }
+
+        c.close();
 
         return members;
     }
