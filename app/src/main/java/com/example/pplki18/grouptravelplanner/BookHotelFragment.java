@@ -56,7 +56,7 @@ public class BookHotelFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_blank, container, false);
+        return inflater.inflate(R.layout.fragment_hotel_list, container, false);
     }
 
     @Override
@@ -197,7 +197,6 @@ public class BookHotelFragment extends Fragment {
 
 
         Log.d("LIST OF PLACES", hotels.toString());
-//        allPlaces.addAll(places);
         return hotels;
     }
 
