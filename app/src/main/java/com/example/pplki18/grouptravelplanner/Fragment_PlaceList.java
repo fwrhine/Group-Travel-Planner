@@ -287,7 +287,7 @@ public class Fragment_PlaceList extends Fragment {
                 intent.putExtra("PLACE_ID", String.valueOf(adapter.getAll().get(position).getPlace_id()));
                 intent.putExtra("plan_id", plan_id);
                 intent.putExtra("date", event_date);
-                intent.putExtra("type", query);
+                intent.putExtra("type", type);
                 intent.putParcelableArrayListExtra("events", (ArrayList<? extends Parcelable>) events);
                 if (prevActivity.equals("CreateNewPlanActivity")) {
                     intent.putExtra("ACTIVITY", "CreateNewPlanActivity");
@@ -331,7 +331,7 @@ public class Fragment_PlaceList extends Fragment {
                         String end_time = endTime.getCurrentHour() + ":" + endTime.getCurrentMinute();
                         Log.d("prev_activity", prevActivity);
                         if (prevActivity.equals("CreateNewPlanActivity")) {
-                            Event anEvent = saveEventLocally(places, position, start_time, end_time);
+                            Event anEvent = saveEventLocally(place, start_time, end_time);
                             events.add(anEvent);
 
                             Intent intent = new Intent(getActivity(), CreateNewPlanActivity.class);
@@ -341,7 +341,7 @@ public class Fragment_PlaceList extends Fragment {
                             getActivity().setResult(RESULT_OK, intent);
                             getActivity().finish();
                         } else {
-                            saveEventToPlan(places, position, start_time, end_time);
+                            saveEventToPlan(place, start_time, end_time);
                             getActivity().finish();
                         }
                     }
@@ -354,36 +354,35 @@ public class Fragment_PlaceList extends Fragment {
         builder.show();
     }
 
-    private Event saveEventLocally(List<Place> places, int position, String start_time, String end_time) {
+    private Event saveEventLocally(Place place, String start_time, String end_time) {
         Event anEvent = new Event();
-        anEvent.setQuery_id(places.get(position).getPlace_id());
-        anEvent.setTitle(places.get(position).getName());
-        anEvent.setLocation(places.get(position).getAddress());
-        anEvent.setDescription(places.get(position).getWebsite());
+        anEvent.setQuery_id(place.getPlace_id());
+        anEvent.setTitle(place.getName());
+        anEvent.setLocation(place.getAddress());
+        anEvent.setDescription(place.getWebsite());
         anEvent.setDate(event_date);
         anEvent.setTime_start(start_time);
         anEvent.setTime_end(end_time);
-        anEvent.setPhone(places.get(position).getPhone_number());
-        anEvent.setType(query);
-        anEvent.setRating(places.get(position).getRating());
+        anEvent.setPhone(place.getPhone_number());
+        anEvent.setType(type);
+        anEvent.setRating(place.getRating());
 
         return anEvent;
     }
 
-    private void saveEventToPlan(List<Place> places, int position, String start_time, String end_time) {
+    private void saveEventToPlan(Place place, String start_time, String end_time) {
         Log.d("SAVEVENT", "MASUK");
         SQLiteDatabase db = databaseHelper.getWritableDatabase();
 
         ContentValues contentValues = new ContentValues();
-        contentValues.put(EventContract.EventEntry.COL_QUERY_ID, places.get(position).getPlace_id());
         contentValues.put(EventContract.EventEntry.COL_PLAN_ID, plan_id);
         contentValues.put(EventContract.EventEntry.COL_TITLE, place.getName());
         contentValues.put(EventContract.EventEntry.COL_LOCATION, place.getAddress());
         contentValues.put(EventContract.EventEntry.COL_DESCRIPTION, place.getWebsite());
         contentValues.put(EventContract.EventEntry.COL_DATE, event_date);
         //TODO ERROR PLACES GADA ADDRESS DLL ??!!
-//        Log.d("event location", places.get(position).getAddress());
-//        Log.d("event desc", places.get(position).getWebsite());
+//        Log.d("event location", place.getAddress());
+//        Log.d("event desc", place.getWebsite());
         contentValues.put(EventContract.EventEntry.COL_TIME_START, start_time);
         contentValues.put(EventContract.EventEntry.COL_TIME_END, end_time);
         contentValues.put(EventContract.EventEntry.COL_PHONE, place.getPhone_number());

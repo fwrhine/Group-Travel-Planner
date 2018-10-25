@@ -61,34 +61,20 @@
         <activity android:name=".EditPhoneNoActivity" />
         <activity android:name=".EditBirthdayActivity" />
         <activity android:name=".ChooseEventActivity">
-<<<<<<< HEAD
-
             <!-- <intent-filter> -->
             <!-- <action android:name="android.intent.action.MAIN" /> -->
 
 
             <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
             <!-- </intent-filter> -->
-=======
-            <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.MAIN" />-->
-
-                <!--<category android:name="android.intent.category.LAUNCHER" />-->
-            <!--</intent-filter>-->
->>>>>>> aghnia
         </activity>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/api_key" />
 
-<<<<<<< HEAD
         <activity android:name=".PlaceActivity" />
-=======
-        <activity android:name=".PlaceActivity">
-        </activity>
 
->>>>>>> aghnia
         <activity android:name=".InHomeActivity" />
         <activity android:name=".CreateNewPlanActivity" />
         <activity android:name=".EditPlanActivity"></activity>
