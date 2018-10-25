@@ -42,9 +42,17 @@ public class Event implements Parcelable, Comparable<Event> {
     public Event(String title, String date, String time_start, String time_end, String type) {
         this.title = title;
         this.date = date;
-        this.time_start = time_start;
-        this.time_end = time_end;
         this.type = type;
+        if (type.equals("restaurants") || type.equals("attractions") || type.equals("custom")) {
+            this.time_start = time_start;
+            this.time_end = time_end;
+        } else if (type.equals("flights") || type.equals("trains")) {
+            this.departure_time = time_start;
+            this.arrival_time = time_end;
+        } else if (type.equals("hotels")) {
+
+        }
+
     }
 
     protected Event(Parcel in) {
@@ -156,7 +164,12 @@ public class Event implements Parcelable, Comparable<Event> {
         long diff = 0;
 
         try {
-            diff = format.parse(time_end).getTime() - format.parse(time_start).getTime();
+            if (type.equals("restaurants") || type.equals("attractions") || type.equals("custom")) {
+                diff = format.parse(time_end).getTime() - format.parse(time_start).getTime();
+            } else if (type.equals("flights") || type.equals("trains")) {
+                diff = format.parse(arrival_time).getTime() - format.parse(departure_time).getTime();
+            }
+
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -306,10 +319,23 @@ public class Event implements Parcelable, Comparable<Event> {
     public int compareTo(@NonNull Event event) {
         SimpleDateFormat format = new SimpleDateFormat("HH:mm");
         try {
-            Date this_start = format.parse(this.getTime_start());
-            Date this_end = format.parse(this.getTime_end());
-            Date event_start = format.parse(event.getTime_start());
-            Date event_end = format.parse(event.getTime_end());
+            Date this_start = null;
+            Date this_end = null;
+            Date event_start = null;
+            Date event_end = null;
+            if (type.equals("restaurants") || type.equals("attractions") || type.equals("custom")) {
+                this_start = format.parse(this.getTime_start());
+                this_end = format.parse(this.getTime_end());
+                event_start = format.parse(event.getTime_start());
+                event_end = format.parse(event.getTime_end());
+            } else if (type.equals("flights") || type.equals("trains")) {
+                this_start = format.parse(this.getDeparture_time());
+                this_end = format.parse(this.getArrival_time());
+                event_start = format.parse(event.getDeparture_time());
+                event_end = format.parse(event.getArrival_time());
+            } else if (type.equals("hotels")) {
+
+            }
 
             if (this_start.getTime() > event_start.getTime()) {
                 return 1;

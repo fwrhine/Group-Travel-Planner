@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -39,6 +40,7 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
     TextView trip_start_date, trip_end_date, trip_days;
     TextView date_month_year, day;
     ImageButton button_left, button_right, add_event, save_plan;
+    FloatingActionButton fab_add_event;
 
     private SessionManager session;
     private HashMap<String, String> user;
@@ -84,8 +86,10 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
 
         button_left = (ImageButton) findViewById(R.id.button_left);
         button_right = (ImageButton) findViewById(R.id.button_right);
-        add_event = (ImageButton) findViewById(R.id.add_event);
+//        add_event = (ImageButton) findViewById(R.id.add_event);
         save_plan = (ImageButton) findViewById(R.id.save_plan);
+
+        fab_add_event = (FloatingActionButton) findViewById(R.id.fab_add_event);
     }
 
     public void init() {
@@ -216,7 +220,7 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void setAddEventButton() {
-        add_event.setOnClickListener(
+        fab_add_event.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {

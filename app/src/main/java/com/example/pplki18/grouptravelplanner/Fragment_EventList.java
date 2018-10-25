@@ -1,17 +1,14 @@
 package com.example.pplki18.grouptravelplanner;
 
-import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,13 +16,9 @@ import android.view.ViewGroup;
 
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
 import com.example.pplki18.grouptravelplanner.data.EventContract;
-import com.example.pplki18.grouptravelplanner.data.PlanContract;
-import com.example.pplki18.grouptravelplanner.data.PlanContract.PlanEntry;
-import com.example.pplki18.grouptravelplanner.data.UserContract;
 import com.example.pplki18.grouptravelplanner.utils.Event;
 //import com.example.pplki18.grouptravelplanner.utils.Plan;
 import com.example.pplki18.grouptravelplanner.utils.RVAdapter_NewPlan;
-import com.example.pplki18.grouptravelplanner.utils.RVAdapter_Plan;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -43,7 +36,8 @@ public class Fragment_EventList extends Fragment {
     private RecyclerView rvNewPlan;
     private LinearLayoutManager linearLayoutManager;
     private Intent intent;
-    private SimpleDateFormat dateFormatter;
+    private SimpleDateFormat dateFormatter1;
+    private SimpleDateFormat dateFormatter2;
     private List<Event> events;
     RVAdapter_NewPlan adapter;
     DatabaseHelper myDb;
@@ -109,15 +103,20 @@ public class Fragment_EventList extends Fragment {
     public List<Event> getAllEvents(Date cur_date) {
         List<Event> all_event = new ArrayList<Event>();
         int plan_id = getActivity().getIntent().getIntExtra("plan_id", 0);
-        String str_cur_date = dateFormatter.format(cur_date);
+        String str_cur_date = dateFormatter1.format(cur_date);
+        // this one is to check the transport date (saved in different format)
+        String str_cur_date2 = dateFormatter2.format(cur_date);
         Log.d("CUR_DATE", str_cur_date);
+        Log.d("CUR_DATE2", str_cur_date2);
 
         String selectQuery = "SELECT * FROM " + EventContract.EventEntry.TABLE_NAME +
                 " WHERE " + EventContract.EventEntry.COL_PLAN_ID + " = " + plan_id + " AND " + "( " +
                 EventContract.EventEntry.COL_DATE + " = " + "\"" + str_cur_date + "\"" + " OR " +
                 EventContract.EventEntry.COL_DATE_CHECK_IN + " = " + "\"" + str_cur_date + "\"" + " OR " +
                 EventContract.EventEntry.COL_DATE_CHECK_OUT + " = " + "\"" + str_cur_date + "\"" + " OR " +
-                EventContract.EventEntry.COL_DATE_CHECK_IN + " = " + "\"" + str_cur_date + "\"" + " )";
+                EventContract.EventEntry.COL_DATE + " = " + "\"" + str_cur_date2 + "\"" + " OR " +
+                EventContract.EventEntry.COL_DATE_CHECK_IN + " = " + "\"" + str_cur_date2 + "\"" + " OR " +
+                EventContract.EventEntry.COL_DATE_CHECK_OUT + " = " + "\"" + str_cur_date2 + "\"" + " )";
 
         SQLiteDatabase db = databaseHelper.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
@@ -128,13 +127,24 @@ public class Fragment_EventList extends Fragment {
         if (c.moveToFirst()) {
             do {
                 long event_id = c.getLong(c.getColumnIndex(EventContract.EventEntry._ID));
-                String query_id = c.getString(c.getColumnIndex(EventContract.EventEntry.COL_QUERY_ID));
+                String type = c.getString(c.getColumnIndex(EventContract.EventEntry.COL_TYPE));
                 String date = c.getString(c.getColumnIndex(EventContract.EventEntry.COL_DATE));
                 String title = c.getString(c.getColumnIndex(EventContract.EventEntry.COL_TITLE));
-                String time_start = c.getString(c.getColumnIndex(EventContract.EventEntry.COL_TIME_START));
-                String time_end = c.getString(c.getColumnIndex(EventContract.EventEntry.COL_TIME_END));
-                String type = c.getString(c.getColumnIndex(EventContract.EventEntry.COL_TYPE));
                 String description = c.getString(c.getColumnIndex(EventContract.EventEntry.COL_DESCRIPTION));
+                String query_id = "";
+                String time_start = "";
+                String time_end = "";
+                if (type.equals("restaurants") || type.equals("attractions") || type.equals("customs")) {
+                    query_id = c.getString(c.getColumnIndex(EventContract.EventEntry.COL_QUERY_ID));
+                    time_start = c.getString(c.getColumnIndex(EventContract.EventEntry.COL_TIME_START));
+                    time_end = c.getString(c.getColumnIndex(EventContract.EventEntry.COL_TIME_END));
+                } else if (type.equals("trains") || type.equals("flights")) {
+                    query_id = "";
+                    time_start = c.getString(c.getColumnIndex(EventContract.EventEntry.COL_DEPARTURE_TIME));
+                    time_end = c.getString(c.getColumnIndex(EventContract.EventEntry.COL_ARRIVAL_TIME));
+                } else {
+                    query_id = "";
+                }
 
                 try {
                     String time1 = format.format(format.parse(time_start));
@@ -154,6 +164,9 @@ public class Fragment_EventList extends Fragment {
             } while (c.moveToNext());
         }
         Collections.sort(all_event);
+        for(Event e: all_event) {
+            Log.d("TYPE IS", e.getType());
+        }
         return all_event;
     }
 
@@ -162,7 +175,7 @@ public class Fragment_EventList extends Fragment {
         all_event = intent.getParcelableArrayListExtra("events");
         List<Event> some_event = new ArrayList<Event>();
 
-        String str_cur_date = dateFormatter.format(date);
+        String str_cur_date = dateFormatter1.format(date);
         for (Event e : all_event) {
             if (e.getDate().equals(str_cur_date)) {
                 some_event.add(e);
@@ -178,6 +191,7 @@ public class Fragment_EventList extends Fragment {
         linearLayoutManager = new LinearLayoutManager(this.getActivity());
         databaseHelper = new DatabaseHelper(this.getActivity());
         intent = getActivity().getIntent();
-        dateFormatter = new SimpleDateFormat("d MMMM yyyy", Locale.US);
+        dateFormatter1 = new SimpleDateFormat("d MMMM yyyy", Locale.US);
+        dateFormatter2 = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
     }
 }

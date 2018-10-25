@@ -62,14 +62,25 @@ public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.Ne
         Event event = events.get(position);
         SimpleDateFormat format = new SimpleDateFormat("HH:mm");
 
-        String time_start = event.getTime_start();
-        String timeString = time_start + " - " + event.getTime_end() +
-                " (" + event.getTotal_time() + ")";
+        String time_start = "";
+        String timeString = "";
+        if (event.getType().equals("restaurants") || event.getType().equals("attractions")) {
+            time_start = event.getTime_start();
+            timeString = time_start + " - " + event.getTime_end() +
+                    " (" + event.getTotal_time() + ")";
+        } else if (event.getType().equals("flights") || event.getType().equals("trains")) {
+            time_start = event.getDeparture_time();
+            timeString = time_start + " - " + event.getArrival_time() +
+                    " (" + event.getTotal_time() + ")";
+        }
+
         if(event.getType() != null) {
             if (event.getType().equals("restaurants")) {
                 holder.eventIcon.setMarker(mContext.getDrawable(R.drawable.ic_restaurant_black));
             } else if (event.getType().equals("attractions")) {
                 holder.eventIcon.setMarker(mContext.getDrawable(R.drawable.ic_sunny_black));
+            } else if (event.getType().equals("flights")) {
+                holder.eventIcon.setMarker(mContext.getDrawable(R.drawable.ic_flight_black));
             }
         }
 

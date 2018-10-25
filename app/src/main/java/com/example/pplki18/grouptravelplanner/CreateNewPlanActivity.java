@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Parcelable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -44,6 +45,7 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
     TextView trip_start_date, trip_end_date, trip_days;
     TextView date_month_year, day;
     ImageButton button_left, button_right, add_event, save_plan;
+    FloatingActionButton fab_add_event;
     Intent intent;
     private SessionManager session;
     private HashMap<String, String> user;
@@ -128,8 +130,10 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
 
         button_left = (ImageButton) findViewById(R.id.button_left);
         button_right = (ImageButton) findViewById(R.id.button_right);
-        add_event = (ImageButton) findViewById(R.id.add_event);
+//        add_event = (ImageButton) findViewById(R.id.add_event);
         save_plan = (ImageButton) findViewById(R.id.save_plan);
+
+        fab_add_event = (FloatingActionButton) findViewById(R.id.fab_add_event);
     }
 
     @Override
@@ -278,24 +282,46 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
     private void saveEventToDB(SQLiteDatabase db, int plan_id) {
         for(Event e : events) {
 //            Log.d("testtt", e.getTitle() + ", " + e.getDate());
+            String type = e.getType();
             ContentValues contentValues = new ContentValues();
-            contentValues.put(EventContract.EventEntry.COL_PLAN_ID, plan_id);
-            contentValues.put(EventContract.EventEntry.COL_QUERY_ID, e.getQuery_id());
-            contentValues.put(EventContract.EventEntry.COL_TITLE, e.getTitle());
-            contentValues.put(EventContract.EventEntry.COL_LOCATION, e.getLocation());
-            contentValues.put(EventContract.EventEntry.COL_DESCRIPTION, e.getDescription());
-            contentValues.put(EventContract.EventEntry.COL_DATE, e.getDate());
-            contentValues.put(EventContract.EventEntry.COL_TIME_START, e.getTime_start());
-            contentValues.put(EventContract.EventEntry.COL_TIME_END, e.getTime_end());
-            contentValues.put(EventContract.EventEntry.COL_PHONE, e.getPhone());
-            contentValues.put(EventContract.EventEntry.COL_TYPE, e.getType());
-            contentValues.put(EventContract.EventEntry.COL_RATING, e.getRating());
-            long event_id = db.insert(EventContract.EventEntry.TABLE_NAME, null, contentValues);
+            if (type.equals("restaurants") || type.equals("attractions") || type.equals("custom")) {
+
+                contentValues.put(EventContract.EventEntry.COL_PLAN_ID, plan_id);
+                contentValues.put(EventContract.EventEntry.COL_QUERY_ID, e.getQuery_id());
+                contentValues.put(EventContract.EventEntry.COL_TITLE, e.getTitle());
+                contentValues.put(EventContract.EventEntry.COL_LOCATION, e.getLocation());
+                contentValues.put(EventContract.EventEntry.COL_DESCRIPTION, e.getDescription());
+                contentValues.put(EventContract.EventEntry.COL_DATE, e.getDate());
+                contentValues.put(EventContract.EventEntry.COL_TIME_START, e.getTime_start());
+                contentValues.put(EventContract.EventEntry.COL_TIME_END, e.getTime_end());
+                contentValues.put(EventContract.EventEntry.COL_PHONE, e.getPhone());
+                contentValues.put(EventContract.EventEntry.COL_TYPE, type);
+                contentValues.put(EventContract.EventEntry.COL_RATING, e.getRating());
+                long event_id = db.insert(EventContract.EventEntry.TABLE_NAME, null, contentValues);
+
+            } else if (type.equals("flights") || type.equals("trains")) {
+                contentValues.put(EventContract.EventEntry.COL_PLAN_ID, plan_id);
+                contentValues.put(EventContract.EventEntry.COL_TITLE, "Flight");
+                contentValues.put(EventContract.EventEntry.COL_DESCRIPTION, "Flight for Transport");
+                contentValues.put(EventContract.EventEntry.COL_DATE, e.getDate());
+                contentValues.put(EventContract.EventEntry.COL_TYPE, "flights");
+
+                contentValues.put(EventContract.EventEntry.COL_ORIGIN, e.getOrigin());
+                contentValues.put(EventContract.EventEntry.COL_DESTINATION, e.getDestination());
+                contentValues.put(EventContract.EventEntry.COL_DEPARTURE_TIME, e.getDeparture_time());
+                contentValues.put(EventContract.EventEntry.COL_ARRIVAL_TIME, e.getArrival_time());
+                contentValues.put(EventContract.EventEntry.COL_TRANS_NUMBER, e.getTransport_number());
+                long event_id = db.insert(EventContract.EventEntry.TABLE_NAME, null, contentValues);
+
+            } else if (type.equals("hotels")) {
+
+            }
+
         }
     }
 
     private void setAddEventButton() {
-        add_event.setOnClickListener(
+        fab_add_event.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {

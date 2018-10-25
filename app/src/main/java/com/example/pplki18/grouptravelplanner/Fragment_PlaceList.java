@@ -97,7 +97,6 @@ public class Fragment_PlaceList extends Fragment {
                     getActivity().setResult(RESULT_OK, intent);
                     getActivity().finish();
                 }
-
             }
         }
     }
