@@ -1,5 +1,6 @@
 package com.example.pplki18.grouptravelplanner;
 
+import android.app.Activity;
 import android.app.Notification;
 import android.content.Context;
 import android.content.Intent;
@@ -18,6 +19,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
 import com.example.pplki18.grouptravelplanner.data.ReminderContract;
@@ -37,6 +39,7 @@ public class Fragment_Reminder extends Fragment implements NavigationView.OnNavi
     List<Reminder> channelList;
     Reminder r;
     Context context;
+    long i;
 
     @Nullable
     @Override
@@ -48,8 +51,8 @@ public class Fragment_Reminder extends Fragment implements NavigationView.OnNavi
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         init();
-        long i = Long.parseLong("1");
-        r = new Reminder("New York", "2001/9/11", i, 0);
+
+        r = new Reminder("T2", "2018/10/25", i);
 //        r.setDate("2001/9/11");
 //        r.setDestination("New York");
 //        r.setChannel(0);
@@ -61,19 +64,20 @@ public class Fragment_Reminder extends Fragment implements NavigationView.OnNavi
             @Override
             public void onClick(View view) {
                 Log.v("fab", "FAB Clicked");
-                Intent myIntent = new Intent(getActivity(), Activity_CreateReminder.class);
-                Fragment_Reminder.this.startActivity(myIntent);
+//                Intent myIntent = new Intent(getActivity(), Activity_CreateReminder.class);
+//                Fragment_Reminder.this.startActivity(myIntent);
+                // TO TEST generalInsert
+                ((InHomeActivity) getActivity()).generalInsertNotifier("T1","T2", "T3",
+                        2018, 10, 25, 8, 20);
+                Toast.makeText(getActivity().getApplicationContext(), "PRESSED FAB", Toast.LENGTH_SHORT).show();
+
             }
         });
 
 
         recyclerViewGroup.setHasFixedSize(true);
         recyclerViewGroup.setLayoutManager(linearLayoutManager);
-        if(context instanceof Activity_CreateReminder){
-            Log.v("RemList", "adding if to add calender");
-            ((Activity_CreateReminder)context).generalInsertNotifier("test",
-                    "destination", 2018, 10, 22, 10, 0);
-        }
+
         populateReminderRecyclerView();
     }
 
@@ -136,6 +140,5 @@ public class Fragment_Reminder extends Fragment implements NavigationView.OnNavi
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         return false;
     }
-
 
 }

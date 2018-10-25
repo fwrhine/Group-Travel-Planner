@@ -128,7 +128,7 @@ public class Activity_CreateReminder extends AppCompatActivity implements DatePi
 //                createNotification(dest, notificationTxt);
 //                generalCreateNotification("event", "detail", Integer i);
 
-                eventID2 = generalInsertNotifier(destText, notificationTxt, yearFinal, monthFinal, dayFinal, hourFinal, minuteFinal);
+                eventID2 = generalInsertNotifier(destText, notificationTxt, destText, yearFinal, monthFinal, dayFinal, hourFinal, minuteFinal);
 
 
 //                alarmCal.set(yearFinal, monthFinal, dayFinal, hourFinal, minuteFinal);
@@ -163,13 +163,13 @@ public class Activity_CreateReminder extends AppCompatActivity implements DatePi
     }
 
 
-    public long generalInsertNotifier(String title, String description, Integer year, Integer month,
+    public long generalInsertNotifier(String title, String description, String destination, Integer year, Integer month,
                                       Integer day, Integer hour, Integer minute) {
         //TODO error handling, numbers must be within limit
         ContentValues event = new ContentValues();
         ContentResolver cr = getContentResolver();
         Long eventID;
-        String destinationStr = destination.getText().toString();
+        String destinationStr = destination;
         String date = day + month + year + "";
 
         Calendar startTime = Calendar.getInstance();
@@ -183,14 +183,21 @@ public class Activity_CreateReminder extends AppCompatActivity implements DatePi
 
         event.put(CalendarContract.Events.TITLE, title);
         event.put(CalendarContract.Events.DESCRIPTION, description);
-        event.put(CalendarContract.Events.EVENT_LOCATION, destinationStr);
+        event.put(CalendarContract.Events.EVENT_LOCATION, destination);
 
         event.put(CalendarContract.Events.DTSTART, startTime.getTimeInMillis());
         event.put(CalendarContract.Events.DTEND, endTime.getTimeInMillis());
 
         Log.v("calenderData", title);
         Log.v("calenderData", description);
-        Log.v("calenderData", destination.getText().toString() + "in 1 hour");
+
+        Log.v("calenderData", year +"");
+        Log.v("calenderData", month + "");
+        Log.v("calenderData", day + "");
+        Log.v("calenderData", hour + "");
+        Log.v("calenderData", minute + "");
+
+        Log.v("calenderData", destination + " in 1 hour");
         Log.v("calenderData", startTime.getTimeInMillis() +  "");
         Log.v("calenderData", endTime.getTimeInMillis() + "");
         Log.v("calenderData", Time.getCurrentTimezone());

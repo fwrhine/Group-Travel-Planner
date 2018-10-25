@@ -50,7 +50,7 @@
                 android:textSize="20sp"
                 android:layout_below="@id/alarmchannel"
                 android:layout_toRightOf="@id/date_adap"
-                android:visibility="gone"
+                android:text="test"
                 />
 
             <Button

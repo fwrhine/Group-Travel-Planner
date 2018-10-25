@@ -1,5 +1,6 @@
 package com.example.pplki18.grouptravelplanner.utils;
 
+import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
@@ -24,6 +25,7 @@ import android.widget.Toast;
 import com.example.pplki18.grouptravelplanner.Activity_CreateReminder;
 import com.example.pplki18.grouptravelplanner.Activity_EditReminder;
 import com.example.pplki18.grouptravelplanner.Fragment_Reminder;
+import com.example.pplki18.grouptravelplanner.InHomeActivity;
 import com.example.pplki18.grouptravelplanner.R;
 import com.example.pplki18.grouptravelplanner.Reminder;
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
@@ -66,7 +68,7 @@ public class RVAdapter_Reminder extends RecyclerView.Adapter<RVAdapter_Reminder.
         reminderViewHolder.eventid.setText(reminderList.get(i).getEventID().toString());
 //        reminderViewHolder.alarmchannel.setText(reminderList.get(i).getAlarmChannel());
 
-
+        final long eventID = Long.parseLong(reminderList.get(i).getEventID().toString());
 /*        Calendar cal = Calendar.getInstance();
         Uri eventUri = CalendarContract.Events.CONTENT_URI;
         CalendarContract.Events._ID;
@@ -83,16 +85,29 @@ public class RVAdapter_Reminder extends RecyclerView.Adapter<RVAdapter_Reminder.
             @Override
             public void onClick(View v) {
                 //TODO method to remove from calendar
-                long eventID = Long.parseLong(reminderViewHolder.eventid.getText().toString());
-                if(context instanceof Activity_CreateReminder){
-                    ((Activity_CreateReminder)context).deleteEventFromCalendar(eventID);
-                }
-                Toast.makeText(context, "Deleted event", Toast.LENGTH_SHORT).show();
+//                long eventID = Long.parseLong(reminderViewHolder.eventid.getText().toString());
+//                if(context instanceof Activity_CreateReminder){
+//                    ((Activity_CreateReminder)context).deleteEventFromCalendar(eventID);
+//                }
+//                Toast.makeText(context, "Deleted event", Toast.LENGTH_SHORT).show();
                 //====================================
 //                removeRem(reminderViewHolder);
+                Toast.makeText(context, "Deleted event", Toast.LENGTH_SHORT).show();
+
+                ((InHomeActivity) context).deleteEventFromCalendar(76);
+                Toast.makeText(context, "PRESSED FAB", Toast.LENGTH_SHORT).show();
             }
         });
     }
+
+//    public void deleteEventFromCalendar(long eventID){
+//        ContentResolver cr = getContentResolver();
+//        Uri deleteUri = null;
+//        deleteUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventID);
+//        cr.delete(deleteUri, null, null);
+//        Log.v("CALENDAR DELETE", "Event deleted");
+//        Toast.makeText(getApplicationContext(), "Removed Event", Toast.LENGTH_SHORT).show();
+//    }
 
     public void removeRem(ReminderViewHolder viewHolder) {
         myDb = new DatabaseHelper(context);
