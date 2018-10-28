@@ -1,5 +1,6 @@
 package com.example.pplki18.grouptravelplanner;
 
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -14,6 +15,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,12 +40,15 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class BookHotelFragment extends Fragment {
     private RecyclerView recyclerViewPlace;
     private LinearLayoutManager linearLayoutManager;
     private SearchView searchView;
+    private EditText checkIn;
+    private EditText checkOut;
     private TextView textView;
     private RVAdapter_Hotel adapter;
     private ProgressBar progressBar;
@@ -50,6 +56,8 @@ public class BookHotelFragment extends Fragment {
     private SessionManager sessionManager;
 
     private String region;
+    private String checkInDate;
+    private String checkOutDate;
 
     private boolean isLoading = false;
     private boolean isLastPage = false;
@@ -106,11 +114,60 @@ public class BookHotelFragment extends Fragment {
                 if (TextUtils.isEmpty(newQuery)){
 //                    sendRequest(type);
 //                    adapter.clear();
-//                    progressBar.setVisibility(View.VISIBLE);
+//                    progressBar.set    Visibility(View.VISIBLE);
                 }
                 return false;
             }
         });
+
+        final DatePickerDialog.OnDateSetListener checkInPicker = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int monthOfYear,
+                                  int dayOfMonth) {
+                // TODO Auto-generated method stub
+                checkInDate = dayOfMonth + "/" + monthOfYear + "/" + year;
+                checkIn.setText(checkInDate);
+            }
+        };
+
+        checkIn.setOnClickListener(new EditText.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Calendar calendar = Calendar.getInstance();
+                // TODO Auto-generated method stub
+                DatePickerDialog datePicker= new DatePickerDialog(getContext(), checkInPicker,
+                        calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),
+                        calendar.get(Calendar.DAY_OF_MONTH));
+
+                datePicker.show();
+                datePicker.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
+            }
+        });
+
+        final DatePickerDialog.OnDateSetListener checkOutPicker = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int monthOfYear,
+                                  int dayOfMonth) {
+                // TODO Auto-generated method stub
+                checkOutDate = dayOfMonth + "/" + monthOfYear + "/" + year;
+                checkOut.setText(checkOutDate);
+            }
+        };
+
+        checkOut.setOnClickListener(new EditText.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Calendar calendar = Calendar.getInstance();
+                // TODO Auto-generated method stub
+                DatePickerDialog datePicker= new DatePickerDialog(getContext(), checkInPicker,
+                        calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),
+                        calendar.get(Calendar.DAY_OF_MONTH));
+
+                datePicker.show();
+                datePicker.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
+            }
+        });
+
 
         generateToken();
 
@@ -243,6 +300,8 @@ public class BookHotelFragment extends Fragment {
         recyclerViewPlace = (RecyclerView) getView().findViewById(R.id.rv);
         progressBar = (ProgressBar) getView().findViewById(R.id.main_progress);
         searchView = (SearchView) getView().findViewById(R.id.search_hotel);
+        checkIn = (EditText) getView().findViewById(R.id.check_in);
+        checkOut = (EditText) getView().findViewById(R.id.check_out);
         textView = (TextView) getView().findViewById(R.id.connection);
         linearLayoutManager = new LinearLayoutManager(getActivity());
         queue = Volley.newRequestQueue(getActivity());
