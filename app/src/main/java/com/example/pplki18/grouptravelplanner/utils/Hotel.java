@@ -7,6 +7,7 @@ public class Hotel {
     private String name;
     private String rating;
     private String region;
+    private String photo;
 
 
     public Hotel() {
@@ -29,6 +30,10 @@ public class Hotel {
         this.region = region;
     }
 
+    public void setPhoto(String photo) {
+        this.photo = photo;
+    }
+
 
     public String getHotel_id() {
         return hotel_id;
@@ -44,6 +49,10 @@ public class Hotel {
 
     public String getRegion() {
         return region;
+    }
+
+    public String getPhoto() {
+        return photo;
     }
 }
 

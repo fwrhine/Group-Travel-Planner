@@ -18,6 +18,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -116,7 +117,6 @@ public class BookHotelFragment extends Fragment {
     }
 
     public void generateToken() {
-        Log.d("GET TOKEN HOTEL", "HERE");
         String secretKey = "6c484049beacda6541bf40c90e62e8e5";
         String url = "https://api-sandbox.tiket.com/apiv1/payexpress"
                 + "?method=getToken&secretkey=" + secretKey + "&output=json";
@@ -150,16 +150,17 @@ public class BookHotelFragment extends Fragment {
     }
 
     public void sendRequest(String token) {
-        Log.d("REQUEST HOTEL", "HERE");
-        String url = "https://api-sandbox.tiket.com/search/hotel?q=" + region + "&startdate=2018-11-01&" +
-                "night=1&enddate=2018-11-02&room=1&adult=2&token=" + token;
+        String url = "https://api-sandbox.tiket.com/search/hotel?q=" + "bali" + "&startdate=2018-11-01&" +
+                "night=1&enddate=2018-11-02&room=1&adult=2&token=" + token + "&output=json";
+
+        Log.d("HOTEL REQUEST", url);
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        populatePlaceRecyclerView(getHotels(response));
                         Log.d("HOTELS", response);
+                        populatePlaceRecyclerView(getHotels(response));
 
                     }
                 }, new Response.ErrorListener() {
@@ -169,6 +170,11 @@ public class BookHotelFragment extends Fragment {
             }
         });
 
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(
+                60000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+
         queue.add(stringRequest);
     }
 
@@ -176,11 +182,12 @@ public class BookHotelFragment extends Fragment {
         ArrayList<Hotel> hotels = new ArrayList<>();
         try {
             JSONObject obj = new JSONObject(response);
-            JSONArray results = obj.optJSONArray("results");
+            JSONObject results = obj.optJSONObject("results");
+            JSONArray listHotels = results.optJSONArray("result");
 
-            for (int i = 0 ; i < results.length() ; i++)
+            for (int i = 0 ; i < listHotels.length() ; i++)
             {
-                JSONObject hotelObj = new JSONObject(results.get(i).toString());
+                JSONObject hotelObj = new JSONObject(listHotels.get(i).toString());
 
                 Hotel hotel = new Hotel();
                 hotel.setHotel_id(hotelObj.optString("id"));
@@ -196,7 +203,6 @@ public class BookHotelFragment extends Fragment {
         }
 
 
-        Log.d("LIST OF PLACES", hotels.toString());
         return hotels;
     }
 

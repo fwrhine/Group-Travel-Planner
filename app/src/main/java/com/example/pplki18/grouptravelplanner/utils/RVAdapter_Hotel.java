@@ -77,6 +77,10 @@ public class RVAdapter_Hotel extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     }
                 });
 
+//                if (hotels.get(i).getPhoto() != null) {
+//                    getPhoto(placeViewHolder, hotels.get(i).getPhoto());
+//                }
+
                 break;
             case LOADING:
 //                Do nothing

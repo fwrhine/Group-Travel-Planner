@@ -157,7 +157,7 @@ public class ChooseEventActivity extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
                 Place place = PlaceAutocomplete.getPlace(this, data);
                 sessionManager.setCurrentRegion(place.getAddress().toString());
-//                region = place.getName().toString();
+
                 regionCoor = place.getLatLng();
 
 //                LatLngBounds.Builder builder = new LatLngBounds.Builder().include(place.getLatLng());

@@ -45,7 +45,7 @@
                     android:src="@drawable/ic_location"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/place_name"
+                    app:layout_constraintTop_toBottomOf="@+id/hotel_name"
                     app:layout_constraintVertical_bias="0.0" />
 
                 <TextView
