@@ -3,6 +3,7 @@ package com.example.pplki18.grouptravelplanner;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.ContentValues;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -439,6 +440,7 @@ public class BookPlaneFragment extends Fragment {
                                     Toast.makeText(BookPlaneFragment.this.getActivity(), "Selected Flight : "
                                             + tvFlightNum.getText() , Toast.LENGTH_LONG).show();
                                     dialog.dismiss();
+                                    //startActivity(new Intent(BookPlaneFragment.this.getActivity(), CreateNewPlanActivity.class));
                                 }
 
                                 else {

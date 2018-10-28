@@ -2,7 +2,6 @@ package com.example.pplki18.grouptravelplanner;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
@@ -29,12 +28,12 @@ import com.example.pplki18.grouptravelplanner.data.UserContract;
 import com.example.pplki18.grouptravelplanner.utils.SessionManager;
 
 import java.util.HashMap;
+import java.util.Objects;
 
 public class SearchBarActivity extends AppCompatActivity {
 
-    DatabaseHelper myDb;
-    Cursor result;
-    Toolbar toolbar;
+    private DatabaseHelper myDb;
+    private Cursor result;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,11 +42,11 @@ public class SearchBarActivity extends AppCompatActivity {
 
         myDb = new DatabaseHelper(this);
 
-        SearchView searchView = (SearchView) findViewById(R.id.search);
+        SearchView searchView = findViewById(R.id.search);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         setTitle("Add Friend");
 
@@ -70,12 +69,12 @@ public class SearchBarActivity extends AppCompatActivity {
                 }
 
                 else {
-                    result = searchData(newText.toString(), currUsername);
+                    result = searchData(newText, currUsername);
 
                     Log.d("QUERY", "START_SEARCH");
                 }
 
-                searchItems = (ListView) findViewById(R.id.list);
+                searchItems = findViewById(R.id.list);
                 SearchCursorAdapter adapter = new SearchCursorAdapter(getApplicationContext(), result);
                 searchItems.setAdapter(adapter);
                 return true;
@@ -83,7 +82,7 @@ public class SearchBarActivity extends AppCompatActivity {
         });
     }
 
-    public Cursor searchData(String query, String currentUser) {
+    private Cursor searchData(String query, String currentUser) {
         SQLiteDatabase db = myDb.getReadableDatabase();
 
         String command = "SELECT * FROM " + UserContract.UserEntry.TABLE_NAME + " WHERE "
@@ -102,26 +101,10 @@ public class SearchBarActivity extends AppCompatActivity {
         return true;
     }
 
-//    public void setUpToolbar() {
-//        toolbar.setNavigationOnClickListener(
-//                new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View view) {
-////                        Intent intent = new Intent(SearchBarActivity.this, InHomeActivity.class);
-////                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-////                        startActivity(intent);
-//                        onBackPressed();
-////                        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container_home,
-////                                new Fragment_Friends()).commit();
-//                    }
-//                }
-//        );
-//    }
-
-    public class SearchCursorAdapter extends CursorAdapter {
+    class SearchCursorAdapter extends CursorAdapter {
         SessionManager sessionManager;
 
-        public SearchCursorAdapter(Context context, Cursor cursor) {
+        SearchCursorAdapter(Context context, Cursor cursor) {
             super(context, cursor, 0);
         }
 
@@ -132,16 +115,16 @@ public class SearchBarActivity extends AppCompatActivity {
 
         @Override
         public void bindView(View view, Context context, Cursor cursor) {
-            final TextView tvUsername = (TextView) view.findViewById(R.id.username);
-            TextView tvFullname = (TextView) view.findViewById(R.id.fullname);
-            ImageView tvDisplayPicture = (ImageView) view.findViewById(R.id.profile_image);
+            final TextView tvUsername = view.findViewById(R.id.username);
+            TextView tvFullname = view.findViewById(R.id.fullname);
+            ImageView tvDisplayPicture = view.findViewById(R.id.profile_image);
 
             String username = cursor.getString(cursor.getColumnIndexOrThrow("username"));
             String fullname = cursor.getString(cursor.getColumnIndexOrThrow("fullname"));
 
             Log.d("CURSOR", cursor.getString(cursor.getColumnIndexOrThrow("fullname")) + "");
             byte[] byteArray = cursor.getBlob(cursor.getColumnIndexOrThrow("display_picture"));
-            Bitmap bmImage = null;
+            Bitmap bmImage;
             if (byteArray != null) {
                 bmImage = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
                 tvDisplayPicture.setImageBitmap(bmImage);
@@ -150,18 +133,18 @@ public class SearchBarActivity extends AppCompatActivity {
             tvUsername.setText("@" + String.valueOf(username));
             tvFullname.setText(String.valueOf(fullname));
 
-            final Button addFriendBtn = (Button) view.findViewById(R.id.add_friend);
+            final Button addFriendBtn = view.findViewById(R.id.add_friend);
             addFriendBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    insertFriends(tvUsername);
+                    insertFriends();
                     addFriendBtn.setEnabled(false);
                     addFriendBtn.setBackgroundColor(Color.parseColor("#9E9E9E"));
                 }
             });
         }
 
-        public Integer findFriendId(String username1){
+        Integer findFriendId(String username1){
             Integer friendID;
             String selectQuery = "SELECT * FROM " + UserContract.UserEntry.TABLE_NAME +
                     " WHERE " + UserContract.UserEntry.COL_USERNAME + " = " + "\"" + username1 + "\"";
@@ -173,10 +156,11 @@ public class SearchBarActivity extends AppCompatActivity {
             Cursor c = db.rawQuery(selectQuery, null);
             friendID = c.getColumnIndex(UserContract.UserEntry._ID);
             // looping through all rows and adding to list
+            c.close();
             return friendID;
         }
 
-        public void insertFriends(View addBtn){
+        void insertFriends(){   // Removed Parameter (N)
             myDb = new DatabaseHelper(SearchBarActivity.this);
             SQLiteDatabase db = myDb.getReadableDatabase();
             sessionManager = new SessionManager(getApplicationContext());
