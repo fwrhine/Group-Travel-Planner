@@ -240,45 +240,6 @@ public class InHomeActivity extends AppCompatActivity implements NavigationView.
         Toast.makeText(getApplicationContext(), "Removed Event", Toast.LENGTH_SHORT).show();
     }
 
-/*    public void getDataFromInstaceTable() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_CALENDAR}, READ_CALENDAR);
-        }
-        Cursor cur = null;
-        ContentResolver cr = getContentResolver();
-
-        String[] eventInfo =
-                {
-                        "_id",
-                        CalendarContract.Instances.TITLE,
-                        CalendarContract.Instances.EVENT_LOCATION,
-                        CalendarContract.Instances.DTSTART,
-//                        CalendarContract.Instances.DTEND,
-                        CalendarContract.Instances.EVENT_ID,
-                };
-
-
-        Uri uri = CalendarContract.Instances.CONTENT_URI;
-        String selection = CalendarContract.Instances.EVENT_ID + " = ? ";
-        String[] selectionArgs = new String[]{"80"};
-
-        cur = cr.query(uri, eventInfo, null, null, null);
-
-        while (cur.moveToNext()) {
-            String destination = cur.getString(cur.getColumnIndex(CalendarContract.Instances.EVENT_LOCATION));
-            String dateStart = cur.getString(cur.getColumnIndex(CalendarContract.Instances.DTSTART));
-            String eventID = cur.getString(cur.getColumnIndex(CalendarContract.Instances.EVENT_ID));
-
-            Log.v("CALENDAR INSTANCE", dateStart);
-
-//            if (date)
-//            TextView tv1 = new TextView(this);
-//            tv1.setText(title);
-//            cont.addView(tv1);
-        }
-
-
-    }*/
 
     public static void readCalendar(Context context) {
 
@@ -309,15 +270,18 @@ public class InHomeActivity extends AppCompatActivity implements NavigationView.
             ContentUris.appendId(builder, now - DateUtils.WEEK_IN_MILLIS);
             ContentUris.appendId(builder, now + DateUtils.WEEK_IN_MILLIS);
 
-            Cursor eventCursor = contentResolver.query(builder.build(),
-                    new String[] { "event_id", "destination"}, null,
+            Cursor cur = contentResolver.query(builder.build(),
+                    new String[] { "event_id", "description", "begin"}, null,
                     null, null);
 
 
-            while (eventCursor.moveToNext()) {
-                final String eventID = eventCursor.getString(0);
+            while (cur.moveToNext()) {
+                final String eventID = cur.getString(0);
+                final String description = cur.getString(1);
+                final Date begin = new Date(cur.getLong(2));
 
-                String output = "event id " + eventID;
+                String output = "event id: " + eventID + " description: " + description +
+                        " begin: " + begin;
                 Log.v("CALENDAR INSTANCE", output);
 
             }
