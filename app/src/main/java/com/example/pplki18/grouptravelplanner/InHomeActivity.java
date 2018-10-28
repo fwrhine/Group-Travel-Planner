@@ -4,8 +4,10 @@ import android.Manifest;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.net.Uri;
 import android.provider.CalendarContract;
 import android.support.annotation.NonNull;
@@ -17,6 +19,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.text.format.DateUtils;
 import android.text.format.Time;
 import android.util.Log;
 import android.view.MenuItem;
@@ -26,10 +29,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
+import com.example.pplki18.grouptravelplanner.utils.RVAdapter_Reminder;
 import com.example.pplki18.grouptravelplanner.utils.SessionManager;
 
 import java.util.Calendar;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.Objects;
+
+import static android.Manifest.permission.READ_CALENDAR;
 
 public class InHomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -40,12 +48,18 @@ public class InHomeActivity extends AppCompatActivity implements NavigationView.
     private ActionBarDrawerToggle toggle;
     private Button buttonLogout;
     private SessionManager sessionManager;
+    Integer READ_CALENDAR;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_in_home);
         init();
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_CALENDAR}, READ_CALENDAR);
+        }
+        readCalendar(getApplicationContext());
 
         navigationView.setNavigationItemSelectedListener(this);
         drawer.addDrawerListener(toggle);
@@ -98,7 +112,7 @@ public class InHomeActivity extends AppCompatActivity implements NavigationView.
         navigationView = findViewById(R.id.nav_home);
         toggle = new ActionBarDrawerToggle(this, drawer, toolbar,
                 R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        buttonLogout  = findViewById(R.id.buttonLogout);
+        buttonLogout = findViewById(R.id.buttonLogout);
 
         buttonLogout.setOnClickListener(
                 new View.OnClickListener() {
@@ -108,9 +122,11 @@ public class InHomeActivity extends AppCompatActivity implements NavigationView.
                     }
                 }
         );
+
+        READ_CALENDAR = 5;
     }
 
-    public void setHeaderInfo(){
+    public void setHeaderInfo() {
         View headerView = navigationView.getHeaderView(0);
 
         headerView.setOnClickListener(new View.OnClickListener() {
@@ -128,10 +144,9 @@ public class InHomeActivity extends AppCompatActivity implements NavigationView.
         header_fullname.setText(sessionManager.getUserDetails().get(sessionManager.KEY_FULLNAME));
 
         String status = null;
-        if(sessionManager.isOnTrip()){
+        if (sessionManager.isOnTrip()) {
             status = "On Trip";
-        }
-        else{
+        } else {
             status = "Not On Trip";
         }
         header_status.setText("Status: " + status);
@@ -143,7 +158,7 @@ public class InHomeActivity extends AppCompatActivity implements NavigationView.
         ContentValues event = new ContentValues();
         ContentResolver cr = getContentResolver();
         Long eventID;
-        Integer m1 = month -1;
+        Integer m1 = month - 1;
 
         Calendar startTime = Calendar.getInstance();
 //        Integer adjustedHour = hour - 1;
@@ -164,14 +179,14 @@ public class InHomeActivity extends AppCompatActivity implements NavigationView.
         Log.v("calenderData", title);
         Log.v("calenderData", description);
 
-        Log.v("calenderData", year +"");
+        Log.v("calenderData", year + "");
         Log.v("calenderData", month + "");
         Log.v("calenderData", day + "");
         Log.v("calenderData", hour + "");
         Log.v("calenderData", minute + "");
 
         Log.v("calenderData", destination + " in 1 hour");
-        Log.v("calenderData", startTime.getTimeInMillis() +  "");
+        Log.v("calenderData", startTime.getTimeInMillis() + "");
         Log.v("calenderData", endTime.getTimeInMillis() + "");
         Log.v("calenderData", Time.getCurrentTimezone());
 
@@ -186,8 +201,7 @@ public class InHomeActivity extends AppCompatActivity implements NavigationView.
             Uri eventUri = cr.insert(CalendarContract.Events.CONTENT_URI, event);
             eventID = Long.parseLong(Objects.requireNonNull(eventUri).getLastPathSegment());
 
-        }
-        else {
+        } else {
             Uri eventUri = cr.insert(CalendarContract.Events.CONTENT_URI, event);
             eventID = Long.parseLong(Objects.requireNonNull(eventUri).getLastPathSegment());
         }
@@ -202,7 +216,7 @@ public class InHomeActivity extends AppCompatActivity implements NavigationView.
         return eventID;
     }
 
-        private void startAlarm(long eventID){
+    private void startAlarm(long eventID) {
         // reminder insert
         String reminderUriString = "content://com.android.calendar/reminders";
 
@@ -217,13 +231,96 @@ public class InHomeActivity extends AppCompatActivity implements NavigationView.
         Log.v("calender", "return REMINDER:  " + Long.parseLong(Objects.requireNonNull(reminderUri).getLastPathSegment()));
     }
 
-    public void deleteEventFromCalendar(long eventID){
+    public void deleteEventFromCalendar(long eventID) {
         ContentResolver cr = getContentResolver();
-        Uri deleteUri;
+        Uri deleteUri = null;
         deleteUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventID);
         cr.delete(deleteUri, null, null);
         Log.v("CALENDAR DELETE", "Event deleted");
         Toast.makeText(getApplicationContext(), "Removed Event", Toast.LENGTH_SHORT).show();
     }
 
+/*    public void getDataFromInstaceTable() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_CALENDAR}, READ_CALENDAR);
+        }
+        Cursor cur = null;
+        ContentResolver cr = getContentResolver();
+
+        String[] eventInfo =
+                {
+                        "_id",
+                        CalendarContract.Instances.TITLE,
+                        CalendarContract.Instances.EVENT_LOCATION,
+                        CalendarContract.Instances.DTSTART,
+//                        CalendarContract.Instances.DTEND,
+                        CalendarContract.Instances.EVENT_ID,
+                };
+
+
+        Uri uri = CalendarContract.Instances.CONTENT_URI;
+        String selection = CalendarContract.Instances.EVENT_ID + " = ? ";
+        String[] selectionArgs = new String[]{"80"};
+
+        cur = cr.query(uri, eventInfo, null, null, null);
+
+        while (cur.moveToNext()) {
+            String destination = cur.getString(cur.getColumnIndex(CalendarContract.Instances.EVENT_LOCATION));
+            String dateStart = cur.getString(cur.getColumnIndex(CalendarContract.Instances.DTSTART));
+            String eventID = cur.getString(cur.getColumnIndex(CalendarContract.Instances.EVENT_ID));
+
+            Log.v("CALENDAR INSTANCE", dateStart);
+
+//            if (date)
+//            TextView tv1 = new TextView(this);
+//            tv1.setText(title);
+//            cont.addView(tv1);
+        }
+
+
+    }*/
+
+    public static void readCalendar(Context context) {
+
+        ContentResolver contentResolver = context.getContentResolver();
+
+        // Fetch a list of all calendars synced with the device, their display names and whether the
+        // user has them selected for display.
+
+        final Cursor cursor = contentResolver.query(Uri.parse("content://com.android.calendar/calendars"),
+                (new String[] { "_id" }), null, null, null);
+
+
+        HashSet<String> calendarIds = new HashSet<String>();
+
+
+        while (cursor.moveToNext()) {
+
+            final String _id = cursor.getString(0);
+
+            System.out.println("Id: " + _id );
+            calendarIds.add(_id);
+        }
+
+        // For each calendar, display all the events from the previous week to the end of next week.
+        for (String id : calendarIds) {
+            Uri.Builder builder = Uri.parse("content://com.android.calendar/instances/when").buildUpon();
+            long now = new Date().getTime();
+            ContentUris.appendId(builder, now - DateUtils.WEEK_IN_MILLIS);
+            ContentUris.appendId(builder, now + DateUtils.WEEK_IN_MILLIS);
+
+            Cursor eventCursor = contentResolver.query(builder.build(),
+                    new String[] { "event_id", "destination"}, null,
+                    null, null);
+
+
+            while (eventCursor.moveToNext()) {
+                final String eventID = eventCursor.getString(0);
+
+                String output = "event id " + eventID;
+                Log.v("CALENDAR INSTANCE", output);
+
+            }
+        }
+    }
 }
