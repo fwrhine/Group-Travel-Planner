@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.pplki18.grouptravelplanner.EditEventActivity;
 import com.example.pplki18.grouptravelplanner.PlaceActivity;
 import com.example.pplki18.grouptravelplanner.R;
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
@@ -96,27 +97,52 @@ public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.Ne
         holder.eventDetail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent myIntent = new Intent(mContext, PlaceActivity.class);
+
                 Event anEvent = events.get(position);
-                myIntent.putExtra("PLACE_ID", anEvent.getQuery_id());
-                Log.d("DATE", anEvent.getDate());
-                myIntent.putExtra("ACTIVITY", "PlanActivity");
-                myIntent.putExtra("date", anEvent.getDate());
-                myIntent.putExtra("time_start", anEvent.getTime_start());
-                myIntent.putExtra("time_end", anEvent.getTime_end());
-                myIntent.putExtra("duration", anEvent.getTotal_time());
-                myIntent.putExtra("event_id", anEvent.getEvent_id());
-                myIntent.putExtra("type", anEvent.getType());
+                String type = anEvent.getType();
 
-                Intent intent =((Activity) mContext).getIntent();
-                Date date_start = (Date) intent.getExtras().get("start_date");
-                Date date_end = (Date) intent.getExtras().get("end_date");
-                myIntent.putExtra("start_date", date_start);
-                myIntent.putExtra("end_date", date_end);
-
-                mContext.startActivity(myIntent);
+                if (type.equals("restaurants") || type.equals("attractions")) {
+                    setEventDetailOne(anEvent);
+                } else {
+                    setEventDetailTwo(anEvent);
+                }
             }
         });
+    }
+
+    public void setEventDetailOne(Event anEvent) {
+        Intent myIntent = new Intent(mContext, PlaceActivity.class);
+        myIntent.putExtra("PLACE_ID", anEvent.getQuery_id());
+        Log.d("DATE", anEvent.getDate());
+        myIntent.putExtra("ACTIVITY", "PlanActivity");
+        myIntent.putExtra("date", anEvent.getDate());
+        myIntent.putExtra("time_start", anEvent.getTime_start());
+        myIntent.putExtra("time_end", anEvent.getTime_end());
+        myIntent.putExtra("duration", anEvent.getTotal_time());
+        myIntent.putExtra("event_id", anEvent.getEvent_id());
+        myIntent.putExtra("type", anEvent.getType());
+
+        Intent intent =((Activity) mContext).getIntent();
+        Date date_start = (Date) intent.getExtras().get("start_date");
+        Date date_end = (Date) intent.getExtras().get("end_date");
+        myIntent.putExtra("start_date", date_start);
+        myIntent.putExtra("end_date", date_end);
+
+        mContext.startActivity(myIntent);
+    }
+
+    public void setEventDetailTwo(Event anEvent) {
+        Intent myIntent = new Intent(mContext, EventDetailActivity.class);
+
+        myIntent.putExtra("event", anEvent);
+
+        Intent intent =((Activity) mContext).getIntent();
+        Date date_start = (Date) intent.getExtras().get("start_date");
+        Date date_end = (Date) intent.getExtras().get("end_date");
+        myIntent.putExtra("start_date", date_start);
+        myIntent.putExtra("end_date", date_end);
+
+        mContext.startActivity(myIntent);
     }
 
     public void setCardViewLongClick(final NewPlanViewHolder holder, final int position,

@@ -39,6 +39,11 @@ public class Event implements Parcelable, Comparable<Event> {
     // empty constructor
     public Event() {}
 
+    public Event(String time_start, String time_end) {
+        this.time_start = time_start;
+        this.time_end = time_end;
+    }
+
     public Event(String title, String date, String time_start, String time_end, String type) {
         this.title = title;
         this.date = date;
@@ -54,7 +59,6 @@ public class Event implements Parcelable, Comparable<Event> {
 //        }
         this.time_start = time_start;
         this.time_end = time_end;
-
     }
 
     protected Event(Parcel in) {

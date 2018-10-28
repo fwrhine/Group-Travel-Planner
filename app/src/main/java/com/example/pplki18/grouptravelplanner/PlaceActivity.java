@@ -52,6 +52,7 @@ import java.util.Locale;
 
 public class PlaceActivity extends AppCompatActivity {
     private static final String TAG = "RestaurantList";
+    private static final int REQUEST_CODE_EDIT_EVENT = 1;
 
     private DatabaseHelper databaseHelper;
 
@@ -92,6 +93,30 @@ public class PlaceActivity extends AppCompatActivity {
 
         sendRequest();
 
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == REQUEST_CODE_EDIT_EVENT) {
+            if (resultCode == Activity.RESULT_OK) {
+                String start = data.getStringExtra("start_time");
+                String end = data.getStringExtra("end_time");
+                String description = data.getStringExtra("description");
+                String date = data.getStringExtra("date");
+
+                Event event = new Event(start, end);
+                String duration = event.getTotal_time();
+
+                String timeStr = start + " - " + end;
+
+                eventDate.setText(date);
+                eventTime.setText(timeStr);
+                eventDuration.setText(duration);
+
+            }
+        }
     }
 
     public void sendRequest() {
@@ -331,7 +356,6 @@ public class PlaceActivity extends AppCompatActivity {
         String start = getIntent().getStringExtra("time_start");
         String end = getIntent().getStringExtra("time_end");
         String duration = getIntent().getStringExtra("duration");
-        int event_id = getIntent().getIntExtra("event_id", -1);
 
         String timeStr = start + " - " + end;
 
@@ -358,15 +382,17 @@ public class PlaceActivity extends AppCompatActivity {
             public void onClick(View view) {
 //                SimpleDateFormat dateFormatter2 = new SimpleDateFormat("d MMMM yyyy", Locale.US);
 
+                int event_id = getIntent().getIntExtra("event_id", -1);
                 Bundle bundle = getIntent().getExtras();
                 bundle.putString("address", address.getText().toString());
                 bundle.putString("name", title.getText().toString());
+                bundle.putInt("event_id", event_id);
 
                 Toast.makeText(PlaceActivity.this, "edit event", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(PlaceActivity.this, EditEventActivity.class);
                 intent.putExtras(bundle);
 
-                startActivity(intent);
+                startActivityForResult(intent, REQUEST_CODE_EDIT_EVENT);
             }
         });
     }

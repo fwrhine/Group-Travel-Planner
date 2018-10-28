@@ -1,7 +1,12 @@
 package com.example.pplki18.grouptravelplanner;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -9,9 +14,13 @@ import android.util.Log;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.TimePicker;
+
+import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
+import com.example.pplki18.grouptravelplanner.data.EventContract;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -26,6 +35,7 @@ public class EditEventActivity extends AppCompatActivity implements View.OnClick
     private TextView event_name, event_address;
     private EditText event_description, event_date, event_start_time, event_end_time;
     private ImageView type_icon;
+    private ImageButton save_event;
 
     private SimpleDateFormat dateFormatter1, dateFormatter2;
     private DatePickerDialog datePickerDialog;
@@ -36,6 +46,13 @@ public class EditEventActivity extends AppCompatActivity implements View.OnClick
     private String end_time;
     private Date start_date;
     private Date end_date;
+    private String s_date;
+    private String desc;
+    private String type;
+    private int event_id;
+    private Date d_date;
+
+    private DatabaseHelper databaseHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,13 +64,17 @@ public class EditEventActivity extends AppCompatActivity implements View.OnClick
     public void init() {
         findViewById();
 
+        databaseHelper = new DatabaseHelper(EditEventActivity.this);
+
+        desc = event_description.getText().toString();
         Bundle bundle = getIntent().getExtras();
         assert bundle != null;
+        event_id = bundle.getInt("event_id");
         start_date = (Date) bundle.get("start_date");
         end_date = (Date) bundle.get("end_date");
         String date = bundle.getString("date");
         String name = bundle.getString("name");
-        String type = bundle.getString("type");
+        type = bundle.getString("type");
         String address = bundle.getString("address");
         start_time = getIntent().getStringExtra("time_start");
         end_time = getIntent().getStringExtra("time_end");
@@ -62,8 +83,8 @@ public class EditEventActivity extends AppCompatActivity implements View.OnClick
         dateFormatter2 = new SimpleDateFormat("d MMMM yyyy", Locale.US);
 
         try {
-            Date d_date = dateFormatter2.parse(date);
-            String s_date = dateFormatter1.format(d_date);
+            d_date = dateFormatter2.parse(date);
+            s_date = dateFormatter1.format(d_date);
             Log.d("the date", s_date);
             event_date.setText(s_date);
         } catch (ParseException e) {
@@ -90,6 +111,7 @@ public class EditEventActivity extends AppCompatActivity implements View.OnClick
 
         setDateField();
         setTimeField();
+        setSaveEventButton();
     }
 
     public void findViewById() {
@@ -101,6 +123,7 @@ public class EditEventActivity extends AppCompatActivity implements View.OnClick
         event_start_time = findViewById(R.id.start_time);
         event_end_time = findViewById(R.id.end_time);
         type_icon = findViewById(R.id.type_icon);
+        save_event = findViewById(R.id.save_event);
 
     }
 
@@ -113,7 +136,8 @@ public class EditEventActivity extends AppCompatActivity implements View.OnClick
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                 Calendar newDate = Calendar.getInstance();
                 newDate.set(year, monthOfYear, dayOfMonth);
-                event_date.setText(dateFormatter1.format(newDate.getTime()));
+                d_date = newDate.getTime();
+                event_date.setText(dateFormatter1.format(d_date));
             }
         },newCalendar.get(Calendar.YEAR), newCalendar.get(Calendar.MONTH), newCalendar.get(Calendar.DAY_OF_MONTH));
 
@@ -146,6 +170,92 @@ public class EditEventActivity extends AppCompatActivity implements View.OnClick
             }
         }, hour2, minute2, true);//Yes 24 hour time
         endTimePickerDialog.setTitle("Select End Time");
+    }
+
+    private void setSaveEventButton() {
+        save_event.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if (!s_date.equals(event_date.getText().toString()) ||
+                        !start_time.equals(event_start_time.getText().toString()) ||
+                        !end_time.equals(event_end_time.getText().toString()) ||
+                        !desc.equals(event_description.getText().toString())) {
+                    AlertDialog box;
+                    box = updateEventDialog();
+                    box.show();
+                } else {
+                    onBackPressed();
+                }
+            }
+        });
+    }
+
+    public AlertDialog updateEventDialog() {
+        AlertDialog myUpdateEventDialog = new AlertDialog.Builder(this)
+                //set message, title, and icon
+                .setTitle("Update Event Details")
+                .setMessage("Do you want to save your changes?")
+                .setNeutralButton("Discard", new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        //your deleting code
+                        EditEventActivity.this.finish();
+                    }
+
+                })
+
+                .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        //your saving code
+                        String start_time = event_start_time.getText().toString();
+                        String end_time = event_end_time.getText().toString();
+                        String description = event_description.getText().toString();
+                        String date = dateFormatter2.format(d_date);
+
+                        updateEvent(date, start_time, end_time, description);
+
+                        final Intent data = new Intent();
+                        data.putExtra("start_time", start_time);
+                        data.putExtra("end_time", end_time);
+                        data.putExtra("description", description);
+                        data.putExtra("date", date);
+
+                        setResult(Activity.RESULT_OK, data);
+                        EditEventActivity.this.finish();
+
+                    }
+
+                })
+
+                .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        dialog.dismiss();
+
+                    }
+                })
+                .create();
+        return myUpdateEventDialog;
+    }
+
+    public void updateEvent(String date, String start_time, String end_time, String desc) {
+        SQLiteDatabase db = databaseHelper.getWritableDatabase();
+
+        if (type.equals("restaurants") || type.equals("attractions")) {
+
+            String updateQuery = "UPDATE " + EventContract.EventEntry.TABLE_NAME + " SET " +
+                    EventContract.EventEntry.COL_DATE + " = " + "\"" + date + "\", " +
+                    EventContract.EventEntry.COL_TIME_START + " = " + "\"" + start_time + "\", " +
+                    EventContract.EventEntry.COL_TIME_END + " = " + "\"" + end_time + "\", " +
+                    EventContract.EventEntry.COL_DESCRIPTION + " = " + "\"" + desc + "\" " +
+                    " WHERE " + EventContract.EventEntry._ID + " = " + event_id;
+            Log.d("updateQuery", updateQuery);
+            db.execSQL(updateQuery);
+
+            db.close();
+        }
     }
 
     @Override

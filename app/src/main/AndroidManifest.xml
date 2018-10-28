@@ -79,11 +79,12 @@
         <activity android:name=".EditPlanActivity" />
 
         <!-- <activity android:name=".Activity_InHome"></activity> -->
-        <activity android:name=".Activity_CreateReminder"></activity>
+        <activity android:name=".Activity_CreateReminder" />
 
         <receiver android:name=".AlertReciever" />
         <!-- <activity android:name=".Activity_ReminderList"/> -->
-        <activity android:name=".EditEventActivity"></activity>
+        <activity android:name=".EditEventActivity" />
+        <activity android:name=".utils.EventDetailActivity"></activity>
     </application>
 
 </manifest>
