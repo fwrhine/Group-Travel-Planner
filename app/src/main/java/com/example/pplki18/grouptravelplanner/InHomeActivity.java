@@ -1,6 +1,7 @@
 package com.example.pplki18.grouptravelplanner;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -29,15 +30,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
-import com.example.pplki18.grouptravelplanner.utils.RVAdapter_Reminder;
 import com.example.pplki18.grouptravelplanner.utils.SessionManager;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Objects;
-
-import static android.Manifest.permission.READ_CALENDAR;
 
 public class InHomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -248,14 +246,14 @@ public class InHomeActivity extends AppCompatActivity implements NavigationView.
         // Fetch a list of all calendars synced with the device, their display names and whether the
         // user has them selected for display.
 
-        final Cursor cursor = contentResolver.query(Uri.parse("content://com.android.calendar/calendars"),
+        @SuppressLint("Recycle") final Cursor cursor = contentResolver.query(Uri.parse("content://com.android.calendar/calendars"),
                 (new String[] { "_id" }), null, null, null);
 
 
-        HashSet<String> calendarIds = new HashSet<String>();
+        HashSet<String> calendarIds = new HashSet<>();
 
 
-        while (cursor.moveToNext()) {
+        while (Objects.requireNonNull(cursor).moveToNext()) {
 
             final String _id = cursor.getString(0);
 
@@ -270,12 +268,12 @@ public class InHomeActivity extends AppCompatActivity implements NavigationView.
             ContentUris.appendId(builder, now - DateUtils.WEEK_IN_MILLIS);
             ContentUris.appendId(builder, now + DateUtils.WEEK_IN_MILLIS);
 
-            Cursor cur = contentResolver.query(builder.build(),
+            @SuppressLint("Recycle") Cursor cur = contentResolver.query(builder.build(),
                     new String[] { "event_id", "description", "begin"}, null,
                     null, null);
 
 
-            while (cur.moveToNext()) {
+            while (Objects.requireNonNull(cur).moveToNext()) {
                 final String eventID = cur.getString(0);
                 final String description = cur.getString(1);
                 final Date begin = new Date(cur.getLong(2));
