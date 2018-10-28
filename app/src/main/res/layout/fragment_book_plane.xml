@@ -7,13 +7,13 @@
     tools:context=".ChooseEventActivity">
 
     <LinearLayout
-        android:id="@+id/editPlace"
+        android:id="@+id/layoutOrigin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal" >
 
         <TextView
-            android:layout_width="94dp"
+            android:layout_width="50dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/bookFrom"
@@ -25,18 +25,28 @@
             android:layout_height="48dp"
             android:layout_weight="4"
             android:hint="@string/bookOrigin"
+            android:textColorHint="@android:color/darker_gray"
             android:layout_marginBottom="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginTop="8dp" />
 
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layoutDestination"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@id/layoutOrigin">
+
         <TextView
-            android:layout_width="78dp"
+            android:layout_width="50dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/bookTo"
             android:layout_marginBottom="8dp"
             android:layout_marginEnd="8dp"
-            android:layout_marginTop="8dp" />
+            android:layout_marginStart="8dp" />
 
         <AutoCompleteTextView
             android:id="@+id/destination"
@@ -44,17 +54,16 @@
             android:layout_height="48dp"
             android:layout_weight="4"
             android:hint="@string/bookDestination"
+            android:textColorHint="@android:color/darker_gray"
             android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginTop="8dp" />
-
+            android:layout_marginEnd="8dp" />
     </LinearLayout>
 
     <RelativeLayout
         android:id="@+id/resultList"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/editPlace">
+        android:layout_below="@+id/layoutDestination">
 
         <Button
             android:id="@+id/searchButton"

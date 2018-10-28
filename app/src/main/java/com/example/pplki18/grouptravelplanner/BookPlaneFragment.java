@@ -217,15 +217,7 @@ public class BookPlaneFragment extends Fragment {
                                 String airportLoc = airportData.getString("location_name");
                                 String airportCode = airportData.getString("airport_code");
 
-
-                                if (airportLoc.contains(" - ")) {
-                                    String[] splitLoc = airportLoc.split(" - ");
-                                    airportMap.put(splitLoc[1], airportCode);
-                                }
-
-                                else {
                                     airportMap.put(airportLoc, airportCode);
-                                }
                             }
                             availableAirports = airportMap;
 

@@ -7,7 +7,7 @@
     tools:context=".ChooseEventActivity">
 
     <LinearLayout
-        android:id="@+id/editPlace"
+        android:id="@+id/layoutOrigin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal" >
@@ -58,7 +58,7 @@
         android:id="@+id/resultList"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/editPlace">
+        android:layout_below="@+id/layoutOrigin">
 
         <Button
             android:id="@+id/searchButton"
