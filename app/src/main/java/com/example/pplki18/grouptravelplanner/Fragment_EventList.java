@@ -167,6 +167,7 @@ public class Fragment_EventList extends Fragment {
         for(Event e: all_event) {
             Log.d("TYPE IS", e.getType());
         }
+        c.close();
         return all_event;
     }
 

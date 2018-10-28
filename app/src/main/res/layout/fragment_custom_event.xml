@@ -58,7 +58,7 @@
             android:padding="20dp"
             android:layout_marginTop="10dp"
             android:hint="Notes"
-            android:textSize="15dp"
+            android:textSize="15sp"
             android:textColorHint="#8c8c8c"
             android:scrollbars="vertical"
             android:inputType="textMultiLine"/>

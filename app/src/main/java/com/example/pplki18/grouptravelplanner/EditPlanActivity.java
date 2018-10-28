@@ -308,7 +308,7 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
     public void setDateChanger() throws ParseException {
         date_month_year.setText(dateFormatter2.format(date_start_temp));
         date_month_year.setTextColor(getResources().getColor(R.color.colorBlack));
-        day.setText(new SimpleDateFormat("EEEE").format(date_start_temp));
+        day.setText(new SimpleDateFormat("EEEE", Locale.US).format(date_start_temp));
         day.setTextColor(getResources().getColor(R.color.colorBlack));
 
         Date start_pin = dateFormatter2.parse(dateFormatter2.format(date_start_temp));
@@ -347,7 +347,7 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
 
                         c_cur_date.add(Calendar.DATE, -1);
                         date_month_year.setText(dateFormatter2.format(c_cur_date.getTime()));
-                        day.setText(new SimpleDateFormat("EEEE").format(c_cur_date.getTime()));
+                        day.setText(new SimpleDateFormat("EEEE", Locale.US).format(c_cur_date.getTime()));
 
                         if (c_cur_date.getTime().getTime() == c_start_pin.getTime().getTime()) {
                             button_left.setEnabled(false);

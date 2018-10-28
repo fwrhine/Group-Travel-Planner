@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -46,6 +47,7 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
     TextView date_month_year, day;
     ImageButton button_left, button_right, add_event, save_plan;
     FloatingActionButton fab_add_event;
+    ViewGroup parent;
     Intent intent;
     private SessionManager session;
     private HashMap<String, String> user;
@@ -134,6 +136,8 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
         save_plan = (ImageButton) findViewById(R.id.save_plan);
 
         fab_add_event = (FloatingActionButton) findViewById(R.id.fab_add_event);
+
+        parent = (ViewGroup) findViewById(R.id.container);
     }
 
     @Override
@@ -227,7 +231,7 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
 
     private void askPlanNameDialog() {
         LayoutInflater factory = LayoutInflater.from(this);
-        final View linearLayout = factory.inflate(R.layout.save_plan_dialog, null);
+        final View linearLayout = factory.inflate(R.layout.save_plan_dialog, parent, false);
 
         final EditText edtTextName = (EditText) linearLayout.findViewById(R.id.editText_planName);
         plan_name = intent.getStringExtra("plan_name");
@@ -421,7 +425,7 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
     public void setDateChanger() throws ParseException {
         date_month_year.setText(dateFormatter2.format(date_start));
         date_month_year.setTextColor(getResources().getColor(R.color.colorBlack));
-        day.setText(new SimpleDateFormat("EEEE").format(date_start));
+        day.setText(new SimpleDateFormat("EEEE", Locale.US).format(date_start));
         day.setTextColor(getResources().getColor(R.color.colorBlack));
 
         Date start_pin = dateFormatter2.parse(dateFormatter2.format(date_start));
@@ -453,7 +457,7 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
 
                         c_cur_date.add(Calendar.DATE, -1);
                         date_month_year.setText(dateFormatter2.format(c_cur_date.getTime()));
-                        day.setText(new SimpleDateFormat("EEEE").format(c_cur_date.getTime()));
+                        day.setText(new SimpleDateFormat("EEEE", Locale.US).format(c_cur_date.getTime()));
 
                         if (c_cur_date.getTime().getTime() == c_start_pin.getTime().getTime()) {
                             button_left.setEnabled(false);
@@ -479,7 +483,7 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
                     public void onClick(View view) {
                         c_cur_date.add(Calendar.DATE, 1);
                         date_month_year.setText(dateFormatter2.format(c_cur_date.getTime()));
-                        day.setText(new SimpleDateFormat("EEEE").format(c_cur_date.getTime()));
+                        day.setText(new SimpleDateFormat("EEEE", Locale.US).format(c_cur_date.getTime()));
 
                         if (c_cur_date.getTime().getTime() == c_end_pin.getTime().getTime()) {
                             button_left.setEnabled(true);
