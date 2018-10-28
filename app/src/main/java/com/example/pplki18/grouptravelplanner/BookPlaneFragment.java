@@ -16,7 +16,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -42,6 +41,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Objects;
 
 public class BookPlaneFragment extends Fragment {
 
@@ -71,7 +71,7 @@ public class BookPlaneFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        origin = getView().findViewById(R.id.origin);
+        origin = Objects.requireNonNull(getView()).findViewById(R.id.origin);
         destination = getView().findViewById(R.id.destination);
 
         searchButton = getView().findViewById(R.id.searchButton);

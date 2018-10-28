@@ -33,7 +33,6 @@
     <string name="bookFlightNumber">Flight Number</string>
     <string name="bookDepartCity">Depart City</string>
     <string name="bookDepartTime">Depart Time</string>
-    <string name="bookArrow"><![CDATA[->]]></string>
     <string name="bookArriveCity">Arrive City</string>
     <string name="bookArriveTime">Arrive Time</string>
     <string name="bookPrice">Price</string>
