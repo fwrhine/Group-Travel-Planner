@@ -68,7 +68,7 @@ public class Fragment_Reminder extends Fragment implements NavigationView.OnNavi
 //                Fragment_Reminder.this.startActivity(myIntent);
                 // TO TEST generalInsert
                 ((InHomeActivity) getActivity()).generalInsertNotifier("T1","T2", "T3",
-                        2018, 10, 25, 8, 20);
+                        2018, 10, 28, 8, 20);
                 Toast.makeText(getActivity().getApplicationContext(), "PRESSED FAB", Toast.LENGTH_SHORT).show();
 
             }

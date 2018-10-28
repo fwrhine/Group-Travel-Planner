@@ -29,6 +29,7 @@ import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
 import com.example.pplki18.grouptravelplanner.utils.SessionManager;
 
 import java.util.Calendar;
+import java.util.Objects;
 
 public class InHomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -143,8 +144,6 @@ public class InHomeActivity extends AppCompatActivity implements NavigationView.
         ContentResolver cr = getContentResolver();
         Long eventID;
         Integer m1 = month -1;
-        String destinationStr = destination;
-        String date = day + m1 + year + "";
 
         Calendar startTime = Calendar.getInstance();
 //        Integer adjustedHour = hour - 1;
@@ -185,12 +184,12 @@ public class InHomeActivity extends AppCompatActivity implements NavigationView.
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_CALENDAR) == PackageManager.PERMISSION_GRANTED) {
             Log.v("calenderIF", "inside if");
             Uri eventUri = cr.insert(CalendarContract.Events.CONTENT_URI, event);
-            eventID = Long.parseLong(eventUri.getLastPathSegment());
+            eventID = Long.parseLong(Objects.requireNonNull(eventUri).getLastPathSegment());
 
         }
         else {
             Uri eventUri = cr.insert(CalendarContract.Events.CONTENT_URI, event);
-            eventID = Long.parseLong(eventUri.getLastPathSegment());
+            eventID = Long.parseLong(Objects.requireNonNull(eventUri).getLastPathSegment());
         }
         Log.v("calender", "EVENT ID:  " + eventID);
         Log.v("calender", "calendar entry inserted");
@@ -215,12 +214,12 @@ public class InHomeActivity extends AppCompatActivity implements NavigationView.
         reminderValues.put("method", 1);
 
         Uri reminderUri = getContentResolver().insert(Uri.parse(reminderUriString), reminderValues);
-        Log.v("calender", "return REMINDER:  " + Long.parseLong(reminderUri.getLastPathSegment()));
+        Log.v("calender", "return REMINDER:  " + Long.parseLong(Objects.requireNonNull(reminderUri).getLastPathSegment()));
     }
 
     public void deleteEventFromCalendar(long eventID){
         ContentResolver cr = getContentResolver();
-        Uri deleteUri = null;
+        Uri deleteUri;
         deleteUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventID);
         cr.delete(deleteUri, null, null);
         Log.v("CALENDAR DELETE", "Event deleted");

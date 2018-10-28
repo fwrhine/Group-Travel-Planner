@@ -164,44 +164,23 @@ public class Activity_EditReminder  extends AppCompatActivity implements DatePic
         //TODO error handling, numbers must be within limit
         ContentValues event = new ContentValues();
         ContentResolver cr = getContentResolver();
+
+        Uri eventUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, event_id);
+
         Calendar startTime = Calendar.getInstance();
-        Integer adjustedHour = hour - 1;
-        startTime.set(year, month, day, adjustedHour, minute);
+        startTime.set(year, month, day, hour, minute);
+
         Calendar endTime = Calendar.getInstance();
         endTime.set(year, month, day, hour + 1, minute);
 
-        // TODO might not work, with all phones. ID is set to 1 for my phone, 3 is likely the other likely possibility
-        event.put(CalendarContract.Events.CALENDAR_ID, 1);
-        event.put(CalendarContract.Events._ID, event_id);
-
         event.put(CalendarContract.Events.TITLE, title);
         event.put(CalendarContract.Events.DESCRIPTION, description);
-        event.put(CalendarContract.Events.EVENT_LOCATION, destination.getText().toString());
-
         event.put(CalendarContract.Events.DTSTART, startTime.getTimeInMillis());
         event.put(CalendarContract.Events.DTEND, endTime.getTimeInMillis());
 
-        Log.v("calenderData", title);
-        Log.v("calenderData", description);
-        Log.v("calenderData", destination.getText().toString());
-        Log.v("calenderData", startTime.getTimeInMillis() +  "");
-        Log.v("calenderData", endTime.getTimeInMillis() + "");
-        Log.v("calenderData", Time.getCurrentTimezone());
+        cr.update(eventUri, event, null, null);
 
-        event.put(CalendarContract.Events.ALL_DAY, 0);   // 0 for false, 1 for true
-        event.put("eventStatus", 1); // 0 for tentative, 1 for confirmed, 2 for canceled
-        event.put(CalendarContract.Events.HAS_ALARM, 1); // 0 for false, 1 for true
-        event.put(CalendarContract.Events.EVENT_TIMEZONE, Time.getCurrentTimezone());
-
-
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_CALENDAR) == PackageManager.PERMISSION_GRANTED) {
-            Log.v("calenderIF", "inside if");
-            Uri url = cr.insert(CalendarContract.Events.CONTENT_URI, event);
-        }
-        else {
-            Uri url = cr.insert(CalendarContract.Events.CONTENT_URI, event);
-        }
-        Log.v("calender", "calendar entry inserted");
+        Log.v("calender", "calendar entry updated");
 
     }
 

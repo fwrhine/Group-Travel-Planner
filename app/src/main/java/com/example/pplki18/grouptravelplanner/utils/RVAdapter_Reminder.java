@@ -77,7 +77,7 @@ public class RVAdapter_Reminder extends RecyclerView.Adapter<RVAdapter_Reminder.
         reminderViewHolder.edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                editRem(reminderViewHolder);
+                editRemTest(Long.parseLong("79"));
             }
         });
 
@@ -85,29 +85,15 @@ public class RVAdapter_Reminder extends RecyclerView.Adapter<RVAdapter_Reminder.
             @Override
             public void onClick(View v) {
                 //TODO method to remove from calendar
-//                long eventID = Long.parseLong(reminderViewHolder.eventid.getText().toString());
-//                if(context instanceof Activity_CreateReminder){
-//                    ((Activity_CreateReminder)context).deleteEventFromCalendar(eventID);
-//                }
-//                Toast.makeText(context, "Deleted event", Toast.LENGTH_SHORT).show();
-                //====================================
-//                removeRem(reminderViewHolder);
+
                 Toast.makeText(context, "Deleted event", Toast.LENGTH_SHORT).show();
 
-                ((InHomeActivity) context).deleteEventFromCalendar(76);
+                ((InHomeActivity) context).deleteEventFromCalendar(eventID);
                 Toast.makeText(context, "PRESSED FAB", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-//    public void deleteEventFromCalendar(long eventID){
-//        ContentResolver cr = getContentResolver();
-//        Uri deleteUri = null;
-//        deleteUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventID);
-//        cr.delete(deleteUri, null, null);
-//        Log.v("CALENDAR DELETE", "Event deleted");
-//        Toast.makeText(getApplicationContext(), "Removed Event", Toast.LENGTH_SHORT).show();
-//    }
 
     public void removeRem(ReminderViewHolder viewHolder) {
         myDb = new DatabaseHelper(context);
@@ -133,30 +119,12 @@ public class RVAdapter_Reminder extends RecyclerView.Adapter<RVAdapter_Reminder.
     }
 
 
-    public void editRem(ReminderViewHolder viewHolder) {
+    public void editRemTest(Long eventID) {
         //TODO go to edit page
 
         Intent myIntent = new Intent(this.context, Activity_EditReminder.class);
-        Long id = Long.parseLong(viewHolder.eventid.getText().toString());
-        myIntent.putExtra("event_id", id);
+        myIntent.putExtra("event_id", eventID);
         context.startActivity(myIntent);
-
-/*        String evId = viewHolder.eventid.getText().toString();
-        long id = Long.parseLong(evId);
-
-        long rowID = 760;
-        Uri uri = ContentUris.withAppendedId(
-                CalendarContract.Events.CONTENT_URI, rowID);
-        Intent intent = new Intent(Intent.ACTION_EDIT, uri);
-        // Modify the calendar event details
-        Calendar startTime = Calendar.getInstance();
-        startTime.set(2014, 2, 13, 0, 30);
-        intent.putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME,
-                startTime.getTimeInMillis());
-        intent.putExtra(CalendarContract.EXTRA_EVENT_ALL_DAY, true);
-        // Use the Calendar application to edit the event.
-        startActivity(intent);
-        Toast.makeText(this, "Editing done", Toast.LENGTH_SHORT).show();*/
     }
 
     @Override
