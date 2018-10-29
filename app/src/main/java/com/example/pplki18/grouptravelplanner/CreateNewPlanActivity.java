@@ -3,22 +3,21 @@ package com.example.pplki18.grouptravelplanner;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Parcelable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -47,6 +46,8 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
     TextView trip_start_date, trip_end_date, trip_days;
     TextView date_month_year, day;
     ImageButton button_left, button_right, add_event, save_plan;
+    FloatingActionButton fab_add_event;
+    ViewGroup parent;
     Intent intent;
     private SessionManager session;
     private HashMap<String, String> user;
@@ -131,8 +132,12 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
 
         button_left = (ImageButton) findViewById(R.id.button_left);
         button_right = (ImageButton) findViewById(R.id.button_right);
-        add_event = (ImageButton) findViewById(R.id.add_event);
+//        add_event = (ImageButton) findViewById(R.id.add_event);
         save_plan = (ImageButton) findViewById(R.id.save_plan);
+
+        fab_add_event = (FloatingActionButton) findViewById(R.id.fab_add_event);
+
+        parent = (ViewGroup) findViewById(R.id.container);
     }
 
     @Override
@@ -226,7 +231,7 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
 
     private void askPlanNameDialog() {
         LayoutInflater factory = LayoutInflater.from(this);
-        final View linearLayout = factory.inflate(R.layout.save_plan_dialog, null);
+        final View linearLayout = factory.inflate(R.layout.save_plan_dialog, parent, false);
 
         final EditText edtTextName = (EditText) linearLayout.findViewById(R.id.editText_planName);
         plan_name = intent.getStringExtra("plan_name");
@@ -274,30 +279,53 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
         contentValues.put(PlanContract.PlanEntry.COL_DESCRIPTION, plan_desc);
         long plan_id = db.insert(PlanContract.PlanEntry.TABLE_NAME, null, contentValues);
 
-        saveEventToDB(db, contentValues, (int) plan_id);
+        saveEventToDB(db, (int) plan_id);
     }
 
-    private void saveEventToDB(SQLiteDatabase db, ContentValues contentValues, int plan_id) {
+    private void saveEventToDB(SQLiteDatabase db, int plan_id) {
         for(Event e : events) {
 //            Log.d("testtt", e.getTitle() + ", " + e.getDate());
-            contentValues = new ContentValues();
-            contentValues.put(EventContract.EventEntry.COL_PLAN_ID, plan_id);
-            contentValues.put(EventContract.EventEntry.COL_QUERY_ID, e.getQuery_id());
-            contentValues.put(EventContract.EventEntry.COL_TITLE, e.getTitle());
-            contentValues.put(EventContract.EventEntry.COL_LOCATION, e.getLocation());
-            contentValues.put(EventContract.EventEntry.COL_DESCRIPTION, e.getDescription());
-            contentValues.put(EventContract.EventEntry.COL_DATE, e.getDate());
-            contentValues.put(EventContract.EventEntry.COL_TIME_START, e.getTime_start());
-            contentValues.put(EventContract.EventEntry.COL_TIME_END, e.getTime_end());
-            contentValues.put(EventContract.EventEntry.COL_PHONE, e.getPhone());
-            contentValues.put(EventContract.EventEntry.COL_TYPE, e.getType());
-            contentValues.put(EventContract.EventEntry.COL_RATING, e.getRating());
-            long event_id = db.insert(EventContract.EventEntry.TABLE_NAME, null, contentValues);
+            String type = e.getType();
+            ContentValues contentValues = new ContentValues();
+            if (type.equals("restaurants") || type.equals("attractions") || type.equals("custom")) {
+
+                contentValues.put(EventContract.EventEntry.COL_PLAN_ID, plan_id);
+                contentValues.put(EventContract.EventEntry.COL_QUERY_ID, e.getQuery_id());
+                contentValues.put(EventContract.EventEntry.COL_TITLE, e.getTitle());
+                contentValues.put(EventContract.EventEntry.COL_LOCATION, e.getLocation());
+                contentValues.put(EventContract.EventEntry.COL_DESCRIPTION, e.getDescription());
+                contentValues.put(EventContract.EventEntry.COL_DATE, e.getDate());
+                contentValues.put(EventContract.EventEntry.COL_TIME_START, e.getTime_start());
+                contentValues.put(EventContract.EventEntry.COL_TIME_END, e.getTime_end());
+                contentValues.put(EventContract.EventEntry.COL_PHONE, e.getPhone());
+                contentValues.put(EventContract.EventEntry.COL_TYPE, type);
+                contentValues.put(EventContract.EventEntry.COL_RATING, e.getRating());
+                contentValues.put(EventContract.EventEntry.COL_WEBSITE, e.getWebsite());
+                long event_id = db.insert(EventContract.EventEntry.TABLE_NAME, null, contentValues);
+
+            } else if (type.equals("flights") || type.equals("trains")) {
+                contentValues.put(EventContract.EventEntry.COL_PLAN_ID, plan_id);
+                contentValues.put(EventContract.EventEntry.COL_TITLE, "Flight");
+                contentValues.put(EventContract.EventEntry.COL_DESCRIPTION, "Flight for Transport");
+                contentValues.put(EventContract.EventEntry.COL_DATE, e.getDate());
+                contentValues.put(EventContract.EventEntry.COL_TYPE, "flights");
+
+                contentValues.put(EventContract.EventEntry.COL_ORIGIN, e.getOrigin());
+                contentValues.put(EventContract.EventEntry.COL_DESTINATION, e.getDestination());
+                contentValues.put(EventContract.EventEntry.COL_DEPARTURE_TIME, e.getDeparture_time());
+                contentValues.put(EventContract.EventEntry.COL_ARRIVAL_TIME, e.getArrival_time());
+                contentValues.put(EventContract.EventEntry.COL_TRANS_NUMBER, e.getTransport_number());
+                long event_id = db.insert(EventContract.EventEntry.TABLE_NAME, null, contentValues);
+
+            } else if (type.equals("hotels")) {
+
+            }
+
         }
     }
 
     private void setAddEventButton() {
-        add_event.setOnClickListener(
+        fab_add_event.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -311,9 +339,11 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
                             myIntent.putExtra("ACTIVITY", "CreateNewPlanActivity");
                             myIntent.putExtra("plan_name", plan_name);
                             myIntent.putExtra("date", date);
+                            myIntent.putExtra("date_start", date_start);
+                            myIntent.putExtra("date_end", date_end);
+
                             myIntent.putParcelableArrayListExtra("events", (ArrayList<? extends Parcelable>) events);
 
-//                            CreateNewPlanActivity.this.startActivity(myIntent);
                             startActivityForResult(myIntent, 1);
                             Toast.makeText(CreateNewPlanActivity.this, "Add Event", Toast.LENGTH_SHORT).show();
                         }
@@ -343,9 +373,9 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
                         long total_days = diff / (24 * 60 * 60 * 1000) + 2;
                         trip_days.setText(total_days + "");
                         intent.putExtra("date", date_start);
+                        putExtraPlanDateRange();
                         setDateChanger();
-                        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_timeline_activity,
-                                new Fragment_EventList()).commit();
+                        beginFragmentEventList();
                     } catch (ParseException e) {
                         e.printStackTrace();
                     }
@@ -369,9 +399,9 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
                         long total_days = diff / (24 * 60 * 60 * 1000) + 1;
                         trip_days.setText(total_days + "");
                         intent.putExtra("date", date_start);
+                        putExtraPlanDateRange();
                         setDateChanger();
-                        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_timeline_activity,
-                                new Fragment_EventList()).commit();
+                        beginFragmentEventList();
                     } catch (ParseException e) {
                         e.printStackTrace();
                     }
@@ -395,7 +425,7 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
     public void setDateChanger() throws ParseException {
         date_month_year.setText(dateFormatter2.format(date_start));
         date_month_year.setTextColor(getResources().getColor(R.color.colorBlack));
-        day.setText(new SimpleDateFormat("EEEE").format(date_start));
+        day.setText(new SimpleDateFormat("EEEE", Locale.US).format(date_start));
         day.setTextColor(getResources().getColor(R.color.colorBlack));
 
         Date start_pin = dateFormatter2.parse(dateFormatter2.format(date_start));
@@ -427,7 +457,7 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
 
                         c_cur_date.add(Calendar.DATE, -1);
                         date_month_year.setText(dateFormatter2.format(c_cur_date.getTime()));
-                        day.setText(new SimpleDateFormat("EEEE").format(c_cur_date.getTime()));
+                        day.setText(new SimpleDateFormat("EEEE", Locale.US).format(c_cur_date.getTime()));
 
                         if (c_cur_date.getTime().getTime() == c_start_pin.getTime().getTime()) {
                             button_left.setEnabled(false);
@@ -441,6 +471,7 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
                         }
 
                         intent.putExtra("date", c_cur_date.getTime());
+                        putExtraPlanDateRange();
                         beginFragmentEventList();
                     }
                 }
@@ -452,7 +483,7 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
                     public void onClick(View view) {
                         c_cur_date.add(Calendar.DATE, 1);
                         date_month_year.setText(dateFormatter2.format(c_cur_date.getTime()));
-                        day.setText(new SimpleDateFormat("EEEE").format(c_cur_date.getTime()));
+                        day.setText(new SimpleDateFormat("EEEE", Locale.US).format(c_cur_date.getTime()));
 
                         if (c_cur_date.getTime().getTime() == c_end_pin.getTime().getTime()) {
                             button_left.setEnabled(true);
@@ -466,10 +497,16 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
                         }
 
                         intent.putExtra("date", c_cur_date.getTime());
+                        putExtraPlanDateRange();
                         beginFragmentEventList();
                     }
                 }
         );
+    }
+
+    public void putExtraPlanDateRange() {
+        intent.putExtra("start_date", date_start);
+        intent.putExtra("end_date", date_end);
     }
 
     public void beginFragmentEventList() {

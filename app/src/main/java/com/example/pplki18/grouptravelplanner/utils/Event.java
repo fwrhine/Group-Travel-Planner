@@ -21,11 +21,13 @@ public class Event implements Parcelable, Comparable<Event> {
     private String phone;
     private String type;
     private String rating;
+    private String website;
+    private String price;
 
     private String origin;
     private String destination;
-    private String departure_time;
-    private String arrival_time;
+//    private String departure_time;
+//    private String arrival_time;
     private String transport_number;
 
     // for hotel
@@ -39,12 +41,26 @@ public class Event implements Parcelable, Comparable<Event> {
     // empty constructor
     public Event() {}
 
+    public Event(String time_start, String time_end) {
+        this.time_start = time_start;
+        this.time_end = time_end;
+    }
+
     public Event(String title, String date, String time_start, String time_end, String type) {
         this.title = title;
         this.date = date;
+        this.type = type;
+//        if (type.equals("restaurants") || type.equals("attractions") || type.equals("custom")) {
+//            this.time_start = time_start;
+//            this.time_end = time_end;
+//        } else if (type.equals("flights") || type.equals("trains")) {
+//            this.departure_time = time_start;
+//            this.arrival_time = time_end;
+//        } else if (type.equals("hotels")) {
+//
+//        }
         this.time_start = time_start;
         this.time_end = time_end;
-        this.type = type;
     }
 
     protected Event(Parcel in) {
@@ -59,10 +75,12 @@ public class Event implements Parcelable, Comparable<Event> {
         phone = in.readString();
         type = in.readString();
         rating = in.readString();
+        website = in.readString();
+        price = in.readString();
         origin = in.readString();
         destination = in.readString();
-        departure_time = in.readString();
-        arrival_time = in.readString();
+//        departure_time = in.readString();
+//        arrival_time = in.readString();
         transport_number = in.readString();
         date_check_in = in.readString();
         date_check_out = in.readString();
@@ -156,7 +174,12 @@ public class Event implements Parcelable, Comparable<Event> {
         long diff = 0;
 
         try {
-            diff = format.parse(time_end).getTime() - format.parse(time_start).getTime();
+//            if (type.equals("restaurants") || type.equals("attractions") || type.equals("custom")) {
+                diff = format.parse(time_end).getTime() - format.parse(time_start).getTime();
+//            } else if (type.equals("flights") || type.equals("trains")) {
+//                diff = format.parse(arrival_time).getTime() - format.parse(departure_time).getTime();
+//            }
+
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -201,19 +224,19 @@ public class Event implements Parcelable, Comparable<Event> {
     }
 
     public String getDeparture_time() {
-        return departure_time;
+        return time_start;
     }
 
     public void setDeparture_time(String departure_time) {
-        this.departure_time = departure_time;
+        this.time_start = departure_time;
     }
 
     public String getArrival_time() {
-        return arrival_time;
+        return time_end;
     }
 
     public void setArrival_time(String arrival_time) {
-        this.arrival_time = arrival_time;
+        this.time_end = arrival_time;
     }
 
     public String getTransport_number() {
@@ -272,6 +295,14 @@ public class Event implements Parcelable, Comparable<Event> {
         this.rating = rating;
     }
 
+    public String getWebsite() { return website; }
+
+    public void setWebsite(String website) { this.website = website; }
+
+    public String getPrice() { return price; }
+
+    public void setPrice(String price) { this.price = price; }
+
     @Override
     public int describeContents() {
         return 0;
@@ -290,10 +321,12 @@ public class Event implements Parcelable, Comparable<Event> {
         parcel.writeString(phone);
         parcel.writeString(type);
         parcel.writeString(rating);
+        parcel.writeString(website);
+        parcel.writeString(price);
         parcel.writeString(origin);
         parcel.writeString(destination);
-        parcel.writeString(departure_time);
-        parcel.writeString(arrival_time);
+//        parcel.writeString(departure_time);
+//        parcel.writeString(arrival_time);
         parcel.writeString(transport_number);
         parcel.writeString(date_check_in);
         parcel.writeString(date_check_out);
@@ -306,10 +339,23 @@ public class Event implements Parcelable, Comparable<Event> {
     public int compareTo(@NonNull Event event) {
         SimpleDateFormat format = new SimpleDateFormat("HH:mm");
         try {
-            Date this_start = format.parse(this.getTime_start());
-            Date this_end = format.parse(this.getTime_end());
-            Date event_start = format.parse(event.getTime_start());
-            Date event_end = format.parse(event.getTime_end());
+            Date this_start = null;
+            Date this_end = null;
+            Date event_start = null;
+            Date event_end = null;
+//            if (type.equals("restaurants") || type.equals("attractions") || type.equals("custom")) {
+                this_start = format.parse(this.getTime_start());
+                this_end = format.parse(this.getTime_end());
+                event_start = format.parse(event.getTime_start());
+                event_end = format.parse(event.getTime_end());
+//            } else if (type.equals("flights") || type.equals("trains")) {
+//                this_start = format.parse(this.getDeparture_time());
+//                this_end = format.parse(this.getArrival_time());
+//                event_start = format.parse(event.getDeparture_time());
+//                event_end = format.parse(event.getArrival_time());
+//            } else if (type.equals("hotels")) {
+//
+//            }
 
             if (this_start.getTime() > event_start.getTime()) {
                 return 1;

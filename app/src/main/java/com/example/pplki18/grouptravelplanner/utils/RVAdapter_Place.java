@@ -62,8 +62,8 @@ public class RVAdapter_Place extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     @Override
-    public void onBindViewHolder(final RecyclerView.ViewHolder viewHolder, int i) {
-
+    public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int i) {
+        final int pos = i;
         switch (getItemViewType(i)) {
             case ITEM:
                 PlaceViewHolder placeViewHolder = (PlaceViewHolder) viewHolder;
@@ -73,7 +73,7 @@ public class RVAdapter_Place extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 placeViewHolder.addIcon.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        listener.addImageOnClick(v, viewHolder.getAdapterPosition());
+                        listener.addImageOnClick(v, pos);
                     }
                 });
 

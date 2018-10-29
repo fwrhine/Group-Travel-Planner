@@ -16,9 +16,8 @@
             android:scaleType="centerCrop"
             app1:layout_constraintDimensionRatio="H, 3:2"
             app:layout_constraintBottom_toTopOf="@id/guideline"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0" />
 
@@ -52,25 +51,6 @@
                 app1:layout_constraintHorizontal_bias="0.0"
                 app1:layout_constraintStart_toStartOf="parent" />
 
-            <RatingBar
-                android:id="@+id/rating"
-                style="?android:attr/ratingBarStyleSmall"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:theme="@style/RatingBar"
-                app1:layout_constraintStart_toStartOf="parent"
-                app1:layout_constraintTop_toBottomOf="@+id/title" />
-
-            <TextView
-                android:id="@+id/rating_num"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/colorWhite"
-                android:layout_marginLeft="5dp"
-                app1:layout_constraintTop_toBottomOf="@+id/title"
-                app:layout_constraintLeft_toRightOf="@+id/rating" />
-
         </android.support.constraint.ConstraintLayout>
 
         <RelativeLayout
@@ -97,11 +77,11 @@
                 android:text="date"/>
 
             <!--<ImageView-->
-                <!--android:id="@+id/event_detail_icon"-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_alignEnd="@+id/event_detail_date"-->
-                <!--android:src="@drawable/ic_event_note_black_24dp"/>-->
+            <!--android:id="@+id/event_detail_icon"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_alignEnd="@+id/event_detail_date"-->
+            <!--android:src="@drawable/ic_event_note_black_24dp"/>-->
 
             <TextView
                 android:id="@+id/event_detail_time"
@@ -135,7 +115,7 @@
                 android:textStyle="bold"/>
 
             <ImageView
-                android:id="@+id/desc_icon"
+                android:id="@+id/ic_desc"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/event_detail_duration"
@@ -148,7 +128,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/event_detail_duration"
-                android:layout_toEndOf="@id/desc_icon"
+                android:layout_toEndOf="@id/ic_desc"
                 android:layout_marginTop="5dp"
                 android:paddingEnd="25dp"
                 android:paddingStart="5dp"
@@ -162,25 +142,15 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_marginEnd="30dp"
-            android:src="@drawable/ic_add"
-            android:id="@+id/ic_add"
+            android:src="@drawable/ic_flight"
+            android:id="@+id/ic_event"
             android:tint="@color/colorWhite"
             app:backgroundTint="@color/colorPrimary"
             app:layout_constraintBottom_toBottomOf="@id/guideline"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/guideline" />
 
-        <ProgressBar
-            android:id="@+id/main_progress"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app1:layout_constraintStart_toStartOf="parent"
-            app1:layout_constraintEnd_toEndOf="parent"
-            app1:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:indeterminateTint="@color/darkgrey"/>
-
-        <android.support.constraint.ConstraintLayout
+        <RelativeLayout
             android:id="@+id/constraintLayout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -190,117 +160,91 @@
             app:layout_constraintTop_toBottomOf="@+id/detail_layout">
 
             <ImageView
-                android:id="@+id/ic_location"
-                android:layout_width="30dp"
-                android:layout_height="29dp"
-                android:src="@drawable/ic_location"
-                app1:layout_constraintStart_toStartOf="parent"
-                app1:layout_constraintTop_toTopOf="@+id/address"
-                tools:layout_editor_absoluteY="87dp" />
-
-            <TextView
-                android:id="@+id/address"
+                android:id="@+id/ic_transport"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="2dp"
-                android:layout_marginTop="30dp"
-                android:background="@drawable/label_bg"
-                android:paddingRight="30dp"
-                app1:layout_constraintStart_toEndOf="@+id/ic_location" />
+                android:layout_marginBottom="5dp"
+                android:src="@drawable/ic_flight_black"/>
+
+            <TextView
+                android:id="@+id/transport"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="30dp"
+                android:layout_toEndOf="@+id/ic_transport"
+                android:paddingStart="5dp"
+                android:text="name and code"/>
+
+            <LinearLayout
+                android:id="@+id/midLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/ic_transport"
+                android:orientation="horizontal"
+                android:weightSum="2">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="5dp"
+                        android:text="From: "
+                        android:textStyle="bold"/>
+
+                    <TextView
+                        android:id="@+id/origin"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="5dp"
+                        android:text="Origin"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:text="To: "
+                        android:textStyle="bold"/>
+
+                    <TextView
+                        android:id="@+id/destination"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="30dp"
+                        android:paddingStart="5dp"
+                        android:text="Destination"/>
+                </LinearLayout>
+
+
+            </LinearLayout>
+
 
             <ImageView
-                android:id="@+id/ic_website"
-                android:layout_width="23dp"
-                android:layout_height="23dp"
-                android:layout_marginStart="4dp"
-                android:layout_marginTop="8dp"
-                android:src="@drawable/ic_website"
-                app1:layout_constraintStart_toStartOf="parent"
-                app1:layout_constraintTop_toBottomOf="@+id/address" />
-
-            <TextView
-                android:id="@+id/website"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:layout_marginTop="11dp"
-                android:autoLink="web"
-                android:background="@drawable/label_bg"
-                android:paddingRight="30dp"
-                app1:layout_constraintStart_toEndOf="@+id/ic_website"
-                app1:layout_constraintTop_toBottomOf="@+id/address" />
-
-            <ImageView
-                android:id="@+id/ic_phone"
-                android:layout_width="22dp"
-                android:layout_height="22dp"
-                android:layout_marginStart="4dp"
-                android:layout_marginTop="8dp"
-                android:src="@drawable/ic_phone"
-                app1:layout_constraintStart_toStartOf="parent"
-                app1:layout_constraintTop_toBottomOf="@+id/website" />
-
-            <TextView
-                android:id="@+id/phone"
+                android:id="@+id/ic_money"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:layout_marginTop="11dp"
-                android:autoLink="phone"
-                android:background="@drawable/label_bg"
-                app1:layout_constraintStart_toEndOf="@+id/ic_website"
-                app1:layout_constraintTop_toBottomOf="@+id/website" />
-
-            <ImageView
-                android:id="@+id/ic_time"
-                android:layout_width="22dp"
-                android:layout_height="22dp"
-                android:layout_marginStart="4dp"
-                android:layout_marginTop="8dp"
-                android:src="@drawable/ic_time"
-                app1:layout_constraintStart_toStartOf="parent"
-                app1:layout_constraintTop_toBottomOf="@+id/ic_phone" />
+                android:src="@drawable/ic_attach_money"
+                android:layout_below="@id/midLayout"
+                android:layout_marginBottom="5dp"/>
 
             <TextView
-                android:id="@+id/open_now"
+                android:id="@+id/money"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:layout_marginTop="11dp"
-                android:textStyle="bold"
-                app1:layout_constraintStart_toEndOf="@+id/ic_time"
-                app1:layout_constraintTop_toBottomOf="@+id/phone" />
+                android:layout_marginEnd="30dp"
+                android:layout_below="@id/midLayout"
+                android:layout_toEndOf="@+id/ic_money"
+                android:paddingStart="5dp"
+                android:text="moneyyyy"/>
 
-            <TextView
-                android:id="@+id/open_hours"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:layout_marginTop="11dp"
-                app1:layout_constraintStart_toEndOf="@+id/ic_time"
-                app1:layout_constraintTop_toBottomOf="@+id/open_now" />
-
-        </android.support.constraint.ConstraintLayout>
-
-        <android.support.v7.widget.Toolbar
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:theme="@style/CustomActionBar"/>
-
-        <!--<Button-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:id="@+id/google_button"-->
-        <!--android:layout_marginTop="40dp"-->
-        <!--app1:layout_constraintEnd_toEndOf="parent"-->
-        <!--app1:layout_constraintStart_toStartOf="parent"-->
-        <!--android:text="Open in Google"-->
-        <!--android:drawableRight="@drawable/ic_google"-->
-        <!--android:drawablePadding="5dp"-->
-        <!--app1:layout_constraintTop_toBottomOf="@+id/constraintLayout" />-->
+        </RelativeLayout>
 
     </android.support.constraint.ConstraintLayout>
 </ScrollView>

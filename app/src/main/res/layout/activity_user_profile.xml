@@ -76,7 +76,7 @@
                 android:layout_centerHorizontal="true"
                 android:layout_marginBottom="32dp"
                 android:text="My Name"
-                android:textSize="20dp"
+                android:textSize="20sp"
                 android:textStyle="normal" />
 
             <ImageButton

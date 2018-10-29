@@ -159,6 +159,7 @@ public class UserProfileActivity extends AppCompatActivity {
                 byte_array = cursor.getBlob(cursor.getColumnIndex(UserContract.UserEntry.COL_PICTURE));
             } while (cursor.moveToNext());
         }
+        cursor.close();
 
         fullname_label.setText(fullname_str);
         username_label.setText(username_str);
@@ -192,15 +193,6 @@ public class UserProfileActivity extends AppCompatActivity {
             birthday_label.setText(birthday);
             birthday_label.setTypeface(birthday_label.getTypeface(), Typeface.NORMAL);
         }
-
-//        buttonLogout.setOnClickListener(
-//                new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View view) {
-//                        session.logoutUser();
-//                    }
-//                }
-//        );
     }
 
     @Override

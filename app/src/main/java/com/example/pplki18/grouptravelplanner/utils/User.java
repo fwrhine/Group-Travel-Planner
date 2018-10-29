@@ -2,9 +2,9 @@ package com.example.pplki18.grouptravelplanner.utils;
 
 public class User {
 
-    int user_id;
-    String user_name;
-    byte[] user_image;
+    private int user_id;
+    private String user_name;
+    private byte[] user_image;
 
     //constructor
     public User() {

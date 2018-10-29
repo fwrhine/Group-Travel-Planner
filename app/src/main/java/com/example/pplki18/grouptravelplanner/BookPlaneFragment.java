@@ -3,7 +3,9 @@ package com.example.pplki18.grouptravelplanner;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.ContentValues;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -28,6 +30,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
 import com.example.pplki18.grouptravelplanner.data.EventContract;
+import com.example.pplki18.grouptravelplanner.utils.Event;
 import com.example.pplki18.grouptravelplanner.utils.Flight;
 import com.example.pplki18.grouptravelplanner.utils.FlightAdapter;
 
@@ -40,7 +43,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Objects;
+
+import static android.app.Activity.RESULT_OK;
 
 public class BookPlaneFragment extends Fragment {
 
@@ -58,6 +64,9 @@ public class BookPlaneFragment extends Fragment {
     private RequestQueue queue;
     private int countUpdate;
     private ListView listTravel;
+
+    private String prevActivity;
+    private List<Event> events;
 
     @Nullable
     @Override
@@ -86,7 +95,37 @@ public class BookPlaneFragment extends Fragment {
 
         availableAirports = new HashMap<>();
 
+        prevActivity = getActivity().getIntent().getStringExtra("ACTIVITY");
+        if (prevActivity.equals("CreateNewPlanActivity")) {
+            events = getActivity().getIntent().getParcelableArrayListExtra("events");
+        }
+
         initSearch();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 3) {
+            if (resultCode == RESULT_OK) {
+                String prevActivity = data.getStringExtra("ACTIVITY");
+                if (prevActivity != null && prevActivity.equals("EditPlanActivity")) {
+                    getActivity().finish();
+                } else {
+                    events = data.getParcelableArrayListExtra("events");
+
+                    for (Event e : events) {
+                        Log.d("testtt", e.getTitle());
+                    }
+
+                    Intent intent = new Intent(getActivity(), CreateNewPlanActivity.class);
+                    intent.putParcelableArrayListExtra("events", (ArrayList<? extends Parcelable>) events);
+
+                    getActivity().setResult(RESULT_OK, intent);
+                    getActivity().finish();
+                }
+            }
+        }
     }
 
     private void initSearch() {
@@ -398,37 +437,68 @@ public class BookPlaneFragment extends Fragment {
                                 final TextView tvDepartTime = viewItem.findViewById(R.id.departTime);
                                 final TextView tvArriveTime = viewItem.findViewById(R.id.arriveTime);
 
-                                DatabaseHelper myDb = new DatabaseHelper(BookPlaneFragment.this.getActivity());
-                                SQLiteDatabase db = myDb.getReadableDatabase();
+                                String flightNum = tvFlightNum.getText().toString();
+                                String departCity = tvDepartCity.getText().toString();
+                                String arriveCity = tvArriveCity.getText().toString();
+                                String departTime = tvDepartTime.getText().toString();
+                                String arriveTime = tvArriveTime.getText().toString();
 
-                                final String date = startDate;
+                                if (prevActivity.equals("CreateNewPlanActivity")) {
+                                    Event anEvent = new Event();
+                                    anEvent.setTitle("Flight");
+                                    anEvent.setDescription("Flight for Transport");
+                                    anEvent.setDate(date);
+                                    anEvent.setType("flights");
 
-                                ContentValues values = new ContentValues();
+                                    anEvent.setOrigin(departCity);
+                                    anEvent.setDestination(arriveCity);
+                                    anEvent.setDeparture_time(departTime);
+                                    anEvent.setArrival_time(arriveTime);
+                                    anEvent.setTransport_number(flightNum);
 
-                                values.put(EventContract.EventEntry.COL_PLAN_ID, plan_id);
-                                values.put(EventContract.EventEntry.COL_TITLE, "Travel Plan");
-                                values.put(EventContract.EventEntry.COL_DESCRIPTION, "Flight for Transport");
-                                values.put(EventContract.EventEntry.COL_DATE, date);
-                                values.put(EventContract.EventEntry.COL_TYPE, "Transport");
+                                    events.add(anEvent);
+                                    Intent intent = new Intent(getActivity(), CreateNewPlanActivity.class);
+                                    intent.putParcelableArrayListExtra("events", (ArrayList<? extends Parcelable>) events);
+//                                    intent.putExtra("ACTIVITY", "Fragment_PlaceList");
+                                    
+                                    getActivity().setResult(RESULT_OK, intent);
+                                    getActivity().finish();
 
-                                values.put(EventContract.EventEntry.COL_ORIGIN, tvDepartCity.getText().toString());
-                                values.put(EventContract.EventEntry.COL_DESTINATION, tvArriveCity.getText().toString());
-                                values.put(EventContract.EventEntry.COL_DEPARTURE_TIME, tvDepartTime.getText().toString());
-                                values.put(EventContract.EventEntry.COL_ARRIVAL_TIME, tvArriveTime.getText().toString());
-                                values.put(EventContract.EventEntry.COL_TRANS_NUMBER, tvFlightNum.getText().toString());
+                                } else {
 
-                                long newRowId = db.insert(EventContract.EventEntry.TABLE_NAME, null, values);
+                                    DatabaseHelper myDb = new DatabaseHelper(BookPlaneFragment.this.getActivity());
+                                    SQLiteDatabase db = myDb.getReadableDatabase();
 
-                                if (newRowId != -1) {
-                                    Toast.makeText(BookPlaneFragment.this.getActivity(), "Selected Flight : "
-                                            + tvFlightNum.getText() , Toast.LENGTH_LONG).show();
-                                    dialog.dismiss();
-                                }
+                                    final String date = startDate;
 
-                                else {
-                                    Toast.makeText(BookPlaneFragment.this.getActivity(),
-                                            "Selection Failed!", Toast.LENGTH_LONG).show();
-                                    dialog.dismiss();
+                                    ContentValues values = new ContentValues();
+
+                                    values.put(EventContract.EventEntry.COL_PLAN_ID, plan_id);
+                                    values.put(EventContract.EventEntry.COL_TITLE, "Flight");
+                                    values.put(EventContract.EventEntry.COL_DESCRIPTION, "Flight for Transport");
+                                    values.put(EventContract.EventEntry.COL_DATE, date);
+                                    values.put(EventContract.EventEntry.COL_TYPE, "flights");
+
+                                    values.put(EventContract.EventEntry.COL_ORIGIN, departCity);
+                                    values.put(EventContract.EventEntry.COL_DESTINATION, arriveCity);
+                                    values.put(EventContract.EventEntry.COL_DEPARTURE_TIME, departTime);
+                                    values.put(EventContract.EventEntry.COL_ARRIVAL_TIME, arriveTime);
+                                    values.put(EventContract.EventEntry.COL_TRANS_NUMBER, flightNum);
+
+                                    long newRowId = db.insert(EventContract.EventEntry.TABLE_NAME, null, values);
+
+                                    if (newRowId != -1) {
+                                        Toast.makeText(BookPlaneFragment.this.getActivity(), "Selected Flight : "
+                                                + tvFlightNum.getText() , Toast.LENGTH_LONG).show();
+                                        dialog.dismiss();
+                                        getActivity().finish();
+                                    }
+
+                                    else {
+                                        Toast.makeText(BookPlaneFragment.this.getActivity(),
+                                                "Selection Failed!", Toast.LENGTH_LONG).show();
+                                        dialog.dismiss();
+                                    }
                                 }
                             }
                         }
