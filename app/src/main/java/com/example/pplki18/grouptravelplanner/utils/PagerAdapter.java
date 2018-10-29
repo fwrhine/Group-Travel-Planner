@@ -51,7 +51,8 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
                 BookTrainFragment myFragment2 = new BookTrainFragment();
                 myFragment2.setArguments(bundle);
                 return myFragment2;
-            case 5: Fragment_CustomEvent tab3 = new Fragment_CustomEvent();
+            case 5:
+                Fragment_CustomEvent tab3 = newCustomEventInstance();
                 return tab3;
             default:
                 return null;
