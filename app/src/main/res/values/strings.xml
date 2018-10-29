@@ -37,6 +37,10 @@
     <string name="bookArriveTime">Arrive Time</string>
     <string name="bookPrice">Price</string>
     <string name="buttonFindTrain">FIND TRAIN</string>
+    <string name="pick_destination">Pick Destination</string>
+    <string name="open_now">Open Now</string>
+    <string name="closed">Closed</string>
+
 
 
 </resources>

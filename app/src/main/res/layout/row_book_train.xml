@@ -34,7 +34,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Depart City"
-                android:textSize="14dp" />
+                android:textSize="14sp" />
 
             <TextView
                 android:id="@+id/departTime"
@@ -42,7 +42,7 @@
                 android:layout_height="wrap_content"
                 android:text="Depart Time"
                 android:layout_below="@id/departCity"
-                android:textSize="12dp" />
+                android:textSize="12sp" />
 
         </RelativeLayout>
 
@@ -53,7 +53,7 @@
             android:text=" -> "
             android:layout_toEndOf="@id/departData"
             android:layout_below="@id/trainData"
-            android:textSize="14dp" />
+            android:textSize="14sp" />
 
         <RelativeLayout
             android:id="@+id/arriveData"
@@ -67,7 +67,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Arrive City"
-                android:textSize="14dp" />
+                android:textSize="14sp" />
 
             <TextView
                 android:id="@+id/arriveTime"
@@ -75,7 +75,7 @@
                 android:layout_height="wrap_content"
                 android:text="Arrive Time"
                 android:layout_below="@id/arriveCity"
-                android:textSize="12dp" />
+                android:textSize="12sp" />
 
         </RelativeLayout>
     </RelativeLayout>
@@ -93,7 +93,7 @@
             android:layout_height="56dp"
             android:gravity="center"
             android:text="Price"
-            android:textSize="16dp" />
+            android:textSize="16sp" />
 
     </RelativeLayout>
 

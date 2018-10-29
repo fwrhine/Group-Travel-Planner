@@ -18,6 +18,7 @@ public class EventContract {
 
         // for all
         public static final String _ID = BaseColumns._ID;
+        public static final String COL_QUERY_ID = "query_id";
         public static final String COL_PLAN_ID = "plan_id";
         public static final String COL_TITLE = "event_title";
         public static final String COL_LOCATION = "event_location";     // GAK USAH
@@ -26,8 +27,10 @@ public class EventContract {
         public static final String COL_TIME_START = "event_time_start";
         public static final String COL_TIME_END = "event_time_end";
         public static final String COL_PHONE = "event_phone";
+        public static final String COL_WEBSITE = "event_website";
         public static final String COL_TYPE = "event_type";
         public static final String COL_RATING = "event_rating";
+        public static final String COL_PRICE = "event_price";
 
         // for flight and train
         public static final String COL_ORIGIN = "origin";

@@ -7,6 +7,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -38,6 +40,7 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
     TextView trip_start_date, trip_end_date, trip_days;
     TextView date_month_year, day;
     ImageButton button_left, button_right, add_event, save_plan;
+    FloatingActionButton fab_add_event;
 
     private SessionManager session;
     private HashMap<String, String> user;
@@ -83,8 +86,10 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
 
         button_left = (ImageButton) findViewById(R.id.button_left);
         button_right = (ImageButton) findViewById(R.id.button_right);
-        add_event = (ImageButton) findViewById(R.id.add_event);
+//        add_event = (ImageButton) findViewById(R.id.add_event);
         save_plan = (ImageButton) findViewById(R.id.save_plan);
+
+        fab_add_event = (FloatingActionButton) findViewById(R.id.fab_add_event);
     }
 
     public void init() {
@@ -185,6 +190,7 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
         return myQuittingDialogBox;
     }
 
+    // TODO set the triple dot more button
     private void setMoreButton() {
         save_plan.setOnClickListener(
                 new View.OnClickListener() {
@@ -214,15 +220,18 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void setAddEventButton() {
-        add_event.setOnClickListener(
+        fab_add_event.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         String date = date_month_year.getText().toString();
                         Intent myIntent = new Intent(EditPlanActivity.this, ChooseEventActivity.class);
-//                        Log.d("IDDDDD", plan_id + "");
+
+                        myIntent.putExtra("ACTIVITY", "EditPlanActivity");
                         myIntent.putExtra("plan_id", plan_id);
                         myIntent.putExtra("date", date);
+                        myIntent.putExtra("date_start", date_start);
+                        myIntent.putExtra("date_end", date_end);
 
                         EditPlanActivity.this.startActivity(myIntent);
                         Toast.makeText(EditPlanActivity.this, "Add Event", Toast.LENGTH_SHORT).show();
@@ -259,9 +268,9 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
                     long total_days = diff / (24 * 60 * 60 * 1000) + 2;
                     trip_days.setText(total_days + "");
                     intent.putExtra("date", date_start_temp);
+                    putExtraPlanDateRange();
                     setDateChanger();
-                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment_timeline_activity,
-                            new Fragment_EventList()).commit();
+                    beginFragmentEventList();
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
@@ -282,9 +291,9 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
                     long total_days = diff / (24 * 60 * 60 * 1000) + 1;
                     trip_days.setText(total_days + "");
                     intent.putExtra("date", date_start_temp);
+                    putExtraPlanDateRange();
                     setDateChanger();
-                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment_timeline_activity,
-                            new Fragment_EventList()).commit();
+                    beginFragmentEventList();
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
@@ -299,7 +308,7 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
     public void setDateChanger() throws ParseException {
         date_month_year.setText(dateFormatter2.format(date_start_temp));
         date_month_year.setTextColor(getResources().getColor(R.color.colorBlack));
-        day.setText(new SimpleDateFormat("EEEE").format(date_start_temp));
+        day.setText(new SimpleDateFormat("EEEE", Locale.US).format(date_start_temp));
         day.setTextColor(getResources().getColor(R.color.colorBlack));
 
         Date start_pin = dateFormatter2.parse(dateFormatter2.format(date_start_temp));
@@ -325,8 +334,8 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
         }
 
         intent.putExtra("date", c_cur_date.getTime());
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_timeline_activity,
-                new Fragment_EventList()).commit();
+        putExtraPlanDateRange();
+        beginFragmentEventList();
 
         button_left.setOnClickListener(
                 new View.OnClickListener() {
@@ -338,7 +347,7 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
 
                         c_cur_date.add(Calendar.DATE, -1);
                         date_month_year.setText(dateFormatter2.format(c_cur_date.getTime()));
-                        day.setText(new SimpleDateFormat("EEEE").format(c_cur_date.getTime()));
+                        day.setText(new SimpleDateFormat("EEEE", Locale.US).format(c_cur_date.getTime()));
 
                         if (c_cur_date.getTime().getTime() == c_start_pin.getTime().getTime()) {
                             button_left.setEnabled(false);
@@ -352,8 +361,8 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
                         }
 
                         intent.putExtra("date", c_cur_date.getTime());
-                        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_timeline_activity,
-                                new Fragment_EventList()).commit();
+                        putExtraPlanDateRange();
+                        beginFragmentEventList();
                     }
                 }
         );
@@ -378,13 +387,21 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
                         }
 
                         intent.putExtra("date", c_cur_date.getTime());
-                        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_timeline_activity,
-                                new Fragment_EventList()).commit();
+                        putExtraPlanDateRange();
+                        beginFragmentEventList();
                     }
                 }
         );
+    }
 
+    public void putExtraPlanDateRange() {
+        intent.putExtra("start_date", date_start);
+        intent.putExtra("end_date", date_end);
+    }
 
-
+    public void beginFragmentEventList() {
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_timeline_activity,
+                new Fragment_EventList()).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .show(new Fragment_EventList()).commit();
     }
 }

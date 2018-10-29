@@ -13,12 +13,12 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.READ_CALENDAR" />
     <uses-permission android:name="android.permission.WRITE_CALENDAR" />
-
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
 
     <application
+        android:fullBackupContent="true"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -61,29 +61,31 @@
         <activity android:name=".EditPhoneNoActivity" />
         <activity android:name=".EditBirthdayActivity" />
         <activity android:name=".ChooseEventActivity">
-            <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.MAIN" /> -->
 
-            <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+
+            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+            <!-- </intent-filter> -->
         </activity>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/api_key" />
 
-        <activity android:name=".PlaceActivity"></activity>
+        <activity android:name=".PlaceActivity" />
 
         <activity android:name=".InHomeActivity" />
         <activity android:name=".CreateNewPlanActivity" />
-        <activity android:name=".EditPlanActivity"></activity>
+        <activity android:name=".EditPlanActivity" />
 
-        <!--<activity android:name=".Activity_InHome"></activity>-->
-        <activity android:name=".Activity_CreateReminder">
+        <!-- <activity android:name=".Activity_InHome"></activity> -->
+        <activity android:name=".Activity_CreateReminder" />
 
-        </activity>
-        <receiver android:name=".AlertReciever"/>
-        <!--<activity android:name=".Activity_ReminderList"/>-->
+        <receiver android:name=".AlertReciever" />
+        <!-- <activity android:name=".Activity_ReminderList"/> -->
+        <activity android:name=".EditEventActivity" />
+        <activity android:name=".EventDetailActivity"></activity>
     </application>
 
 </manifest>

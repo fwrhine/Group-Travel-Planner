@@ -2,6 +2,7 @@ package com.example.pplki18.grouptravelplanner;
 
 import android.content.Intent;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.pplki18.grouptravelplanner.utils.CustomTabLayout;
 import com.example.pplki18.grouptravelplanner.utils.PagerAdapter;
 import com.example.pplki18.grouptravelplanner.utils.SessionManager;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
@@ -25,25 +27,24 @@ import com.google.android.gms.maps.model.LatLng;
 
 public class ChooseEventActivity extends AppCompatActivity {
 
-    Toolbar toolbar;
-    TabLayout tabLayout;
-    ViewPager viewPager;
-    PlaceAutocompleteFragment autocompleteFragment;
-    SessionManager sessionManager;
-    TextView textRegion;
-    LinearLayout pickDestination;
+    private Toolbar toolbar;
+    private TabLayout tabLayout;
+    private ViewPager viewPager;
+    private PlaceAutocompleteFragment autocompleteFragment;
+    private SessionManager sessionManager;
+    private TextView textRegion;
+    private LinearLayout pickDestination;
 //    SearchView searchView;
-    Bundle plan_bundle;
+    private Bundle plan_bundle;
 
-    LatLng regionCoor;
+    private LatLng regionCoor;
 
     //
 //    if(ContextCompat.checkSelfPermission(mActivity,Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED){
 //        // Camera permission granted
 //        PlaceLikelihoodBufferResponse currentPlace = PlaceDetectionClient.getCurrentPlace();
 
-    int REGION_AUTOCOMPLETE_REQUEST_CODE = 1;
-    int PLACE_AUTOCOMPLETE_REQUEST_CODE = 2;
+    private final int REGION_AUTOCOMPLETE_REQUEST_CODE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +64,7 @@ public class ChooseEventActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowCustomEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-        textRegion.setText("Pick destination");
+        textRegion.setText(R.string.pick_destination);
         pickDestination.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -93,9 +94,9 @@ public class ChooseEventActivity extends AppCompatActivity {
         tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_restaurant));
         tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_sunny));
 
-
-        tabLayout.addTab(tabLayout.newTab().setText("Airplane"));
-        tabLayout.addTab(tabLayout.newTab().setText("Train"));
+        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_hotel));
+        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_airplane));
+        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_train));
         tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_add_white));
 
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
@@ -151,6 +152,7 @@ public class ChooseEventActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REGION_AUTOCOMPLETE_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 Place place = PlaceAutocomplete.getPlace(this, data);
@@ -169,18 +171,6 @@ public class ChooseEventActivity extends AppCompatActivity {
                 Log.d("COOR", regionCoor.toString());
 
                 textRegion.setText(place.getName());
-            } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
-                Status status = PlaceAutocomplete.getStatus(this, data);
-                // TODO: Handle the error.
-                Log.i("AFTER CLICK", status.getStatusMessage());
-
-            } else if (resultCode == RESULT_CANCELED) {
-                // The user canceled the operation.
-            }
-        } else if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
-            if (resultCode == RESULT_OK) {
-                Place place = PlaceAutocomplete.getPlace(this, data);
-                Log.d("PLACE ONE", place.getName().toString());
             } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
                 Status status = PlaceAutocomplete.getStatus(this, data);
                 // TODO: Handle the error.

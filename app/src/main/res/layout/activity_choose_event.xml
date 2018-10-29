@@ -52,7 +52,7 @@
         android:background="?attr/colorPrimary"
         android:elevation="6dp"
         android:minHeight="?attr/actionBarSize"
-        app:tabMode="scrollable"
+        app:tabGravity="fill"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"/>
 
     <!--<SearchView-->

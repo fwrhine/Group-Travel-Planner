@@ -1,17 +1,14 @@
 package com.example.pplki18.grouptravelplanner;
 
-import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,16 +16,13 @@ import android.view.ViewGroup;
 
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
 import com.example.pplki18.grouptravelplanner.data.EventContract;
-import com.example.pplki18.grouptravelplanner.data.PlanContract;
-import com.example.pplki18.grouptravelplanner.data.PlanContract.PlanEntry;
-import com.example.pplki18.grouptravelplanner.data.UserContract;
 import com.example.pplki18.grouptravelplanner.utils.Event;
 //import com.example.pplki18.grouptravelplanner.utils.Plan;
 import com.example.pplki18.grouptravelplanner.utils.RVAdapter_NewPlan;
-import com.example.pplki18.grouptravelplanner.utils.RVAdapter_Plan;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -42,7 +36,8 @@ public class Fragment_EventList extends Fragment {
     private RecyclerView rvNewPlan;
     private LinearLayoutManager linearLayoutManager;
     private Intent intent;
-    private SimpleDateFormat dateFormatter;
+    private SimpleDateFormat dateFormatter1;
+    private SimpleDateFormat dateFormatter2;
     private List<Event> events;
     RVAdapter_NewPlan adapter;
     DatabaseHelper myDb;
@@ -63,6 +58,9 @@ public class Fragment_EventList extends Fragment {
         rvNewPlan.setHasFixedSize(true);
         rvNewPlan.setLayoutManager(linearLayoutManager);
 
+//        Date end_date = (Date) intent.getExtras().get("end_date");
+//        Log.d("fragment_end_date", end_date.toString());
+
         populateEventRecyclerView(date);
     }
 
@@ -71,7 +69,12 @@ public class Fragment_EventList extends Fragment {
         Log.d("RESUME", "masuk resume");
         super.onResume();
         Date date = (Date) intent.getExtras().get("date");
-        events = getAllEvents(date);
+        String prevActivity = getActivity().getIntent().getStringExtra("ACTIVITY");
+        if (prevActivity != null && prevActivity.equals("CreateNewPlanActivity")) {
+            events = getAllEventsTemp(date);
+        } else {
+            events = getAllEvents(date);
+        }
         adapter = new RVAdapter_NewPlan(events, getActivity());
         rvNewPlan.setAdapter(adapter);
         adapter.notifyDataSetChanged();
@@ -82,7 +85,14 @@ public class Fragment_EventList extends Fragment {
         Log.d(TAG, "populateEventRecyclerView: Displaying list of events in the ListView.");
 
         //get data and append to list
-        List<Event> events = getAllEvents(date);
+        String prevActivity = getActivity().getIntent().getStringExtra("ACTIVITY");
+        if (prevActivity != null && prevActivity.equals("CreateNewPlanActivity")) {
+            Log.d("prevActivity", "bener");
+            events = getAllEventsTemp(date);
+        } else {
+            events = getAllEvents(date);
+        }
+
         RVAdapter_NewPlan adapter = new RVAdapter_NewPlan(events, getActivity());
         rvNewPlan.setAdapter(adapter);
     }
@@ -91,17 +101,22 @@ public class Fragment_EventList extends Fragment {
      * Get all event with the selected date
      * */
     public List<Event> getAllEvents(Date cur_date) {
-        List<Event> events = new ArrayList<Event>();
+        List<Event> all_event = new ArrayList<Event>();
         int plan_id = getActivity().getIntent().getIntExtra("plan_id", 0);
-        String str_cur_date = dateFormatter.format(cur_date);
+        String str_cur_date = dateFormatter1.format(cur_date);
+        // this one is to check the transport date (saved in different format)
+        String str_cur_date2 = dateFormatter2.format(cur_date);
         Log.d("CUR_DATE", str_cur_date);
+        Log.d("CUR_DATE2", str_cur_date2);
 
         String selectQuery = "SELECT * FROM " + EventContract.EventEntry.TABLE_NAME +
                 " WHERE " + EventContract.EventEntry.COL_PLAN_ID + " = " + plan_id + " AND " + "( " +
                 EventContract.EventEntry.COL_DATE + " = " + "\"" + str_cur_date + "\"" + " OR " +
                 EventContract.EventEntry.COL_DATE_CHECK_IN + " = " + "\"" + str_cur_date + "\"" + " OR " +
                 EventContract.EventEntry.COL_DATE_CHECK_OUT + " = " + "\"" + str_cur_date + "\"" + " OR " +
-                EventContract.EventEntry.COL_DATE_CHECK_IN + " = " + "\"" + str_cur_date + "\"" + " )";
+                EventContract.EventEntry.COL_DATE + " = " + "\"" + str_cur_date2 + "\"" + " OR " +
+                EventContract.EventEntry.COL_DATE_CHECK_IN + " = " + "\"" + str_cur_date2 + "\"" + " OR " +
+                EventContract.EventEntry.COL_DATE_CHECK_OUT + " = " + "\"" + str_cur_date2 + "\"" + " )";
 
         SQLiteDatabase db = databaseHelper.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
@@ -111,28 +126,73 @@ public class Fragment_EventList extends Fragment {
         // looping through all rows and adding to list
         if (c.moveToFirst()) {
             do {
-                String title = c.getString(c.getColumnIndex(EventContract.EventEntry.COL_TITLE));
-                String time_start = c.getString(c.getColumnIndex(EventContract.EventEntry.COL_TIME_START));
-                String time_end = c.getString(c.getColumnIndex(EventContract.EventEntry.COL_TIME_END));
+                long event_id = c.getLong(c.getColumnIndex(EventContract.EventEntry._ID));
                 String type = c.getString(c.getColumnIndex(EventContract.EventEntry.COL_TYPE));
+                String date = c.getString(c.getColumnIndex(EventContract.EventEntry.COL_DATE));
+                String title = c.getString(c.getColumnIndex(EventContract.EventEntry.COL_TITLE));
                 String description = c.getString(c.getColumnIndex(EventContract.EventEntry.COL_DESCRIPTION));
+                String query_id = "";
+                String time_start = "";
+                String time_end = "";
+                String transport_num = "";
+                String origin = "";
+                String destination = "";
+                if (type.equals("restaurants") || type.equals("attractions") || type.equals("custom")) {
+                    query_id = c.getString(c.getColumnIndex(EventContract.EventEntry.COL_QUERY_ID));
+                    time_start = c.getString(c.getColumnIndex(EventContract.EventEntry.COL_TIME_START));
+                    time_end = c.getString(c.getColumnIndex(EventContract.EventEntry.COL_TIME_END));
+                } else if (type.equals("trains") || type.equals("flights")) {
+                    query_id = "";
+                    time_start = c.getString(c.getColumnIndex(EventContract.EventEntry.COL_DEPARTURE_TIME));
+                    time_end = c.getString(c.getColumnIndex(EventContract.EventEntry.COL_ARRIVAL_TIME));
+                    transport_num = c.getString(c.getColumnIndex(EventContract.EventEntry.COL_TRANS_NUMBER));
+                    origin = c.getString(c.getColumnIndex(EventContract.EventEntry.COL_ORIGIN));
+                    destination = c.getString(c.getColumnIndex(EventContract.EventEntry.COL_DESTINATION));
+
+                } else {
+                    query_id = "";
+                }
 
                 try {
-                    Date time1 = format.parse(time_start);
-                    Date time2 = format.parse(time_end);
-                    Event event = new Event(title, time1, time2, type);
+                    String time1 = format.format(format.parse(time_start));
+                    Log.d("time1", time1);
+                    String time2 = format.format(format.parse(time_end));
+                    Event event = new Event(title, date, time1, time2, type);
+                    event.setQuery_id(query_id);
                     event.setDescription(description);
-//                    if (event.getDate().equals(str_cur_date)){
-                    events.add(event);
-//                    }
+                    event.setEvent_id((int) event_id);
+                    event.setTransport_number(transport_num);
+                    event.setOrigin(origin);
+                    event.setDestination(destination);
 
+                    all_event.add(event);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             } while (c.moveToNext());
         }
+        Collections.sort(all_event);
+        for(Event e: all_event) {
+            Log.d("TYPE IS", e.getType());
+        }
+        c.close();
+        return all_event;
+    }
 
-        return events;
+    public List<Event> getAllEventsTemp(Date date) {
+        List<Event> all_event;
+        all_event = intent.getParcelableArrayListExtra("events");
+        List<Event> some_event = new ArrayList<Event>();
+
+        String str_cur_date = dateFormatter1.format(date);
+        for (Event e : all_event) {
+            if (e.getDate().equals(str_cur_date)) {
+                some_event.add(e);
+            }
+        }
+
+        Collections.sort(some_event);
+        return some_event;
     }
 
     private void init() {
@@ -140,6 +200,7 @@ public class Fragment_EventList extends Fragment {
         linearLayoutManager = new LinearLayoutManager(this.getActivity());
         databaseHelper = new DatabaseHelper(this.getActivity());
         intent = getActivity().getIntent();
-        dateFormatter = new SimpleDateFormat("d MMMM yyyy", Locale.US);
+        dateFormatter1 = new SimpleDateFormat("d MMMM yyyy", Locale.US);
+        dateFormatter2 = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
     }
 }

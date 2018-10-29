@@ -31,7 +31,7 @@
             android:layout_height="wrap_content"
             android:gravity="bottom"
             android:text="FULLNAME"
-            android:textSize="20dp" />
+            android:textSize="20sp" />
 
         <TextView
             android:id="@+id/username"
@@ -40,7 +40,7 @@
             android:layout_below="@id/fullname"
             android:gravity="bottom"
             android:text="USERNAME"
-            android:textSize="16dp" />
+            android:textSize="16sp" />
 
     </RelativeLayout>
 
