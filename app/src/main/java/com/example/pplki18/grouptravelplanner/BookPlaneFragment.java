@@ -106,13 +106,21 @@ public class BookPlaneFragment extends Fragment {
                     public void onCallback(HashMap<String, String> map) {
                         Log.d("MAP-FINAL", "map size: "+ map.size());
                         availableAirports = map;
+
                         String[] airportKeyArray = availableAirports.keySet().toArray(new String[availableAirports.size()]);
-                        ArrayAdapter<String> adapter1 = new ArrayAdapter<>(BookPlaneFragment.this.getActivity(), R.layout.support_simple_spinner_dropdown_item, airportKeyArray);
+                        ArrayList<String> airportArrayList = new ArrayList<>();
+
+                        for (int i = 0; i < availableAirports.size(); i++) {
+                            String currentKey = airportKeyArray[i];
+                            airportArrayList.add(availableAirports.get(currentKey)+" | "+currentKey);
+                        }
+
+                        ArrayAdapter<String> adapter1 = new ArrayAdapter<>(BookPlaneFragment.this.getActivity(), R.layout.support_simple_spinner_dropdown_item, airportArrayList);
                         origin.setAdapter(adapter1);
                         destination.setAdapter(adapter1);
 
-                        origin.setText(airportKeyArray[0]);
-                        destination.setText(airportKeyArray[1]);
+                        origin.setText(airportArrayList.get(0));
+                        destination.setText(airportArrayList.get(1));
                     }
                 });
             }
@@ -130,7 +138,7 @@ public class BookPlaneFragment extends Fragment {
             e.printStackTrace();
         }
 
-        getView().findViewById(R.id.loadingPanel).setVisibility(View.GONE);
+        Objects.requireNonNull(getView()).findViewById(R.id.loadingPanel).setVisibility(View.GONE);
 
         searchButton.setOnClickListener(
                 new View.OnClickListener() {
@@ -140,8 +148,15 @@ public class BookPlaneFragment extends Fragment {
 
                             if(validate()) {
 
-                                String startLoc = origin.getText().toString();
-                                String endLoc = destination.getText().toString();
+                                String[] startSplit = origin.getText().toString().split(" \\| ");
+                                String startLoc = startSplit[1];
+
+                                Log.d("START", startLoc);
+
+                                String[] endSplit = destination.getText().toString().split(" \\| ");
+                                String endLoc = endSplit[1];
+
+                                Log.d("START", startLoc);
                                 final String departDate = startDate;
 
                                 if (availableAirports.containsKey(startLoc)) {
@@ -384,7 +399,7 @@ public class BookPlaneFragment extends Fragment {
         Log.d("ALMOST", "Almost finished");
         FlightAdapter adapter = new FlightAdapter(this.getActivity(), availableFlights);
 
-        getView().findViewById(R.id.loadingPanel).setVisibility(View.GONE);
+        Objects.requireNonNull(getView()).findViewById(R.id.loadingPanel).setVisibility(View.GONE);
 
         listTravel.setAdapter(adapter);
         listTravel.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -422,13 +437,15 @@ public class BookPlaneFragment extends Fragment {
                                 final TextView tvDepartTime = viewItem.findViewById(R.id.departTime);
                                 final TextView tvArriveTime = viewItem.findViewById(R.id.arriveTime);
 
+                                // Add for Airline Name & Price
+                                final TextView tvAirlineName = viewItem.findViewById(R.id.airlineName);
+                                String tvFlight = tvAirlineName.getText().toString() +"-"+ tvFlightNum.getText().toString();
 
-                                // Add for Airline Name
-                                TextView tvAirlineName = viewItem.findViewById(R.id.airlineName);
+                                final TextView tvPrice = viewItem.findViewById(R.id.price);
 
                                 // For the city name located in the input box
-                                String startLoc = origin.getText().toString();
-                                String endLoc = destination.getText().toString();
+                                String startLoc = origin.getText().toString().split(" \\| ")[1];
+                                String endLoc = destination.getText().toString().split(" \\| ")[1];
 
                                 DatabaseHelper myDb = new DatabaseHelper(BookPlaneFragment.this.getActivity());
                                 SQLiteDatabase db = myDb.getReadableDatabase();
@@ -447,7 +464,7 @@ public class BookPlaneFragment extends Fragment {
                                 values.put(EventContract.EventEntry.COL_DESTINATION, tvArriveCity.getText().toString());
                                 values.put(EventContract.EventEntry.COL_DEPARTURE_TIME, tvDepartTime.getText().toString());
                                 values.put(EventContract.EventEntry.COL_ARRIVAL_TIME, tvArriveTime.getText().toString());
-                                values.put(EventContract.EventEntry.COL_TRANS_NUMBER, tvFlightNum.getText().toString());
+                                values.put(EventContract.EventEntry.COL_TRANS_NUMBER, tvFlight);
 
                                 long newRowId = db.insert(EventContract.EventEntry.TABLE_NAME, null, values);
 
@@ -455,7 +472,6 @@ public class BookPlaneFragment extends Fragment {
                                     Toast.makeText(BookPlaneFragment.this.getActivity(), "Selected Flight : "
                                             + tvFlightNum.getText() , Toast.LENGTH_LONG).show();
                                     dialog.dismiss();
-                                    //startActivity(new Intent(BookPlaneFragment.this.getActivity(), CreateNewPlanActivity.class));
                                 }
 
                                 else {
