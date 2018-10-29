@@ -125,9 +125,9 @@ public class Fragment_GroupList extends Fragment implements NavigationView.OnNav
                 groups.clear();
                 for (DataSnapshot postSnapshot: dataSnapshot.getChildren()){
                     Group group = postSnapshot.getValue(Group.class); // Group Objects
-                        if(groupIDs.contains(group.getGroup_id())){
-                            groups.add(group);
-                        }
+                    if(groupIDs.contains(group.getGroup_id())){
+                        groups.add(group);
+                    }
                 }
                 groupCallback.onCallback(groups);
             }

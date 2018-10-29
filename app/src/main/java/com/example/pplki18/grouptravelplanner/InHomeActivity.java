@@ -30,6 +30,8 @@ import com.google.firebase.auth.FirebaseUser;
 
 public class InHomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
+    private final int FRAGMENT_FRIENDS = 0;
+
     private DatabaseHelper myDb;
     private DrawerLayout drawer;
     private Toolbar toolbar;

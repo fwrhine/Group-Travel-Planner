@@ -6,7 +6,7 @@ import java.util.List;
 public class Plan {
 
     String plan_id;
-    String userId;
+    String creatorId;
     String plan_name;
     String plan_start_date;
     String plan_end_date;
@@ -14,16 +14,16 @@ public class Plan {
     String plan_overview;
     String plan_modified;
     String plan_created;
-    List<Event> events;
+    List<String> events;
 
     //constructor
     public Plan() {
     }
 
-    public Plan(String plan_id, String plan_name, String userId) {
+    public Plan(String plan_id, String plan_name, String creatorId) {
         this.plan_id = plan_id;
         this.plan_name = plan_name;
-        this.userId = userId;
+        this.creatorId = creatorId;
         events = new ArrayList<>();
 //        this.user_image = user_image;
 
@@ -91,5 +91,13 @@ public class Plan {
 
     public void setPlan_created(String plan_created) {
         this.plan_created = plan_created;
+    }
+
+    public List<String> getEvents() {
+        return this.events;
+    }
+
+    public void setEvents(List<String> events) {
+        this.events = events;
     }
 }

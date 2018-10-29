@@ -73,6 +73,7 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
     private String plan_name;
 
     private List<Event> events;
+    private List<String> planIDs = new ArrayList<>();
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -277,6 +278,17 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
     }
 
     private void savePlanToDB(final String plan_name_fix, final String plan_desc) {
+        savePlanHelper(plan_name_fix, plan_desc, new InsertPlanCallback() {
+            @Override
+            public void onCallback(String planId) {
+                savePlanToUser(planId);
+                saveEventToDB(planId);
+                Log.d("PLAN_ID", planId);
+            }
+        });
+    }
+
+    private void savePlanHelper(final String plan_name_fix, final String plan_desc, final InsertPlanCallback callback){
         final String start_day = dateFormatter2.format(date_start);
         final String end_day = dateFormatter2.format(date_end);
         final int total_days = Integer.parseInt(trip_days.getText().toString());
@@ -293,6 +305,7 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
                 plan.setPlan_total_days(total_days);
                 plan.setPlan_overview(plan_desc);
                 planRef.child(planId).setValue(plan);
+                callback.onCallback(planId);
             }
 
             @Override
@@ -300,16 +313,58 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
 
             }
         });
-        saveEventToDB(planId);
+    }
+
+    private void savePlanToUser(final String newPlanID){
+        final DatabaseReference userRef = firebaseDatabase.getReference().child("users").child(firebaseUser.getUid());
+
+        getAllPlanIDs(new PlanIdCallback() {
+            @Override
+            public void onCallback(final List<String> planID) {
+                userRef.child("plans").addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        planID.add(newPlanID);
+                        userRef.child("plans").setValue(planID);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+            }
+        });
+    }
+
+    private void getAllPlanIDs(final PlanIdCallback callback){
+        final DatabaseReference userRef = firebaseDatabase.getReference().child("users").child(firebaseUser.getUid());
+
+        userRef.child("plans").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                planIDs.clear();
+                for (DataSnapshot postSnapshot: dataSnapshot.getChildren()){
+                    String planId = postSnapshot.getValue(String.class); // String of groupID
+                    planIDs.add(planId);
+                }
+                callback.onCallback(planIDs);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     private void saveEventToDB(String plan_id) {
-        final DatabaseReference eventRef = firebaseDatabase.getReference().child("events");
-
-        eventRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        final DatabaseReference planRef = firebaseDatabase.getReference().child("plans").child(plan_id).child("events");
+        final List<String> eventIDs = getEventIDs(planRef, plan_id);
+        planRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                eventRef.setValue(events);
+                planRef.setValue(eventIDs);
             }
 
             @Override
@@ -317,6 +372,33 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
 
             }
         });
+
+        final DatabaseReference eventRef = firebaseDatabase.getReference().child("events");
+        eventRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (Event e : events){
+                    eventRef.child(e.getEvent_id()).setValue(e);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
+    private List<String> getEventIDs(DatabaseReference eventRef, String planID){
+
+        List<String> eventIDs = new ArrayList<>();
+        for (Event e : events){
+            e.setEvent_id(eventRef.push().getKey());
+            e.setPlan_id(planID);
+            eventIDs.add(e.getEvent_id());
+        }
+        return eventIDs;
     }
 
     private void setAddEventButton() {
@@ -500,4 +582,11 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
                 new Fragment_EventList()).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN).commit();
     }
 
+    private interface InsertPlanCallback {
+        void onCallback(String planId);
+    }
+
+    private interface PlanIdCallback {
+        void onCallback(List<String> planID);
+    }
 }

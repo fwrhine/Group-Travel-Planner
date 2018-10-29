@@ -52,8 +52,7 @@ public class RVAdapter_Plan extends RecyclerView.Adapter<RVAdapter_Plan.PlanView
     @Override
     public RVAdapter_Plan.PlanViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
         View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.row_plan, viewGroup, false);
-        RVAdapter_Plan.PlanViewHolder pvh = new RVAdapter_Plan.PlanViewHolder(v);
-        return pvh;
+        return new PlanViewHolder(v);
     }
 
     @Override
@@ -140,7 +139,7 @@ public class RVAdapter_Plan extends RecyclerView.Adapter<RVAdapter_Plan.PlanView
     }
 
     private AlertDialog deleteConfirmation(final int position, String name) {
-        AlertDialog myQuittingDialogBox = new AlertDialog.Builder(context)
+        return new AlertDialog.Builder(context)
                 //set message, title, and icon
                 .setTitle("Delete")
                 .setMessage("Do you want to delete " + name + "?")
@@ -165,7 +164,6 @@ public class RVAdapter_Plan extends RecyclerView.Adapter<RVAdapter_Plan.PlanView
                     }
                 })
                 .create();
-        return myQuittingDialogBox;
     }
 
     private void deletePlan(Plan plan) {
@@ -182,7 +180,7 @@ public class RVAdapter_Plan extends RecyclerView.Adapter<RVAdapter_Plan.PlanView
 
     private AlertDialog renameDialog(final int position, String name) {
         final EditText edtText = new EditText(context);
-        AlertDialog myQuittingDialogBox = new AlertDialog.Builder(context)
+        return new AlertDialog.Builder(context)
                 //set message, title, and icon
                 .setTitle("Rename " + name)
                 .setMessage("Insert new name below!")
@@ -208,7 +206,6 @@ public class RVAdapter_Plan extends RecyclerView.Adapter<RVAdapter_Plan.PlanView
                     }
                 })
                 .create();
-        return myQuittingDialogBox;
     }
 
     public void renamePlan(Plan plan, String new_name) {

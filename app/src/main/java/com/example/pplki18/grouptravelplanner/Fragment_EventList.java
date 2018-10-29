@@ -125,7 +125,7 @@ public class Fragment_EventList extends Fragment {
         // looping through all rows and adding to list
         if (c.moveToFirst()) {
             do {
-                long event_id = c.getLong(c.getColumnIndex(EventContract.EventEntry._ID));
+                String event_id = c.getString(c.getColumnIndex(EventContract.EventEntry._ID));
                 String query_id = c.getString(c.getColumnIndex(EventContract.EventEntry.COL_QUERY_ID));
                 String date = c.getString(c.getColumnIndex(EventContract.EventEntry.COL_DATE));
                 String title = c.getString(c.getColumnIndex(EventContract.EventEntry.COL_TITLE));
@@ -141,7 +141,7 @@ public class Fragment_EventList extends Fragment {
                     Event event = new Event(title, date, time1, time2, type);
                     event.setQuery_id(query_id);
                     event.setDescription(description);
-                    event.setEvent_id((int) event_id);
+                    event.setEvent_id((String) event_id);
 //                    if (event.getDate().equals(str_cur_date)){
                     all_event.add(event);
 //                    }

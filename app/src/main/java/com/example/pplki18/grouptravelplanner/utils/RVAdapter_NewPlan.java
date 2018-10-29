@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
@@ -20,6 +21,13 @@ import com.example.pplki18.grouptravelplanner.R;
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
 import com.example.pplki18.grouptravelplanner.data.EventContract;
 import com.github.vipulasri.timelineview.TimelineView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -33,9 +41,15 @@ public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.Ne
     private Context mContext;
     private LayoutInflater mLayoutInflater;
 
+    private FirebaseAuth mAuth;
+    private FirebaseUser firebaseUser;
+    private FirebaseDatabase firebaseDatabase;
+
     public RVAdapter_NewPlan(List<Event> events, Context context) {
         this.events = events;
         this.mContext = context;
+        mAuth = FirebaseAuth.getInstance();
+        firebaseDatabase = FirebaseDatabase.getInstance();
     }
 
     @Override
@@ -159,17 +173,46 @@ public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.Ne
     }
 
     private void deleteEvent(Event event) {
-        DatabaseHelper myDb = new DatabaseHelper(mContext);
-        SQLiteDatabase db = myDb.getWritableDatabase();
 
-        if(event.getEvent_id() != 0) {
-            String deleteQuery = "DELETE FROM " + EventContract.EventEntry.TABLE_NAME + " WHERE " +
-                    EventContract.EventEntry._ID + " = " + event.getEvent_id();
-            db.execSQL(deleteQuery);
-            db.close();
+        if (event.getEvent_id() != null){
+            deleteHelper(event, new DeleteEventCallback() {
+                @Override
+                public void onCallback() {
+                    notifyDataSetChanged();
+                }
+            });
         }
+    }
 
-        notifyDataSetChanged();
+    public void deleteHelper(Event event, final DeleteEventCallback callback){
+        //TODO: CHECK
+        String plan_id = event.getPlan_id();
+        final String event_id = event.getEvent_id();
+        final DatabaseReference planRef = firebaseDatabase.getReference().child("plans").child(plan_id).child("events").child(event_id);
+        planRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                planRef.removeValue();
+                final DatabaseReference eventRef = firebaseDatabase.getReference().child("events").child(event_id);
+                eventRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        eventRef.removeValue();
+                        callback.onCallback();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     @Override
@@ -196,4 +239,7 @@ public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.Ne
         }
     }
 
+    private interface DeleteEventCallback {
+        void onCallback();
+    }
 }

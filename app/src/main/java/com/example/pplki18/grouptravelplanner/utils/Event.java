@@ -9,7 +9,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Event implements Parcelable, Comparable<Event> {
-    private int event_id;
+    private String event_id;
+    private String plan_id;
 
     private String query_id;
     private String title;
@@ -48,7 +49,7 @@ public class Event implements Parcelable, Comparable<Event> {
     }
 
     protected Event(Parcel in) {
-        event_id = in.readInt();
+        event_id = in.readString();
         query_id = in.readString();
         title = in.readString();
         location = in.readString();
@@ -83,11 +84,11 @@ public class Event implements Parcelable, Comparable<Event> {
         }
     };
 
-    public int getEvent_id() {
+    public String getEvent_id() {
         return event_id;
     }
 
-    public void setEvent_id(int id) {
+    public void setEvent_id(String id) {
         this.event_id = id;
     }
 
@@ -174,6 +175,14 @@ public class Event implements Parcelable, Comparable<Event> {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public String getPlan_id() {
+        return plan_id;
+    }
+
+    public void setPlan_id(String plan_id){
+        this.plan_id = plan_id;
     }
 
     public String getType() {
@@ -279,7 +288,7 @@ public class Event implements Parcelable, Comparable<Event> {
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeInt(event_id);
+        parcel.writeString(event_id);
         parcel.writeString(query_id);
         parcel.writeString(title);
         parcel.writeString(location);

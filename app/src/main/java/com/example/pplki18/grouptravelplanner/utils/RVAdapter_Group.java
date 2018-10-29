@@ -36,8 +36,6 @@ import java.util.List;
 public class RVAdapter_Group extends RecyclerView.Adapter<RVAdapter_Group.GroupViewHolder>{
 
     List<Group> groups;
-    DatabaseHelper myDb;
-    SessionManager sessionManager;
     Context context;
 
     public RVAdapter_Group(List<Group> groups, Context context){
@@ -91,7 +89,7 @@ public class RVAdapter_Group extends RecyclerView.Adapter<RVAdapter_Group.GroupV
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     User user = dataSnapshot.getValue(User.class);
-                    if(!user.getPhotoUrl().equals("none")){
+                    if(user != null && !user.getPhotoUrl().equals("none")){
                         Uri uri = Uri.parse(user.photoUrl);
 
                         GlideApp.with(memberImageViews.get(index[0]).getContext())
@@ -121,6 +119,10 @@ public class RVAdapter_Group extends RecyclerView.Adapter<RVAdapter_Group.GroupV
     @Override
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
+    }
+
+    public void insertGroup(Group group) {
+        groups.add(group);
     }
 
     public static class GroupViewHolder extends RecyclerView.ViewHolder {
