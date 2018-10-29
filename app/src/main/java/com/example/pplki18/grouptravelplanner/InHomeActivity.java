@@ -32,9 +32,11 @@ import android.widget.Toast;
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
 import com.example.pplki18.grouptravelplanner.utils.SessionManager;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 
 public class InHomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -46,6 +48,7 @@ public class InHomeActivity extends AppCompatActivity implements NavigationView.
     private ActionBarDrawerToggle toggle;
     private Button buttonLogout;
     private SessionManager sessionManager;
+    public static List<Reminder> reminderList;
     Integer READ_CALENDAR;
 
     @Override
@@ -121,7 +124,9 @@ public class InHomeActivity extends AppCompatActivity implements NavigationView.
                 }
         );
 
-        READ_CALENDAR = 5;
+        READ_CALENDAR = 5;  //just some number
+        reminderList = new ArrayList<Reminder>() {
+        };
     }
 
     public void setHeaderInfo() {
@@ -150,12 +155,13 @@ public class InHomeActivity extends AppCompatActivity implements NavigationView.
         header_status.setText("Status: " + status);
     }
 
-    public long generalInsertNotifier(String title, String description, String destination, Integer year, Integer month,
+    public long generalInsertNotifier(String title, String destination, Integer year, Integer month,
                                       Integer day, Integer hour, Integer minute) {
         //TODO error handling, numbers must be within limit
         ContentValues event = new ContentValues();
         ContentResolver cr = getContentResolver();
         Long eventID;
+        String description = "GTP";
         Integer m1 = month - 1;
 
         Calendar startTime = Calendar.getInstance();
@@ -239,7 +245,7 @@ public class InHomeActivity extends AppCompatActivity implements NavigationView.
     }
 
 
-    public static void readCalendar(Context context) {
+    public void readCalendar(Context context) {
 
         ContentResolver contentResolver = context.getContentResolver();
 
@@ -249,39 +255,42 @@ public class InHomeActivity extends AppCompatActivity implements NavigationView.
         @SuppressLint("Recycle") final Cursor cursor = contentResolver.query(Uri.parse("content://com.android.calendar/calendars"),
                 (new String[] { "_id" }), null, null, null);
 
-
+        //TODO too many calendar IDs
         HashSet<String> calendarIds = new HashSet<>();
 
+        Objects.requireNonNull(cursor).moveToNext();
+        final String _id = cursor.getString(0);
+        System.out.println("Id: " + _id );
+        calendarIds.add(_id);
 
-        while (Objects.requireNonNull(cursor).moveToNext()) {
-
-            final String _id = cursor.getString(0);
-
-            System.out.println("Id: " + _id );
-            calendarIds.add(_id);
-        }
-
-        // For each calendar, display all the events from the previous week to the end of next week.
+        // For each calendar, display all the events for the next 1 week.
         for (String id : calendarIds) {
             Uri.Builder builder = Uri.parse("content://com.android.calendar/instances/when").buildUpon();
             long now = new Date().getTime();
-            ContentUris.appendId(builder, now - DateUtils.WEEK_IN_MILLIS);
+            ContentUris.appendId(builder, now);
             ContentUris.appendId(builder, now + DateUtils.WEEK_IN_MILLIS);
 
+            //CANT USE SELECTION PROPERLY
             @SuppressLint("Recycle") Cursor cur = contentResolver.query(builder.build(),
-                    new String[] { "event_id", "description", "begin"}, null,
-                    null, null);
+                    new String[] { "event_id", "eventLocation", "begin", "description"}, null,
+                    null, "begin ASC");
 
 
             while (Objects.requireNonNull(cur).moveToNext()) {
                 final String eventID = cur.getString(0);
-                final String description = cur.getString(1);
+                final String location = cur.getString(1);
                 final Date begin = new Date(cur.getLong(2));
+                final String description = cur.getString(3);
 
-                String output = "event id: " + eventID + " description: " + description +
-                        " begin: " + begin;
+
+                String output = "event id: " + eventID + " eventLocation: " + location +
+                        " begin: " + begin.toString() + " description: " + description;
                 Log.v("CALENDAR INSTANCE", output);
-
+                //manual filter to accept only reminders that were created through the app
+                if (description.equals("GTP")) {
+                    Reminder rem = new Reminder(location, begin, Long.parseLong(eventID));
+                    reminderList.add(rem);
+                }
             }
         }
     }

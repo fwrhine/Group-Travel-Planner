@@ -63,8 +63,11 @@ public class RVAdapter_Reminder extends RecyclerView.Adapter<RVAdapter_Reminder.
     @Override
     public void onBindViewHolder(final RVAdapter_Reminder.ReminderViewHolder reminderViewHolder, int i) {
         //TRYING TO USE CALENDAR EVENT TABLE
-        reminderViewHolder.destination.setText(reminderList.get(i).getDestination());
-        reminderViewHolder.date.setText((reminderList.get(i).getDate()));
+        String destinationText = reminderList.get(i).getDestination() + " at ";
+        String dateText = reminderList.get(i).getDate().toString().substring(0, 16);
+
+        reminderViewHolder.destination.setText(destinationText);
+        reminderViewHolder.date.setText(dateText);
         reminderViewHolder.eventid.setText(reminderList.get(i).getEventID().toString());
 //        reminderViewHolder.alarmchannel.setText(reminderList.get(i).getAlarmChannel());
 
@@ -77,51 +80,24 @@ public class RVAdapter_Reminder extends RecyclerView.Adapter<RVAdapter_Reminder.
         reminderViewHolder.edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                editRemTest(Long.parseLong("79"));
+                editRemTest(eventID);
             }
         });
 
         reminderViewHolder.delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO method to remove from calendar
-
-                Toast.makeText(context, "Deleted event", Toast.LENGTH_SHORT).show();
-
+                // method to remove from calendar
                 ((InHomeActivity) context).deleteEventFromCalendar(eventID);
-                Toast.makeText(context, "PRESSED FAB", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Deleted event", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
 
-    public void removeRem(ReminderViewHolder viewHolder) {
-        myDb = new DatabaseHelper(context);
-        SQLiteDatabase db = myDb.getReadableDatabase();
-        sessionManager = new SessionManager(context);
-        HashMap<String, String> user = sessionManager.getUserDetails();
-
-        String where = ReminderContract.ReminderEntry.COL_EVENT_ID + " = " + viewHolder.eventid.getText().toString() +
-                " AND " + ReminderContract.ReminderEntry.COL_USER_ID + " = " + user.get(SessionManager.KEY_ID);
-        db.delete(ReminderContract.ReminderEntry.TABLE_NAME, where, null );
-        Log.d("RemoveRem", "Removed Friend");
-        Toast.makeText(context, "Removed friend", Toast.LENGTH_SHORT).show();
-    }
-
-    /** user defined method to delete the event based on id*/
-    private int deleteEventFromCalendar(ContentResolver cr, long id){
-        Uri eventUri = Uri.parse("content://com.android.calendar/events");  // or
-        Uri deleteUri = null;
-        deleteUri = ContentUris.withAppendedId(eventUri, id);
-        int rows = cr.delete(deleteUri, null, null);
-// System.out.println("Rows deleted: " + rows);
-        return rows;
-    }
-
 
     public void editRemTest(Long eventID) {
-        //TODO go to edit page
-
+        // go to edit page
         Intent myIntent = new Intent(this.context, Activity_EditReminder.class);
         myIntent.putExtra("event_id", eventID);
         context.startActivity(myIntent);

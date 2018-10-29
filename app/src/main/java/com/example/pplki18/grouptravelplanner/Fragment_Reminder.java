@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.icu.text.SimpleDateFormat;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -25,7 +26,9 @@ import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
 import com.example.pplki18.grouptravelplanner.data.ReminderContract;
 import com.example.pplki18.grouptravelplanner.utils.RVAdapter_Reminder;
 
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static android.content.ContentValues.TAG;
@@ -52,7 +55,7 @@ public class Fragment_Reminder extends Fragment implements NavigationView.OnNavi
         super.onActivityCreated(savedInstanceState);
         init();
 
-        r = new Reminder("T2", "2018/10/25", i);
+//        r = new Reminder("T2", "2018/10/25", i);
 //        r.setDate("2001/9/11");
 //        r.setDestination("New York");
 //        r.setChannel(0);
@@ -67,8 +70,8 @@ public class Fragment_Reminder extends Fragment implements NavigationView.OnNavi
 //                Intent myIntent = new Intent(getActivity(), Activity_CreateReminder.class);
 //                Fragment_Reminder.this.startActivity(myIntent);
                 // TO TEST generalInsert
-                ((InHomeActivity) getActivity()).generalInsertNotifier("T1","T2", "T3",
-                        2018, 10, 28, 8, 20);
+                ((InHomeActivity) getActivity()).generalInsertNotifier("T1", "T2",
+                        2018, 10, 30, 8, 20);
                 Toast.makeText(getActivity().getApplicationContext(), "PRESSED FAB", Toast.LENGTH_SHORT).show();
 
             }
@@ -86,16 +89,29 @@ public class Fragment_Reminder extends Fragment implements NavigationView.OnNavi
         Log.d(TAG, "populateGroupRecyclerView: Displaying list of groups in the ListView.");
 
         //get data and append to list
-        List<Reminder> reminderList = new ArrayList<Reminder>();
-        reminderList.add(r);
+        List<Reminder> reminderList = getAllReminders();
         RVAdapter_Reminder adapter = new RVAdapter_Reminder(reminderList, getActivity());
         recyclerViewGroup.setAdapter(adapter);
     }
 
     private List<Reminder> getAllReminders() {
-        channelList = Activity_CreateReminder.reminders;
-        return channelList;
+        return InHomeActivity.reminderList;
     }
+
+    public static List<Reminder> bubbleSort(List<Reminder> arr) {
+        for (int i = 0; i < arr.size(); i++) {
+            for (int j = 0; j < arr.size()-1-i; j++) {
+                if(arr.get(j).getDate().after(arr.get(j+1).getDate()))
+                {
+                    Reminder temp = arr.get(j);
+                    arr.set(j, arr.get(j+1));
+                    arr.set(j+1, temp);
+                }
+            }
+        }
+        return arr;
+    }
+
 
 
     private void init() {

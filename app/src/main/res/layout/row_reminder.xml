@@ -51,6 +51,7 @@
                 android:layout_below="@id/alarmchannel"
                 android:layout_toRightOf="@id/date_adap"
                 android:text="test"
+                android:visibility="gone"
                 />
 
             <Button

@@ -128,7 +128,7 @@ public class Activity_CreateReminder extends AppCompatActivity implements DatePi
 //                createNotification(dest, notificationTxt);
 //                generalCreateNotification("event", "detail", Integer i);
 
-                eventID2 = generalInsertNotifier(destText, notificationTxt, destText, yearFinal, monthFinal, dayFinal, hourFinal, minuteFinal);
+                eventID2 = generalInsertNotifier(destText, destText, yearFinal, monthFinal, dayFinal, hourFinal, minuteFinal);
 
 
 //                alarmCal.set(yearFinal, monthFinal, dayFinal, hourFinal, minuteFinal);
@@ -163,13 +163,13 @@ public class Activity_CreateReminder extends AppCompatActivity implements DatePi
     }
 
 
-    public long generalInsertNotifier(String title, String description, String destination, Integer year, Integer month,
+    public long generalInsertNotifier(String title, String destination, Integer year, Integer month,
                                       Integer day, Integer hour, Integer minute) {
         //TODO error handling, numbers must be within limit
         ContentValues event = new ContentValues();
         ContentResolver cr = getContentResolver();
         Long eventID;
-        String destinationStr = destination;
+        String description = "GTP";
         String date = day + month + year + "";
 
         Calendar startTime = Calendar.getInstance();
@@ -238,22 +238,6 @@ public class Activity_CreateReminder extends AppCompatActivity implements DatePi
 //        values.put( "minutes", 10 );
 //        cr.insert( REMINDERS_URI, values );
 //    }
-
-    public void remToDatabase(Integer eventID){
-        myDb = new DatabaseHelper(getApplicationContext());
-        SQLiteDatabase db = myDb.getReadableDatabase();
-        HashMap<String, String> user = session.getUserDetails();
-
-        ContentValues values = new ContentValues();
-        values.put(ReminderContract.ReminderEntry.COL_USER_ID, user.get(session.KEY_ID));
-        values.put(ReminderContract.ReminderEntry.COL_EVENT_ID, eventID);
-        values.put(ReminderContract.ReminderEntry.COL_ALARM_CHANNEL, currChannel);
-
-        db.insert(ReminderContract.ReminderEntry.TABLE_NAME, null, values);
-
-        Log.d("Reminder", "Added Reminder");
-        Toast.makeText(getApplicationContext(), "Added Reminder", Toast.LENGTH_SHORT).show();
-    }
 
 
     @SuppressLint("SetTextI18n")
