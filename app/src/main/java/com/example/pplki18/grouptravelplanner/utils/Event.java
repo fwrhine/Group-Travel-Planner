@@ -21,6 +21,8 @@ public class Event implements Parcelable, Comparable<Event> {
     private String phone;
     private String type;
     private String rating;
+    private String website;
+    private String price;
 
     private String origin;
     private String destination;
@@ -73,6 +75,8 @@ public class Event implements Parcelable, Comparable<Event> {
         phone = in.readString();
         type = in.readString();
         rating = in.readString();
+        website = in.readString();
+        price = in.readString();
         origin = in.readString();
         destination = in.readString();
 //        departure_time = in.readString();
@@ -228,7 +232,7 @@ public class Event implements Parcelable, Comparable<Event> {
     }
 
     public String getArrival_time() {
-        return time_start;
+        return time_end;
     }
 
     public void setArrival_time(String arrival_time) {
@@ -291,6 +295,14 @@ public class Event implements Parcelable, Comparable<Event> {
         this.rating = rating;
     }
 
+    public String getWebsite() { return website; }
+
+    public void setWebsite(String website) { this.website = website; }
+
+    public String getPrice() { return price; }
+
+    public void setPrice(String price) { this.price = price; }
+
     @Override
     public int describeContents() {
         return 0;
@@ -309,6 +321,8 @@ public class Event implements Parcelable, Comparable<Event> {
         parcel.writeString(phone);
         parcel.writeString(type);
         parcel.writeString(rating);
+        parcel.writeString(website);
+        parcel.writeString(price);
         parcel.writeString(origin);
         parcel.writeString(destination);
 //        parcel.writeString(departure_time);

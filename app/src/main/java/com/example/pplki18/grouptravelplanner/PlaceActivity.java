@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
+import android.graphics.Typeface;
 import android.media.Image;
 import android.media.Rating;
 import android.net.Uri;
@@ -74,6 +75,7 @@ public class PlaceActivity extends AppCompatActivity {
     TextView eventDate;
     TextView eventTime;
     TextView eventDuration;
+    TextView eventDescription;
     RelativeLayout detailLayout;
     ImageButton editEvent;
 
@@ -114,6 +116,7 @@ public class PlaceActivity extends AppCompatActivity {
                 eventDate.setText(date);
                 eventTime.setText(timeStr);
                 eventDuration.setText(duration);
+                eventDescription.setText(description);
 
             }
         }
@@ -315,7 +318,7 @@ public class PlaceActivity extends AppCompatActivity {
         anEvent.setQuery_id(place_id);
         anEvent.setTitle(title.getText().toString());
         anEvent.setLocation(address.getText().toString());
-        anEvent.setDescription(website.getText().toString());
+        anEvent.setWebsite(website.getText().toString());
         anEvent.setDate(getIntent().getStringExtra("date"));
         anEvent.setTime_start(start_time);
         anEvent.setTime_end(end_time);
@@ -335,7 +338,7 @@ public class PlaceActivity extends AppCompatActivity {
         contentValues.put(EventContract.EventEntry.COL_PLAN_ID, getIntent().getIntExtra("plan_id", -1));
         contentValues.put(EventContract.EventEntry.COL_TITLE, title.getText().toString());
         contentValues.put(EventContract.EventEntry.COL_LOCATION, address.getText().toString());
-        contentValues.put(EventContract.EventEntry.COL_DESCRIPTION, website.getText().toString());
+        contentValues.put(EventContract.EventEntry.COL_WEBSITE, website.getText().toString());
         contentValues.put(EventContract.EventEntry.COL_DATE, getIntent().getStringExtra("date"));
         contentValues.put(EventContract.EventEntry.COL_TIME_START, start_time);
         contentValues.put(EventContract.EventEntry.COL_TIME_END, end_time);
@@ -356,12 +359,20 @@ public class PlaceActivity extends AppCompatActivity {
         String start = getIntent().getStringExtra("time_start");
         String end = getIntent().getStringExtra("time_end");
         String duration = getIntent().getStringExtra("duration");
+        String desc = getIntent().getStringExtra("description");
 
         String timeStr = start + " - " + end;
 
         eventDate.setText(date);
         eventTime.setText(timeStr);
         eventDuration.setText(duration);
+
+        if (desc.equals("")) {
+            eventDescription.setText("edit to add description");
+            eventDescription.setTypeface(eventDescription.getTypeface(), Typeface.ITALIC);
+        } else {
+            eventDescription.setText(desc);
+        }
 
         String type = getIntent().getStringExtra("type");
         ic_add.setEnabled(false);
@@ -386,6 +397,7 @@ public class PlaceActivity extends AppCompatActivity {
                 Bundle bundle = getIntent().getExtras();
                 bundle.putString("address", address.getText().toString());
                 bundle.putString("name", title.getText().toString());
+                bundle.putString("description", eventDescription.getText().toString());
                 bundle.putInt("event_id", event_id);
 
                 Toast.makeText(PlaceActivity.this, "edit event", Toast.LENGTH_SHORT).show();
@@ -419,6 +431,7 @@ public class PlaceActivity extends AppCompatActivity {
         eventDate = (TextView) findViewById(R.id.event_detail_date);
         eventTime = (TextView) findViewById(R.id.event_detail_time);
         eventDuration = (TextView) findViewById(R.id.event_detail_duration);
+        eventDescription = (TextView) findViewById(R.id.event_detail_desc);
         detailLayout = (RelativeLayout) findViewById(R.id.detail_layout);
         editEvent = (ImageButton) findViewById(R.id.edit_event);
 

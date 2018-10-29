@@ -74,6 +74,7 @@ public class EditEventActivity extends AppCompatActivity implements View.OnClick
         end_date = (Date) bundle.get("end_date");
         String date = bundle.getString("date");
         String name = bundle.getString("name");
+        String desc = bundle.getString("description");
         type = bundle.getString("type");
         String address = bundle.getString("address");
         start_time = getIntent().getStringExtra("time_start");
@@ -92,6 +93,7 @@ public class EditEventActivity extends AppCompatActivity implements View.OnClick
         }
         event_start_time.setText(start_time);
         event_end_time.setText(end_time);
+        event_description.setText(desc);
 
         setSupportActionBar(toolbar);
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);

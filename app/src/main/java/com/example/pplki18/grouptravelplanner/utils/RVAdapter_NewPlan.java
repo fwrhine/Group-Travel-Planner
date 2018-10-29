@@ -9,14 +9,13 @@ import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.example.pplki18.grouptravelplanner.EditEventActivity;
+import com.example.pplki18.grouptravelplanner.EventDetailActivity;
 import com.example.pplki18.grouptravelplanner.PlaceActivity;
 import com.example.pplki18.grouptravelplanner.R;
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
@@ -89,6 +88,15 @@ public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.Ne
         holder.eventTitle.setText(event.getTitle());
         holder.eventTimeDetail.setText(timeString);
 
+        holder.eventDescription.setVisibility(View.GONE);
+        if (event.getDescription() != null) {
+            holder.eventDescription.setVisibility(View.VISIBLE);
+            String desc = event.getDescription();
+            if (desc.length() > 45) desc = desc.substring(0,42) + "...";
+            holder.eventDescription.setText(desc);
+        }
+
+
         setEventDetailOnClick(holder, position);
         setCardViewLongClick(holder, position, event.getTitle());
     }
@@ -112,8 +120,8 @@ public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.Ne
 
     public void setEventDetailOne(Event anEvent) {
         Intent myIntent = new Intent(mContext, PlaceActivity.class);
+
         myIntent.putExtra("PLACE_ID", anEvent.getQuery_id());
-        Log.d("DATE", anEvent.getDate());
         myIntent.putExtra("ACTIVITY", "PlanActivity");
         myIntent.putExtra("date", anEvent.getDate());
         myIntent.putExtra("time_start", anEvent.getTime_start());
@@ -121,6 +129,12 @@ public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.Ne
         myIntent.putExtra("duration", anEvent.getTotal_time());
         myIntent.putExtra("event_id", anEvent.getEvent_id());
         myIntent.putExtra("type", anEvent.getType());
+
+        if (anEvent.getDescription() != null) {
+            myIntent.putExtra("description", anEvent.getDescription());
+        } else {
+            myIntent.putExtra("description", "");
+        }
 
         Intent intent =((Activity) mContext).getIntent();
         Date date_start = (Date) intent.getExtras().get("start_date");
@@ -229,6 +243,7 @@ public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.Ne
         TextView eventTimeDetail;
         TextView eventTime;
         TextView eventDetail;
+        TextView eventDescription;
         TimelineView eventIcon;
 
         NewPlanViewHolder(View itemView) {
@@ -237,6 +252,7 @@ public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.Ne
             eventTitle = (TextView) itemView.findViewById(R.id.item_title);
             eventTime = (TextView) itemView.findViewById(R.id.item_time);
             eventTimeDetail = (TextView) itemView.findViewById(R.id.item_time_detail);
+            eventDescription = (TextView) itemView.findViewById(R.id.item_desc_detail);
             eventDetail = (TextView) itemView.findViewById(R.id.item_detail);
             eventIcon = (TimelineView) itemView.findViewById(R.id.time_marker);
         }

@@ -134,7 +134,7 @@ public class Fragment_EventList extends Fragment {
                 String query_id = "";
                 String time_start = "";
                 String time_end = "";
-                if (type.equals("restaurants") || type.equals("attractions") || type.equals("customs")) {
+                if (type.equals("restaurants") || type.equals("attractions") || type.equals("custom")) {
                     query_id = c.getString(c.getColumnIndex(EventContract.EventEntry.COL_QUERY_ID));
                     time_start = c.getString(c.getColumnIndex(EventContract.EventEntry.COL_TIME_START));
                     time_end = c.getString(c.getColumnIndex(EventContract.EventEntry.COL_TIME_END));

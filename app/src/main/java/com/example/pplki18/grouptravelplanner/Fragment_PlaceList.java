@@ -339,7 +339,7 @@ public class Fragment_PlaceList extends Fragment {
         anEvent.setQuery_id(places.get(position).getPlace_id());
         anEvent.setTitle(places.get(position).getName());
         anEvent.setLocation(places.get(position).getAddress());
-        anEvent.setDescription(places.get(position).getWebsite());
+        anEvent.setWebsite(places.get(position).getWebsite());
         anEvent.setDate(event_date);
         anEvent.setTime_start(start_time);
         anEvent.setTime_end(end_time);
@@ -359,7 +359,7 @@ public class Fragment_PlaceList extends Fragment {
         contentValues.put(EventContract.EventEntry.COL_PLAN_ID, plan_id);
         contentValues.put(EventContract.EventEntry.COL_TITLE, places.get(position).getName());
         contentValues.put(EventContract.EventEntry.COL_LOCATION, places.get(position).getAddress());
-        contentValues.put(EventContract.EventEntry.COL_DESCRIPTION, places.get(position).getWebsite());
+        contentValues.put(EventContract.EventEntry.COL_WEBSITE, places.get(position).getWebsite());
         contentValues.put(EventContract.EventEntry.COL_DATE, event_date);
         //TODO ERROR PLACES GADA ADDRESS DLL ??!!
 //        Log.d("event location", places.get(position).getAddress());

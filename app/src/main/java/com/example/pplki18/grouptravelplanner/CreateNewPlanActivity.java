@@ -301,6 +301,7 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
                 contentValues.put(EventContract.EventEntry.COL_PHONE, e.getPhone());
                 contentValues.put(EventContract.EventEntry.COL_TYPE, type);
                 contentValues.put(EventContract.EventEntry.COL_RATING, e.getRating());
+                contentValues.put(EventContract.EventEntry.COL_WEBSITE, e.getWebsite());
                 long event_id = db.insert(EventContract.EventEntry.TABLE_NAME, null, contentValues);
 
             } else if (type.equals("flights") || type.equals("trains")) {

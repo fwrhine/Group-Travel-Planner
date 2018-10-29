@@ -85,7 +85,7 @@
         <receiver android:name=".AlertReciever" />
         <!-- <activity android:name=".Activity_ReminderList"/> -->
         <activity android:name=".EditEventActivity" />
-        <activity android:name=".utils.EventDetailActivity"></activity>
+        <activity android:name=".EventDetailActivity"></activity>
     </application>
 
 </manifest>
