@@ -16,7 +16,7 @@ import com.example.pplki18.grouptravelplanner.R;
 import com.example.pplki18.grouptravelplanner.utils.Event;
 
 public class EventDetailActivity extends AppCompatActivity {
-    ImageView image, desc_icon, ic_transport, ic_origin, ic_destination, ic_money;
+    ImageView image, desc_icon, ic_transport, ic_money;
     TextView title, description, transport, origin, destination, money;
     TextView eventDate, eventTime, eventDuration, eventDescription;
     ImageButton editEvent;
@@ -38,6 +38,22 @@ public class EventDetailActivity extends AppCompatActivity {
         Event event = intent.getParcelableExtra("event");
         type = event.getType();
 
+        String start = event.getTime_start();
+        String end = event.getTime_end();
+        String duration = event.getTotal_time();
+
+        String timeStr = start + " - " + end;
+
+        title.setText(event.getTitle());
+        eventDate.setText(event.getDate());
+        eventTime.setText(timeStr);
+        eventDuration.setText(duration);
+        eventDescription.setText(event.getDescription());
+        transport.setText(event.getTransport_number());
+        origin.setText(event.getOrigin());
+        destination.setText(event.getDestination());
+        money.setText(event.getPrice());
+
         if (type.equals("flights")) {
             initFlight(event);
         } else if (type.equals("trains")) {
@@ -48,27 +64,14 @@ public class EventDetailActivity extends AppCompatActivity {
     }
 
     public void initFlight(Event event) {
-        String start = event.getTime_start();
-        String end = event.getTime_end();
-        String duration = event.getTotal_time();
-
-        String timeStr = start + " - " + end;
-
         image.setImageResource(R.drawable.airplane_flying);
-        title.setText(event.getTitle());
-        eventDate.setText(event.getDate());
-        eventTime.setText(timeStr);
-        eventDuration.setText(duration);
-        eventDescription.setText(event.getDescription());
-
-        transport.setText(event.getTransport_number());
-        origin.setText(event.getOrigin());
-        destination.setText(event.getDestination());
-//        money.setText(event.getPrice());
     }
 
     public void initTrain(Event event) {
         image.setImageResource(R.drawable.train);
+        ic_event.setImageResource(R.drawable.ic_train);
+        ic_transport.setImageResource(R.drawable.ic_train_black);
+
     }
 
     public void initCustom(Event event) {
@@ -79,9 +82,8 @@ public class EventDetailActivity extends AppCompatActivity {
         image = findViewById(R.id.image);
         desc_icon = findViewById(R.id.ic_desc);
         ic_transport = findViewById(R.id.ic_transport);
-        ic_origin = findViewById(R.id.ic_origin);
-        ic_destination = findViewById(R.id.ic_destination);
         ic_money = findViewById(R.id.ic_money);
+        ic_event = findViewById(R.id.ic_event);
         title = findViewById(R.id.title);
         description = findViewById(R.id.event_detail_desc);
         transport = findViewById(R.id.transport);

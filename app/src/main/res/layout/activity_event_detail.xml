@@ -175,48 +175,63 @@
                 android:paddingStart="5dp"
                 android:text="name and code"/>
 
-            <ImageView
-                android:id="@+id/ic_origin"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/midLayout"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_flight_takeoff"
                 android:layout_below="@id/ic_transport"
-                android:layout_marginBottom="5dp"/>
+                android:orientation="horizontal"
+                android:weightSum="2">
 
-            <TextView
-                android:id="@+id/origin"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/ic_transport"
-                android:layout_toEndOf="@+id/ic_origin"
-                android:paddingStart="5dp"
-                android:text="Origin"/>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="5dp"
+                        android:text="From: "
+                        android:textStyle="bold"/>
 
-            <ImageView
-                android:id="@+id/ic_destination"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_flight_land"
-                android:layout_below="@id/ic_transport"
-                android:layout_toEndOf="@id/origin"
-                android:layout_marginStart="20dp"/>
+                    <TextView
+                        android:id="@+id/origin"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="5dp"
+                        android:text="Origin"/>
+                </LinearLayout>
 
-            <TextView
-                android:id="@+id/destination"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="30dp"
-                android:layout_below="@id/ic_transport"
-                android:layout_toEndOf="@+id/ic_destination"
-                android:paddingStart="5dp"
-                android:text="Destination"/>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:text="To: "
+                        android:textStyle="bold"/>
+
+                    <TextView
+                        android:id="@+id/destination"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="30dp"
+                        android:paddingStart="5dp"
+                        android:text="Destination"/>
+                </LinearLayout>
+
+
+            </LinearLayout>
+
 
             <ImageView
                 android:id="@+id/ic_money"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_attach_money"
-                android:layout_below="@id/ic_origin"
+                android:layout_below="@id/midLayout"
                 android:layout_marginBottom="5dp"/>
 
             <TextView
@@ -224,7 +239,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="30dp"
-                android:layout_below="@id/ic_origin"
+                android:layout_below="@id/midLayout"
                 android:layout_toEndOf="@+id/ic_money"
                 android:paddingStart="5dp"
                 android:text="moneyyyy"/>
