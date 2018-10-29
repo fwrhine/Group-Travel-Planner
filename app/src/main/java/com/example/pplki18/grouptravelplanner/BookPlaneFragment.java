@@ -3,7 +3,6 @@ package com.example.pplki18.grouptravelplanner;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.ContentValues;
-import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -131,32 +130,38 @@ public class BookPlaneFragment extends Fragment {
             e.printStackTrace();
         }
 
+        getView().findViewById(R.id.loadingPanel).setVisibility(View.GONE);
+
         searchButton.setOnClickListener(
                 new View.OnClickListener() {
 
                     @Override
                     public void onClick(View view) {
 
-                            String startLoc = origin.getText().toString();
-                            String endLoc = destination.getText().toString();
-                            final String departDate = startDate;
+                            if(validate()) {
 
-                            if(availableAirports.containsKey(startLoc)) {
+                                String startLoc = origin.getText().toString();
+                                String endLoc = destination.getText().toString();
+                                final String departDate = startDate;
 
-                                if(availableAirports.containsKey(endLoc)) {
+                                if (availableAirports.containsKey(startLoc)) {
 
-                                    final String start = availableAirports.get(startLoc);
-                                    final String end = availableAirports.get(endLoc);
-                                    flightApiCall(token, start, end, departDate);
+                                    if (availableAirports.containsKey(endLoc)) {
+
+                                        final String start = availableAirports.get(startLoc);
+                                        final String end = availableAirports.get(endLoc);
+                                        getView().findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
+                                        flightApiCall(token, start, end, departDate);
+                                    } else {
+                                        Toast.makeText(BookPlaneFragment.this.getActivity()
+                                                , "No Airports are in the arrival area"
+                                                , Toast.LENGTH_LONG).show();
+                                    }
                                 } else {
                                     Toast.makeText(BookPlaneFragment.this.getActivity()
-                                            , "No Airports are in the arrival area"
+                                            , "No Airports are in the departure area"
                                             , Toast.LENGTH_LONG).show();
                                 }
-                            } else {
-                                Toast.makeText(BookPlaneFragment.this.getActivity()
-                                        , "No Airports are in the departure area"
-                                        , Toast.LENGTH_LONG).show();
                             }
                         }
                 }
@@ -379,6 +384,8 @@ public class BookPlaneFragment extends Fragment {
         Log.d("ALMOST", "Almost finished");
         FlightAdapter adapter = new FlightAdapter(this.getActivity(), availableFlights);
 
+        getView().findViewById(R.id.loadingPanel).setVisibility(View.GONE);
+
         listTravel.setAdapter(adapter);
         listTravel.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -414,6 +421,14 @@ public class BookPlaneFragment extends Fragment {
                                 final TextView tvArriveCity = viewItem.findViewById(R.id.arriveCity);
                                 final TextView tvDepartTime = viewItem.findViewById(R.id.departTime);
                                 final TextView tvArriveTime = viewItem.findViewById(R.id.arriveTime);
+
+
+                                // Add for Airline Name
+                                TextView tvAirlineName = viewItem.findViewById(R.id.airlineName);
+
+                                // For the city name located in the input box
+                                String startLoc = origin.getText().toString();
+                                String endLoc = destination.getText().toString();
 
                                 DatabaseHelper myDb = new DatabaseHelper(BookPlaneFragment.this.getActivity());
                                 SQLiteDatabase db = myDb.getReadableDatabase();
@@ -494,6 +509,27 @@ public class BookPlaneFragment extends Fragment {
         });
 
         queue.add(stringRequest);
+    }
+
+    public boolean validate() {
+        boolean valid = true;
+
+        String startLoc = origin.getText().toString();
+        String endLoc = destination.getText().toString();
+
+        if (startLoc.isEmpty()) {
+            Toast.makeText(BookPlaneFragment.this.getActivity(), "Please write the origin",
+                    Toast.LENGTH_LONG).show();
+            valid = false;
+        }
+
+        else if (endLoc.isEmpty()) {
+            Toast.makeText(BookPlaneFragment.this.getActivity(), "Please write the destination",
+                    Toast.LENGTH_LONG).show();
+            valid = false;
+        }
+
+        return valid;
     }
 
     private interface AirportCallback {
