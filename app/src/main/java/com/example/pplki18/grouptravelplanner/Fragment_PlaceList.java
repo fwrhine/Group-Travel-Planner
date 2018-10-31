@@ -374,6 +374,7 @@ public class Fragment_PlaceList extends Fragment {
         SQLiteDatabase db = databaseHelper.getWritableDatabase();
 
         ContentValues contentValues = new ContentValues();
+        contentValues.put(EventContract.EventEntry.COL_QUERY_ID, place.getPlace_id());
         contentValues.put(EventContract.EventEntry.COL_PLAN_ID, plan_id);
         contentValues.put(EventContract.EventEntry.COL_TITLE, place.getName());
         contentValues.put(EventContract.EventEntry.COL_LOCATION, place.getAddress());

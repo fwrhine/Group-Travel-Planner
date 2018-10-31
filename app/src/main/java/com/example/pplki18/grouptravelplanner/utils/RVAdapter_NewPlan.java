@@ -81,6 +81,10 @@ public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.Ne
                 holder.eventIcon.setMarker(mContext.getDrawable(R.drawable.ic_sunny_black));
             } else if (event.getType().equals("flights")) {
                 holder.eventIcon.setMarker(mContext.getDrawable(R.drawable.ic_flight_black));
+            } else if (event.getType().equals("trains")) {
+                holder.eventIcon.setMarker(mContext.getDrawable(R.drawable.ic_train_black));
+            } else if (event.getType().equals("hotels")) {
+                holder.eventIcon.setMarker(mContext.getDrawable(R.drawable.ic_hotel_black));
             }
         }
 

@@ -155,7 +155,7 @@ public class Fragment_EventList extends Fragment {
 
                 try {
                     String time1 = format.format(format.parse(time_start));
-                    Log.d("time1", time1);
+//                    Log.d("time1", time1);
                     String time2 = format.format(format.parse(time_end));
                     Event event = new Event(title, date, time1, time2, type);
                     event.setQuery_id(query_id);
@@ -172,9 +172,10 @@ public class Fragment_EventList extends Fragment {
             } while (c.moveToNext());
         }
         Collections.sort(all_event);
-        for(Event e: all_event) {
-            Log.d("TYPE IS", e.getType());
-        }
+//        for(Event e: all_event) {
+//            Log.d("TYPE IS", e.getType());
+//            Log.d("DATE IS", e.getDate());
+//        }
         c.close();
         return all_event;
     }
