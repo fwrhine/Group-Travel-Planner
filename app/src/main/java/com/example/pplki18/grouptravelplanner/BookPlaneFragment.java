@@ -470,8 +470,8 @@ public class BookPlaneFragment extends Fragment {
                             public void onClick(View view) {
 
                                 final TextView tvFlightNum = viewItem.findViewById(R.id.flightNumber);
-                                final TextView tvDepartCity = viewItem.findViewById(R.id.departCity);
-                                final TextView tvArriveCity = viewItem.findViewById(R.id.arriveCity);
+                                //final TextView tvDepartCity = viewItem.findViewById(R.id.departCity);
+                                //final TextView tvArriveCity = viewItem.findViewById(R.id.arriveCity);
                                 final TextView tvDepartTime = viewItem.findViewById(R.id.departTime);
                                 final TextView tvArriveTime = viewItem.findViewById(R.id.arriveTime);
 
@@ -482,11 +482,11 @@ public class BookPlaneFragment extends Fragment {
                                 final TextView tvPrice = viewItem.findViewById(R.id.price);
 
                                 // For the city name located in the input box
-                                String startLoc = origin.getText().toString().split(" \\| ")[1];
-                                String endLoc = destination.getText().toString().split(" \\| ")[1];
+                                String startLoc = origin.getText().toString();
+                                String endLoc = destination.getText().toString();
 
-                                String departCity = tvDepartCity.getText().toString();
-                                String arriveCity = tvArriveCity.getText().toString();
+                                //String departCity = tvDepartCity.getText().toString();
+                                //String arriveCity = tvArriveCity.getText().toString();
                                 String departTime = tvDepartTime.getText().toString();
                                 String arriveTime = tvArriveTime.getText().toString();
                                 String price = tvPrice.getText().toString();
@@ -498,8 +498,8 @@ public class BookPlaneFragment extends Fragment {
                                     anEvent.setDate(date);
                                     anEvent.setType("flights");
 
-                                    anEvent.setOrigin(departCity);
-                                    anEvent.setDestination(arriveCity);
+                                    anEvent.setOrigin(startLoc);
+                                    anEvent.setDestination(endLoc);
                                     anEvent.setDeparture_time(departTime);
                                     anEvent.setArrival_time(arriveTime);
                                     anEvent.setTransport_number(tvFlight);
@@ -528,8 +528,8 @@ public class BookPlaneFragment extends Fragment {
                                     values.put(EventContract.EventEntry.COL_TYPE, "flights");
                                     values.put(EventContract.EventEntry.COL_PRICE, price);
 
-                                    values.put(EventContract.EventEntry.COL_ORIGIN, departCity);
-                                    values.put(EventContract.EventEntry.COL_DESTINATION, arriveCity);
+                                    values.put(EventContract.EventEntry.COL_ORIGIN, startLoc);
+                                    values.put(EventContract.EventEntry.COL_DESTINATION, endLoc);
                                     values.put(EventContract.EventEntry.COL_DEPARTURE_TIME, departTime);
                                     values.put(EventContract.EventEntry.COL_ARRIVAL_TIME, arriveTime);
                                     values.put(EventContract.EventEntry.COL_TRANS_NUMBER, tvFlight);

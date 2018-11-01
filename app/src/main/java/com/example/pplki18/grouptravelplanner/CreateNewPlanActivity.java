@@ -309,6 +309,7 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
                 contentValues.put(EventContract.EventEntry.COL_DESCRIPTION, "Flight for Transport");
                 contentValues.put(EventContract.EventEntry.COL_DATE, e.getDate());
                 contentValues.put(EventContract.EventEntry.COL_TYPE, "flights");
+                contentValues.put(EventContract.EventEntry.COL_PRICE, e.getPrice());
 
                 contentValues.put(EventContract.EventEntry.COL_ORIGIN, e.getOrigin());
                 contentValues.put(EventContract.EventEntry.COL_DESTINATION, e.getDestination());

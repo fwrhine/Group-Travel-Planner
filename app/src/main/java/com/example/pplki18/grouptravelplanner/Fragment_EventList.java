@@ -137,6 +137,7 @@ public class Fragment_EventList extends Fragment {
                 String transport_num = "";
                 String origin = "";
                 String destination = "";
+                String price = "";
                 if (type.equals("restaurants") || type.equals("attractions") || type.equals("custom")) {
                     query_id = c.getString(c.getColumnIndex(EventContract.EventEntry.COL_QUERY_ID));
                     time_start = c.getString(c.getColumnIndex(EventContract.EventEntry.COL_TIME_START));
@@ -148,7 +149,7 @@ public class Fragment_EventList extends Fragment {
                     transport_num = c.getString(c.getColumnIndex(EventContract.EventEntry.COL_TRANS_NUMBER));
                     origin = c.getString(c.getColumnIndex(EventContract.EventEntry.COL_ORIGIN));
                     destination = c.getString(c.getColumnIndex(EventContract.EventEntry.COL_DESTINATION));
-
+                    price = c.getString(c.getColumnIndex(EventContract.EventEntry.COL_PRICE));
                 } else {
                     query_id = "";
                 }
@@ -164,6 +165,7 @@ public class Fragment_EventList extends Fragment {
                     event.setTransport_number(transport_num);
                     event.setOrigin(origin);
                     event.setDestination(destination);
+                    event.setPrice(price);
 
                     all_event.add(event);
                 } catch (Exception e) {
