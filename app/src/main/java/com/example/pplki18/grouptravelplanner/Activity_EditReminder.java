@@ -26,6 +26,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -44,8 +45,8 @@ public class Activity_EditReminder  extends AppCompatActivity implements DatePic
         TimePickerDialog.OnTimeSetListener {
     Button btn_pick;
     Button btn_create;
-    Button btn_goto_cal;
     Button btn_del_event;
+    ImageButton btn_done;
     public TextView resultYear;
     public TextView resultMonth;
     public TextView resultDay;
@@ -83,9 +84,9 @@ public class Activity_EditReminder  extends AppCompatActivity implements DatePic
 
         //=================
         btn_pick = (Button) findViewById(R.id.button_pick_notification2);
-        btn_goto_cal = (Button) findViewById(R.id.button_goto_cal2);
-        btn_del_event = (Button) findViewById(R.id.button_cancel2);
+        btn_del_event = (Button) findViewById(R.id.button_del2);
         btn_create = findViewById(R.id.button_update_notification2);
+        btn_done = findViewById(R.id.doneEdit_reminder);
 
         resultYear = (TextView) findViewById(R.id.notifaction_resultYear2);
         resultMonth = (TextView) findViewById(R.id.notifaction_resultMonth2);
@@ -125,20 +126,13 @@ public class Activity_EditReminder  extends AppCompatActivity implements DatePic
 //                generalCreateNotification("event", "detail", Integer i);
 
                 //=================
-                changeNotifier(destText, notificationTxt, yearFinal, monthFinal, dayFinal, hourFinal, minuteFinal, event_id);
-
-
-                //=================
-                Toast.makeText(getApplicationContext(), "notification updated", Toast.LENGTH_SHORT).show();
-
-
-            }
-        });
-        btn_goto_cal.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Starts the function below
-                gotoCalendar();
+                if (!dest.isEmpty() && !resultTime.getText().toString().isEmpty()) {
+                    changeNotifier(destText, destText, yearFinal, monthFinal, dayFinal, hourFinal, minuteFinal, event_id);
+                    Toast.makeText(getApplicationContext(), "notification updated", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    Toast.makeText(getApplicationContext(), "Please pick notification and set location", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -149,21 +143,24 @@ public class Activity_EditReminder  extends AppCompatActivity implements DatePic
                 deleteEventFromCalendar(event_id);
             }
         });
+
+        btn_done.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent myIntent = new Intent(Activity_EditReminder.this , InHomeActivity.class);
+                myIntent.putExtra("fragment", "friends");
+                startActivity(myIntent);
+            }
+        });
     }
 
-    public void gotoCalendar() {
-        Intent calIntent = new Intent(Intent.ACTION_INSERT);
-        calIntent.setData(CalendarContract.Events.CONTENT_URI);
-        startActivity(calIntent);
 
-    }
-
-
-    public void changeNotifier(String title, String description, Integer year, Integer month,
+    public void changeNotifier(String title, String destination, Integer year, Integer month,
                                       Integer day, Integer hour, Integer minute, long event_id) {
         //TODO error handling, numbers must be within limit
         ContentValues event = new ContentValues();
         ContentResolver cr = getContentResolver();
+        String description = "GTP";
 
         Uri eventUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, event_id);
 
@@ -174,6 +171,7 @@ public class Activity_EditReminder  extends AppCompatActivity implements DatePic
         endTime.set(year, month, day, hour + 1, minute);
 
         event.put(CalendarContract.Events.TITLE, title);
+        event.put(CalendarContract.Events.EVENT_LOCATION, destination);
         event.put(CalendarContract.Events.DESCRIPTION, description);
         event.put(CalendarContract.Events.DTSTART, startTime.getTimeInMillis());
         event.put(CalendarContract.Events.DTEND, endTime.getTimeInMillis());

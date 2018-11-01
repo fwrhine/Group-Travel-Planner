@@ -41,6 +41,8 @@ import java.util.Objects;
 
 public class InHomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
+    private final String FRAGMENT_REMINDER = "friends";
+
     private DatabaseHelper myDb;
     private DrawerLayout drawer;
     private Toolbar toolbar;
@@ -61,14 +63,29 @@ public class InHomeActivity extends AppCompatActivity implements NavigationView.
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_CALENDAR}, READ_CALENDAR);
         }
         readCalendar(getApplicationContext());
-
         navigationView.setNavigationItemSelectedListener(this);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
         setHeaderInfo();
 
-        if (savedInstanceState == null) {
+        Bundle bundle = getIntent().getExtras();
+
+        if (bundle != null) {
+            if (bundle.containsKey("fragment")) {
+                if (bundle.get("fragment").equals(FRAGMENT_REMINDER)) {
+                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container_home,
+                            new Fragment_Reminder()).commit();
+                    navigationView.setCheckedItem(R.id.nav_reminder_list);
+                    toolbar.setTitle("My Notifications");
+
+                } else {
+                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container_home,
+                            new Fragment_GroupList()).commit();
+                    navigationView.setCheckedItem(R.id.nav_group_list);
+                }
+            }
+        } else {
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container_home,
                     new Fragment_GroupList()).commit();
             navigationView.setCheckedItem(R.id.nav_group_list);

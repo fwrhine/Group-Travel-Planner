@@ -1,35 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/coordinatorLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     tools:context=".Activity_EditReminder">
 
-    <android.support.design.widget.AppBarLayout
-        android:id="@+id/appBarLayout3"
+    <RelativeLayout
+        android:id="@+id/toolbarLayoutRemEdit"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_height="50dp">
 
         <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
+            android:id="@+id/plan_toolbarRemEdit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="?attr/colorPrimary"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
-    </android.support.design.widget.AppBarLayout>
+        <ImageButton
+            android:id="@+id/doneEdit_reminder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="20dp"
+            android:background="@null"
+            android:foregroundGravity="center"
+            android:src="@drawable/ic_check_white_24dp" />
 
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    </RelativeLayout>
+
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_below="@id/toolbarLayoutRemEdit">
 
         <Button
             android:id="@+id/button_pick_notification2"
@@ -40,7 +47,7 @@
 
         <TextView
             android:id="@+id/text_resultYear2"
-            android:layout_width="wrap_content"
+            android:layout_width="70dp"
             android:layout_height="wrap_content"
             android:layout_below="@id/button_pick_notification2"
             android:text="Year: "
@@ -55,7 +62,7 @@
 
         <TextView
             android:id="@+id/text_resultMonth2"
-            android:layout_width="wrap_content"
+            android:layout_width="70dp"
             android:layout_height="wrap_content"
             android:layout_below="@id/text_resultYear2"
             android:text="Month: "
@@ -70,7 +77,7 @@
 
         <TextView
             android:id="@+id/text_resultDay2"
-            android:layout_width="wrap_content"
+            android:layout_width="70dp"
             android:layout_height="wrap_content"
             android:layout_below="@id/text_resultMonth2"
             android:text="Day : "
@@ -85,7 +92,7 @@
 
         <TextView
             android:id="@+id/text_resultTime2"
-            android:layout_width="wrap_content"
+            android:layout_width="70dp"
             android:layout_height="wrap_content"
             android:layout_below="@id/text_resultDay2"
             android:text="Time: "
@@ -104,7 +111,9 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/notifaction_resultTime2"
             android:layout_centerHorizontal="true"
-            android:hint="event location" />
+            android:hint="event location"
+            android:textColorHint="#9E9E9E"/>
+
 
         <Button
             android:id="@+id/button_update_notification2"
@@ -114,22 +123,15 @@
             android:layout_centerHorizontal="true"
             android:text="Update" />
 
+
         <Button
-            android:id="@+id/button_goto_cal2"
+            android:id="@+id/button_del2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/button_update_notification2"
             android:layout_centerHorizontal="true"
-            android:text="Go To Calendar" />
-
-        <Button
-            android:id="@+id/button_cancel2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/button_goto_cal2"
-            android:layout_centerHorizontal="true"
-            android:text="Cancel" />
+            android:text="Delete" />
 
 
     </RelativeLayout>
-</LinearLayout>
+</RelativeLayout>

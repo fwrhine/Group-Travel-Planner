@@ -67,12 +67,12 @@ public class Fragment_Reminder extends Fragment implements NavigationView.OnNavi
             @Override
             public void onClick(View view) {
                 Log.v("fab", "FAB Clicked");
-//                Intent myIntent = new Intent(getActivity(), Activity_CreateReminder.class);
-//                Fragment_Reminder.this.startActivity(myIntent);
+                Intent myIntent = new Intent(getActivity(), Activity_CreateReminder.class);
+                Fragment_Reminder.this.startActivity(myIntent);
                 // TO TEST generalInsert
-                ((InHomeActivity) getActivity()).generalInsertNotifier("T1", "T2",
-                        2018, 10, 30, 8, 20);
-                Toast.makeText(getActivity().getApplicationContext(), "PRESSED FAB", Toast.LENGTH_SHORT).show();
+//                ((InHomeActivity) getActivity()).generalInsertNotifier("T1", "T2",
+//                        2018, 10, 30, 8, 20);
+//                Toast.makeText(getActivity().getApplicationContext(), "PRESSED FAB", Toast.LENGTH_SHORT).show();
 
             }
         });

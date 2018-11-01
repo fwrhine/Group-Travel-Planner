@@ -25,6 +25,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
@@ -47,7 +48,8 @@ public class Activity_CreateReminder extends AppCompatActivity implements DatePi
     Button btn_pick;
     Button btn_create;
     Button btn_goto_cal;
-    Button btn_del_event;
+    Button btn_cancel_event;
+    ImageButton btn_done;
     public TextView resultYear;
     public TextView resultMonth;
     public TextView resultDay;
@@ -88,8 +90,9 @@ public class Activity_CreateReminder extends AppCompatActivity implements DatePi
         //=================
         btn_pick = (Button) findViewById(R.id.button_pick_notification);
         btn_goto_cal = (Button) findViewById(R.id.button_goto_cal);
-        btn_del_event = (Button) findViewById(R.id.button_del_event);
+        btn_cancel_event = (Button) findViewById(R.id.button_del_event);
         btn_create = findViewById(R.id.button_create_notification);
+        btn_done = findViewById(R.id.btn_done_reminder);
 
         resultYear = (TextView) findViewById(R.id.notifaction_resultYear);
         resultMonth = (TextView) findViewById(R.id.notifaction_resultMonth);
@@ -127,16 +130,14 @@ public class Activity_CreateReminder extends AppCompatActivity implements DatePi
                         " at " + dest;
 //                createNotification(dest, notificationTxt);
 //                generalCreateNotification("event", "detail", Integer i);
-
-                eventID2 = generalInsertNotifier(destText, destText, yearFinal, monthFinal, dayFinal, hourFinal, minuteFinal);
-
-
-//                alarmCal.set(yearFinal, monthFinal, dayFinal, hourFinal, minuteFinal);
-//                startAlarm(alarmCal);
-                btn_del_event.setEnabled(true);
-                Toast.makeText(getApplicationContext(), "notification added", Toast.LENGTH_SHORT).show();
-
-
+                if (!dest.isEmpty() && !resultTime.getText().toString().isEmpty()) {
+                    eventID2 = generalInsertNotifier(destText, destText, yearFinal, monthFinal, dayFinal, hourFinal, minuteFinal);
+                    btn_cancel_event.setEnabled(true);
+                    Toast.makeText(getApplicationContext(), "notification added", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    Toast.makeText(getApplicationContext(), "Please pick notification and set location", Toast.LENGTH_SHORT).show();
+                }
             }
         });
         btn_goto_cal.setOnClickListener(new View.OnClickListener() {
@@ -146,11 +147,20 @@ public class Activity_CreateReminder extends AppCompatActivity implements DatePi
             }
         });
 
-        btn_del_event.setOnClickListener(new View.OnClickListener() {
+        btn_cancel_event.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                deleteEventFromCalendar(eventID2);
-                btn_del_event.setEnabled(false);
+                cancelLatestEventFromCalendar(eventID2);
+                btn_cancel_event.setEnabled(false);
+            }
+        });
+
+        btn_done.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent myIntent = new Intent(Activity_CreateReminder.this , InHomeActivity.class);
+                myIntent.putExtra("fragment", "friends");
+                startActivity(myIntent);
             }
         });
     }
@@ -285,18 +295,8 @@ public class Activity_CreateReminder extends AppCompatActivity implements DatePi
         Log.v("calender", "return REMINDER:  " + Long.parseLong(reminderUri.getLastPathSegment()));
     }
 
-    private void cancelAlarm(Integer channel){
-        oldestChannel = currChannel - 1;
-        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        Intent intent = new Intent(this, AlertReciever.class);
-        // requestCodeList size will increase to allow the setting of multiple alarms
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), oldestChannel, intent, 0);
-        currChannel--;
-        Objects.requireNonNull(alarmManager).cancel(pendingIntent);
-        Toast.makeText(getApplicationContext(), "Alarm notification canceled", Toast.LENGTH_SHORT).show();
-    }
 
-    public void deleteEventFromCalendar(long eventID){
+    public void cancelLatestEventFromCalendar(long eventID){
         ContentResolver cr = getContentResolver();
         Uri deleteUri = null;
         deleteUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventID);
@@ -305,14 +305,6 @@ public class Activity_CreateReminder extends AppCompatActivity implements DatePi
         Toast.makeText(getApplicationContext(), "Removed Event", Toast.LENGTH_SHORT).show();
     }
 
-    public void updateEvent(long eventID){
-        ContentResolver cr = getContentResolver();
-        Uri eventUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventID);
-        ContentValues event = new ContentValues();
-        event.put(CalendarContract.Events.TITLE, "new title");
-        event.put(CalendarContract.Events.DESCRIPTION, "My cool event!");
-        cr.update(eventUri, event, null, null);
-    }
 
 
 }
