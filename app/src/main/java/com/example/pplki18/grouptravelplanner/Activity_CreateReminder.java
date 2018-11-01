@@ -159,7 +159,7 @@ public class Activity_CreateReminder extends AppCompatActivity implements DatePi
             @Override
             public void onClick(View v) {
                 Intent myIntent = new Intent(Activity_CreateReminder.this , InHomeActivity.class);
-                myIntent.putExtra("fragment", "friends");
+                myIntent.putExtra("fragment", "reminder");
                 startActivity(myIntent);
             }
         });

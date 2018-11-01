@@ -148,7 +148,7 @@ public class Activity_EditReminder  extends AppCompatActivity implements DatePic
             @Override
             public void onClick(View v) {
                 Intent myIntent = new Intent(Activity_EditReminder.this , InHomeActivity.class);
-                myIntent.putExtra("fragment", "friends");
+                myIntent.putExtra("fragment", "reminder");
                 startActivity(myIntent);
             }
         });

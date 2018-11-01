@@ -41,7 +41,7 @@ import java.util.Objects;
 
 public class InHomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    private final String FRAGMENT_REMINDER = "friends";
+    private final String FRAGMENT_REMINDER = "reminder";
 
     private DatabaseHelper myDb;
     private DrawerLayout drawer;
