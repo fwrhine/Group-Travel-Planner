@@ -77,11 +77,11 @@ public class InHomeActivity extends AppCompatActivity implements NavigationView.
                         new Fragment_PlanList()).commit();
                 toolbar.setTitle("My Plans");
                 break;
-//            case R.id.nav_reminder_list:
-//                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container_home,
-//                        new Fragment_Reminder()).commit();
-//                toolbar.setTitle("My Notifications");
-//                break;
+            case R.id.nav_reminder_list:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container_home,
+                        new Fragment_Reminder()).commit();
+                toolbar.setTitle("My Notifications");
+                break;
 
         }
         drawer.closeDrawer(GravityCompat.START);

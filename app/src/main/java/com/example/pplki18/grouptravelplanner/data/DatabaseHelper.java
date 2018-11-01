@@ -115,6 +115,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + EventEntry.COL_PHONE + " TEXT, "
                 + EventEntry.COL_TYPE + " TEXT, "
                 + EventEntry.COL_RATING + " TEXT, "
+                + EventEntry.COL_WEBSITE + " TEXT, "
+                + EventEntry.COL_PRICE + " TEXT, "
 
                 + EventEntry.COL_ORIGIN + " TEXT, "
                 + EventEntry.COL_DESTINATION + " TEXT, "

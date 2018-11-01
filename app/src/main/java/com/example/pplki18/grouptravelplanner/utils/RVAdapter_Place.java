@@ -2,9 +2,6 @@ package com.example.pplki18.grouptravelplanner.utils;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.media.Image;
-import android.provider.ContactsContract;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -12,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.android.volley.RequestQueue;
@@ -21,7 +17,6 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.pplki18.grouptravelplanner.R;
-import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -67,8 +62,8 @@ public class RVAdapter_Place extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, final int i) {
-
+    public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int i) {
+        final int pos = i;
         switch (getItemViewType(i)) {
             case ITEM:
                 PlaceViewHolder placeViewHolder = (PlaceViewHolder) viewHolder;
@@ -78,7 +73,7 @@ public class RVAdapter_Place extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 placeViewHolder.addIcon.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        listener.addImageOnClick(v, i);
+                        listener.addImageOnClick(v, pos);
                     }
                 });
 
@@ -112,7 +107,7 @@ public class RVAdapter_Place extends RecyclerView.Adapter<RecyclerView.ViewHolde
    _________________________________________________________________________________________________
     */
 
-    public void add(Place place) {
+    private void add(Place place) {
         places.add(place);
         notifyItemInserted(places.size() - 1);
     }
@@ -123,8 +118,12 @@ public class RVAdapter_Place extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
     }
 
-    public void remove(Place city) {
-        int position = places.indexOf(city);
+    public List<Place> getAll() {
+        return places;
+    }
+
+    private void remove(Place place) {
+        int position = places.indexOf(place);
         if (position > -1) {
             places.remove(position);
             notifyItemRemoved(position);
@@ -155,14 +154,14 @@ public class RVAdapter_Place extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
     }
 
-    public Place getItem(int position) {
+    private Place getItem(int position) {
         return places.get(position);
     }
 
-    public void getPhoto(final PlaceViewHolder placeViewHolder, String photo_reference) {
+    private void getPhoto(final PlaceViewHolder placeViewHolder, String photo_reference) {
         // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(context);
-        String url = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=900&photoreference="
+        String url = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=300&photoreference="
                 + photo_reference + "&key=" + context.getString(R.string.api_key);
 
 

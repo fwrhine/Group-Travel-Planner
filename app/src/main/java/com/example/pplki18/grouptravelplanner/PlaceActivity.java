@@ -6,6 +6,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.media.Image;
 import android.media.Rating;
 import android.net.Uri;
@@ -20,7 +22,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.RelativeLayout;
@@ -28,9 +29,12 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.android.volley.NetworkError;
+import com.android.volley.NoConnectionError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.StringRequest;
@@ -44,32 +48,38 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class PlaceActivity extends AppCompatActivity {
     private static final String TAG = "RestaurantList";
+    private static final int REQUEST_CODE_EDIT_EVENT = 1;
 
     private DatabaseHelper databaseHelper;
 
-    String place_id;
-    Toolbar toolbar;
-    TextView title;
-    TextView rating_num;
-    RatingBar rating;
-    TextView address;
-    TextView phone;
-    TextView website;
-    ImageView image;
-    TextView open_now;
-    TextView open_hours;
-    FloatingActionButton ic_add;
+    private String place_id;
+    private Toolbar toolbar;
+    private TextView title;
+    private TextView rating_num;
+    private RatingBar rating;
+    private TextView address;
+    private TextView phone;
+    private TextView website;
+    private ImageView image;
+    private TextView open_now;
+    private TextView open_hours;
+    private FloatingActionButton ic_add;
 //    Button google_button;
-    ProgressBar progressBar;
+    private ProgressBar progressBar;
+    private RequestQueue queue;
 
     TextView eventDate;
     TextView eventTime;
     TextView eventDuration;
+    TextView eventDescription;
     RelativeLayout detailLayout;
     ImageButton editEvent;
 
@@ -79,6 +89,10 @@ public class PlaceActivity extends AppCompatActivity {
         setContentView(R.layout.activity_place);
 
         init();
+
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        setTitle("");
 
         ic_add.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -91,7 +105,51 @@ public class PlaceActivity extends AppCompatActivity {
 
     }
 
-    public void sendRequest() {
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
+
+    private void noConnection(VolleyError volleyError) {
+        String message = null;
+        if (volleyError instanceof NetworkError) {
+            message = "No internet connection.";
+        } else if (volleyError instanceof NoConnectionError) {
+            message = "No internet connection.";
+        } else if (volleyError instanceof TimeoutError) {
+            message = "Connection timeout.";
+        }
+
+        progressBar.setVisibility(View.GONE);
+        toastMessage(message);
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == REQUEST_CODE_EDIT_EVENT) {
+            if (resultCode == Activity.RESULT_OK) {
+                String start = data.getStringExtra("start_time");
+                String end = data.getStringExtra("end_time");
+                String description = data.getStringExtra("description");
+                String date = data.getStringExtra("date");
+
+                Event event = new Event(start, end);
+                String duration = event.getTotal_time();
+
+                String timeStr = start + " - " + end;
+
+                eventDate.setText(date);
+                eventTime.setText(timeStr);
+                eventDuration.setText(duration);
+                eventDescription.setText(description);
+
+            }
+        }
+    }
+
+    private void sendRequest() {
         // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(this);
         String url = "https://maps.googleapis.com/maps/api/place/details/json?placeid="
@@ -112,6 +170,7 @@ public class PlaceActivity extends AppCompatActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.d(TAG, "REQUEST ERROR");
+                noConnection(error);
             }
         });
 
@@ -119,7 +178,7 @@ public class PlaceActivity extends AppCompatActivity {
         queue.add(stringRequest);
     }
 
-    public Place getPlace(String response) {
+    private Place getPlace(String response) {
         Place place = new Place();
         try {
             JSONObject obj = new JSONObject(response);
@@ -137,7 +196,7 @@ public class PlaceActivity extends AppCompatActivity {
                 place.setOpen_now(opening_hours.optBoolean("open_now"));
                 JSONArray weekday_text = opening_hours.optJSONArray("weekday_text");
                 if (weekday_text != null) {
-                    ArrayList<String> listdata = new ArrayList<String>();
+                    ArrayList<String> listdata = new ArrayList<>();
                     for (int i=0;i<weekday_text.length();i++){
                         listdata.add(weekday_text.getString(i));
                     }
@@ -160,7 +219,7 @@ public class PlaceActivity extends AppCompatActivity {
         return place;
     }
 
-    public void populatePlaceView(final Place place) {
+    private void populatePlaceView(final Place place) {
         title.setText(place.getName());
         rating_num.setText(place.getRating());
         rating.setRating(Float.valueOf(place.getRating()));
@@ -179,10 +238,10 @@ public class PlaceActivity extends AppCompatActivity {
 
         if (place.getOpen_now() != null) {
             if (place.getOpen_now()) {
-                open_now.setText("Open Now");
+                open_now.setText(R.string.open_now);
             } else {
                 open_now.setTextColor(getResources().getColor(R.color.red));
-                open_now.setText("Closed");
+                open_now.setText(R.string.closed);
             }
 
             List<String> weekday_text = place.getWeekday_text();
@@ -210,9 +269,7 @@ public class PlaceActivity extends AppCompatActivity {
         getPhoto(place.getPhoto());
     }
 
-    public void getPhoto(String photo_reference) {
-        // Instantiate the RequestQueue.
-        RequestQueue queue = Volley.newRequestQueue(this);
+    private void getPhoto(String photo_reference) {
         String url = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=900&photoreference="
                 + photo_reference + "&key=" + getString(R.string.api_key);
 
@@ -235,7 +292,7 @@ public class PlaceActivity extends AppCompatActivity {
         queue.add(imageRequest);
     }
 
-    public void setTime() {
+    private void setTime() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = getLayoutInflater();
         View dialogLayout = inflater.inflate(R.layout.set_time_dialog, null);
@@ -287,7 +344,7 @@ public class PlaceActivity extends AppCompatActivity {
         anEvent.setQuery_id(place_id);
         anEvent.setTitle(title.getText().toString());
         anEvent.setLocation(address.getText().toString());
-        anEvent.setDescription(website.getText().toString());
+        anEvent.setWebsite(website.getText().toString());
         anEvent.setDate(getIntent().getStringExtra("date"));
         anEvent.setTime_start(start_time);
         anEvent.setTime_end(end_time);
@@ -307,7 +364,7 @@ public class PlaceActivity extends AppCompatActivity {
         contentValues.put(EventContract.EventEntry.COL_PLAN_ID, getIntent().getIntExtra("plan_id", -1));
         contentValues.put(EventContract.EventEntry.COL_TITLE, title.getText().toString());
         contentValues.put(EventContract.EventEntry.COL_LOCATION, address.getText().toString());
-        contentValues.put(EventContract.EventEntry.COL_DESCRIPTION, website.getText().toString());
+        contentValues.put(EventContract.EventEntry.COL_WEBSITE, website.getText().toString());
         contentValues.put(EventContract.EventEntry.COL_DATE, getIntent().getStringExtra("date"));
         contentValues.put(EventContract.EventEntry.COL_TIME_START, start_time);
         contentValues.put(EventContract.EventEntry.COL_TIME_END, end_time);
@@ -328,13 +385,20 @@ public class PlaceActivity extends AppCompatActivity {
         String start = getIntent().getStringExtra("time_start");
         String end = getIntent().getStringExtra("time_end");
         String duration = getIntent().getStringExtra("duration");
-        int event_id = getIntent().getIntExtra("event_id", -1);
+        String desc = getIntent().getStringExtra("description");
 
         String timeStr = start + " - " + end;
 
         eventDate.setText(date);
         eventTime.setText(timeStr);
         eventDuration.setText(duration);
+
+        if (desc.equals("")) {
+            eventDescription.setText("edit to add description");
+            eventDescription.setTypeface(eventDescription.getTypeface(), Typeface.ITALIC);
+        } else {
+            eventDescription.setText(desc);
+        }
 
         String type = getIntent().getStringExtra("type");
         ic_add.setEnabled(false);
@@ -353,12 +417,25 @@ public class PlaceActivity extends AppCompatActivity {
         editEvent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(PlaceActivity.this, "EDIT", Toast.LENGTH_SHORT).show();
+//                SimpleDateFormat dateFormatter2 = new SimpleDateFormat("d MMMM yyyy", Locale.US);
+
+                int event_id = getIntent().getIntExtra("event_id", -1);
+                Bundle bundle = getIntent().getExtras();
+                bundle.putString("address", address.getText().toString());
+                bundle.putString("name", title.getText().toString());
+                bundle.putString("description", eventDescription.getText().toString());
+                bundle.putInt("event_id", event_id);
+
+                Toast.makeText(PlaceActivity.this, "edit event", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(PlaceActivity.this, EditEventActivity.class);
+                intent.putExtras(bundle);
+
+                startActivityForResult(intent, REQUEST_CODE_EDIT_EVENT);
             }
         });
     }
 
-    public void init() {
+    private void init() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         place_id = getIntent().getStringExtra("PLACE_ID");
         title = (TextView) findViewById(R.id.title);
@@ -373,13 +450,14 @@ public class PlaceActivity extends AppCompatActivity {
         ic_add = (FloatingActionButton) findViewById(R.id.ic_add);
 //        google_button = (Button) findViewById(R.id.google_button);
         progressBar = (ProgressBar) findViewById(R.id.main_progress);
-
+        queue = Volley.newRequestQueue(this);
         databaseHelper = new DatabaseHelper(this);
         String prevActivity = getIntent().getStringExtra("ACTIVITY");
 
         eventDate = (TextView) findViewById(R.id.event_detail_date);
         eventTime = (TextView) findViewById(R.id.event_detail_time);
         eventDuration = (TextView) findViewById(R.id.event_detail_duration);
+        eventDescription = (TextView) findViewById(R.id.event_detail_desc);
         detailLayout = (RelativeLayout) findViewById(R.id.detail_layout);
         editEvent = (ImageButton) findViewById(R.id.edit_event);
 

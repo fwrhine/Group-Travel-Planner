@@ -56,7 +56,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class CreateNewGroupActivity extends AppCompatActivity {
     private static final String TAG = "CreateNewGroupActivity";
 
-    DatabaseHelper databaseHelper;
+    private DatabaseHelper databaseHelper;
     private Button btnCreate;
     private FloatingActionButton fab_pic;
     private EditText editText;
@@ -69,7 +69,8 @@ public class CreateNewGroupActivity extends AppCompatActivity {
     private SearchView searchView;
     private HashMap<String, String> user;
     private String currId;
-    private int GALLERY = 1, CAMERA = 2;
+    private final int GALLERY = 1;
+    private final int CAMERA = 2;
 
     private FirebaseDatabase firebaseDatabase;
     private FirebaseAuth firebaseAuth;
@@ -211,7 +212,7 @@ public class CreateNewGroupActivity extends AppCompatActivity {
         pictureDialog.show();
     }
 
-    public void choosePhotoFromGallery() {
+    private void choosePhotoFromGallery() {
         Intent galleryIntent = new Intent(Intent.ACTION_PICK,
                 android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
 
@@ -261,7 +262,7 @@ public class CreateNewGroupActivity extends AppCompatActivity {
     }
 
     //get resized bitmap
-    public Bitmap getResizedBitmap(Bitmap image, int maxSize) {
+    private Bitmap getResizedBitmap(Bitmap image, int maxSize) {
         int width = image.getWidth();
         int height = image.getHeight();
 

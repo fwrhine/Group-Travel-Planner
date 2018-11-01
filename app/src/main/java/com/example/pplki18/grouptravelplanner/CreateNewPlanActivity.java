@@ -3,23 +3,23 @@ package com.example.pplki18.grouptravelplanner;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentTransaction;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -56,6 +56,8 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
     TextView trip_start_date, trip_end_date, trip_days;
     TextView date_month_year, day;
     ImageButton button_left, button_right, add_event, save_plan;
+    FloatingActionButton fab_add_event;
+    ViewGroup parent;
     Intent intent;
     private SessionManager session;
     private HashMap<String, String> user;
@@ -149,8 +151,12 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
 
         button_left = (ImageButton) findViewById(R.id.button_left);
         button_right = (ImageButton) findViewById(R.id.button_right);
-        add_event = (ImageButton) findViewById(R.id.add_event);
+//        add_event = (ImageButton) findViewById(R.id.add_event);
         save_plan = (ImageButton) findViewById(R.id.save_plan);
+
+        fab_add_event = (FloatingActionButton) findViewById(R.id.fab_add_event);
+
+        parent = (ViewGroup) findViewById(R.id.container);
     }
 
     @Override
@@ -235,7 +241,7 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
                 .setIcon(R.drawable.ic_error_black_24dp)
                 .setNeutralButton("Ok", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        ;
+
                     }
                 });
         AlertDialog alert = builder.create();
@@ -244,7 +250,7 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
 
     private void askPlanNameDialog() {
         LayoutInflater factory = LayoutInflater.from(this);
-        final View linearLayout = factory.inflate(R.layout.save_plan_dialog, null);
+        final View linearLayout = factory.inflate(R.layout.save_plan_dialog, parent, false);
 
         final EditText edtTextName = (EditText) linearLayout.findViewById(R.id.editText_planName);
         plan_name = intent.getStringExtra("plan_name");
@@ -270,7 +276,6 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
-                        ;
                     }
                 });
         AlertDialog alert = builder.create();
@@ -448,9 +453,9 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
                         long total_days = diff / (24 * 60 * 60 * 1000) + 2;
                         trip_days.setText(total_days + "");
                         intent.putExtra("date", date_start);
+                        putExtraPlanDateRange();
                         setDateChanger();
-                        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_timeline_activity,
-                                new Fragment_EventList()).commit();
+                        beginFragmentEventList();
                     } catch (ParseException e) {
                         e.printStackTrace();
                     }
@@ -474,9 +479,9 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
                         long total_days = diff / (24 * 60 * 60 * 1000) + 1;
                         trip_days.setText(total_days + "");
                         intent.putExtra("date", date_start);
+                        putExtraPlanDateRange();
                         setDateChanger();
-                        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_timeline_activity,
-                                new Fragment_EventList()).commit();
+                        beginFragmentEventList();
                     } catch (ParseException e) {
                         e.printStackTrace();
                     }
@@ -500,7 +505,7 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
     public void setDateChanger() throws ParseException {
         date_month_year.setText(dateFormatter2.format(date_start));
         date_month_year.setTextColor(getResources().getColor(R.color.colorBlack));
-        day.setText(new SimpleDateFormat("EEEE").format(date_start));
+        day.setText(new SimpleDateFormat("EEEE", Locale.US).format(date_start));
         day.setTextColor(getResources().getColor(R.color.colorBlack));
 
         Date start_pin = dateFormatter2.parse(dateFormatter2.format(date_start));
@@ -532,7 +537,7 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
 
                         c_cur_date.add(Calendar.DATE, -1);
                         date_month_year.setText(dateFormatter2.format(c_cur_date.getTime()));
-                        day.setText(new SimpleDateFormat("EEEE").format(c_cur_date.getTime()));
+                        day.setText(new SimpleDateFormat("EEEE", Locale.US).format(c_cur_date.getTime()));
 
                         if (c_cur_date.getTime().getTime() == c_start_pin.getTime().getTime()) {
                             button_left.setEnabled(false);
@@ -546,6 +551,7 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
                         }
 
                         intent.putExtra("date", c_cur_date.getTime());
+                        putExtraPlanDateRange();
                         beginFragmentEventList();
                     }
                 }
@@ -557,7 +563,7 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
                     public void onClick(View view) {
                         c_cur_date.add(Calendar.DATE, 1);
                         date_month_year.setText(dateFormatter2.format(c_cur_date.getTime()));
-                        day.setText(new SimpleDateFormat("EEEE").format(c_cur_date.getTime()));
+                        day.setText(new SimpleDateFormat("EEEE", Locale.US).format(c_cur_date.getTime()));
 
                         if (c_cur_date.getTime().getTime() == c_end_pin.getTime().getTime()) {
                             button_left.setEnabled(true);
@@ -571,10 +577,16 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
                         }
 
                         intent.putExtra("date", c_cur_date.getTime());
+                        putExtraPlanDateRange();
                         beginFragmentEventList();
                     }
                 }
         );
+    }
+
+    public void putExtraPlanDateRange() {
+        intent.putExtra("start_date", date_start);
+        intent.putExtra("end_date", date_end);
     }
 
     public void beginFragmentEventList() {

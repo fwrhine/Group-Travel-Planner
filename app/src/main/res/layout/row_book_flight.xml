@@ -18,24 +18,24 @@
                 android:id="@+id/airlineName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Airline Name"
-                android:textSize="16dp" />
+                android:text="@string/bookAirlineName"
+                android:textSize="16sp" />
 
             <TextView
                 android:id="@+id/separator"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=" - "
+                android:text="@string/bookDivider"
                 android:layout_toEndOf="@id/airlineName"
-                android:textSize="16dp" />
+                android:textSize="16sp" />
 
             <TextView
                 android:id="@+id/flightNumber"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Flight Number"
+                android:text="@string/bookFlightNumber"
                 android:layout_toEndOf="@id/separator"
-                android:textSize="16dp" />
+                android:textSize="16sp" />
 
         </RelativeLayout>
 
@@ -49,49 +49,50 @@
                 android:id="@+id/departCity"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Depart City"
-                android:textSize="14dp" />
+                android:text="@string/bookDepartCity"
+                android:textSize="14sp" />
 
             <TextView
                 android:id="@+id/departTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Depart Time"
+                android:text="@string/bookDepartTime"
                 android:layout_below="@id/departCity"
-                android:textSize="12dp" />
+                android:textSize="12sp" />
 
         </RelativeLayout>
 
-        <TextView
+        <ImageView
             android:id="@+id/arrow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text=" -> "
+            android:src="@drawable/ic_arrow_forward_grey_20dp"
             android:layout_toEndOf="@id/departData"
             android:layout_below="@id/airlineData"
-            android:textSize="14dp" />
+            android:layout_margin="4sp"/>
 
         <RelativeLayout
             android:id="@+id/arriveData"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/airlineData"
-            android:layout_toEndOf="@id/arrow" >
+            android:layout_toEndOf="@id/arrow"
+            android:layout_marginStart="4sp" >
 
             <TextView
                 android:id="@+id/arriveCity"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Arrive City"
-                android:textSize="14dp" />
+                android:text="@string/bookArriveCity"
+                android:textSize="14sp" />
 
             <TextView
                 android:id="@+id/arriveTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Arrive Time"
+                android:text="@string/bookArriveTime"
                 android:layout_below="@id/arriveCity"
-                android:textSize="12dp" />
+                android:textSize="12sp" />
 
         </RelativeLayout>
     </RelativeLayout>
@@ -108,8 +109,8 @@
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:gravity="center"
-            android:text="Price"
-            android:textSize="16dp" />
+            android:text="@string/bookPrice"
+            android:textSize="16sp" />
 
     </RelativeLayout>
 

@@ -28,6 +28,7 @@ import com.google.firebase.storage.StorageReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 public class SearchBarActivity extends AppCompatActivity {
 
@@ -60,11 +61,11 @@ public class SearchBarActivity extends AppCompatActivity {
         myDb = new DatabaseHelper(this);
         searchItems = (RecyclerView) findViewById(R.id.list);
 
-        SearchView searchView = (SearchView) findViewById(R.id.search);
+        SearchView searchView = findViewById(R.id.search);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         setTitle("Add Friend");
 
@@ -122,6 +123,12 @@ public class SearchBarActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 
 

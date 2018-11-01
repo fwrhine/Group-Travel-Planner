@@ -37,9 +37,10 @@ public class EditBirthdayActivity extends FragmentActivity {
 
     Toolbar edit_birthday_toolbar;
     ImageButton save_birthday_button;
-    static EditText edit_birthday;
+    EditText edit_birthday;
 
     String username_str, birthday;
+    static String birthday_str;
 
     SimpleDateFormat dateFormatter;
     DatePickerDialog datePickerDialog;
@@ -123,6 +124,7 @@ public class EditBirthdayActivity extends FragmentActivity {
                         InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
                         imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
                         showTruitonDatePickerDialog(v);
+                        edit_birthday.setText(birthday_str);
                     }
                 }
         );
@@ -150,7 +152,8 @@ public class EditBirthdayActivity extends FragmentActivity {
 
         public void onDateSet(DatePicker view, int year, int month, int day) {
             // Do something with the date chosen by the user
-            edit_birthday.setText(day + "/" + (month + 1) + "/" + year);
+//            edit_birthday.setText(day + "/" + (month + 1) + "/" + year);
+            birthday_str = day + "/" + (month + 1) + "/" + year;
         }
     }
 }

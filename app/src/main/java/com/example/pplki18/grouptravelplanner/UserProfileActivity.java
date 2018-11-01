@@ -221,15 +221,6 @@ public class UserProfileActivity extends AppCompatActivity {
             birthday_label.setText(birthday);
             birthday_label.setTypeface(birthday_label.getTypeface(), Typeface.NORMAL);
         }
-
-//        buttonLogout.setOnClickListener(
-//                new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View view) {
-//                        session.logoutUser();
-//                    }
-//                }
-//        );
     }
 
     @Override

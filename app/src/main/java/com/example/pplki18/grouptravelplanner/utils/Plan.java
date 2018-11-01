@@ -5,16 +5,16 @@ import java.util.List;
 
 public class Plan {
 
-    String plan_id;
-    String creatorId;
-    String plan_name;
-    String plan_start_date;
-    String plan_end_date;
-    int plan_total_days;
-    String plan_overview;
-    String plan_modified;
-    String plan_created;
-    List<String> events;
+    private String plan_id;
+    private String creatorId;
+    private String plan_name;
+    private String plan_start_date;
+    private String plan_end_date;
+    private int plan_total_days;
+    private String plan_overview;
+    private String plan_modified;
+    private String plan_created;
+    private List<String> events;
 
     //constructor
     public Plan() {
