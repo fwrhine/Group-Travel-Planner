@@ -15,53 +15,84 @@
             android:padding="20dp"
             android:layout_marginBottom="10dp"
             android:hint="Event name"
+            android:textSize="20sp"
             android:textStyle="bold"
             android:textColorHint="#8c8c8c"/>
 
-        <TextView
+        <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/event_title"
-            android:text="Start"
+            android:layout_marginBottom="10dp"
+            android:id="@+id/start">
 
-            android:layout_marginLeft="20dp"
-            android:id="@+id/start_text"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Start"
+                android:textSize="20sp"
+                android:layout_marginLeft="20dp"
+                android:id="@+id/start_text"
+                android:layout_centerVertical="true"/>
 
-        <TimePicker
-            android:id="@+id/start_time"
+            <TimePicker
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@id/start_time"
+                android:layout_toRightOf="@id/start_text"
+                android:timePickerMode="spinner"
+                android:layout_marginLeft="10dp"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/start_text"
-            android:timePickerMode="spinner"
-            android:layout_marginBottom="10dp"/>
+            android:layout_marginBottom="10dp"
+            android:layout_below="@+id/start"
+            android:id="@+id/end">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/start_time"
-            android:id="@+id/end_text"
-            android:text="End"
-            android:layout_marginLeft="20dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="End"
+                android:textSize="20sp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="8dp"
+                android:id="@+id/end_text"
+                android:layout_centerVertical="true"/>
 
-        <TimePicker
-            android:id="@+id/end_time"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/end_text"
-            android:timePickerMode="spinner" />
+            <TimePicker
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@id/end_time"
+                android:layout_toRightOf="@id/end_text"
+                android:timePickerMode="spinner"
+                android:layout_marginLeft="10dp"/>
+
+        </RelativeLayout>
 
         <EditText
             android:id="@+id/event_notes"
-            android:layout_below="@+id/end_time"
+            android:layout_below="@+id/end"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="20dp"
-            android:layout_marginTop="10dp"
             android:hint="Notes"
-            android:textSize="15dp"
+            android:textSize="18sp"
             android:textColorHint="#8c8c8c"
             android:scrollbars="vertical"
             android:inputType="textMultiLine"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/add_button"
+            android:text="Add"
+            android:layout_marginTop="15dp"
+            android:textSize="15sp"
+            android:layout_below="@+id/event_notes"
+            android:layout_centerHorizontal="true"/>
     </RelativeLayout>
 
 </ScrollView>

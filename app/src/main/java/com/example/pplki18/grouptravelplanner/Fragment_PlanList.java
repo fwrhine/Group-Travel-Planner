@@ -164,7 +164,7 @@ public class Fragment_PlanList extends Fragment {
                 plans.add(plan);
             } while (c.moveToNext());
         }
-
+        c.close();
         return plans;
     }
 

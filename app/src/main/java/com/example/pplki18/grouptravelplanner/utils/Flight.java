@@ -1,13 +1,13 @@
 package com.example.pplki18.grouptravelplanner.utils;
 
 public class Flight {
-    public String airlineName;
-    public String flightNumber;
-    public String departureTime;
-    public String arrivalTime;
-    public String price;
-    public String departureCity;
-    public String arrivalCity;
+    public final String airlineName;
+    public final String flightNumber;
+    public final String departureTime;
+    public final String arrivalTime;
+    public final String price;
+    public final String departureCity;
+    public final String arrivalCity;
 
     public Flight(String airlineName, String flightNumber, String departureTime, String arrivalTime,
                   String price, String departureCity, String arrivalCity) {

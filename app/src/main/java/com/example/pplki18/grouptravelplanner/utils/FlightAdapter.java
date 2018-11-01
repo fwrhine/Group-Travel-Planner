@@ -1,16 +1,11 @@
 package com.example.pplki18.grouptravelplanner.utils;
 
 import android.content.Context;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.util.Log;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.CursorAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.pplki18.grouptravelplanner.R;
@@ -22,8 +17,9 @@ public class FlightAdapter extends ArrayAdapter<Flight> {
         super(context, 0, arrayList);
     }
 
+    @NonNull
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(int position, View convertView, @NonNull ViewGroup parent) {
         // Get the data item for this position
         Flight user = getItem(position);
         // Check if an existing view is being reused, otherwise inflate the view
@@ -31,15 +27,16 @@ public class FlightAdapter extends ArrayAdapter<Flight> {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.row_book_flight, parent, false);
         }
         // Lookup view for data population
-        TextView tvAirlineName = (TextView) convertView.findViewById(R.id.airlineName);
-        TextView tvFlightNum = (TextView) convertView.findViewById(R.id.flightNumber);
-        TextView tvDepartCity = (TextView) convertView.findViewById(R.id.departCity);
-        TextView tvArriveCity = (TextView) convertView.findViewById(R.id.arriveCity);
-        TextView tvDepartTime = (TextView) convertView.findViewById(R.id.departTime);
-        TextView tvArriveTime = (TextView) convertView.findViewById(R.id.arriveTime);
-        TextView tvPrice = (TextView) convertView.findViewById(R.id.price);
+        TextView tvAirlineName = convertView.findViewById(R.id.airlineName);
+        TextView tvFlightNum = convertView.findViewById(R.id.flightNumber);
+        TextView tvDepartCity = convertView.findViewById(R.id.departCity);
+        TextView tvArriveCity = convertView.findViewById(R.id.arriveCity);
+        TextView tvDepartTime = convertView.findViewById(R.id.departTime);
+        TextView tvArriveTime = convertView.findViewById(R.id.arriveTime);
+        TextView tvPrice = convertView.findViewById(R.id.price);
 
         // Populate the data into the template view using the data object
+        assert user != null;
         tvAirlineName.setText(user.airlineName);
         tvFlightNum.setText(user.flightNumber);
         tvDepartCity.setText(user.departureCity);

@@ -4,7 +4,7 @@
     android:id="@+id/coordinatorLayout3"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".PagerBooking">
+    tools:context=".ChooseEventActivity">
 
     <LinearLayout
         android:id="@+id/editPlace"
@@ -13,94 +13,44 @@
         android:orientation="horizontal" >
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="94dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="From:"
+            android:text="@string/bookFrom"
             android:layout_margin="8dp" />
 
         <EditText
             android:id="@+id/origin"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="4"
             android:background="@android:color/darker_gray"
-            android:hint="Origin"
+            android:hint="@string/bookOrigin"
             android:layout_marginBottom="8dp"
             android:layout_marginEnd="8dp"
-            android:layout_marginTop="8dp" />
+            android:layout_marginTop="8dp"
+            android:inputType="text" />
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="78dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="To:"
+            android:text="@string/bookTo"
             android:layout_marginBottom="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginTop="8dp" />
 
         <EditText
             android:id="@+id/destination"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="4"
             android:background="@android:color/darker_gray"
-            android:hint="Destination"
+            android:hint="@string/bookDestination"
             android:layout_marginBottom="8dp"
             android:layout_marginEnd="8dp"
-            android:layout_marginTop="8dp" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/editDate"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/editPlace"
-        android:orientation="horizontal" >
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Date:"
-            android:layout_margin="8dp"/>
-
-        <EditText
-            android:id="@+id/departureDay"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="4"
-            android:background="@android:color/darker_gray"
-            android:hint="Day"
-            android:inputType="number"
             android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp" />
-
-        <EditText
-            android:id="@+id/departureMonth"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="4"
-            android:background="@android:color/darker_gray"
-            android:hint="Month"
-            android:inputType="number"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp" />
-
-        <EditText
-            android:id="@+id/departureYear"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="4"
-            android:background="@android:color/darker_gray"
-            android:hint="Year"
-            android:inputType="number"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp" />
+            android:inputType="text" />
 
     </LinearLayout>
 
@@ -108,14 +58,14 @@
         android:id="@+id/resultList"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/editDate">
+        android:layout_below="@+id/editPlace">
 
         <Button
             android:id="@+id/searchButton"
             android:background="@color/background_color"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="FIND TRAIN"
+            android:text="@string/buttonFindTrain"
             android:layout_margin="8dp"/>
 
         <ListView

@@ -2,14 +2,14 @@ package com.example.pplki18.grouptravelplanner.utils;
 
 public class Plan {
 
-    int plan_id;
-    String plan_name;
-    String plan_start_date;
-    String plan_end_date;
-    int plan_total_days;
-    String plan_overview;
-    String plan_modified;
-    String plan_created;
+    private int plan_id;
+    private String plan_name;
+    private String plan_start_date;
+    private String plan_end_date;
+    private int plan_total_days;
+    private String plan_overview;
+    private String plan_modified;
+    private String plan_created;
 
     //constructor
     public Plan() {

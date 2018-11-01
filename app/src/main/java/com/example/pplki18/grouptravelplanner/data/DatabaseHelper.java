@@ -37,7 +37,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     /**
      * Database version. If you change the database schema, you must increment the database version.
      */
-    private static final int DATABASE_VERSION = 8;
+    private static final int DATABASE_VERSION = 9;
     private Context c2;
     /**
      * Constructs a new instance of {@link DatabaseHelper}.
@@ -113,7 +113,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         String SQL_CREATE_EVENT_TABLE = "CREATE TABLE " + EventEntry.TABLE_NAME + " ("
                 + EventEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + EventEntry.COL_PLAN_ID + " INTEGER, "
+                + EventEntry.COL_PLAN_ID + " INTEGER NOT NULL, "
+                + EventEntry.COL_QUERY_ID + " TEXT, "
                 + EventEntry.COL_TITLE + " TEXT, "
                 + EventEntry.COL_LOCATION + " TEXT, "
                 + EventEntry.COL_DESCRIPTION + " TEXT, "
@@ -123,6 +124,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + EventEntry.COL_PHONE + " TEXT, "
                 + EventEntry.COL_TYPE + " TEXT, "
                 + EventEntry.COL_RATING + " TEXT, "
+                + EventEntry.COL_WEBSITE + " TEXT, "
+                + EventEntry.COL_PRICE + " TEXT, "
 
                 + EventEntry.COL_ORIGIN + " TEXT, "
                 + EventEntry.COL_DESTINATION + " TEXT, "

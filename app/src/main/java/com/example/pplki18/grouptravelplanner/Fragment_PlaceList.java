@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -19,18 +20,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.android.volley.NetworkError;
+import com.android.volley.NoConnectionError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
 import com.example.pplki18.grouptravelplanner.data.EventContract;
-import com.example.pplki18.grouptravelplanner.data.PlanContract;
+import com.example.pplki18.grouptravelplanner.utils.Event;
 import com.example.pplki18.grouptravelplanner.utils.PaginationScrollListener;
 import com.example.pplki18.grouptravelplanner.utils.Place;
 import com.example.pplki18.grouptravelplanner.utils.RVAdapter_Place;
@@ -43,24 +48,30 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.app.Activity.RESULT_OK;
+
 public class Fragment_PlaceList extends Fragment {
 
     private RecyclerView recyclerViewPlace;
     private LinearLayoutManager linearLayoutManager;
     private SearchView searchView;
+    private TextView textView;
     private RVAdapter_Place adapter;
     private ProgressBar progressBar;
     private SessionManager sessionManager;
     private DatabaseHelper databaseHelper;
 
-    private String query;
+    private String type;
     private String region;
     private String latitude;
     private String longitude;
     private String next_token;
+    private RequestQueue queue;
 
     private int plan_id;
     private String event_date;
+    private String prevActivity;
+    private List<Event> events;
 
     private boolean isLoading = false;
     private boolean isLastPage = false;
@@ -72,9 +83,36 @@ public class Fragment_PlaceList extends Fragment {
     }
 
     @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 3) {
+            if (resultCode == RESULT_OK) {
+                String prevActivity = data.getStringExtra("ACTIVITY");
+                if (prevActivity != null && prevActivity.equals("EditPlanActivity")) {
+                    getActivity().finish();
+                } else {
+                    events = data.getParcelableArrayListExtra("events");
+
+                    for (Event e : events) {
+                        Log.d("testtt", e.getTitle());
+                    }
+
+                    Intent intent = new Intent(getActivity(), CreateNewPlanActivity.class);
+                    intent.putParcelableArrayListExtra("events", (ArrayList<? extends Parcelable>) events);
+
+                    getActivity().setResult(RESULT_OK, intent);
+                    getActivity().finish();
+                }
+            }
+        }
+    }
+
+    @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         init();
+
+        textView.setVisibility(View.GONE);
 
         recyclerViewPlace.setHasFixedSize(true);
         recyclerViewPlace.setLayoutManager(linearLayoutManager);
@@ -102,7 +140,7 @@ public class Fragment_PlaceList extends Fragment {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String newQuery) {
-                sendRequest(newQuery);
+                sendRequest(newQuery + " " + type);
                 adapter.clear();
                 progressBar.setVisibility(View.VISIBLE);
 
@@ -112,7 +150,7 @@ public class Fragment_PlaceList extends Fragment {
             @Override
             public boolean onQueryTextChange(String newQuery) {
                 if (TextUtils.isEmpty(newQuery)){
-                    sendRequest(query);
+                    sendRequest(type);
                     adapter.clear();
                     progressBar.setVisibility(View.VISIBLE);
                 }
@@ -120,18 +158,30 @@ public class Fragment_PlaceList extends Fragment {
             }
         });
 
-        sendRequest(query);
+        sendRequest(type);
     }
 
-    public void sendRequest(String query) {
-        // Instantiate the RequestQueue.
-        RequestQueue queue = Volley.newRequestQueue(getActivity());
-        String url ="https://maps.googleapis.com/maps/api/place/textsearch/json?query=" + query + "+in+" + region
-                + "&fields=id,name,types,rating,formatted_address&key=" + getString(R.string.api_key);
+    private void noConnection(VolleyError volleyError) {
+        String message = null;
+        if (volleyError instanceof NetworkError) {
+            message = "No internet connection.";
+        } else if (volleyError instanceof NoConnectionError) {
+            message = "No internet connection.";
+        } else if (volleyError instanceof TimeoutError) {
+            message = "Connection timeout.";
+        }
 
-//        String url ="https://maps.googleapis.com/maps/api/place/textsearch/json?query=" + query
-//                + "&locationbias=circle:5000@" + latitude + "," + longitude
-//                + "&fields=id,name,types,rating,formatted_address&key=" + getString(R.string.api_key);
+        progressBar.setVisibility(View.GONE);
+        textView.setVisibility(View.VISIBLE);
+        toastMessage(message);
+    }
+
+    private void sendRequest(String query) {
+        String url ="https://maps.googleapis.com/maps/api/place/textsearch/json?query=" + query +
+                "+in+" + region + "&fields=id,name,types,rating,formatted_address" +
+                "&key=" + getString(R.string.api_key);
+
+        Log.d("REQUEST", url);
 
         // Request a string response from the provided URL.
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
@@ -145,6 +195,7 @@ public class Fragment_PlaceList extends Fragment {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.d("LIST REQUEST ERROR", error.toString());
+                noConnection(error);
             }
         });
 
@@ -152,8 +203,7 @@ public class Fragment_PlaceList extends Fragment {
         queue.add(stringRequest);
     }
 
-    public void loadMorePlaces() {
-        RequestQueue queue = Volley.newRequestQueue(getActivity());
+    private void loadMorePlaces() {
         String url = "https://maps.googleapis.com/maps/api/place/textsearch/json?pagetoken="
                 + next_token + "&key=AIzaSyB4QT2f2fyMQ8gDILgUEi5xBl_NKiGt_fo";
 
@@ -174,6 +224,7 @@ public class Fragment_PlaceList extends Fragment {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.d("NEXT PAGE REQUEST ERROR", error.toString());
+                noConnection(error);
             }
         });
 
@@ -181,7 +232,7 @@ public class Fragment_PlaceList extends Fragment {
         queue.add(stringRequest);
     }
 
-    public List<Place> getPlaces(String response) {
+    private List<Place> getPlaces(String response) {
         ArrayList<Place> places = new ArrayList<>();
         try {
             JSONObject obj = new JSONObject(response);
@@ -220,6 +271,7 @@ public class Fragment_PlaceList extends Fragment {
 
 
         Log.d("LIST OF PLACES", places.toString());
+//        allPlaces.addAll(places);
         return places;
     }
 
@@ -228,18 +280,27 @@ public class Fragment_PlaceList extends Fragment {
 
         RVAdapter_Place.ClickListener clickListener = new RVAdapter_Place.ClickListener() {
             @Override public void cardViewOnClick(View v, int position) {
-                Log.d("SELECTED PLACE ID", String.valueOf(places.get(position).getPlace_id()));
+                Log.d("SELECTED PLACE ID", String.valueOf(adapter.getAll().get(position).getPlace_id()));
 
                 Intent intent = new Intent(getActivity(), PlaceActivity.class);
-                intent.putExtra("PLACE_ID", String.valueOf(places.get(position).getPlace_id()));
+                intent.putExtra("PLACE_ID", String.valueOf(adapter.getAll().get(position).getPlace_id()));
                 intent.putExtra("plan_id", plan_id);
                 intent.putExtra("date", event_date);
-                intent.putExtra("type", query);
-                startActivity(intent);
+                intent.putExtra("type", type);
+                intent.putParcelableArrayListExtra("events", (ArrayList<? extends Parcelable>) events);
+                if (prevActivity.equals("CreateNewPlanActivity")) {
+                    intent.putExtra("ACTIVITY", "CreateNewPlanActivity");
+                    getActivity().startActivityForResult(intent, 3);
+                } else if (prevActivity.equals("EditPlanActivity")){
+                    intent.putExtra("ACTIVITY", "EditPlanActivity");
+                    getActivity().startActivityForResult(intent, 3);
+                } else {
+                    startActivity(intent);
+                }
             }
 
             @Override public void addImageOnClick(View v, int position) {
-                setTime(places, position);
+                setTime(adapter.getAll().get(position));
             }
         };
 
@@ -252,7 +313,7 @@ public class Fragment_PlaceList extends Fragment {
         if (!isLastPage) adapter.addLoadingFooter();
     }
 
-    public void setTime(final List<Place> places, final int position) {
+    private void setTime(final Place place) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getLayoutInflater();
         View dialogLayout = inflater.inflate(R.layout.set_time_dialog, null);
@@ -265,12 +326,23 @@ public class Fragment_PlaceList extends Fragment {
         builder.setPositiveButton("OK",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        toastMessage("Start " + startTime.getCurrentHour() + ":" + startTime.getCurrentMinute()
-                                + " End " + endTime.getCurrentHour() + ":" + endTime.getCurrentMinute());
                         String start_time = startTime.getCurrentHour() + ":" + startTime.getCurrentMinute();
                         String end_time = endTime.getCurrentHour() + ":" + endTime.getCurrentMinute();
-                        saveEventToPlan(places, position, start_time, end_time);
-                        getActivity().finish();
+                        Log.d("prev_activity", prevActivity);
+                        if (prevActivity.equals("CreateNewPlanActivity")) {
+                            Event anEvent = saveEventLocally(place, start_time, end_time);
+                            events.add(anEvent);
+
+                            Intent intent = new Intent(getActivity(), CreateNewPlanActivity.class);
+                            intent.putParcelableArrayListExtra("events", (ArrayList<? extends Parcelable>) events);
+                            intent.putExtra("ACTIVITY", "Fragment_PlaceList");
+                            Log.d("prev activity", "createnewplan");
+                            getActivity().setResult(RESULT_OK, intent);
+                            getActivity().finish();
+                        } else {
+                            saveEventToPlan(place, start_time, end_time);
+                            getActivity().finish();
+                        }
                     }
                 });
         builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
@@ -281,23 +353,40 @@ public class Fragment_PlaceList extends Fragment {
         builder.show();
     }
 
-    private void saveEventToPlan(List<Place> places, int position, String start_time, String end_time) {
+    private Event saveEventLocally(Place place, String start_time, String end_time) {
+        Event anEvent = new Event();
+        anEvent.setQuery_id(place.getPlace_id());
+        anEvent.setTitle(place.getName());
+        anEvent.setLocation(place.getAddress());
+        anEvent.setWebsite(place.getWebsite());
+        anEvent.setDate(event_date);
+        anEvent.setTime_start(start_time);
+        anEvent.setTime_end(end_time);
+        anEvent.setPhone(place.getPhone_number());
+        anEvent.setType(type);
+        anEvent.setRating(place.getRating());
+
+        return anEvent;
+    }
+
+    private void saveEventToPlan(Place place, String start_time, String end_time) {
         Log.d("SAVEVENT", "MASUK");
         SQLiteDatabase db = databaseHelper.getWritableDatabase();
 
         ContentValues contentValues = new ContentValues();
         contentValues.put(EventContract.EventEntry.COL_PLAN_ID, plan_id);
-        contentValues.put(EventContract.EventEntry.COL_TITLE, places.get(position).getName());
-        contentValues.put(EventContract.EventEntry.COL_LOCATION, places.get(position).getAddress());
-        contentValues.put(EventContract.EventEntry.COL_DESCRIPTION, places.get(position).getWebsite());
+        contentValues.put(EventContract.EventEntry.COL_TITLE, place.getName());
+        contentValues.put(EventContract.EventEntry.COL_LOCATION, place.getAddress());
+        contentValues.put(EventContract.EventEntry.COL_WEBSITE, place.getWebsite());
         contentValues.put(EventContract.EventEntry.COL_DATE, event_date);
-        Log.d("event date", event_date);
-        Log.d("plan_id", plan_id+"");
+        //TODO ERROR PLACES GADA ADDRESS DLL ??!!
+//        Log.d("event location", place.getAddress());
+//        Log.d("event desc", place.getWebsite());
         contentValues.put(EventContract.EventEntry.COL_TIME_START, start_time);
         contentValues.put(EventContract.EventEntry.COL_TIME_END, end_time);
-        contentValues.put(EventContract.EventEntry.COL_PHONE, places.get(position).getPhone_number());
-        contentValues.put(EventContract.EventEntry.COL_TYPE, query);
-        contentValues.put(EventContract.EventEntry.COL_RATING, places.get(position).getRating());
+        contentValues.put(EventContract.EventEntry.COL_PHONE, place.getPhone_number());
+        contentValues.put(EventContract.EventEntry.COL_TYPE, type);
+        contentValues.put(EventContract.EventEntry.COL_RATING, place.getRating());
         long event_id = db.insert(EventContract.EventEntry.TABLE_NAME, null, contentValues);
 
     }
@@ -310,8 +399,9 @@ public class Fragment_PlaceList extends Fragment {
         recyclerViewPlace = (RecyclerView) getView().findViewById(R.id.rv);
         progressBar = (ProgressBar) getView().findViewById(R.id.main_progress);
         searchView = (SearchView) getView().findViewById(R.id.search_place);
+        textView = (TextView) getView().findViewById(R.id.connection);
         linearLayoutManager = new LinearLayoutManager(getActivity());
-        query = getArguments().getString("QUERY");
+        type = getArguments().getString("QUERY");
         sessionManager = new SessionManager(getActivity().getApplicationContext());
         region = sessionManager.getCurrentRegion();
         latitude = getArguments().getString("LATITUDE");
@@ -320,5 +410,10 @@ public class Fragment_PlaceList extends Fragment {
         plan_id = getArguments().getInt("plan_id");
         event_date = getArguments().getString("date");
         databaseHelper = new DatabaseHelper(getActivity());
+        prevActivity = getActivity().getIntent().getStringExtra("ACTIVITY");
+        queue = Volley.newRequestQueue(getActivity());
+        if (prevActivity.equals("CreateNewPlanActivity")) {
+            events = getActivity().getIntent().getParcelableArrayListExtra("events");
+        }
     }
 }

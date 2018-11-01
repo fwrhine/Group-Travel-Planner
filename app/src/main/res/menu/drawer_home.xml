@@ -14,9 +14,8 @@
             android:icon="@drawable/ic_event_note_black_24dp"
             android:title="Plans" />
         <item android:id="@+id/nav_reminder_list"
-            android:icon="@drawable/ic_event_note_black_24dp"
-            android:title="Plans" />
-
+            android:icon="@drawable/ic_timer"
+            android:title="Reminder" />
     </group>
 
 </menu>
