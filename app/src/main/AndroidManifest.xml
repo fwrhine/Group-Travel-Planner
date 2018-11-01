@@ -82,6 +82,10 @@
         <!-- <activity android:name=".Activity_InHome"></activity> -->
         <activity android:name=".Activity_CreateReminder" />
 
+        <activity android:name=".Activity_EditReminder" />
+
+        <receiver android:name=".AlertReciever"/>
+        <!--<activity android:name=".Activity_ReminderList"/>-->
         <receiver android:name=".AlertReciever" />
         <!-- <activity android:name=".Activity_ReminderList"/> -->
         <activity android:name=".EditEventActivity" />
