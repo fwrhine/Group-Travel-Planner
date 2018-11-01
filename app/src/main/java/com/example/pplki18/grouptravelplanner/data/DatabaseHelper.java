@@ -169,7 +169,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 //        db.execSQL(SQL_CREATE_FLIGHT_TABLE);
 //        db.execSQL(SQL_CREATE_TRAIN_TABLE);
 //        db.execSQL(SQL_CREATE_OTHER_EVENT_TABLE);
-        db.execSQL(SQL_CREATE_REMINDER_TABLE);
+//        db.execSQL(SQL_CREATE_REMINDER_TABLE);
     }
 
     @Override
