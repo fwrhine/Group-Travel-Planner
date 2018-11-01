@@ -15,8 +15,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,7 +32,6 @@ import com.android.volley.toolbox.Volley;
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
 import com.example.pplki18.grouptravelplanner.data.EventContract;
 import com.example.pplki18.grouptravelplanner.utils.Event;
-import com.example.pplki18.grouptravelplanner.utils.Place;
 import com.example.pplki18.grouptravelplanner.utils.Train;
 import com.example.pplki18.grouptravelplanner.utils.TrainAdapter;
 
@@ -51,7 +51,7 @@ import static android.app.Activity.RESULT_OK;
 
 public class BookTrainFragment extends Fragment {
 
-    private EditText origin, destination;
+    private AutoCompleteTextView origin, destination;
     private Button searchButton;
 
     private int plan_id;
@@ -60,7 +60,7 @@ public class BookTrainFragment extends Fragment {
     private String startDate;
 
     private String token;
-    private HashMap<String, String> availableStation;
+    private HashMap<String, String> availableStations;
 
     private RequestQueue queue;
     private ListView listTravel;
@@ -92,7 +92,7 @@ public class BookTrainFragment extends Fragment {
         token = "";
         queue = Volley.newRequestQueue(this.getActivity());
 
-        availableStation = new HashMap<>();
+        availableStations = new HashMap<>();
 
         prevActivity = getActivity().getIntent().getStringExtra("ACTIVITY");
         if (prevActivity.equals("CreateNewPlanActivity")) {
@@ -133,20 +133,36 @@ public class BookTrainFragment extends Fragment {
         String tokenUrl = "https://api-sandbox.tiket.com/apiv1/payexpress"
                 + "?method=getToken&secretkey=" + secretKey + "&output=json";
 
-        generateToken(tokenUrl, new TokenCallback() {
+        generateToken(tokenUrl, new BookTrainFragment.TokenCallback() {
             @Override
             public void onCallback(String tokenStr) {
                 token = tokenStr;
 
-                fillStationList(new StationCallback() {
+                fillStationList(new BookTrainFragment.StationCallback() {
                     @Override
                     public void onCallback(HashMap<String, String> map) {
                         Log.d("MAP-FINAL", "map size: "+ map.size());
-                        availableStation = map;
+                        availableStations = map;
+
+                        String[] stationKeyArray = availableStations.keySet().toArray(new String[availableStations.size()]);
+                        ArrayList<String> stationArrayList = new ArrayList<>();
+
+                        for (int i = 0; i < availableStations.size(); i++) {
+                            String currentKey = stationKeyArray[i];
+                            stationArrayList.add(availableStations.get(currentKey)+" | "+currentKey);
+                        }
+
+                        ArrayAdapter<String> adapter1 = new ArrayAdapter<>(BookTrainFragment.this.getActivity(), R.layout.support_simple_spinner_dropdown_item, stationArrayList);
+                        origin.setAdapter(adapter1);
+                        destination.setAdapter(adapter1);
+
+                        origin.setText(stationArrayList.get(0));
+                        destination.setText(stationArrayList.get(1));
                     }
                 });
             }
         });
+
 
         try {
 
@@ -160,23 +176,34 @@ public class BookTrainFragment extends Fragment {
             e.printStackTrace();
         }
 
+        Objects.requireNonNull(getView()).findViewById(R.id.loadingPanel).setVisibility(View.GONE);
+
         searchButton.setOnClickListener(
                 new View.OnClickListener() {
 
                     @Override
                     public void onClick(View view) {
-                        if (validate()) {
 
-                            String startLoc = origin.getText().toString();
-                            String endLoc = destination.getText().toString();
+                        if(validate()) {
+
+                            String[] startSplit = origin.getText().toString().split(" \\| ");
+                            String startLoc = startSplit[1];
+
+                            Log.d("START", startLoc);
+
+                            String[] endSplit = destination.getText().toString().split(" \\| ");
+                            String endLoc = endSplit[1];
+
+                            Log.d("START", startLoc);
                             final String departDate = startDate;
 
-                            if(availableStation.containsKey(startLoc)) {
+                            if (availableStations.containsKey(startLoc)) {
 
-                                if(availableStation.containsKey(endLoc)) {
+                                if (availableStations.containsKey(endLoc)) {
 
-                                    final String start = availableStation.get(startLoc);
-                                    final String end = availableStation.get(endLoc);
+                                    final String start = availableStations.get(startLoc);
+                                    final String end = availableStations.get(endLoc);
+                                    getView().findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
                                     trainApiCall(token, start, end, departDate);
                                 } else {
                                     Toast.makeText(BookTrainFragment.this.getActivity()
@@ -236,8 +263,8 @@ public class BookTrainFragment extends Fragment {
                             Log.d("FILL-MAP", "start -> " + response);
                             JSONObject json = new JSONObject(response);
 
-                            JSONObject allStation = json.getJSONObject("stations");
-                            JSONArray stationList = allStation.getJSONArray("station");
+                            JSONObject allStations = json.getJSONObject("stations");
+                            JSONArray stationList = allStations.getJSONArray("station");
 
                             HashMap<String, String> stationMap = new HashMap<>();
 
@@ -245,21 +272,14 @@ public class BookTrainFragment extends Fragment {
 
                                 JSONObject stationData = stationList.getJSONObject(i);
 
-                                String stationLoc = stationData.getString("station_name");
+                                String stationLoc = stationData.getString("city_name");
                                 String stationCode = stationData.getString("station_code");
 
-                                if (stationLoc.contains(" - ")) {
-                                    String[] splitLoc = stationLoc.split(" - ");
-                                    stationMap.put(splitLoc[1], stationCode);
-                                }
-
-                                else {
-                                    stationMap.put(stationLoc, stationCode);
-                                }
+                                stationMap.put(stationLoc, stationCode);
                             }
-                            availableStation = stationMap;
+                            availableStations = stationMap;
 
-                            callback.onCallback(availableStation);
+                            callback.onCallback(availableStations);
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -278,7 +298,6 @@ public class BookTrainFragment extends Fragment {
     private void trainApiCall (final String token, final String start, final String end,
                                 final String depart) {
         // Request a string response from the provided URL.
-
         //final String url = "http://api-sandbox.tiket.com/search/train?d="
           //      + start + "&a=" + end + "&date=" + depart + "&token=" + token + "&output=json";
 
@@ -395,28 +414,28 @@ public class BookTrainFragment extends Fragment {
 
             StringBuilder editedPrice = new StringBuilder();
 
-            for(int j = 0; j < addCommaPrice.length; j++) {
-                if (addCommaPrice[j].equals(".")) {
+            for (String anAddCommaPrice : addCommaPrice) {
+                if (anAddCommaPrice.equals(".")) {
                     editedPrice.append(",");
-                }
-
-                else {
-                    editedPrice.append(addCommaPrice[j]);
+                } else {
+                    editedPrice.append(anAddCommaPrice);
                 }
             }
 
-            String airlineName = moreTrainInfo.get(0);
+            String trainName = moreTrainInfo.get(0);
             String priceValue = "Rp " + editedPrice.toString();
             String departTime = moreTrainInfo.get(2);
             String arriveTime = moreTrainInfo.get(3);
 
-            Train train = new Train(airlineName, departTime, arriveTime,
+            Train train = new Train(trainName, departTime, arriveTime,
                     priceValue, startLoc, endLoc);
             availableTrains.add(train);
         }
 
         Log.d("ALMOST", "Almost finished");
         TrainAdapter adapter = new TrainAdapter(this.getActivity(), availableTrains);
+
+        Objects.requireNonNull(getView()).findViewById(R.id.loadingPanel).setVisibility(View.GONE);
 
         listTravel.setAdapter(adapter);
         listTravel.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -448,17 +467,20 @@ public class BookTrainFragment extends Fragment {
                             @Override
                             public void onClick(View view) {
 
-                                TextView tvTrainName = viewItem.findViewById(R.id.trainName);
-                                TextView tvDepartCity = viewItem.findViewById(R.id.departCity);
-                                TextView tvArriveCity = viewItem.findViewById(R.id.arriveCity);
-                                TextView tvDepartTime = viewItem.findViewById(R.id.departTime);
-                                TextView tvArriveTime = viewItem.findViewById(R.id.arriveTime);
+                                final TextView tvDepartTime = viewItem.findViewById(R.id.departTime);
+                                final TextView tvArriveTime = viewItem.findViewById(R.id.arriveTime);
 
-                                String trainName = tvTrainName.getText().toString();
-                                String departCity = tvDepartCity.getText().toString();
-                                String arriveCity = tvArriveCity.getText().toString();
+                                // Add for Airline Name & Price
+                                final TextView tvTrainName = viewItem.findViewById(R.id.trainName);
+                                final TextView tvPrice = viewItem.findViewById(R.id.price);
+
+                                // For the city name located in the input box
+                                String startLoc = origin.getText().toString();
+                                String endLoc = destination.getText().toString();
+
                                 String departTime = tvDepartTime.getText().toString();
                                 String arriveTime = tvArriveTime.getText().toString();
+                                String price = tvPrice.getText().toString();
 
                                 if (prevActivity.equals("CreateNewPlanActivity")) {
                                     Event anEvent = new Event();
@@ -467,16 +489,16 @@ public class BookTrainFragment extends Fragment {
                                     anEvent.setDate(date);
                                     anEvent.setType("trains");
 
-                                    anEvent.setOrigin(departCity);
-                                    anEvent.setDestination(arriveCity);
+                                    anEvent.setOrigin(startLoc);
+                                    anEvent.setDestination(endLoc);
                                     anEvent.setDeparture_time(departTime);
                                     anEvent.setArrival_time(arriveTime);
-                                    anEvent.setTransport_number(trainName);
+                                    anEvent.setTransport_number(tvTrainName.getText().toString());
+                                    anEvent.setPrice(price);
 
                                     events.add(anEvent);
                                     Intent intent = new Intent(getActivity(), CreateNewPlanActivity.class);
                                     intent.putParcelableArrayListExtra("events", (ArrayList<? extends Parcelable>) events);
-//                                    intent.putExtra("ACTIVITY", "Fragment_PlaceList");
 
                                     getActivity().setResult(RESULT_OK, intent);
                                     getActivity().finish();
@@ -495,18 +517,19 @@ public class BookTrainFragment extends Fragment {
                                     values.put(EventContract.EventEntry.COL_DESCRIPTION, "Train for Transport");
                                     values.put(EventContract.EventEntry.COL_DATE, date);
                                     values.put(EventContract.EventEntry.COL_TYPE, "trains");
+                                    values.put(EventContract.EventEntry.COL_PRICE, price);
 
-                                    values.put(EventContract.EventEntry.COL_ORIGIN, tvDepartCity.getText().toString());
-                                    values.put(EventContract.EventEntry.COL_DESTINATION, tvArriveCity.getText().toString());
-                                    values.put(EventContract.EventEntry.COL_DEPARTURE_TIME, tvDepartTime.getText().toString());
-                                    values.put(EventContract.EventEntry.COL_ARRIVAL_TIME, tvArriveTime.getText().toString());
+                                    values.put(EventContract.EventEntry.COL_ORIGIN, startLoc);
+                                    values.put(EventContract.EventEntry.COL_DESTINATION, endLoc);
+                                    values.put(EventContract.EventEntry.COL_DEPARTURE_TIME, departTime);
+                                    values.put(EventContract.EventEntry.COL_ARRIVAL_TIME, arriveTime);
                                     values.put(EventContract.EventEntry.COL_TRANS_NUMBER, tvTrainName.getText().toString());
 
                                     long newRowId = db.insert(EventContract.EventEntry.TABLE_NAME, null, values);
 
                                     if (newRowId != -1) {
                                         Toast.makeText(BookTrainFragment.this.getActivity(), "Selected Train : "
-                                                + tvTrainName.getText() , Toast.LENGTH_LONG).show();
+                                                + tvTrainName.getText().toString(), Toast.LENGTH_LONG).show();
                                         dialog.dismiss();
                                         getActivity().finish();
                                     }
@@ -522,7 +545,6 @@ public class BookTrainFragment extends Fragment {
                 );
             }
         });
-
         Log.d("DONE", "ListView populated");
 
     }

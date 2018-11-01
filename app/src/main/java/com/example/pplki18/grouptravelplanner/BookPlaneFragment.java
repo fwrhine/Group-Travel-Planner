@@ -470,8 +470,6 @@ public class BookPlaneFragment extends Fragment {
                             public void onClick(View view) {
 
                                 final TextView tvFlightNum = viewItem.findViewById(R.id.flightNumber);
-                                //final TextView tvDepartCity = viewItem.findViewById(R.id.departCity);
-                                //final TextView tvArriveCity = viewItem.findViewById(R.id.arriveCity);
                                 final TextView tvDepartTime = viewItem.findViewById(R.id.departTime);
                                 final TextView tvArriveTime = viewItem.findViewById(R.id.arriveTime);
 
@@ -485,8 +483,6 @@ public class BookPlaneFragment extends Fragment {
                                 String startLoc = origin.getText().toString();
                                 String endLoc = destination.getText().toString();
 
-                                //String departCity = tvDepartCity.getText().toString();
-                                //String arriveCity = tvArriveCity.getText().toString();
                                 String departTime = tvDepartTime.getText().toString();
                                 String arriveTime = tvArriveTime.getText().toString();
                                 String price = tvPrice.getText().toString();
