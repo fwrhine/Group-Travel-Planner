@@ -101,8 +101,6 @@ public class ChooseEventActivity extends AppCompatActivity {
 
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
-
-
         final PagerAdapter adapter = new PagerAdapter
                 (getSupportFragmentManager(), tabLayout.getTabCount(),
                         sessionManager.getCurrentRegion(), regionCoor, plan_bundle);
