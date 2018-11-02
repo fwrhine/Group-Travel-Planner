@@ -98,14 +98,11 @@ public class Fragment_EventList extends Fragment {
 
     @Override
     public void onResume() {  // After a pause OR at startup
-//        Log.d("RESUME", "masuk resume");
         super.onResume();
         Date date = (Date) intent.getExtras().get("date");
         String prevActivity = getActivity().getIntent().getStringExtra("ACTIVITY");
-//        Log.d("HALALA", prevActivity);
         if (prevActivity != null && prevActivity.equals("CreateNewPlanActivity")) {
             events = getAllEventsTemp(date);
-//            getActivity().getIntent().putExtra("ACTIVITY", "CreateNewPlanActivity");
         } else {
             events = getAllEvents(date);
         }

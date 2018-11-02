@@ -306,6 +306,7 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
     }
 
     public void setDateChanger() throws ParseException {
+        button_left.setEnabled(false);
         date_month_year.setText(dateFormatter2.format(date_start_temp));
         date_month_year.setTextColor(getResources().getColor(R.color.colorBlack));
         day.setText(new SimpleDateFormat("EEEE", Locale.US).format(date_start_temp));

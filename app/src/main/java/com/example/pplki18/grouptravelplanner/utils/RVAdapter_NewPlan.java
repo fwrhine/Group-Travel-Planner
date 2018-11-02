@@ -133,13 +133,11 @@ public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.Ne
         String prevActivity = intent.getStringExtra("ACTIVITY");
 
         if (prevActivity != null && prevActivity.equals("CreateNewPlanActivity")) {
-            Log.d("MASUK GA", "MASUK");
             myIntent.putExtra("PREV_ACTIVITY", prevActivity);
             myIntent.putParcelableArrayListExtra("events", (ArrayList<? extends Parcelable>) events);
             myIntent.putExtra("index", pos);
         }
 
-        Log.d("MASUK GA", "GA");
         myIntent.putExtra("ACTIVITY", "PlanActivity");
         myIntent.putExtra("PLACE_ID", anEvent.getQuery_id());
         myIntent.putExtra("date", anEvent.getDate());
@@ -170,7 +168,6 @@ public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.Ne
         String prevActivity = intent.getStringExtra("ACTIVITY");
 
         if (prevActivity != null && prevActivity.equals("CreateNewPlanActivity")) {
-            Log.d("MASUK GA", "MASUK");
             myIntent.putExtra("PREV_ACTIVITY", prevActivity);
             myIntent.putParcelableArrayListExtra("events", (ArrayList<? extends Parcelable>) events);
             myIntent.putExtra("index", pos);
