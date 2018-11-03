@@ -1,7 +1,6 @@
 package com.example.pplki18.grouptravelplanner;
 
-import android.app.DatePickerDialog;
-import android.content.Intent;
+import android.app.Dialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -15,8 +14,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,9 +29,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.pplki18.grouptravelplanner.utils.Hotel;
 import com.example.pplki18.grouptravelplanner.utils.PaginationScrollListener;
-import com.example.pplki18.grouptravelplanner.utils.Place;
 import com.example.pplki18.grouptravelplanner.utils.RVAdapter_Hotel;
-import com.example.pplki18.grouptravelplanner.utils.RVAdapter_Place;
 import com.example.pplki18.grouptravelplanner.utils.SessionManager;
 
 import org.json.JSONArray;
@@ -40,13 +37,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 public class BookHotelFragment extends Fragment {
     private RecyclerView recyclerViewPlace;
     private LinearLayoutManager linearLayoutManager;
-    private SearchView searchView;
+    private ImageView search;
+    private ImageView close;
     private EditText checkIn;
     private EditText checkOut;
     private TextView textView;
@@ -55,7 +52,10 @@ public class BookHotelFragment extends Fragment {
     private RequestQueue queue;
     private SessionManager sessionManager;
 
+    private Dialog searchDialog;
+
     private String region;
+    private String regionCode;
     private String checkInDate;
     private String checkOutDate;
 
@@ -74,6 +74,7 @@ public class BookHotelFragment extends Fragment {
         init();
 
         textView.setVisibility(View.GONE);
+        close.setVisibility(View.GONE);
 
 
         recyclerViewPlace.setHasFixedSize(true);
@@ -99,78 +100,113 @@ public class BookHotelFragment extends Fragment {
 
         });
 
+        search.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showPopup(getView());
+            }
+        });
+
+
+
+//        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+//            @Override
+//            public boolean onQueryTextSubmit(String newQuery) {
+////                sendRequest(newQuery + " " + type);
+////                adapter.clear();
+////                progressBar.setVisibility(View.VISIBLE);
+//
+//                return true;
+//            }
+//
+//            @Override
+//            public boolean onQueryTextChange(String newQuery) {
+//                if (TextUtils.isEmpty(newQuery)){
+////                    sendRequest(type);
+////                    adapter.clear();
+////                    progressBar.set    Visibility(View.VISIBLE);
+//                }
+//                return false;
+//            }
+//        });
+
+//        final DatePickerDialog.OnDateSetListener checkInPicker = new DatePickerDialog.OnDateSetListener() {
+//            @Override
+//            public void onDateSet(DatePicker view, int year, int monthOfYear,
+//                                  int dayOfMonth) {
+//                // TODO Auto-generated method stub
+//                checkInDate = dayOfMonth + "/" + monthOfYear + "/" + year;
+//                checkIn.setText(checkInDate);
+//            }
+//        };
+//
+//        checkIn.setOnClickListener(new EditText.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Calendar calendar = Calendar.getInstance();
+//                // TODO Auto-generated method stub
+//                DatePickerDialog datePicker= new DatePickerDialog(getContext(), checkInPicker,
+//                        calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),
+//                        calendar.get(Calendar.DAY_OF_MONTH));
+//
+//                datePicker.show();
+//                datePicker.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
+//            }
+//        });
+//
+//        final DatePickerDialog.OnDateSetListener checkOutPicker = new DatePickerDialog.OnDateSetListener() {
+//            @Override
+//            public void onDateSet(DatePicker view, int year, int monthOfYear,
+//                                  int dayOfMonth) {
+//                // TODO Auto-generated method stub
+//                checkOutDate = dayOfMonth + "/" + monthOfYear + "/" + year;
+//                checkOut.setText(checkOutDate);
+//            }
+//        };
+//
+//        checkOut.setOnClickListener(new EditText.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Calendar calendar = Calendar.getInstance();
+//                // TODO Auto-generated method stub
+//                DatePickerDialog datePicker= new DatePickerDialog(getContext(), checkInPicker,
+//                        calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),
+//                        calendar.get(Calendar.DAY_OF_MONTH));
+//
+//                datePicker.show();
+//                datePicker.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
+//            }
+//        });
+
+        generateToken();
+
+    }
+
+    public void showPopup(View v) {
+        searchDialog.setContentView(R.layout.search_dialog);
+        SearchView searchView = (SearchView) searchDialog.findViewById(R.id.search_hotel);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String newQuery) {
-//                sendRequest(newQuery + " " + type);
-//                adapter.clear();
-//                progressBar.setVisibility(View.VISIBLE);
-
+                searchHotel(newQuery);
+                adapter.clear();
+                progressBar.setVisibility(View.VISIBLE);
+                close.setVisibility(View.VISIBLE);
+                searchDialog.dismiss();
                 return true;
             }
 
             @Override
             public boolean onQueryTextChange(String newQuery) {
                 if (TextUtils.isEmpty(newQuery)){
-//                    sendRequest(type);
-//                    adapter.clear();
-//                    progressBar.set    Visibility(View.VISIBLE);
+                    generateToken();
+                    adapter.clear();
+                    progressBar.setVisibility(View.VISIBLE);
                 }
                 return false;
             }
         });
-
-        final DatePickerDialog.OnDateSetListener checkInPicker = new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker view, int year, int monthOfYear,
-                                  int dayOfMonth) {
-                // TODO Auto-generated method stub
-                checkInDate = dayOfMonth + "/" + monthOfYear + "/" + year;
-                checkIn.setText(checkInDate);
-            }
-        };
-
-        checkIn.setOnClickListener(new EditText.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Calendar calendar = Calendar.getInstance();
-                // TODO Auto-generated method stub
-                DatePickerDialog datePicker= new DatePickerDialog(getContext(), checkInPicker,
-                        calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),
-                        calendar.get(Calendar.DAY_OF_MONTH));
-
-                datePicker.show();
-                datePicker.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
-            }
-        });
-
-        final DatePickerDialog.OnDateSetListener checkOutPicker = new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker view, int year, int monthOfYear,
-                                  int dayOfMonth) {
-                // TODO Auto-generated method stub
-                checkOutDate = dayOfMonth + "/" + monthOfYear + "/" + year;
-                checkOut.setText(checkOutDate);
-            }
-        };
-
-        checkOut.setOnClickListener(new EditText.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Calendar calendar = Calendar.getInstance();
-                // TODO Auto-generated method stub
-                DatePickerDialog datePicker= new DatePickerDialog(getContext(), checkInPicker,
-                        calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),
-                        calendar.get(Calendar.DAY_OF_MONTH));
-
-                datePicker.show();
-                datePicker.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
-            }
-        });
-
-
-        generateToken();
-
+        searchDialog.show();
     }
 
     public void generateToken() {
@@ -235,6 +271,29 @@ public class BookHotelFragment extends Fragment {
         queue.add(stringRequest);
     }
 
+    public void searchHotel(String query) {
+        String url = "https://www.tripadvisor.com/TypeAheadJson?action=API&query=" +
+                query + "&interleaved=true&types=hotel&filter=nobroad&parentids=" +
+                regionCode + "&name_depth=1&details=true&legacy_format=true&max=8";
+
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d("HOTEL SEARCH RESULT", response);
+                        populatePlaceRecyclerView(getHotelsSearch(response));
+                        adapter.removeLoadingFooter();
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("ERROR ALL HOTELS", error.toString());
+            }
+        });
+
+        queue.add(stringRequest);
+    }
+
     private List<Hotel> getHotels(String response) {
         ArrayList<Hotel> hotels = new ArrayList<>();
         try {
@@ -250,7 +309,34 @@ public class BookHotelFragment extends Fragment {
                 hotel.setHotel_id(hotelObj.optString("id"));
                 hotel.setName(hotelObj.optString("name"));
                 hotel.setRating(hotelObj.optString("star_rating"));
-                hotel.setRegion(hotelObj.optString("regional", "-"));
+                hotel.setAddress(hotelObj.optString("regional", "-"));
+
+                hotels.add(hotel);
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+        return hotels;
+    }
+
+    private List<Hotel> getHotelsSearch(String response) {
+        ArrayList<Hotel> hotels = new ArrayList<>();
+        try {
+            JSONArray results = new JSONArray(response);
+
+            for (int i = 0 ; i < results.length() ; i++)
+            {
+                JSONObject hotelObj = new JSONObject(results.get(i).toString());
+                JSONObject hotelDetails = hotelObj.optJSONObject("details");
+
+                Hotel hotel = new Hotel();
+                hotel.setName(hotelDetails.optString("name"));
+                hotel.setRating(hotelDetails.optString("star_rating", "-"));
+                hotel.setAddress(hotelDetails.optString("address"));
+                hotel.setWebsite(hotelObj.optString("url"));
 
                 hotels.add(hotel);
             }
@@ -299,14 +385,17 @@ public class BookHotelFragment extends Fragment {
     private void init() {
         recyclerViewPlace = (RecyclerView) getView().findViewById(R.id.rv);
         progressBar = (ProgressBar) getView().findViewById(R.id.main_progress);
-        searchView = (SearchView) getView().findViewById(R.id.search_hotel);
-        checkIn = (EditText) getView().findViewById(R.id.check_in);
-        checkOut = (EditText) getView().findViewById(R.id.check_out);
+        search = (ImageView) getView().findViewById(R.id.search);
+        close = (ImageView) getView().findViewById(R.id.close);
+        searchDialog = new Dialog(getContext());
+//        checkIn = (EditText) getView().findViewById(R.id.check_in);
+//        checkOut = (EditText) getView().findViewById(R.id.check_out);
         textView = (TextView) getView().findViewById(R.id.connection);
         linearLayoutManager = new LinearLayoutManager(getActivity());
         queue = Volley.newRequestQueue(getActivity());
         sessionManager = new SessionManager(getActivity().getApplicationContext());
         adapter = new RVAdapter_Hotel(getContext());
         region = sessionManager.getCurrentRegion();
+        regionCode = "294226";
     }
 }
