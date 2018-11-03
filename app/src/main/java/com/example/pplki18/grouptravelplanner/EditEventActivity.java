@@ -16,11 +16,13 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
 import com.example.pplki18.grouptravelplanner.data.EventContract;
+import com.example.pplki18.grouptravelplanner.utils.Event;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -32,12 +34,16 @@ import java.util.Objects;
 public class EditEventActivity extends AppCompatActivity implements View.OnClickListener{
     private Toolbar toolbar;
 
+    private LinearLayout transport_layout;
+    private LinearLayout location_layout;
+
     private TextView event_name, event_address;
     private EditText event_description, event_date, event_start_time, event_end_time;
+    private TextView event_trans_num, event_origin, event_dest, event_price;
     private ImageView type_icon;
     private ImageButton save_event;
 
-    private SimpleDateFormat dateFormatter1, dateFormatter2;
+    private SimpleDateFormat dateFormatter1, dateFormatter2, dateFormatter3;
     private DatePickerDialog datePickerDialog;
     private TimePickerDialog startTimePickerDialog;
     private TimePickerDialog endTimePickerDialog;
@@ -47,9 +53,9 @@ public class EditEventActivity extends AppCompatActivity implements View.OnClick
     private Date start_date;
     private Date end_date;
     private String s_date;
-    private String desc;
+    private String initial_desc;
     private String type;
-    private int event_id;
+    private String event_id;
     private Date d_date;
 
     private DatabaseHelper databaseHelper;
@@ -59,6 +65,11 @@ public class EditEventActivity extends AppCompatActivity implements View.OnClick
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_event);
         init();
+
+        setSupportActionBar(toolbar);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        setTitle("Edit Event");
     }
 
     public void init() {
@@ -66,50 +77,89 @@ public class EditEventActivity extends AppCompatActivity implements View.OnClick
 
         databaseHelper = new DatabaseHelper(EditEventActivity.this);
 
-        desc = event_description.getText().toString();
+        initial_desc = event_description.getText().toString();
         Bundle bundle = getIntent().getExtras();
         assert bundle != null;
-        event_id = bundle.getInt("event_id");
+        type = bundle.getString("type");
+
         start_date = (Date) bundle.get("start_date");
         end_date = (Date) bundle.get("end_date");
-        String date = bundle.getString("date");
-        String name = bundle.getString("name");
-        String desc = bundle.getString("description");
-        type = bundle.getString("type");
-        String address = bundle.getString("address");
-        start_time = getIntent().getStringExtra("time_start");
-        end_time = getIntent().getStringExtra("time_end");
+        String date = "";
 
         dateFormatter1 = new SimpleDateFormat("EEE, MMM d", Locale.US);
         dateFormatter2 = new SimpleDateFormat("d MMMM yyyy", Locale.US);
+        dateFormatter3 = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 
-        try {
-            d_date = dateFormatter2.parse(date);
-            s_date = dateFormatter1.format(d_date);
-            Log.d("the date", s_date);
-            event_date.setText(s_date);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        event_start_time.setText(start_time);
-        event_end_time.setText(end_time);
-        event_description.setText(desc);
+        assert type != null;
+        if (type.equals("restaurants") || type.equals("attractions")) {
+            transport_layout.setVisibility(View.GONE);
 
-        setSupportActionBar(toolbar);
-        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        setTitle("Edit Event");
+            event_id = bundle.getString("event_id");
+            date = bundle.getString("date");
+            String name = bundle.getString("name");
+            String description = bundle.getString("description");
+            String address = bundle.getString("address");
+            start_time = getIntent().getStringExtra("time_start");
+            end_time = getIntent().getStringExtra("time_end");
 
-        event_name.setText(name);
-        if (type != null) {
+            try {
+                d_date = dateFormatter2.parse(date);
+                s_date = dateFormatter1.format(d_date);
+                event_date.setText(s_date);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            event_name.setText(name);
+            event_description.setText(description);
+
             if (type.equals("restaurants")) {
                 type_icon.setImageDrawable(getDrawable(R.drawable.ic_restaurant_black));
             } else if (type.equals("attractions")) {
                 type_icon.setImageDrawable(getDrawable(R.drawable.ic_sunny_black));
             }
+
+            event_address.setText(address);
+
+        } else if (type.equals("flights") || type.equals("trains")) {
+            location_layout.setVisibility(View.GONE);
+            Event event = bundle.getParcelable("event");
+
+            event_id = event.getEvent_id();
+            String title = event.getTitle();
+            String transport_number = event.getTransport_number();
+            String origin = event.getOrigin();
+            String destination = event.getDestination();
+            String description = event.getDescription();
+            String price = event.getPrice();
+            date = event.getDate();
+
+            try {
+                d_date = dateFormatter3.parse(date);
+                s_date = dateFormatter1.format(d_date);
+                event_date.setText(s_date);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            event_name.setText(title);
+            event_description.setText(description);
+            event_trans_num.setText(transport_number);
+            event_origin.setText(origin);
+            event_dest.setText(destination);
+            event_price.setText(price);
+
+            start_time = event.getDeparture_time();
+            end_time = event.getArrival_time();
+
+            event_start_time.setEnabled(false);
+            event_end_time.setEnabled(false);
+            event_date.setEnabled(false);
+
         }
 
-        event_address.setText(address);
+        event_start_time.setText(start_time);
+        event_end_time.setText(end_time);
 
         setDateField();
         setTimeField();
@@ -118,6 +168,8 @@ public class EditEventActivity extends AppCompatActivity implements View.OnClick
 
     public void findViewById() {
         toolbar = findViewById(R.id.edit_event_toolbar);
+        transport_layout = findViewById(R.id.transport_layout);
+        location_layout = findViewById(R.id.location_layout);
         event_name = findViewById(R.id.event_name);
         event_address = findViewById(R.id.event_address);
         event_description = findViewById(R.id.event_description);
@@ -126,6 +178,11 @@ public class EditEventActivity extends AppCompatActivity implements View.OnClick
         event_end_time = findViewById(R.id.end_time);
         type_icon = findViewById(R.id.type_icon);
         save_event = findViewById(R.id.save_event);
+
+        event_trans_num = findViewById(R.id.transport_number);
+        event_origin = findViewById(R.id.origin);
+        event_dest = findViewById(R.id.destination);
+        event_price = findViewById(R.id.price);
 
     }
 
@@ -182,7 +239,7 @@ public class EditEventActivity extends AppCompatActivity implements View.OnClick
                 if (!s_date.equals(event_date.getText().toString()) ||
                         !start_time.equals(event_start_time.getText().toString()) ||
                         !end_time.equals(event_end_time.getText().toString()) ||
-                        !desc.equals(event_description.getText().toString())) {
+                        !initial_desc.equals(event_description.getText().toString())) {
                     AlertDialog box;
                     box = updateEventDialog();
                     box.show();
@@ -257,6 +314,13 @@ public class EditEventActivity extends AppCompatActivity implements View.OnClick
             db.execSQL(updateQuery);
 
             db.close();
+        } else if (type.equals("flights") || type.equals("trains")) {
+
+            String updateQuery = "UPDATE " + EventContract.EventEntry.TABLE_NAME + " SET " +
+                    EventContract.EventEntry.COL_DESCRIPTION + " = " + "\"" + desc + "\" " +
+                    " WHERE " + EventContract.EventEntry._ID + " = " + event_id;
+
+            db.execSQL(updateQuery);
         }
     }
 

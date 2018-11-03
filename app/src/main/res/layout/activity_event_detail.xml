@@ -221,10 +221,7 @@
                         android:paddingStart="5dp"
                         android:text="Destination"/>
                 </LinearLayout>
-
-
             </LinearLayout>
-
 
             <ImageView
                 android:id="@+id/ic_money"
@@ -245,6 +242,14 @@
                 android:text="moneyyyy"/>
 
         </RelativeLayout>
+
+        <android.support.v7.widget.Toolbar
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:theme="@style/CustomActionBar"/>
 
     </android.support.constraint.ConstraintLayout>
 </ScrollView>

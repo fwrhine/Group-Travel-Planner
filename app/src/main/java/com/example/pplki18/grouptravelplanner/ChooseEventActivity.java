@@ -179,11 +179,12 @@ public class ChooseEventActivity extends AppCompatActivity {
             } else if (resultCode == RESULT_CANCELED) {
                 // The user canceled the operation.
             }
-        } else if (requestCode == REQUEST_FROM_PLACE_ACTIVITY) {
-            for (Fragment fragment : getSupportFragmentManager().getFragments()) {
-                fragment.onActivityResult(requestCode, resultCode, data);
-            }
         }
+//        else if (requestCode == REQUEST_FROM_PLACE_ACTIVITY) {
+//            for (Fragment fragment : getSupportFragmentManager().getFragments()) {
+//                fragment.onActivityResult(requestCode, resultCode, data);
+//            }
+//        }
     }
 
     private void init() {

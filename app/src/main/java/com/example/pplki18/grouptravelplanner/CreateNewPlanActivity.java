@@ -407,7 +407,7 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
     }
 
     private void setAddEventButton() {
-        add_event.setOnClickListener(
+        fab_add_event.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {

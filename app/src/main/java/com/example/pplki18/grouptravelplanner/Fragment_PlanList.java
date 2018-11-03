@@ -14,6 +14,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
 import com.example.pplki18.grouptravelplanner.data.PlanContract.PlanEntry;
@@ -45,6 +47,7 @@ public class Fragment_PlanList extends Fragment {
     private DatabaseHelper databaseHelper;
 
     private RecyclerView recyclerViewPlan;
+    private ProgressBar progressBar;
     private LinearLayoutManager linearLayoutManager;
     private FloatingActionButton new_plan_button;
     private SessionManager session;
@@ -77,11 +80,13 @@ public class Fragment_PlanList extends Fragment {
         recyclerViewPlan.setHasFixedSize(true);
         recyclerViewPlan.setLayoutManager(linearLayoutManager);
 
+        progressBar.setVisibility(View.VISIBLE);
         getPlanIDs(new PlanIDCallback() {
             @Override
             public void onCallback(List<String> list) {
                 planIDs = list;
                 populatePlanRecyclerView();
+                progressBar.setVisibility(View.INVISIBLE);
             }
         });
     }
@@ -243,6 +248,7 @@ public class Fragment_PlanList extends Fragment {
         linearLayoutManager = new LinearLayoutManager(this.getActivity());
         databaseHelper = new DatabaseHelper(this.getActivity());
         new_plan_button = getView().findViewById(R.id.fab_add_plan);
+        progressBar = getView().findViewById(R.id.progress_loader);
         session = new SessionManager(getActivity().getApplicationContext());
         user = session.getUserDetails();
         myIntent = new Intent(getActivity(), CreateNewPlanActivity.class);
