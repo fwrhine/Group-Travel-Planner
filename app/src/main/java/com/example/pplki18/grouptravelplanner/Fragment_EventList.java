@@ -96,6 +96,9 @@ public class Fragment_EventList extends Fragment {
         String prevActivity = getActivity().getIntent().getStringExtra("ACTIVITY");
         if (prevActivity != null && prevActivity.equals("CreateNewPlanActivity")) {
             events = getAllEventsTemp(date);
+            adapter = new RVAdapter_NewPlan(events, getActivity());
+            rvNewPlan.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
         } else {
             progressBar.setVisibility(View.VISIBLE);
             getAllEvents(date, new EventCallback() {
@@ -103,12 +106,12 @@ public class Fragment_EventList extends Fragment {
                 public void onCallback(List<Event> list) {
                     events = list;
                     progressBar.setVisibility(View.INVISIBLE);
+                    adapter = new RVAdapter_NewPlan(events, getActivity());
+                    rvNewPlan.setAdapter(adapter);
+                    adapter.notifyDataSetChanged();
                 }
             });
         }
-        adapter = new RVAdapter_NewPlan(events, getActivity());
-        rvNewPlan.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
     }
 
     //Todo: refactor? exactly the same code as the one in CreateNewGroup
