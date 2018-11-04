@@ -2,10 +2,12 @@ package com.example.pplki18.grouptravelplanner.utils;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -15,8 +17,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.request.RequestOptions;
+import com.example.pplki18.grouptravelplanner.InGroupActivity;
 import com.example.pplki18.grouptravelplanner.R;
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
 import com.example.pplki18.grouptravelplanner.data.Group;
@@ -56,8 +60,8 @@ public class RVAdapter_Group extends RecyclerView.Adapter<RVAdapter_Group.GroupV
     }
 
     @Override
-    public void onBindViewHolder(final GroupViewHolder groupViewHolder, int i) {
-        Group group = groups.get(i);
+    public void onBindViewHolder(final GroupViewHolder groupViewHolder, final int i) {
+        final Group group = groups.get(i);
         groupViewHolder.groupName.setText(group.getGroup_name());
 
         if(!group.getGroup_image_url().equals("none")) {
@@ -113,6 +117,16 @@ public class RVAdapter_Group extends RecyclerView.Adapter<RVAdapter_Group.GroupV
                 }
             });
         }
+
+        groupViewHolder.itemView.findViewById(R.id.cv).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(context, "CLICKED " + i, Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(context, InGroupActivity.class);
+                intent.putExtra("group", group);
+                context.startActivity(intent);
+            }
+        });
 
     }
 
