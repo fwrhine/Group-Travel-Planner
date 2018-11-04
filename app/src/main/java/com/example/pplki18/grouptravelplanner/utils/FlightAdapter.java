@@ -21,7 +21,7 @@ public class FlightAdapter extends ArrayAdapter<Flight> {
     @Override
     public View getView(int position, View convertView, @NonNull ViewGroup parent) {
         // Get the data item for this position
-        Flight user = getItem(position);
+        Flight flight = getItem(position);
         // Check if an existing view is being reused, otherwise inflate the view
         if (convertView == null) {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.row_book_flight, parent, false);
@@ -36,15 +36,14 @@ public class FlightAdapter extends ArrayAdapter<Flight> {
         TextView tvPrice = convertView.findViewById(R.id.price);
 
         // Populate the data into the template view using the data object
-        assert user != null;
-        tvAirlineName.setText(user.airlineName);
-        tvFlightNum.setText(user.flightNumber);
-        tvDepartCity.setText(user.departureCity);
-        tvArriveCity.setText(user.arrivalCity);
-        tvDepartTime.setText(user.departureTime);
-        tvArriveCity.setText(user.arrivalCity);
-        tvArriveTime.setText(user.arrivalTime);
-        tvPrice.setText(user.price);
+        assert flight != null;
+        tvAirlineName.setText(flight.getAirlineName());
+        tvFlightNum.setText(flight.getFlightNumber());
+        tvDepartCity.setText(flight.getDepartureCity());
+        tvArriveCity.setText(flight.getArrivalCity());
+        tvDepartTime.setText(flight.getDepartureTime());
+        tvArriveTime.setText(flight.getArrivalTime());
+        tvPrice.setText(flight.getPrice());
 
         // Return the completed view to render on screen
         return convertView;

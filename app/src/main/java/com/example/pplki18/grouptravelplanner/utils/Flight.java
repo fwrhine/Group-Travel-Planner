@@ -1,22 +1,71 @@
 package com.example.pplki18.grouptravelplanner.utils;
 
 public class Flight {
-    public final String airlineName;
-    public final String flightNumber;
-    public final String departureTime;
-    public final String arrivalTime;
-    public final String price;
-    public final String departureCity;
-    public final String arrivalCity;
+    private String airlineName;
+    private String flightNumber;
+    private String departureTime;
+    private String arrivalTime;
+    private String price;
+    private String departureCity;
+    private String arrivalCity;
 
-    public Flight(String airlineName, String flightNumber, String departureTime, String arrivalTime,
-                  String price, String departureCity, String arrivalCity) {
-        this.airlineName=airlineName;
-        this.flightNumber=flightNumber;
-        this.departureTime=departureTime;
-        this.departureCity=departureCity;
-        this.arrivalTime=arrivalTime;
-        this.arrivalCity=arrivalCity;
-        this.price=price;
+    public Flight() {
+
+    }
+
+    public String getAirlineName() {
+        return airlineName;
+    }
+
+    public void setAirlineName(String airlineName) {
+        this.airlineName = airlineName;
+    }
+
+    public String getFlightNumber() {
+        return flightNumber;
+    }
+
+    public void setFlightNumber(String flightNumber) {
+        this.flightNumber = flightNumber;
+    }
+
+    public String getDepartureTime() {
+        return departureTime;
+    }
+
+    public void setDepartureTime(String departureTime) {
+        this.departureTime = departureTime;
+    }
+
+    public String getArrivalTime() {
+        return arrivalTime;
+    }
+
+    public void setArrivalTime(String arrivalTime) {
+        this.arrivalTime = arrivalTime;
+    }
+
+    public String getPrice() {
+        return price;
+    }
+
+    public void setPrice(String price) {
+        this.price = price;
+    }
+
+    public String getDepartureCity() {
+        return departureCity;
+    }
+
+    public void setDepartureCity(String departureCity) {
+        this.departureCity = departureCity;
+    }
+
+    public String getArrivalCity() {
+        return arrivalCity;
+    }
+
+    public void setArrivalCity(String arrivalCity) {
+        this.arrivalCity = arrivalCity;
     }
 }
