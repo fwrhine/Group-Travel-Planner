@@ -66,37 +66,44 @@ public class Fragment_GroupList extends Fragment implements NavigationView.OnNav
         firebaseDatabase = FirebaseDatabase.getInstance();
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
-        userRef = firebaseDatabase.getReference().child("users").child(firebaseUser.getUid());
-        groupRef = firebaseDatabase.getReference().child("groups");
-        storageReference = FirebaseStorage.getInstance().getReference();
+        if (firebaseUser == null) {
+            Intent errorIntent = new Intent(getActivity(), LoginActivity.class);
+            Fragment_GroupList.this.startActivity(errorIntent);
+            getActivity().finish();
+        }
+        else {
+            userRef = firebaseDatabase.getReference().child("users").child(firebaseUser.getUid());
+            groupRef = firebaseDatabase.getReference().child("groups");
+            storageReference = FirebaseStorage.getInstance().getReference();
 
-        init();
+            init();
 
-        //FAB: when clicked, open create new group interface
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.v("fab", "FAB Clicked");
-                Intent myIntent = new Intent(getActivity(), CreateNewGroupActivity.class);
-                Fragment_GroupList.this.startActivity(myIntent);
-            }
-        });
+            //FAB: when clicked, open create new group interface
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Log.v("fab", "FAB Clicked");
+                    Intent myIntent = new Intent(getActivity(), CreateNewGroupActivity.class);
+                    Fragment_GroupList.this.startActivity(myIntent);
+                }
+            });
 
 
-        recyclerViewGroup.setHasFixedSize(true);
-        recyclerViewGroup.setLayoutManager(linearLayoutManager);
+            recyclerViewGroup.setHasFixedSize(true);
+            recyclerViewGroup.setLayoutManager(linearLayoutManager);
 
-        progressBar.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.VISIBLE);
 
-        // TODO: TIME COMPLEXITY bakal meledak kalo jumlah group+user banyak
-        getAllGroupIDs(new UserIdCallback() {
-            @Override
-            public void onCallback(List<String> list) {
-                groupIDs = list;
-                populateGroupRecyclerView();
-                progressBar.setVisibility(View.INVISIBLE);
-            }
-        });
+            // TODO: TIME COMPLEXITY bakal meledak kalo jumlah group+user banyak
+            getAllGroupIDs(new UserIdCallback() {
+                @Override
+                public void onCallback(List<String> list) {
+                    groupIDs = list;
+                    populateGroupRecyclerView();
+                    progressBar.setVisibility(View.INVISIBLE);
+                }
+            });
+        }
     }
 
     //Todo: refactor? exactly the same code as the one in CreateNewGroup

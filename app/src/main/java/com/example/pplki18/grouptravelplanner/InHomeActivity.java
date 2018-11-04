@@ -40,6 +40,7 @@ import com.example.pplki18.grouptravelplanner.utils.GlideApp;
 import com.example.pplki18.grouptravelplanner.utils.SessionManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -68,10 +69,10 @@ public class InHomeActivity extends AppCompatActivity implements NavigationView.
         setContentView(R.layout.activity_in_home);
         init();
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_CALENDAR}, READ_CALENDAR);
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED) {
+            readCalendar(getApplicationContext());
         }
-        readCalendar(getApplicationContext());
         navigationView.setNavigationItemSelectedListener(this);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
@@ -173,16 +174,20 @@ public class InHomeActivity extends AppCompatActivity implements NavigationView.
 
         // set profile picture
         String photoUrl = sessionManager.getUserDetails().get(sessionManager.KEY_PHOTO_URL);
-        Uri uri = Uri.parse(photoUrl);
-        GlideApp.with(this)
-                .load(uri)
-                .placeholder(R.mipmap.ic_launcher_round)
-                .error(R.mipmap.ic_launcher_round)
-                .centerCrop()
-                .apply(new RequestOptions().override(120, 120))
-                .apply(RequestOptions.circleCropTransform())
-                .into(header_photo);
-
+        if (photoUrl != null) {
+            Uri uri = Uri.parse(photoUrl);
+            GlideApp.with(this)
+                    .load(uri)
+                    .placeholder(R.mipmap.ic_launcher_round)
+                    .error(R.mipmap.ic_launcher_round)
+                    .centerCrop()
+                    .apply(new RequestOptions().override(120, 120))
+                    .apply(RequestOptions.circleCropTransform())
+                    .into(header_photo);
+        }
+        else {
+            header_photo.setImageDrawable(getResources().getDrawable(R.drawable.android_head));
+        }
         header_fullname.setText(sessionManager.getUserDetails().get(sessionManager.KEY_FULLNAME));
 
         String status = null;
