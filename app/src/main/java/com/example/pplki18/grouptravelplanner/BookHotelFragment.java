@@ -99,6 +99,7 @@ public class BookHotelFragment extends Fragment {
     private SimpleDateFormat dateFormatter1;
     private SimpleDateFormat dateFormatter2;
     private SimpleDateFormat dateFormatter3;
+    private SimpleDateFormat dateFormatter4;
 
     private String region;
     private String regionCode;
@@ -164,7 +165,7 @@ public class BookHotelFragment extends Fragment {
         search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showSearchPopup(getView());
+                showSearchPopup();
             }
         });
 
@@ -190,80 +191,9 @@ public class BookHotelFragment extends Fragment {
         infoView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showInfoPopup(getView());
+                showInfoPopup();
             }
         });
-
-
-
-//        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-//            @Override
-//            public boolean onQueryTextSubmit(String newQuery) {
-////                sendRequest(newQuery + " " + type);
-////                adapter.clear();
-////                progressBar.setVisibility(View.VISIBLE);
-//
-//                return true;
-//            }
-//
-//            @Override
-//            public boolean onQueryTextChange(String newQuery) {
-//                if (TextUtils.isEmpty(newQuery)){
-////                    sendRequest(type);
-////                    adapter.clear();
-////                    progressBar.set    Visibility(View.VISIBLE);
-//                }
-//                return false;
-//            }
-//        });
-
-//        final DatePickerDialog.OnDateSetListener checkInPicker = new DatePickerDialog.OnDateSetListener() {
-//            @Override
-//            public void onDateSet(DatePicker view, int year, int monthOfYear,
-//                                  int dayOfMonth) {
-//                // TODO Auto-generated method stub
-//                checkInDate = dayOfMonth + "/" + monthOfYear + "/" + year;
-//                checkIn.setText(checkInDate);
-//            }
-//        };
-//
-//        checkIn.setOnClickListener(new EditText.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Calendar calendar = Calendar.getInstance();
-//                // TODO Auto-generated method stub
-//                DatePickerDialog datePicker= new DatePickerDialog(getContext(), checkInPicker,
-//                        calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),
-//                        calendar.get(Calendar.DAY_OF_MONTH));
-//
-//                datePicker.show();
-//                datePicker.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
-//            }
-//        });
-//
-//        final DatePickerDialog.OnDateSetListener checkOutPicker = new DatePickerDialog.OnDateSetListener() {
-//            @Override
-//            public void onDateSet(DatePicker view, int year, int monthOfYear,
-//                                  int dayOfMonth) {
-//                // TODO Auto-generated method stub
-//                checkOutDate = dayOfMonth + "/" + monthOfYear + "/" + year;
-//                checkOut.setText(checkOutDate);
-//            }
-//        };
-//
-//        checkOut.setOnClickListener(new EditText.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Calendar calendar = Calendar.getInstance();
-//                // TODO Auto-generated method stub
-//                DatePickerDialog datePicker= new DatePickerDialog(getContext(), checkInPicker,
-//                        calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),
-//                        calendar.get(Calendar.DAY_OF_MONTH));
-//
-//                datePicker.show();
-//                datePicker.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
-//            }
-//        });
 
         generateToken();
 
@@ -277,7 +207,7 @@ public class BookHotelFragment extends Fragment {
         infoRoom.setText(numOfRoom);
     }
 
-    public void showSearchPopup(View v) {
+    public void showSearchPopup() {
         searchDialog.setContentView(R.layout.search_dialog);
         SearchView searchView = (SearchView) searchDialog.findViewById(R.id.search_hotel);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -329,12 +259,11 @@ public class BookHotelFragment extends Fragment {
             }
         });
 
-// create and show the alert dialog
         AlertDialog dialog = builder.create();
         dialog.show();
     }
 
-    public void showInfoPopup(View v) {
+    public void showInfoPopup() {
         infoDialog.setContentView(R.layout.hotel_dialog);
 
         // set position
@@ -495,14 +424,13 @@ public class BookHotelFragment extends Fragment {
                 nights = nightsTemp;
                 infoDialog.dismiss();
                 loadInfoView();
+                adapter.clear();
+                progressBar.setVisibility(View.VISIBLE);
+                generateToken();
             }
         });
 
         infoDialog.show();
-    }
-
-    private void numberPicker(String type) {
-
     }
 
     public void generateToken() {
@@ -539,8 +467,11 @@ public class BookHotelFragment extends Fragment {
     }
 
     public void sendRequest(String token) {
-        String url = "https://api-sandbox.tiket.com/search/hotel?q=" + "bali" + "&startdate=2018-11-04&" +
-                "night=1&enddate=2018-11-08&room=1&adult=2&token=" + token + "&output=json";
+        String startdate = dateFormatter4.format(checkInDate);
+        String enddate = dateFormatter4.format(checkOutDate);
+        String url = "https://api-sandbox.tiket.com/search/hotel?q=" + region + "&startdate=" +
+                startdate + "&night=" + nights + "&enddate=" + enddate + "&room=" + numOfRoom +
+                "&adult=" + numOfGuest + "&token=" + token + "&output=json";
 
         Log.d("HOTEL REQUEST", url);
 
@@ -705,6 +636,7 @@ public class BookHotelFragment extends Fragment {
         dateFormatter1 = new SimpleDateFormat("EEE, MMM d", Locale.US);
         dateFormatter2 = new SimpleDateFormat("d MMMM yyyy", Locale.US);
         dateFormatter3 = new SimpleDateFormat("MMM d", Locale.US);
+        dateFormatter4 = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
         try {
             checkInDateTemp = dateFormatter2.parse(getArguments().getString("date"));
             checkInDate = checkInDateTemp;
