@@ -116,7 +116,7 @@ public class BookPlaneFragment extends Fragment {
                     events = data.getParcelableArrayListExtra("events");
 
                     for (Event e : events) {
-                        Log.d("testtt", e.getTitle());
+                        Log.d("TITLE", e.getTitle());
                     }
 
                     Intent intent = new Intent(getActivity(), CreateNewPlanActivity.class);
@@ -129,6 +129,7 @@ public class BookPlaneFragment extends Fragment {
         }
     }
 
+    @SuppressWarnings("SpellCheckingInspection")
     private void initSearch() {
 
         String secretKey = "6c484049beacda6541bf40c90e62e8e5";
@@ -297,6 +298,7 @@ public class BookPlaneFragment extends Fragment {
         queue.add(stringRequest);
     }
 
+    @SuppressWarnings("SpellCheckingInspection")
     private void flightApiCall (final String token, final String start, final String end,
                               final String depart) {
         // Request a string response from the provided URL.
@@ -310,7 +312,7 @@ public class BookPlaneFragment extends Fragment {
                     public void onResponse(String response) {
 
                         try {
-                            JSONObject json = new JSONObject(response);
+                            // JSONObject json = new JSONObject(response); [SHOULD BE USED WHEN API IS FIXED]
 
                             Log.d("RESPONSE", response);
 
@@ -353,8 +355,8 @@ public class BookPlaneFragment extends Fragment {
             }
 
             @Override
-            public void retry(VolleyError error) throws VolleyError {
-
+            public void retry(VolleyError error) {
+                Log.d("VolleyError", "An error by the voley");
             }
         });
 
@@ -430,8 +432,16 @@ public class BookPlaneFragment extends Fragment {
             String departTime = moreFlightInfo.get(3);
             String arriveTime = moreFlightInfo.get(4);
 
-            Flight flight = new Flight(airlineName, flightNumber, departTime, arriveTime,
-                    priceValue, startLoc, endLoc);
+            Flight flight = new Flight();
+
+            flight.setAirlineName(airlineName);
+            flight.setFlightNumber(flightNumber);
+            flight.setDepartureCity(startLoc);
+            flight.setArrivalCity(endLoc);
+            flight.setDepartureTime(departTime);
+            flight.setArrivalTime(arriveTime);
+            flight.setPrice(priceValue);
+
             availableFlights.add(flight);
         }
         Log.d("ALMOST", "Almost finished");
@@ -593,7 +603,7 @@ public class BookPlaneFragment extends Fragment {
         queue.add(stringRequest);
     }
 
-    public boolean validate() {
+    private boolean validate() {
         boolean valid = true;
 
         String startLoc = origin.getText().toString();

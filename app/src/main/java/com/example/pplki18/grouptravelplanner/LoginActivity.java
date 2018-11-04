@@ -1,10 +1,13 @@
 package com.example.pplki18.grouptravelplanner;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -56,12 +59,16 @@ public class LoginActivity extends AppCompatActivity {
     String gender;
     String phone_no;
     String birthday;
+    Integer READ_CALENDAR;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
+        READ_CALENDAR = 5;
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_CALENDAR}, READ_CALENDAR);
+        }
         // Initialize the instance variables and add listeners to the buttons
         init();
         addLoginListener();
