@@ -30,10 +30,10 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/guest"
+                android:id="@+id/room"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:drawableLeft="@drawable/ic_person_black_24dp"
+                android:drawableLeft="@drawable/ic_door_24"
                 android:text="1"
                 android:layout_marginTop="6dp"
                 android:layout_marginLeft="10dp"
@@ -42,20 +42,20 @@
                 app:layout_constraintTop_toBottomOf="@+id/date" />
 
             <TextView
-                android:id="@+id/room"
+                android:id="@+id/guest"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
-                android:drawableLeft="@drawable/ic_door_24"
+                android:drawableLeft="@drawable/ic_person_black_24dp"
                 android:gravity="center_vertical"
                 android:text="1"
-                app:layout_constraintStart_toEndOf="@+id/guest"
+                app:layout_constraintStart_toEndOf="@+id/room"
                 app:layout_constraintTop_toBottomOf="@+id/date" />
 
             <ImageView
                 android:id="@+id/search"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginEnd="12dp"
                 android:src="@drawable/ic_search_black"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -66,7 +66,7 @@
             <ImageView
                 android:id="@+id/sort"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginEnd="16dp"
                 android:src="@drawable/ic_sort"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -85,7 +85,7 @@
             <ImageView
                 android:id="@+id/close"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginEnd="20dp"
                 android:src="@drawable/ic_close"
                 app:layout_constraintBottom_toBottomOf="parent"
