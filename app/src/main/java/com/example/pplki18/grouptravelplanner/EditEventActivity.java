@@ -26,6 +26,7 @@ import com.example.pplki18.grouptravelplanner.utils.Event;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -133,9 +134,9 @@ public class EditEventActivity extends AppCompatActivity implements View.OnClick
             String description = event.getDescription();
             String price = event.getPrice();
             date = event.getDate();
-
+            Log.d("DATEOO", date);
             try {
-                d_date = dateFormatter3.parse(date);
+                d_date = dateFormatter2.parse(date);
                 s_date = dateFormatter1.format(d_date);
                 event_date.setText(s_date);
             } catch (ParseException e) {
@@ -273,9 +274,25 @@ public class EditEventActivity extends AppCompatActivity implements View.OnClick
                         String description = event_description.getText().toString();
                         String date = dateFormatter2.format(d_date);
 
-                        updateEvent(date, start_time, end_time, description);
-
                         final Intent data = new Intent();
+
+                        String prevActivity = getIntent().getStringExtra("PREV_ACTIVITY");
+                        if (prevActivity != null && prevActivity.equals("CreateNewPlanActivity")) {
+                            ArrayList<Event> events = getIntent().getParcelableArrayListExtra("events");
+                            int index = getIntent().getIntExtra("index", -1);
+
+                            Log.d("INDEX", index + "");
+                            events.get(index).setDate(date);
+                            events.get(index).setTime_start(start_time);
+                            events.get(index).setTime_end(end_time);
+                            events.get(index).setDescription(description);
+
+                            data.putParcelableArrayListExtra("events", events);
+                            data.putExtra("PREV_ACTIVITY", prevActivity);
+                        } else {
+                            updateEvent(date, start_time, end_time, description);
+                        }
+
                         data.putExtra("start_time", start_time);
                         data.putExtra("end_time", end_time);
                         data.putExtra("description", description);
@@ -283,7 +300,6 @@ public class EditEventActivity extends AppCompatActivity implements View.OnClick
 
                         setResult(Activity.RESULT_OK, data);
                         EditEventActivity.this.finish();
-
                     }
 
                 })
@@ -313,7 +329,6 @@ public class EditEventActivity extends AppCompatActivity implements View.OnClick
             Log.d("updateQuery", updateQuery);
             db.execSQL(updateQuery);
 
-            db.close();
         } else if (type.equals("flights") || type.equals("trains")) {
 
             String updateQuery = "UPDATE " + EventContract.EventEntry.TABLE_NAME + " SET " +
@@ -322,6 +337,8 @@ public class EditEventActivity extends AppCompatActivity implements View.OnClick
 
             db.execSQL(updateQuery);
         }
+
+        db.close();
     }
 
     @Override

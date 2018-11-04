@@ -80,7 +80,8 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1) {
+        Log.d("KOKSINI", "sini");
+        if (requestCode == 1 || requestCode == 5) {
             if(resultCode == RESULT_OK) {
                 events = data.getParcelableArrayListExtra("events");
 //                for(Event e : events) {

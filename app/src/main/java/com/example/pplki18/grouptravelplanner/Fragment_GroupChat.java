@@ -154,7 +154,6 @@ public class Fragment_GroupChat extends Fragment {
         messageRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         List<Message> messages = new ArrayList<>();
-        messageAdapter = new MessageAdapter(getContext(), messages);
 
         progressBar.setVisibility(View.INVISIBLE);
 

@@ -1,5 +1,6 @@
 package com.example.pplki18.grouptravelplanner;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -37,10 +38,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import static android.app.Activity.RESULT_OK;
+
 
 public class Fragment_EventList extends Fragment {
 
     private static final String TAG = "Fragment_EventList";
+    private static final int EDIT_EVENT_REQUEST_CODE = 5;
 
     DatabaseHelper databaseHelper;
     private RecyclerView rvNewPlan;
@@ -88,12 +92,41 @@ public class Fragment_EventList extends Fragment {
 
     }
 
+//    @Override
+//    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//
+//        Log.d("RESULT0", "masuk");
+////        if (requestCode == EDIT_EVENT_REQUEST_CODE) {
+//            if (resultCode == RESULT_OK) {
+//                String prevActivity = data.getStringExtra("ACTIVITY");
+//                Log.d("RESULT", "masuk");
+//                if (prevActivity != null && prevActivity.equals("CreateNewPlanActivity")) {
+//                    String test = getActivity().getIntent().getStringExtra("TEST");
+//                    if (test != null) {
+//
+//                        Log.d("COBA", test);
+//                    }
+//                    Log.d("RESUMEGA", "resumekok");
+////                events = getAllEventsTemp(date);
+////            getActivity().getIntent().putExtra("ACTIVITY", "CreateNewPlanActivity");
+//                } else {
+////                events = getAllEvents(date);
+//                }
+//                adapter = new RVAdapter_NewPlan(events, getActivity());
+//                rvNewPlan.setAdapter(adapter);
+//                adapter.notifyDataSetChanged();
+//            }
+////        }
+//    }
+
     @Override
     public void onResume() {  // After a pause OR at startup
-        Log.d("RESUME", "masuk resume");
+//        Log.d("RESUME", "masuk resume");
         super.onResume();
         Date date = (Date) intent.getExtras().get("date");
         String prevActivity = getActivity().getIntent().getStringExtra("ACTIVITY");
+//        Log.d("HALALA", prevActivity);
         if (prevActivity != null && prevActivity.equals("CreateNewPlanActivity")) {
             events = getAllEventsTemp(date);
             adapter = new RVAdapter_NewPlan(events, getActivity());
@@ -114,14 +147,12 @@ public class Fragment_EventList extends Fragment {
         }
     }
 
-    //Todo: refactor? exactly the same code as the one in CreateNewGroup
     private void populateEventRecyclerView(Date date) {
         Log.d(TAG, "populateEventRecyclerView: Displaying list of events in the ListView.");
 
         //get data and append to list
         String prevActivity = getActivity().getIntent().getStringExtra("ACTIVITY");
         if (prevActivity != null && prevActivity.equals("CreateNewPlanActivity")) {
-            Log.d("prevActivity", "bener");
             events = getAllEventsTemp(date);
             RVAdapter_NewPlan adapter = new RVAdapter_NewPlan(events, getActivity());
             rvNewPlan.setAdapter(adapter);
