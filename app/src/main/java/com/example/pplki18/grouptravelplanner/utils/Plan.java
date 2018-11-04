@@ -1,8 +1,12 @@
 package com.example.pplki18.grouptravelplanner.utils;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Plan {
 
-    private int plan_id;
+    private String plan_id;
+    private String creatorId;
     private String plan_name;
     private String plan_start_date;
     private String plan_end_date;
@@ -10,23 +14,26 @@ public class Plan {
     private String plan_overview;
     private String plan_modified;
     private String plan_created;
+    private List<String> events;
 
     //constructor
     public Plan() {
     }
 
-    public Plan(int plan_id, String plan_name) {
+    public Plan(String plan_id, String plan_name, String creatorId) {
         this.plan_id = plan_id;
         this.plan_name = plan_name;
+        this.creatorId = creatorId;
+        events = new ArrayList<>();
 //        this.user_image = user_image;
 
     }
 
-    public int getPlan_id() {
+    public String getPlan_id() {
         return plan_id;
     }
 
-    public void setPlan_id(int plan_id) {
+    public void setPlan_id(String plan_id) {
         this.plan_id = plan_id;
     }
 
@@ -84,5 +91,13 @@ public class Plan {
 
     public void setPlan_created(String plan_created) {
         this.plan_created = plan_created;
+    }
+
+    public List<String> getEvents() {
+        return this.events;
+    }
+
+    public void setEvents(List<String> events) {
+        this.events = events;
     }
 }

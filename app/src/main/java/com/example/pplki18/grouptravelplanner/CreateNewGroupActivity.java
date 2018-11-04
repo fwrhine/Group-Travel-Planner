@@ -1,19 +1,19 @@
 package com.example.pplki18.grouptravelplanner;
 
+import android.Manifest;
 import android.app.AlertDialog;
-import android.content.ContentValues;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -27,13 +27,23 @@ import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
-import com.example.pplki18.grouptravelplanner.data.GroupContract;
-import com.example.pplki18.grouptravelplanner.data.UserContract;
-import com.example.pplki18.grouptravelplanner.data.UserGroupContract;
-import com.example.pplki18.grouptravelplanner.utils.Group;
+import com.example.pplki18.grouptravelplanner.data.User;
+import com.example.pplki18.grouptravelplanner.data.Group;
 import com.example.pplki18.grouptravelplanner.utils.RVAdapter_User;
 import com.example.pplki18.grouptravelplanner.utils.SessionManager;
-import com.example.pplki18.grouptravelplanner.utils.User;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -53,7 +63,7 @@ public class CreateNewGroupActivity extends AppCompatActivity {
     private CircleImageView circleImageView;
     private Toolbar toolbar;
     private SessionManager sessionManager;
-    private ArrayList<Integer> user_ids;
+    private ArrayList<String> user_ids;
     private RecyclerView recyclerViewUser;
     private LinearLayoutManager linearLayoutManager;
     private SearchView searchView;
@@ -62,11 +72,27 @@ public class CreateNewGroupActivity extends AppCompatActivity {
     private final int GALLERY = 1;
     private final int CAMERA = 2;
 
+    private FirebaseDatabase firebaseDatabase;
+    private FirebaseAuth firebaseAuth;
+    private FirebaseUser firebaseUser;
+    private DatabaseReference userRef;
+    private DatabaseReference groupRef;
+    private StorageReference storageReference;
+
+    private byte[] groupImageByte;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_group);
+
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
+        userRef = firebaseDatabase.getReference().child("users");
+        groupRef = firebaseDatabase.getReference().child("groups");
+        storageReference = FirebaseStorage.getInstance().getReference();
         init();
 
         setSupportActionBar(toolbar);
@@ -87,23 +113,13 @@ public class CreateNewGroupActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String group_name = editText.getText().toString();
-                byte[] group_image = imageViewToByte(circleImageView);
-                Group newGroup = new Group(group_name, group_image);
 
                 if (editText.length() == 0) {
                     toastMessage("Please enter group name.");
-                } else if (user_ids.size() == 0) {
+                } else if (user_ids.size() == 1) {
                     toastMessage("Please select group members.");
                 } else {
-//                    Log.d("CURRENT ID", currId + Integer.parseInt(currId));
-                    user_ids.add(Integer.parseInt(currId));
-                    CreateGroup(newGroup, user_ids);
-                    Intent myIntent = new Intent(CreateNewGroupActivity.this, InGroupActivity.class);
-                    CreateNewGroupActivity.this.startActivity(myIntent);
-
-//                    //empty name and image input
-//                    editText.setText("");
-//                    circleImageView.setImageResource(R.mipmap.ic_launcher_round);
+                    createGroup(group_name);
                 }
             }
         });
@@ -117,7 +133,11 @@ public class CreateNewGroupActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                List<User> result = searchUser(newText);
+                List<User> result = null;
+
+                if(!newText.equals(null)){
+                    result = searchUser(newText);
+                }
 
                 Log.d("QUERY", "START_SEARCH");
                 populateUserRecyclerView(result);
@@ -127,8 +147,6 @@ public class CreateNewGroupActivity extends AppCompatActivity {
 
         recyclerViewUser.setHasFixedSize(true);
         recyclerViewUser.setLayoutManager(linearLayoutManager);
-
-        populateUserRecyclerView(getAllUsers());
 
     }
 
@@ -149,15 +167,15 @@ public class CreateNewGroupActivity extends AppCompatActivity {
                 ImageView button = (ImageView) v.findViewById(R.id.button);
 
                 Log.d("POSITION", String.valueOf(position));
-                Log.d("ID", String.valueOf(users.get(position).getUser_id()));
-                Log.d("NAME", String.valueOf(users.get(position).getUser_name()));
+                Log.d("ID", users.get(position).getId());
+                Log.d("NAME", users.get(position).getId());
 
-                if (user_ids.contains(users.get(position).getUser_id())) {
-                    user_ids.remove(Integer.valueOf(users.get(position).getUser_id()));
+                if (user_ids.contains(users.get(position).getId())) {
+                    user_ids.remove(users.get(position).getId());
 //                    v.setBackgroundColor(getResources().getColor(R.color.colorWhite));
                     button.setImageResource(R.drawable.ic_radio_button_unchecked);
                 } else {
-                    user_ids.add(users.get(position).getUser_id());
+                    user_ids.add(users.get(position).getId());
 //                    v.setBackgroundColor(getResources().getColor(R.color.user_pressed));
                     button.setImageResource(R.drawable.ic_check_circle);
                 }
@@ -203,9 +221,14 @@ public class CreateNewGroupActivity extends AppCompatActivity {
 
     private void takePhotoFromCamera() {
         Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-        startActivityForResult(intent, CAMERA);
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                == PackageManager.PERMISSION_DENIED){
+            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.CAMERA}, CAMERA);
+        }
+        startActivityForResult(intent, CAMERA);;
     }
 
+    // TODO: Benerin biar ga crash waktu ngambil foto dari kamera.
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
@@ -218,8 +241,13 @@ public class CreateNewGroupActivity extends AppCompatActivity {
                 Uri contentURI = data.getData();
                 try {
                     Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), contentURI);
-                    bitmap =  getResizedBitmap(bitmap, 70);
+                    bitmap =  getResizedBitmap(bitmap, 300);
                     circleImageView.setImageBitmap(bitmap);
+
+                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+
+                    groupImageByte = stream.toByteArray();
 
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -231,32 +259,6 @@ public class CreateNewGroupActivity extends AppCompatActivity {
             Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
             circleImageView.setImageBitmap(thumbnail);
         }
-    }
-
-    ///////////////////////////////////////////// convert image view to byte array /////////////////////////////////////////////
-
-    //convert image view to byte array
-    private byte[] imageViewToByte(ImageView image) {
-        try {
-            Bitmap bitmap = getBitmapFromDrawable(image.getDrawable());
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-            byte[] byteArray = stream.toByteArray();
-            return byteArray;
-        } catch (ClassCastException e) {
-            e.printStackTrace();
-            return new byte[0];
-        }
-    }
-
-    //convert drawable to bitmap
-    @NonNull
-    private static Bitmap getBitmapFromDrawable(@NonNull Drawable drawable) {
-        final Bitmap bmp = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-        final Canvas canvas = new Canvas(bmp);
-        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-        drawable.draw(canvas);
-        return bmp;
     }
 
     //get resized bitmap
@@ -275,123 +277,30 @@ public class CreateNewGroupActivity extends AppCompatActivity {
         return Bitmap.createScaledBitmap(image, width, height, true);
     }
 
-    ////////////////////////////////////////////// insert new group to database ////////////////////////////////////////////////
-
-    //Todo: insert data to database, if success, open group chat
-    private void CreateGroup(Group group, ArrayList<Integer> user_ids) {
-        long createGroup = insertGroup(group, user_ids);
-
-        if (createGroup != -1) {
-            toastMessage("New group!");
-        } else {
-            toastMessage("Fail.");
-        }
-
-        user_ids.clear();
-    }
-
-    //////////////////////////////////////////////////// database functions ////////////////////////////////////////////////////
-
-    private long insertGroup(Group group, ArrayList<Integer> user_ids) {
-        sessionManager = new SessionManager(getApplicationContext());
-        SQLiteDatabase db = databaseHelper.getWritableDatabase();
-
-        HashMap<String, String> user = sessionManager.getUserDetails();
-        Log.d("USER DETAIL", user.toString());
-
-        ContentValues values = new ContentValues();
-        values.put(GroupContract.GroupEntry.COL_GROUP_NAME, group.getGroup_name());
-        values.put(GroupContract.GroupEntry.COL_GROUP_IMAGE, group.getGroup_image());
-        values.put(GroupContract.GroupEntry.COL_GROUP_CREATOR, currId);
-        Log.d("CURRENT ID", currId);
-
-        // insert row_user
-        long group_id = db.insert(GroupContract.GroupEntry.TABLE_NAME, null, values);
-
-        // assigning users to groups
-        for (int user_id : user_ids) {
-            insertUserGroup(group_id, user_id);
-        }
-
-        return group_id;
-    }
-
-    private long insertUserGroup(long group_id, int user_id) {
-        SQLiteDatabase db = databaseHelper.getWritableDatabase();
-
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(UserGroupContract.UserGroupEntry.COL_GROUP_ID, group_id);
-        contentValues.put(UserGroupContract.UserGroupEntry.COL_USER_ID, user_id);
-
-        long id = db.insert(UserGroupContract.UserGroupEntry.TABLE_NAME, null, contentValues);
-
-        return id;
-    }
-
-    /*
-     * Get all users
-     * */
-    private List<User> getAllUsers() {
-        List<User> users = new ArrayList<User>();
-        String selectQuery = "SELECT * FROM " + UserContract.UserEntry.TABLE_NAME + " WHERE "
-                + UserContract.UserEntry._ID + " != ?";
-        String[] selectionArgs = new String[]{currId};
-
-        Log.e("USERS", selectQuery);
-
-
-        SQLiteDatabase db = databaseHelper.getReadableDatabase();
-        Cursor c = db.rawQuery(selectQuery, selectionArgs);
-
-        // looping through all rows and adding to list
-        if (c.moveToFirst()) {
-            do {
-                User user = new User();
-                user.setUser_name((c.getString(c.getColumnIndex(UserContract.UserEntry.COL_FULLNAME))));
-                user.setUser_id((c.getInt(c.getColumnIndex(UserContract.UserEntry._ID))));
-
-                Log.d("NAME", c.getString(c.getColumnIndex(UserContract.UserEntry.COL_FULLNAME)));
-                Log.d("ID", String.valueOf(c.getInt(c.getColumnIndex(UserContract.UserEntry._ID))));
-
-                // adding to group list
-                users.add(user);
-            } while (c.moveToNext());
-        }
-
-        c.close();
-
-        return users;
-    }
-
     /*
      * Search user by full name
      * */
-    private List<User> searchUser(String query) {
-        List<User> users = new ArrayList<User>();
+    // TODO: Benerin biar cuma cari temen. Sekarang masih cari semua user.
+    public List<User> searchUser(final String query) {
+        final List<User> users = new ArrayList<>();
 
-        String selectQuery = "SELECT * FROM " + UserContract.UserEntry.TABLE_NAME + " WHERE "
-                + UserContract.UserEntry.COL_FULLNAME + " LIKE ? AND "
-                + UserContract.UserEntry._ID + " != ?";
-        String[] selectionArgs = new String[]{"%" + query + "%", currId};
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                users.clear();
+                for (DataSnapshot postSnapshot: dataSnapshot.getChildren()){
+                    User user = postSnapshot.getValue(User.class);
+                    if(user.getFullName().toLowerCase().contains(query.toLowerCase()) && !user.getId().equals(firebaseUser.getUid())){
+                        users.add(user);
+                    }
+                }
+            }
 
-        Log.e("USERS", selectQuery);
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
 
-        SQLiteDatabase db = databaseHelper.getReadableDatabase();
-        Cursor c = db.rawQuery(selectQuery, selectionArgs);
-
-        // looping through all rows and adding to list
-        if (c.moveToFirst()) {
-            do {
-                User user = new User();
-                user.setUser_name((c.getString(c.getColumnIndex(UserContract.UserEntry.COL_FULLNAME))));
-                user.setUser_id((c.getInt(c.getColumnIndex(UserContract.UserEntry._ID))));
-
-                // adding to group list
-                users.add(user);
-            } while (c.moveToNext());
-        }
-
-        c.close();
+            }
+        });
 
         return users;
     }
@@ -420,9 +329,94 @@ public class CreateNewGroupActivity extends AppCompatActivity {
         recyclerViewUser = (RecyclerView)findViewById(R.id.rv);
         linearLayoutManager = new LinearLayoutManager(this);
         user_ids = new ArrayList<>();
+        user_ids.add(firebaseUser.getUid());
         searchView = (SearchView) findViewById(R.id.search_user);
         user = sessionManager.getUserDetails();
         currId = user.get(SessionManager.KEY_ID);
+    }
+
+    private void createGroup(final String group_name){
+        final ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setTitle("Creating group...");
+        progressDialog.show();
+
+        final String groupId = groupRef.push().getKey();
+
+        if (groupImageByte != null) {
+            // Case kalo user ngupload gambar
+            final StorageReference ref = storageReference.child("images/group/"+ groupId);
+            ref.putBytes(groupImageByte)
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            progressDialog.dismiss();
+                            ref.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+                                    Group group = new Group(groupId, group_name, uri.toString(), firebaseUser.getUid());
+                                    groupRef.child(groupId).setValue(group);
+                                    groupRef.child(groupId).child("members").setValue(user_ids);
+                                    updateUsers(user_ids, groupId);
+                                }
+                            });
+                            toastMessage("Group created!");
+                            Intent intent = new Intent(CreateNewGroupActivity.this, InHomeActivity.class);
+                            startActivity(intent);
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            progressDialog.dismiss();
+                            toastMessage("Failed to upload image.");
+                        }
+                    })
+                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                            double progress = (100.0*taskSnapshot.getBytesTransferred()/taskSnapshot
+                                    .getTotalByteCount());
+                            progressDialog.setMessage("Creating "+(int)progress+"%");
+                        }
+                    });
+        } else {
+            Group group = new Group(groupId, group_name, "none", firebaseUser.getUid());
+            groupRef.child(groupId).setValue(group);
+            groupRef.child(groupId).child("members").setValue(user_ids);
+            updateUsers(user_ids, groupId);
+            progressDialog.dismiss();
+            toastMessage("Group created!");
+            Intent intent = new Intent(this, InHomeActivity.class);
+            startActivity(intent);
+        }
+    }
+
+    /**
+     * This method updates the user's information.
+     * Assign the users to the created group.
+     */
+    public void updateUsers(List<String> user_ids, final String groupId){
+        for(String userId : user_ids){
+            final DatabaseReference groupsRef = userRef.child(userId).child("groups");
+            final List<String> groups = new ArrayList<>();
+
+            groupsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    groups.clear();
+                    for (DataSnapshot postSnapshot: dataSnapshot.getChildren()){
+                        groups.add(postSnapshot.getValue(String.class));
+                    }
+                    groups.add(groupId);
+                    groupsRef.setValue(groups);
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+        }
     }
 
 }

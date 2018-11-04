@@ -7,6 +7,8 @@ import android.content.SharedPreferences.Editor;
 import android.util.Log;
 
 import com.example.pplki18.grouptravelplanner.LoginActivity;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.HashMap;
 
@@ -15,7 +17,9 @@ import java.util.HashMap;
  * for other activities that needs a quick reference
  * of the user's information (e.g. username, isLoggedIn).
  */
-public class SessionManager {
+
+// TODO: Tambahin group sama friend ke session pake GSON
+public class    SessionManager {
 
     // Shared Preferences
     SharedPreferences pref;
@@ -25,6 +29,9 @@ public class SessionManager {
 
     // Context
     Context _context;
+
+    // Firebase Auth
+    FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     // Shared pref mode
     int PRIVATE_MODE = 0;
@@ -56,6 +63,9 @@ public class SessionManager {
     // Birthday
     public static final String KEY_BIRTHDAY = "birthday";
 
+    // Photo url
+    public static final String KEY_PHOTO_URL = "photoUrl";
+
     // Trip status
     public static final String IS_ON_TRIP = "isOnTrip";
 
@@ -74,7 +84,7 @@ public class SessionManager {
      * Create login session
      * */
     public void createLoginSession(String id, String fullname, String username, String email, String gender,
-                                   String phone_no, String birthday){
+                                   String phone_no, String birthday, String photoUrl){
         // Storing login value as TRUE
         editor.putBoolean(IS_LOGIN, true);
 
@@ -98,6 +108,9 @@ public class SessionManager {
 
         // Storing birthday in pref
         editor.putString(KEY_BIRTHDAY, birthday);
+
+        // Storing photoUrl in pref
+        editor.putString(KEY_PHOTO_URL, photoUrl);
 
         // commit changes
         editor.commit();
@@ -153,6 +166,9 @@ public class SessionManager {
         // user birthday
         user.put(KEY_BIRTHDAY, pref.getString(KEY_BIRTHDAY, null));
 
+        // user photo url
+        user.put(KEY_PHOTO_URL, pref.getString(KEY_PHOTO_URL, null));
+
         // user trip status (TYPE IS STRING)
         user.put(IS_ON_TRIP, pref.getString(IS_ON_TRIP, null));
 
@@ -167,6 +183,7 @@ public class SessionManager {
         // Clearing all data from Shared Preferences
         editor.clear();
         editor.commit();
+        FirebaseAuth.getInstance().signOut();
 
         // After logout redirect user to Loing Activity
         Intent i = new Intent(_context, LoginActivity.class);
@@ -183,6 +200,7 @@ public class SessionManager {
     // Get Login State
     public boolean isLoggedIn(){
         return pref.getBoolean(IS_LOGIN, false);
+//       return mAuth.getCurrentUser() != null;
     }
 
     /**

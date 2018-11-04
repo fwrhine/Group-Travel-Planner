@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.telephony.PhoneNumberUtils;
@@ -17,13 +18,22 @@ import android.support.v7.widget.Toolbar;
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
 import com.example.pplki18.grouptravelplanner.data.UserContract;
 import com.example.pplki18.grouptravelplanner.utils.SessionManager;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.HashMap;
 import java.util.Locale;
 
 public class EditPhoneNoActivity extends AppCompatActivity {
     SessionManager session;
-    DatabaseHelper myDb;
+
+    FirebaseDatabase firebaseDatabase;
+    FirebaseAuth firebaseAuth;
+    FirebaseAuth.AuthStateListener mAuthStateListener;
+    FirebaseUser firebaseUser;
+    DatabaseReference userRef;
 
     Toolbar edit_phone_toolbar;
     ImageButton save_phone_button;
@@ -33,34 +43,49 @@ public class EditPhoneNoActivity extends AppCompatActivity {
 
     boolean numberChanged;
 
-    HashMap<String, String> user;
-
-    SQLiteDatabase db;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_phone_no);
         getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
+        userRef = firebaseDatabase.getReference().child("users").child(firebaseUser.getUid());
         init();
+        mAuthStateListener = new FirebaseAuth.AuthStateListener(){
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth){
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user != null){
+
+                } else {
+                    Intent intent = new Intent(EditPhoneNoActivity.this, LoginActivity.class);
+                    startActivity(intent);
+                }
+            }
+        };
+    }
+
+    @Override
+    protected void onPause(){
+        super.onPause();
+        firebaseAuth.removeAuthStateListener(mAuthStateListener);
+    }
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+        firebaseAuth.addAuthStateListener(mAuthStateListener);
     }
 
     public void init() {
         session = new SessionManager(getApplicationContext());
 
-        // To access our database, we instantiate our subclass of SQLiteOpenHelper
-        // and pass the context, which is the current activity
-        myDb = new DatabaseHelper(this);
-
-        // Create and/or open a database to read from it
-        db = myDb.getReadableDatabase();
-
-        // get user data from session
-        user = session.getUserDetails();
-
-        username_str = user.get(SessionManager.KEY_USERNAME);
-        phone_number = user.get(SessionManager.KEY_PHONE);
+        username_str = session.getUserDetails().get(session.KEY_USERNAME);
+        phone_number = session.getUserDetails().get(session.KEY_PHONE);
 
         edit_phone_toolbar = (Toolbar) findViewById(R.id.edit_phone_toolbar);
 
@@ -91,16 +116,7 @@ public class EditPhoneNoActivity extends AppCompatActivity {
                     public void onClick(View view) {
                         String new_phone_no = edit_phone.getText().toString();
                         new_phone_no = PhoneNumberUtils.formatNumber(new_phone_no, Locale.getDefault().getCountry());
-
-                        // Query string to update the user's gender
-                        String query = "UPDATE " + UserContract.UserEntry.TABLE_NAME
-                                + " SET " + UserContract.UserEntry.COL_PHONE + "="
-                                + "\"" + new_phone_no + "\"" + " WHERE "
-                                + UserContract.UserEntry.COL_USERNAME + "="
-                                + "\"" + username_str + "\"";
-
-                        // Execute the query
-                        db.execSQL(query);
+                        userRef.child("phone").setValue(new_phone_no);
                         session.updateSession(SessionManager.KEY_PHONE, new_phone_no+"");
 
                         Log.d("CHECK", "SUCCESS");

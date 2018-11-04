@@ -1,8 +1,6 @@
 package com.example.pplki18.grouptravelplanner;
 
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -15,12 +13,18 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
-import com.example.pplki18.grouptravelplanner.data.FriendsContract;
-import com.example.pplki18.grouptravelplanner.data.UserContract;
-import com.example.pplki18.grouptravelplanner.utils.Friend;
+import com.example.pplki18.grouptravelplanner.data.User;
 import com.example.pplki18.grouptravelplanner.utils.RVAdapter_Friend;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.example.pplki18.grouptravelplanner.utils.SessionManager;
 
 import java.util.ArrayList;
@@ -33,11 +37,19 @@ public class Fragment_Friends extends Fragment {
 
     private static final String TAG = "ListFriendActivity";
 
-    DatabaseHelper databaseHelper;
     private RecyclerView recyclerViewGroup;
     private LinearLayoutManager linearLayoutManager;
     private FloatingActionButton to_search_friend;
     private Toolbar toolbar;
+    private ProgressBar progressBar;
+
+    FirebaseDatabase firebaseDatabase;
+    FirebaseAuth firebaseAuth;
+    FirebaseUser firebaseUser;
+    DatabaseReference userRef;
+
+    List<User> friends = new ArrayList<>();
+    List<String> friendIDs = new ArrayList<>();
     DatabaseHelper myDb;
     SessionManager sessionManager;
 
@@ -51,6 +63,11 @@ public class Fragment_Friends extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
+        userRef = firebaseDatabase.getReference().child("users").child(firebaseUser.getUid());
+
         init();
         setAddFriendButton();
 
@@ -58,7 +75,16 @@ public class Fragment_Friends extends Fragment {
         recyclerViewGroup.setHasFixedSize(true);
         recyclerViewGroup.setLayoutManager(linearLayoutManager);
 
-        populateFriendRecyclerView();
+        progressBar.setVisibility(View.VISIBLE);
+        getAllFriendIDs(new FriendIdCallback() {
+            @Override
+            public void onCallback(List<String> list) {
+                friendIDs = list;
+                populateFriendRecyclerView();
+                progressBar.setVisibility(View.INVISIBLE);
+            }
+        });
+
     }
 
     // TEMP - nopal
@@ -74,62 +100,74 @@ public class Fragment_Friends extends Fragment {
     }
 
 
+    private void init() {
+        toolbar = getView().findViewById(R.id.toolbar);
+        recyclerViewGroup = (RecyclerView) getView().findViewById(R.id.rv2);
+        linearLayoutManager = new LinearLayoutManager(this.getActivity());
+        to_search_friend = getView().findViewById(R.id.to_search_friend);
+        progressBar = getView().findViewById(R.id.progress_loader);
+    }
+
     //Todo: refactor? exactly the same code as the one in CreateNewGroup
     private void populateFriendRecyclerView() {
         Log.d(TAG, "populateFriendRecyclerView: Displaying list of friends in the ListView.");
 
         //get data and append to list
-        List<Friend> friendsList = getAllFriends();
-        RVAdapter_Friend adapter = new RVAdapter_Friend(friendsList, getActivity());
-        recyclerViewGroup.setAdapter(adapter);
+        getAllFriends(new FriendCallback() {
+            @Override
+            public void onCallback(List<User> list) {
+                Log.d("NUM_OF_FRIEND", list.size() + ".");
+                RVAdapter_Friend adapter = new RVAdapter_Friend(list, getActivity());
+                recyclerViewGroup.setAdapter(adapter);
+            }
+        });
     }
 
-    /*
-     * Get all groups
-     * */
-    public List<Friend> getAllFriends() {
-        List<Friend> friendsList = new ArrayList<Friend>();
-//        String selectQuery = "SELECT * FROM " + UserContract.UserEntry.TABLE_NAME + " WHERE " +
-//                UserContract.UserEntry.TABLE_NAME + "." + UserContract.UserEntry._ID + " IN " +
-//                "(SELECT " + FriendsContract.FriendsEntry.COL_FRIEND_ID +
-//                " FROM " + FriendsContract.FriendsEntry.TABLE_NAME + " WHERE " +
-//                FriendsContract.FriendsEntry.TABLE_NAME + "." + FriendsContract.FriendsEntry.COL_USER_ID + " = " +
-//                sessionManager.getUserDetails().get(sessionManager.KEY_ID) + ")";
-        String selectQuery = "SELECT * FROM " + FriendsContract.FriendsEntry.TABLE_NAME + ", " +
-                UserContract.UserEntry.TABLE_NAME + " WHERE " + FriendsContract.FriendsEntry.COL_USER_ID
-                + " = " + sessionManager.getUserDetails().get(sessionManager.KEY_ID);
-//                + "." +
-//                FriendsContract.FriendsEntry.COL_FRIEND_ID + " FROM " + FriendsContract.FriendsEntry.TABLE_NAME + " INTERSECT " +
-//                "SELECT " + UserContract.UserEntry.TABLE_NAME + "." +
-//                UserContract.UserEntry._ID +" FROM " + UserContract.UserEntry.TABLE_NAME;
-        Log.d("FRIENDS", selectQuery);
+    public void getAllFriendIDs(final FriendIdCallback friendIdCallback){
+        userRef.child("friends").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                friendIDs.clear();
+                for (DataSnapshot postSnapshot: dataSnapshot.getChildren()){
+                    String groupId = postSnapshot.getValue(String.class); // String of groupID
+                    friendIDs.add(groupId);
+                }
+                friendIdCallback.onCallback(friendIDs);
+            }
 
-        SQLiteDatabase db = databaseHelper.getReadableDatabase();
-        Cursor c = db.rawQuery(selectQuery, null);
-        Log.d("Cursor_begin", c.getCount() + "");
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
 
-        // looping through all rows and adding to list
-        if (c.moveToFirst()) {
-            do {
-                Friend friend = new Friend();
-//                friend.setFriend_username((c.getString(c.getColumnIndex(UserContract.UserEntry.COL_USERNAME))));
-                friend.setId((c.getInt(c.getColumnIndex(FriendsContract.FriendsEntry.COL_FRIEND_ID))));
-                Log.d("FRIEND CONTENT", friend.getId() + "");
-
-
-                // adding to group list
-                friendsList.add(friend);
-            } while (c.moveToNext());
-        }
-
-        return friendsList;
+            }
+        });
     }
 
-    private void init() {
-        recyclerViewGroup = (RecyclerView) getView().findViewById(R.id.rv2);
-        linearLayoutManager = new LinearLayoutManager(this.getActivity());
-        databaseHelper = new DatabaseHelper(this.getActivity());
-        to_search_friend = getView().findViewById(R.id.to_search_friend);
-        sessionManager = new SessionManager(getActivity().getApplicationContext());
+    public void getAllFriends(final FriendCallback friendCallback){
+        firebaseDatabase.getReference().child("users").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                friends.clear();
+                for (DataSnapshot postSnapshot: dataSnapshot.getChildren()){
+                    User friend = postSnapshot.getValue(User.class); // User Objects
+                    if(friendIDs.contains(friend.getId())){
+                        friends.add(friend);
+                    }
+                }
+                friendCallback.onCallback(friends);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private interface FriendIdCallback{
+        void onCallback(List<String> list);
+    }
+
+    private interface FriendCallback{
+        void onCallback(List<User> list);
     }
 }
