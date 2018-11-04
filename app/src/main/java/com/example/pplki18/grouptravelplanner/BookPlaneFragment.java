@@ -519,7 +519,6 @@ public class BookPlaneFragment extends Fragment {
                                     getActivity().finish();
 
                                 } else {
-
                                     DatabaseHelper myDb = new DatabaseHelper(BookPlaneFragment.this.getActivity());
                                     SQLiteDatabase db = myDb.getReadableDatabase();
 
