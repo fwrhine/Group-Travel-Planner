@@ -70,7 +70,7 @@
             android:layout_toEndOf="@id/departData"
             android:layout_below="@id/airlineData"
             android:layout_margin="4sp"
-            android:contentDescription="@string/image_of_arrow" />
+            android:contentDescription="@string/arrow" />
 
         <RelativeLayout
             android:id="@+id/arriveData"

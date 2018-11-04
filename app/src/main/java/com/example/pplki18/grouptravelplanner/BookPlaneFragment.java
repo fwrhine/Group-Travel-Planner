@@ -312,7 +312,7 @@ public class BookPlaneFragment extends Fragment {
                     public void onResponse(String response) {
 
                         try {
-                            // JSONObject json = new JSONObject(response); {SHOULD BE USED WHEN API IS FIXED]
+                            // JSONObject json = new JSONObject(response); [SHOULD BE USED WHEN API IS FIXED]
 
                             Log.d("RESPONSE", response);
 
