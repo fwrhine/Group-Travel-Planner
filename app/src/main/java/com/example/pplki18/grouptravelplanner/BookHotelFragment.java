@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -42,6 +43,8 @@ import java.util.List;
 public class BookHotelFragment extends Fragment {
     private RecyclerView recyclerViewPlace;
     private LinearLayoutManager linearLayoutManager;
+    private ConstraintLayout infoView;
+    private ConstraintLayout closeSearchView;
     private ImageView search;
     private ImageView close;
     private EditText checkIn;
@@ -74,7 +77,8 @@ public class BookHotelFragment extends Fragment {
         init();
 
         textView.setVisibility(View.GONE);
-        close.setVisibility(View.GONE);
+        closeSearchView.setVisibility(View.GONE);
+        progressBar.setVisibility(View.VISIBLE);
 
 
         recyclerViewPlace.setHasFixedSize(true);
@@ -104,6 +108,17 @@ public class BookHotelFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 showPopup(getView());
+            }
+        });
+
+        close.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                closeSearchView.setVisibility(View.GONE);
+                infoView.setVisibility(View.VISIBLE);
+                generateToken();
+                adapter.clear();
+                progressBar.setVisibility(View.VISIBLE);
             }
         });
 
@@ -191,7 +206,8 @@ public class BookHotelFragment extends Fragment {
                 searchHotel(newQuery);
                 adapter.clear();
                 progressBar.setVisibility(View.VISIBLE);
-                close.setVisibility(View.VISIBLE);
+                infoView.setVisibility(View.INVISIBLE);
+                closeSearchView.setVisibility(View.VISIBLE);
                 searchDialog.dismiss();
                 return true;
             }
@@ -243,8 +259,8 @@ public class BookHotelFragment extends Fragment {
     }
 
     public void sendRequest(String token) {
-        String url = "https://api-sandbox.tiket.com/search/hotel?q=" + "bali" + "&startdate=2018-11-01&" +
-                "night=1&enddate=2018-11-02&room=1&adult=2&token=" + token + "&output=json";
+        String url = "https://api-sandbox.tiket.com/search/hotel?q=" + "bali" + "&startdate=2018-11-04&" +
+                "night=1&enddate=2018-11-08&room=1&adult=2&token=" + token + "&output=json";
 
         Log.d("HOTEL REQUEST", url);
 
@@ -368,7 +384,7 @@ public class BookHotelFragment extends Fragment {
 //                setTime(adapter.getAll().get(position));
             }
         };
-
+        Log.d("HOTELS OBJECTS", hotels.toString());
         progressBar.setVisibility(View.GONE);
         adapter.setListener(clickListener);
         adapter.addAll(hotels);
@@ -384,6 +400,8 @@ public class BookHotelFragment extends Fragment {
 
     private void init() {
         recyclerViewPlace = (RecyclerView) getView().findViewById(R.id.rv);
+        infoView = (ConstraintLayout) getView().findViewById(R.id.info);
+        closeSearchView = (ConstraintLayout) getView().findViewById(R.id.close_search_view);
         progressBar = (ProgressBar) getView().findViewById(R.id.main_progress);
         search = (ImageView) getView().findViewById(R.id.search);
         close = (ImageView) getView().findViewById(R.id.close);
