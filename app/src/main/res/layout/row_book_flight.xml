@@ -69,7 +69,8 @@
             android:src="@drawable/ic_arrow_forward_grey_20dp"
             android:layout_toEndOf="@id/departData"
             android:layout_below="@id/airlineData"
-            android:layout_margin="4sp"/>
+            android:layout_margin="4sp"
+            android:contentDescription="@string/arrow" />
 
         <RelativeLayout
             android:id="@+id/arriveData"

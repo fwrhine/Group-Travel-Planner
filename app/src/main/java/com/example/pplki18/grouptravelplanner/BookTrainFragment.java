@@ -114,7 +114,7 @@ public class BookTrainFragment extends Fragment {
                     events = data.getParcelableArrayListExtra("events");
 
                     for (Event e : events) {
-                        Log.d("testtt", e.getTitle());
+                        Log.d("TITLE", e.getTitle());
                     }
 
                     Intent intent = new Intent(getActivity(), CreateNewPlanActivity.class);
@@ -127,6 +127,7 @@ public class BookTrainFragment extends Fragment {
         }
     }
 
+    @SuppressWarnings("SpellCheckingInspection")
     private void initSearch() {
 
         String secretKey = "6c484049beacda6541bf40c90e62e8e5";
@@ -272,7 +273,7 @@ public class BookTrainFragment extends Fragment {
 
                                 JSONObject stationData = stationList.getJSONObject(i);
 
-                                String stationLoc = stationData.getString("city_name");
+                                String stationLoc = stationData.getString("station_name");
                                 String stationCode = stationData.getString("station_code");
 
                                 stationMap.put(stationLoc, stationCode);
@@ -295,6 +296,7 @@ public class BookTrainFragment extends Fragment {
         queue.add(stringRequest);
     }
 
+    @SuppressWarnings("SpellCheckingInspection")
     private void trainApiCall (final String token, final String start, final String end,
                                 final String depart) {
         // Request a string response from the provided URL.
@@ -311,7 +313,7 @@ public class BookTrainFragment extends Fragment {
                     public void onResponse(String response) {
 
                         try {
-                            JSONObject json = new JSONObject(response);
+                            // JSONObject json = new JSONObject(response); [SHOULD BE USED WHEN API IS FIXED]
                             Log.d("JSON", "there is response: " + response);
                             Log.d("URL", url);
 
@@ -356,7 +358,7 @@ public class BookTrainFragment extends Fragment {
             }
 
             @Override
-            public void retry(VolleyError error) throws VolleyError {
+            public void retry(VolleyError error) {
 
             }
         });
@@ -427,8 +429,17 @@ public class BookTrainFragment extends Fragment {
             String departTime = moreTrainInfo.get(2);
             String arriveTime = moreTrainInfo.get(3);
 
-            Train train = new Train(trainName, departTime, arriveTime,
-                    priceValue, startLoc, endLoc);
+            //Train train = new Train(trainName, departTime, arriveTime,
+              //      priceValue, startLoc, endLoc);
+            Train train = new Train();
+
+            train.setTrainName(trainName);
+            train.setDepartureCity(startLoc);
+            train.setArrivalCity(endLoc);
+            train.setDepartureTime(departTime);
+            train.setArrivalTime(arriveTime);
+            train.setPrice(priceValue);
+
             availableTrains.add(train);
         }
 
@@ -549,7 +560,7 @@ public class BookTrainFragment extends Fragment {
 
     }
 
-    public boolean validate() {
+    private boolean validate() {
         boolean valid = true;
 
         String startLoc = origin.getText().toString();
