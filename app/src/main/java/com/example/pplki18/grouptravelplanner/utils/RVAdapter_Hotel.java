@@ -68,7 +68,7 @@ public class RVAdapter_Hotel extends RecyclerView.Adapter<RecyclerView.ViewHolde
             case ITEM:
                 PlaceViewHolder placeViewHolder = (PlaceViewHolder) viewHolder;
                 placeViewHolder.hotelName.setText(hotels.get(i).getName());
-                placeViewHolder.hotelAddress.setText(hotels.get(i).getRegion());
+                placeViewHolder.hotelAddress.setText(hotels.get(i).getAddress());
                 placeViewHolder.hotelRating.setText(String.valueOf(hotels.get(i).getRating()) + "/5");
                 placeViewHolder.addIcon.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -76,6 +76,10 @@ public class RVAdapter_Hotel extends RecyclerView.Adapter<RecyclerView.ViewHolde
                         listener.addImageOnClick(v, viewHolder.getAdapterPosition());
                     }
                 });
+
+//                if (hotels.get(i).getPhoto() != null) {
+//                    getPhoto(placeViewHolder, hotels.get(i).getPhoto());
+//                }
 
                 break;
             case LOADING:

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/coordinatorLayout2"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
@@ -10,12 +11,89 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <android.support.v7.widget.SearchView
-            android:id="@+id/search_hotel"
+
+        <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_marginTop="0dp"/>
+            android:layout_height="75dp"
+            android:padding="10dp"
+            android:id="@+id/info">
+
+            <TextView
+                android:id="@+id/date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:text="Nov 1 - Nov 10"
+                android:textSize="16sp"
+                android:layout_marginLeft="10dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/room"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/ic_door_24"
+                android:text="1"
+                android:layout_marginTop="6dp"
+                android:layout_marginLeft="10dp"
+                android:gravity="center_vertical"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/date" />
+
+            <TextView
+                android:id="@+id/guest"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:drawableLeft="@drawable/ic_person_black_24dp"
+                android:gravity="center_vertical"
+                android:text="1"
+                app:layout_constraintStart_toEndOf="@+id/room"
+                app:layout_constraintTop_toBottomOf="@+id/date" />
+
+            <ImageView
+                android:id="@+id/search"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="12dp"
+                android:src="@drawable/ic_search_black"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/sort"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.488" />
+
+            <ImageView
+                android:id="@+id/sort"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="16dp"
+                android:src="@drawable/ic_sort"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.488" />
+
+        </android.support.constraint.ConstraintLayout>
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="75dp"
+            android:padding="10dp"
+            android:id="@+id/close_search_view">
+
+            <ImageView
+                android:id="@+id/close"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="20dp"
+                android:src="@drawable/ic_close"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.488" />
+
+        </android.support.constraint.ConstraintLayout>
 
         <TextView
             android:layout_width="wrap_content"
@@ -31,11 +109,11 @@
             android:id="@+id/rv"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:paddingBottom="?attr/actionBarSize"
+            android:paddingBottom="75dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/search_hotel" />
+            app:layout_constraintTop_toBottomOf="@+id/info" />
 
         <ProgressBar
             android:id="@+id/main_progress"

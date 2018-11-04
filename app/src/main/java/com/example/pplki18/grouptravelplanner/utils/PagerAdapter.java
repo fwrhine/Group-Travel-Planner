@@ -42,18 +42,22 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
             case 1:
                 Fragment_PlaceList tab2 = newPlaceListInstance("attractions");
                 return tab2;
-            case 2: return new BookHotelFragment();
-            case 3:
-                BookPlaneFragment myFragment = new BookPlaneFragment();
-                myFragment.setArguments(bundle);
-                return myFragment;
-            case 4:
-                BookTrainFragment myFragment2 = new BookTrainFragment();
-                myFragment2.setArguments(bundle);
-                return myFragment2;
-            case 5:
-                Fragment_CustomEvent tab3 = newCustomEventInstance();
+            case 2:
+                BookHotelFragment tab3 = new BookHotelFragment();
+                tab3.setArguments(bundle);
                 return tab3;
+            case 3:
+                BookPlaneFragment tab4 = new BookPlaneFragment();
+                tab4.setArguments(bundle);
+                return tab4;
+            case 4:
+                BookTrainFragment tab5 = new BookTrainFragment();
+                tab5.setArguments(bundle);
+                return tab5;
+            case 5:
+                Fragment_CustomEvent tab6 = new Fragment_CustomEvent();
+                tab6.setArguments(bundle);
+                return tab6;
             default:
                 return null;
         }
@@ -84,21 +88,6 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
         args.putString("REGION", region);
         args.putString("LATITUDE", String.valueOf(region_coor.latitude));
         args.putString("LONGITUDE", String.valueOf(region_coor.longitude));
-
-        int plan_id = bundle.getInt("plan_id");
-        String date = bundle.getString("date");
-        args.putInt("plan_id", plan_id);
-        args.putString("date", date);
-
-        myFragment.setArguments(args);
-
-        return myFragment;
-    }
-
-    private Fragment_CustomEvent newCustomEventInstance() {
-        Fragment_CustomEvent myFragment = new Fragment_CustomEvent();
-
-        Bundle args = new Bundle();
 
         int plan_id = bundle.getInt("plan_id");
         String date = bundle.getString("date");

@@ -6,7 +6,9 @@ public class Hotel {
     private String hotel_id;
     private String name;
     private String rating;
-    private String region;
+    private String address;
+    private String photo;
+    private String website;
 
 
     public Hotel() {
@@ -25,8 +27,16 @@ public class Hotel {
         this.rating = rating;
     }
 
-    public void setRegion(String region) {
-        this.region = region;
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public void setPhoto(String photo) {
+        this.photo = photo;
+    }
+
+    public void setWebsite(String website) {
+        this.website = website;
     }
 
 
@@ -42,8 +52,16 @@ public class Hotel {
         return rating;
     }
 
-    public String getRegion() {
-        return region;
+    public String getAddress() {
+        return address;
+    }
+
+    public String getPhoto() {
+        return photo;
+    }
+
+    public String getWebsite() {
+        return website;
     }
 }
 

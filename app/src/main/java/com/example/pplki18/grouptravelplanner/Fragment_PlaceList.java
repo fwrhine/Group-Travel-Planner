@@ -206,7 +206,7 @@ public class Fragment_PlaceList extends Fragment {
 
     private void loadMorePlaces() {
         String url = "https://maps.googleapis.com/maps/api/place/textsearch/json?pagetoken="
-                + next_token + "&key=AIzaSyB4QT2f2fyMQ8gDILgUEi5xBl_NKiGt_fo";
+                + next_token + "&key=" + getString(R.string.api_key);
 
         // Request a string response from the provided URL.
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
