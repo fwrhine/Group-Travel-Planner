@@ -103,6 +103,7 @@ public class Fragment_PlaceList extends Fragment {
                     getActivity().setResult(RESULT_OK, intent);
                     getActivity().finish();
                 }
+
             }
         }
     }
@@ -374,14 +375,15 @@ public class Fragment_PlaceList extends Fragment {
         SQLiteDatabase db = databaseHelper.getWritableDatabase();
 
         ContentValues contentValues = new ContentValues();
+        contentValues.put(EventContract.EventEntry.COL_QUERY_ID, place.getPlace_id());
         contentValues.put(EventContract.EventEntry.COL_PLAN_ID, plan_id);
         contentValues.put(EventContract.EventEntry.COL_TITLE, place.getName());
         contentValues.put(EventContract.EventEntry.COL_LOCATION, place.getAddress());
         contentValues.put(EventContract.EventEntry.COL_WEBSITE, place.getWebsite());
         contentValues.put(EventContract.EventEntry.COL_DATE, event_date);
         //TODO ERROR PLACES GADA ADDRESS DLL ??!!
-//        Log.d("event location", place.getAddress());
-//        Log.d("event desc", place.getWebsite());
+//        Log.d("event location", places.get(position).getAddress());
+//        Log.d("event desc", places.get(position).getWebsite());
         contentValues.put(EventContract.EventEntry.COL_TIME_START, start_time);
         contentValues.put(EventContract.EventEntry.COL_TIME_END, end_time);
         contentValues.put(EventContract.EventEntry.COL_PHONE, place.getPhone_number());

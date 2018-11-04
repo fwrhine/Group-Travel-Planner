@@ -22,6 +22,10 @@ import android.widget.ImageButton;
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
 import com.example.pplki18.grouptravelplanner.data.UserContract;
 import com.example.pplki18.grouptravelplanner.utils.SessionManager;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -30,7 +34,6 @@ import java.util.Locale;
 
 public class EditBirthdayActivity extends FragmentActivity {
     SessionManager session;
-    DatabaseHelper myDb;
 
     Toolbar edit_birthday_toolbar;
     ImageButton save_birthday_button;
@@ -44,7 +47,11 @@ public class EditBirthdayActivity extends FragmentActivity {
 
     HashMap<String, String> user;
 
-    SQLiteDatabase db;
+    FirebaseDatabase firebaseDatabase;
+    FirebaseAuth firebaseAuth;
+    FirebaseUser firebaseUser;
+    DatabaseReference userRef;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,18 +61,16 @@ public class EditBirthdayActivity extends FragmentActivity {
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         dateFormatter = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
 
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
+        userRef = firebaseDatabase.getReference().child("users").child(firebaseUser.getUid());
+
         init();
     }
 
     public void init() {
         session = new SessionManager(getApplicationContext());
-
-        // To access our database, we instantiate our subclass of SQLiteOpenHelper
-        // and pass the context, which is the current activity
-        myDb = new DatabaseHelper(this);
-
-        // Create and/or open a database to read from it
-        db = myDb.getReadableDatabase();
 
         // get user data from session
         user = session.getUserDetails();
@@ -100,15 +105,7 @@ public class EditBirthdayActivity extends FragmentActivity {
                     public void onClick(View view) {
                         String new_birthday = edit_birthday.getText().toString();
 
-                        // Query string to update the user's gender
-                        String query = "UPDATE " + UserContract.UserEntry.TABLE_NAME
-                                + " SET " + UserContract.UserEntry.COL_BIRTHDAY + "="
-                                + "\"" + new_birthday + "\"" + " WHERE "
-                                + UserContract.UserEntry.COL_USERNAME + "="
-                                + "\"" + username_str + "\"";
-
-                        // Execute the query
-                        db.execSQL(query);
+                        userRef.child("birthday").setValue(new_birthday);
                         session.updateSession(SessionManager.KEY_BIRTHDAY, new_birthday + "");
 
                         Log.d("CHECK", "SUCCESS");

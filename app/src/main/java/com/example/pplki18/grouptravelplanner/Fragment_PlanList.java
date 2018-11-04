@@ -14,12 +14,21 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
 import com.example.pplki18.grouptravelplanner.data.PlanContract.PlanEntry;
 import com.example.pplki18.grouptravelplanner.utils.Plan;
 import com.example.pplki18.grouptravelplanner.utils.RVAdapter_Plan;
 import com.example.pplki18.grouptravelplanner.utils.SessionManager;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,16 +39,24 @@ public class Fragment_PlanList extends Fragment {
 
     private static final String TAG = "Fragment_PlanList";
 
-    DatabaseHelper databaseHelper;
+    private FirebaseDatabase firebaseDatabase;
+    private FirebaseAuth firebaseAuth;
+    private FirebaseUser firebaseUser;
+    private DatabaseReference userRef;
+    private DatabaseReference planRef;
+    private DatabaseHelper databaseHelper;
+
     private RecyclerView recyclerViewPlan;
+    private ProgressBar progressBar;
     private LinearLayoutManager linearLayoutManager;
     private FloatingActionButton new_plan_button;
     private SessionManager session;
     private HashMap<String, String> user;
-    private List<Plan> plans;
-    RVAdapter_Plan adapter;
-    DatabaseHelper myDb;
-    Intent myIntent;
+    private List<String> planIDs = new ArrayList<>();
+    private List<Plan> plans = new ArrayList<>();
+    private RVAdapter_Plan adapter;
+    private DatabaseHelper myDb;
+    private Intent myIntent;
 
     @Nullable
     @Override
@@ -54,13 +71,27 @@ public class Fragment_PlanList extends Fragment {
         init();
         setCreatePlanButton();
 
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
+        userRef = firebaseDatabase.getReference().child("users").child(firebaseUser.getUid()).child("plans");
+        planRef = firebaseDatabase.getReference().child("plans");
+
         recyclerViewPlan.setHasFixedSize(true);
         recyclerViewPlan.setLayoutManager(linearLayoutManager);
 
-        populatePlanRecyclerView();
+        progressBar.setVisibility(View.VISIBLE);
+        getPlanIDs(new PlanIDCallback() {
+            @Override
+            public void onCallback(List<String> list) {
+                planIDs = list;
+                populatePlanRecyclerView();
+                progressBar.setVisibility(View.INVISIBLE);
+            }
+        });
     }
 
-    public void setCreatePlanButton() {
+    private void setCreatePlanButton() {
         new_plan_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -74,30 +105,31 @@ public class Fragment_PlanList extends Fragment {
         });
     }
 
-    public void setPlanName() {
-        SQLiteDatabase db = databaseHelper.getReadableDatabase();
-
-        String query = "SELECT * FROM " + PlanEntry.TABLE_NAME + " WHERE " + PlanEntry.COL_USER_ID +
-                " = " + user.get(SessionManager.KEY_ID) + " AND " + PlanEntry.COL_PLAN_NAME +
-                " LIKE \'New Plan (%)\' ";
-
-        Cursor cursor = db.rawQuery(query, null);
-        String planName;
-        int idx;
-
-        if(cursor.getCount() > 0) {
-            cursor.moveToLast();
-//            idx = cursor.getCount() + 1;
-            String temp = cursor.getString(cursor.getColumnIndex(PlanEntry.COL_PLAN_NAME));
-            idx = Integer.parseInt(temp.substring(10,temp.length()-1)) + 1;
-            planName = "New Plan (" + idx + ")";
-            cursor.close();
-        } else {
-            planName = "New Plan (1)";
-            cursor.close();
-        }
-
-        myIntent.putExtra("plan_name", planName);
+    private void setPlanName() {
+        //TODO: FIREBASE
+//        SQLiteDatabase db = databaseHelper.getReadableDatabase();
+//
+//        String query = "SELECT * FROM " + PlanEntry.TABLE_NAME + " WHERE " + PlanEntry.COL_USER_ID +
+//                " = " + user.get(SessionManager.KEY_ID) + " AND " + PlanEntry.COL_PLAN_NAME +
+//                " LIKE \'New Plan (%)\' ";
+//
+//        Cursor cursor = db.rawQuery(query, null);
+//        String planName;
+//        int idx;
+//
+//        if(cursor.getCount() > 0) {
+//            cursor.moveToLast();
+////            idx = cursor.getCount() + 1;
+//            String temp = cursor.getString(cursor.getColumnIndex(PlanEntry.COL_PLAN_NAME));
+//            idx = Integer.parseInt(temp.substring(10,temp.length()-1)) + 1;
+//            planName = "New Plan (" + idx + ")";
+//            cursor.close();
+//        } else {
+//            planName = "New Plan (1)";
+//            cursor.close();
+//        }
+//
+//        myIntent.putExtra("plan_name", planName);
 //        ContentValues contentValues = new ContentValues();
 //        contentValues.put(PlanEntry.COL_PLAN_NAME, planName);
 //        contentValues.put(PlanEntry.COL_USER_ID, user.get(SessionManager.KEY_ID));
@@ -117,6 +149,7 @@ public class Fragment_PlanList extends Fragment {
         if (c != null && c.moveToFirst()) {
             lastId = c.getLong(0); //The 0 is the column index, we only have 1 column, so the index is 0
         }
+        c.close();
         myIntent.putExtra("plan_id", lastId+1);
     }
 
@@ -124,59 +157,107 @@ public class Fragment_PlanList extends Fragment {
     public void onResume() {  // After a pause OR at startup
         Log.d("RESUME", "masuk resume");
         super.onResume();
-        plans = getAllPlans();
-        adapter = new RVAdapter_Plan(plans, getActivity());
-        recyclerViewPlan.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
+//        plans = getAllPlans();
+//        adapter = new RVAdapter_Plan(plans, getActivity());
+//        recyclerViewPlan.setAdapter(adapter);
+//        adapter.notifyDataSetChanged();
     }
 
     //Todo: refactor? exactly the same code as the one in CreateNewGroup
     private void populatePlanRecyclerView() {
         Log.d(TAG, "populatePlanRecyclerView: Displaying list of plans in the ListView.");
+        getAllPlans(new PlanCallback() {
+            @Override
+            public void onCallback(List<Plan> list) {
+                adapter = new RVAdapter_Plan(plans, getActivity());
 
-        recyclerViewPlan.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
+                recyclerViewPlan.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
+            }
+        });
     }
 
     /*
      * Get all groups
      * */
-    public List<Plan> getAllPlans() {
-        List<Plan> plans = new ArrayList<Plan>();
+    private void getAllPlans(final PlanCallback callback) {
+        //TODO: FIREBASE
+//
+//        String selectQuery = " SELECT * FROM " + PlanEntry.TABLE_NAME + " WHERE " +
+//                PlanEntry.COL_USER_ID + " = " + user.get(SessionManager.KEY_ID);
+//
+//        SQLiteDatabase db = databaseHelper.getReadableDatabase();
+//        Cursor c = db.rawQuery(selectQuery, null);
+//
+//        if (c.moveToFirst()) {
+//            do {
+//                Plan plan = new Plan();
+//                plan.setPlan_name((c.getString(c.getColumnIndex(PlanEntry.COL_PLAN_NAME))));
+//                plan.setPlan_overview(c.getString(c.getColumnIndex(PlanEntry.COL_DESCRIPTION)));
+//                plan.setPlan_start_date((c.getString(c.getColumnIndex(PlanEntry.COL_START_DAY))));
+//                plan.setPlan_end_date((c.getString(c.getColumnIndex(PlanEntry.COL_END_DAY))));
+//                plan.setPlan_total_days((c.getInt(c.getColumnIndex(PlanEntry.COL_TOTAL_DAY))));
+//                plan.setPlan_id((c.getInt(c.getColumnIndex(PlanEntry._ID))));
+//
+//                // adding to plan list
+//                plans.add(plan);
+//            } while (c.moveToNext());
+//        }
+        planRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                plans.clear();
+                for (DataSnapshot postSnapshot: dataSnapshot.getChildren()){
+                    Plan plan = postSnapshot.getValue(Plan.class); // Plan Objects
+                    if(planIDs.contains(plan.getPlan_id())){
+                        plans.add(plan);
+                    }
+                }
+                callback.onCallback(plans);
+            }
 
-        String selectQuery = " SELECT * FROM " + PlanEntry.TABLE_NAME + " WHERE " +
-                PlanEntry.COL_USER_ID + " = " + user.get(SessionManager.KEY_ID);
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
 
-        SQLiteDatabase db = databaseHelper.getReadableDatabase();
-        Cursor c = db.rawQuery(selectQuery, null);
+            }
+        });
+    }
 
-        if (c.moveToFirst()) {
-            do {
-                Plan plan = new Plan();
-                plan.setPlan_name((c.getString(c.getColumnIndex(PlanEntry.COL_PLAN_NAME))));
-                plan.setPlan_overview(c.getString(c.getColumnIndex(PlanEntry.COL_DESCRIPTION)));
-                plan.setPlan_start_date((c.getString(c.getColumnIndex(PlanEntry.COL_START_DAY))));
-                plan.setPlan_end_date((c.getString(c.getColumnIndex(PlanEntry.COL_END_DAY))));
-                plan.setPlan_total_days((c.getInt(c.getColumnIndex(PlanEntry.COL_TOTAL_DAY))));
-                plan.setPlan_id((c.getInt(c.getColumnIndex(PlanEntry._ID))));
+    private void getPlanIDs(final PlanIDCallback callback) {
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                planIDs.clear();
+                for (DataSnapshot postSnapshot: dataSnapshot.getChildren()){
+                    String planId = postSnapshot.getValue(String.class); // String of groupID
+                    Log.d("PLAN_ID", planId);
+                    planIDs.add(planId);
+                }
+                callback.onCallback(planIDs);
+            }
 
-                // adding to plan list
-                plans.add(plan);
-            } while (c.moveToNext());
-        }
-        c.close();
-        return plans;
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     private void init() {
-        recyclerViewPlan = (RecyclerView) getView().findViewById(R.id.rv_plan_list);
+        recyclerViewPlan = getView().findViewById(R.id.rv_plan_list);
         linearLayoutManager = new LinearLayoutManager(this.getActivity());
         databaseHelper = new DatabaseHelper(this.getActivity());
         new_plan_button = getView().findViewById(R.id.fab_add_plan);
+        progressBar = getView().findViewById(R.id.progress_loader);
         session = new SessionManager(getActivity().getApplicationContext());
         user = session.getUserDetails();
-        plans = getAllPlans();
-        adapter = new RVAdapter_Plan(plans, getActivity());
         myIntent = new Intent(getActivity(), CreateNewPlanActivity.class);
+    }
+
+    private interface PlanIDCallback {
+        void onCallback(List<String> list);
+    }
+    private interface PlanCallback {
+        void onCallback(List<Plan> list);
     }
 }

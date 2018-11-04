@@ -180,6 +180,11 @@ public class ChooseEventActivity extends AppCompatActivity {
                 // The user canceled the operation.
             }
         }
+//        else if (requestCode == REQUEST_FROM_PLACE_ACTIVITY) {
+//            for (Fragment fragment : getSupportFragmentManager().getFragments()) {
+//                fragment.onActivityResult(requestCode, resultCode, data);
+//            }
+//        }
     }
 
     private void init() {

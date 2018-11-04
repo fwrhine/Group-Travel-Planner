@@ -1,5 +1,6 @@
 package com.example.pplki18.grouptravelplanner;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -7,22 +8,36 @@ import android.graphics.drawable.Drawable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.pplki18.grouptravelplanner.R;
 import com.example.pplki18.grouptravelplanner.utils.Event;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 public class EventDetailActivity extends AppCompatActivity {
-    ImageView image, desc_icon, ic_transport, ic_money;
-    TextView title, description, transport, origin, destination, money;
-    TextView eventDate, eventTime, eventDuration, eventDescription;
-    ImageButton editEvent;
+
+    private static final int REQUEST_CODE_EDIT_EVENT = 1;
+
+    private ImageView image, desc_icon, ic_transport, ic_money;
+    private TextView title, description, transport, origin, destination, money;
+    private TextView eventDate, eventTime, eventDuration, eventDescription;
+    private ImageButton editEvent;
+    private Toolbar toolbar;
     FloatingActionButton ic_event;
+    private Event event;
     private Intent intent;
     private String type;
+    private SimpleDateFormat dateFormatter2, dateFormatter3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,13 +45,43 @@ public class EventDetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_event_detail);
 
         init();
+
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        setTitle("");
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == REQUEST_CODE_EDIT_EVENT) {
+            if (resultCode == Activity.RESULT_OK) {
+                String description = data.getStringExtra("description");
+                eventDescription.setText(description);
+            }
+        }
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 
     public void init() {
         findViewById();
         intent = getIntent();
-        Event event = intent.getParcelableExtra("event");
+        event = intent.getParcelableExtra("event");
         type = event.getType();
+
+        dateFormatter2 = new SimpleDateFormat("d MMMM yyyy", Locale.US);
+        dateFormatter3 = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+        String date = "";
+        try {
+            date = dateFormatter2.format(dateFormatter3.parse(event.getDate()));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
         String start = event.getTime_start();
         String end = event.getTime_end();
@@ -45,7 +90,7 @@ public class EventDetailActivity extends AppCompatActivity {
         String timeStr = start + " - " + end;
 
         title.setText(event.getTitle());
-        eventDate.setText(event.getDate());
+        eventDate.setText(date);
         eventTime.setText(timeStr);
         eventDuration.setText(duration);
         eventDescription.setText(event.getDescription());
@@ -55,30 +100,54 @@ public class EventDetailActivity extends AppCompatActivity {
         money.setText(event.getPrice());
 
         if (type.equals("flights")) {
-            initFlight(event);
+            initFlight();
         } else if (type.equals("trains")) {
-            initTrain(event);
+            initTrain();
         } else if (type.equals("custom")) {
-            initCustom(event);
+            initCustom();
         }
+
+        setEditEventButton();
     }
 
-    public void initFlight(Event event) {
+    public void initFlight() {
         image.setImageResource(R.drawable.airplane_flying);
     }
 
-    public void initTrain(Event event) {
+    public void initTrain() {
         image.setImageResource(R.drawable.train);
         ic_event.setImageResource(R.drawable.ic_train);
         ic_transport.setImageResource(R.drawable.ic_train_black);
 
     }
 
-    public void initCustom(Event event) {
+    //TODO custom event
+    public void initCustom() {
 
     }
 
+    public void setEditEventButton() {
+        editEvent.setColorFilter(R.color.colorRipple);
+        editEvent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(EventDetailActivity.this, EditEventActivity.class);
+                intent.putExtra("event", event);
+                intent.putExtra("type", event.getType());
+
+                Date date_start = (Date) getIntent().getExtras().get("start_date");
+                Date date_end = (Date) getIntent().getExtras().get("end_date");
+                intent.putExtra("start_date", date_start);
+                intent.putExtra("end_date", date_end);
+
+                Toast.makeText(EventDetailActivity.this, "edit event", Toast.LENGTH_SHORT).show();
+                startActivityForResult(intent, REQUEST_CODE_EDIT_EVENT);
+            }
+        });
+    }
+
     public void findViewById() {
+        toolbar = findViewById(R.id.toolbar);
         image = findViewById(R.id.image);
         desc_icon = findViewById(R.id.ic_desc);
         ic_transport = findViewById(R.id.ic_transport);
@@ -97,7 +166,5 @@ public class EventDetailActivity extends AppCompatActivity {
         eventDescription = (TextView) findViewById(R.id.event_detail_desc);
         editEvent = (ImageButton) findViewById(R.id.edit_event);
 
-
     }
-
 }

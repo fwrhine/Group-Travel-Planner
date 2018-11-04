@@ -12,6 +12,8 @@
     android:orientation="vertical"
     tools:context=".CreateNewGroupActivity">
 
+    <!--TODO: Kasih tanda loading waktu search -->
+
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appBarLayout3"
         android:layout_width="match_parent"

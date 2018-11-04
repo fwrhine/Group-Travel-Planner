@@ -18,7 +18,7 @@
                 android:id="@+id/airlineName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/bookAirlineName"
+                android:text="@string/bookFlightNumber"
                 android:textSize="16sp" />
 
             <TextView
@@ -62,21 +62,22 @@
 
         </RelativeLayout>
 
-        <TextView
+        <ImageView
             android:id="@+id/arrow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/bookArrow"
+            android:src="@drawable/ic_arrow_forward_grey_20dp"
             android:layout_toEndOf="@id/departData"
             android:layout_below="@id/airlineData"
-            android:textSize="14sp" />
+            android:layout_margin="4sp"/>
 
         <RelativeLayout
             android:id="@+id/arriveData"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/airlineData"
-            android:layout_toEndOf="@id/arrow" >
+            android:layout_toEndOf="@id/arrow"
+            android:layout_marginStart="4sp" >
 
             <TextView
                 android:id="@+id/arriveCity"

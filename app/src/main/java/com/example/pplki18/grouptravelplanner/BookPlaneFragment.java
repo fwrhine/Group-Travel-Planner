@@ -15,8 +15,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -50,7 +51,7 @@ import static android.app.Activity.RESULT_OK;
 
 public class BookPlaneFragment extends Fragment {
 
-    private EditText origin, destination;
+    private AutoCompleteTextView origin, destination;
     private Button searchButton;
 
     private int plan_id;
@@ -144,6 +145,21 @@ public class BookPlaneFragment extends Fragment {
                     public void onCallback(HashMap<String, String> map) {
                         Log.d("MAP-FINAL", "map size: "+ map.size());
                         availableAirports = map;
+
+                        String[] airportKeyArray = availableAirports.keySet().toArray(new String[availableAirports.size()]);
+                        ArrayList<String> airportArrayList = new ArrayList<>();
+
+                        for (int i = 0; i < availableAirports.size(); i++) {
+                            String currentKey = airportKeyArray[i];
+                            airportArrayList.add(availableAirports.get(currentKey)+" | "+currentKey);
+                        }
+
+                        ArrayAdapter<String> adapter1 = new ArrayAdapter<>(BookPlaneFragment.this.getActivity(), R.layout.support_simple_spinner_dropdown_item, airportArrayList);
+                        origin.setAdapter(adapter1);
+                        destination.setAdapter(adapter1);
+
+                        origin.setText(airportArrayList.get(0));
+                        destination.setText(airportArrayList.get(1));
                     }
                 });
             }
@@ -161,36 +177,47 @@ public class BookPlaneFragment extends Fragment {
             e.printStackTrace();
         }
 
+        Objects.requireNonNull(getView()).findViewById(R.id.loadingPanel).setVisibility(View.GONE);
+
         searchButton.setOnClickListener(
                 new View.OnClickListener() {
 
                     @Override
                     public void onClick(View view) {
-                        if (validate()) {
 
-                            String startLoc = origin.getText().toString();
-                            String endLoc = destination.getText().toString();
-                            final String departDate = startDate;
+                            if(validate()) {
 
-                            if(availableAirports.containsKey(startLoc)) {
+                                String[] startSplit = origin.getText().toString().split(" \\| ");
+                                String startLoc = startSplit[1];
 
-                                if(availableAirports.containsKey(endLoc)) {
+                                Log.d("START", startLoc);
 
-                                    final String start = availableAirports.get(startLoc);
-                                    final String end = availableAirports.get(endLoc);
-                                    flightApiCall(token, start, end, departDate);
+                                String[] endSplit = destination.getText().toString().split(" \\| ");
+                                String endLoc = endSplit[1];
+
+                                Log.d("START", startLoc);
+                                final String departDate = startDate;
+
+                                if (availableAirports.containsKey(startLoc)) {
+
+                                    if (availableAirports.containsKey(endLoc)) {
+
+                                        final String start = availableAirports.get(startLoc);
+                                        final String end = availableAirports.get(endLoc);
+                                        getView().findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
+                                        flightApiCall(token, start, end, departDate);
+                                    } else {
+                                        Toast.makeText(BookPlaneFragment.this.getActivity()
+                                                , "No Airports are in the arrival area"
+                                                , Toast.LENGTH_LONG).show();
+                                    }
                                 } else {
                                     Toast.makeText(BookPlaneFragment.this.getActivity()
-                                            , "No Airports are in the arrival area"
+                                            , "No Airports are in the departure area"
                                             , Toast.LENGTH_LONG).show();
                                 }
-                            } else {
-                                Toast.makeText(BookPlaneFragment.this.getActivity()
-                                        , "No Airports are in the departure area"
-                                        , Toast.LENGTH_LONG).show();
                             }
                         }
-                    }
                 }
         );
     }
@@ -212,6 +239,7 @@ public class BookPlaneFragment extends Fragment {
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
+
                     }
                 }, new Response.ErrorListener() {
             @Override
@@ -249,15 +277,7 @@ public class BookPlaneFragment extends Fragment {
                                 String airportLoc = airportData.getString("location_name");
                                 String airportCode = airportData.getString("airport_code");
 
-
-                                if (airportLoc.contains(" - ")) {
-                                    String[] splitLoc = airportLoc.split(" - ");
-                                    airportMap.put(splitLoc[1], airportCode);
-                                }
-
-                                else {
                                     airportMap.put(airportLoc, airportCode);
-                                }
                             }
                             availableAirports = airportMap;
 
@@ -295,7 +315,7 @@ public class BookPlaneFragment extends Fragment {
                             Log.d("RESPONSE", response);
 
                             // FOR TEST ONLY
-                            String test = "test";
+                            String test = "{\"output_type\":\"json\",\"round_trip\":true,\"search_queries\":{\"from\":\"BPN\",\"to\":\"MES\",\"date\":\"2013-02-05\",\"ret_date\":\"2013-02-10\",\"adult\":1,\"child\":0,\"infant\":0},\"go_det\":{\"dep_airport\":{\"airport_code\":\"BPN\",\"international\":\"1\",\"trans_name_id\":\"7565\",\"business_name\":\"SEPINGGAN\",\"business_name_trans_id\":\"5924\",\"business_id\":\"20350\",\"country_name\":\"Indonesia \",\"city_name\":\"Balikpapan\",\"province_name\":\"Kalimantan Timur\",\"location_name\":\"BalikPapan\"},\"arr_airport\":{\"airport_code\":\"MES\",\"international\":\"1\",\"trans_name_id\":\"7585\",\"business_name\":\"POLONIA\",\"business_name_trans_id\":\"5949\",\"business_id\":\"20375\",\"country_name\":\"Indonesia \",\"city_name\":\"Medan\",\"province_name\":\"Sumatera Utara\",\"location_name\":\"Medan\"},\"date\":\"2013-02-05\",\"formatted_date\":\"05 February 2013\"},\"ret_det\":{\"dep_airport\":{\"airport_code\":\"MES\",\"international\":\"1\",\"trans_name_id\":\"7585\",\"business_name\":\"POLONIA\",\"business_name_trans_id\":\"5949\",\"business_id\":\"20375\",\"country_name\":\"Indonesia \",\"city_name\":\"Medan\",\"province_name\":\"Sumatera Utara\",\"location_name\":\"Medan\"},\"arr_airport\":{\"airport_code\":\"BPN\",\"international\":\"1\",\"trans_name_id\":\"7565\",\"business_name\":\"SEPINGGAN\",\"business_name_trans_id\":\"5924\",\"business_id\":\"20350\",\"country_name\":\"Indonesia \",\"city_name\":\"Balikpapan\",\"province_name\":\"Kalimantan Timur\",\"location_name\":\"BalikPapan\"},\"date\":\"2013-02-10\",\"formatted_date\":\"10 February 2013\"},\"diagnostic\":{\"status\":200,\"elapsetime\":\"1.5670\",\"memoryusage\":\"20.37MB\",\"confirm\":\"success\",\"lang\":\"en\",\"currency\":\"IDR\"},\"departures\":{\"result\":[{\"flight_id\":\"3789714\",\"airlines_name\":\"LION\",\"flight_number\":\"JT-763\\/JT-382\",\"price_value\":\"1126500.00\",\"timestamp\":\"2013-01-14 16:58:00\",\"price_adult\":\"1126500.00\",\"price_child\":\"0.00\",\"price_infant\":\"0.00\",\"simple_departure_time\":\"06:00\",\"simple_arrival_time\":\"15:10\",\"stop\":\"1 Stop\",\"long_via\":\"Jakarta (CGK)\",\"full_via\":\"BPN - CGK (06:00 - 07:10), CGK - MES (12:50 - 15:10)\",\"duration\":\"10 h 10 m\",\"image\":\"http:\\/\\/www.sandbox.tiket.com\\/images\\/tiket2\\/icon_lion_2.jpg\",\"flight_infos\":{\"flight_info\":[{\"flight_number\":\"JT-763\",\"departure_city\":\"BPN\",\"arrival_city\":\"CGK\",\"simple_departure_time\":\"06:00\",\"simple_arrival_time\":\"07:10\"},{\"flight_number\":\"JT-382\",\"departure_city\":\"CGK\",\"arrival_city\":\"MES\",\"simple_departure_time\":\"12:50\",\"simple_arrival_time\":\"15:10\"}]}},{\"flight_id\":\"3789712\",\"airlines_name\":\"LION\",\"flight_number\":\"JT-673\\/JT-382\",\"price_value\":\"1126500.00\",\"timestamp\":\"2013-01-14 16:58:00\",\"price_adult\":\"1126500.00\",\"price_child\":\"0.00\",\"price_infant\":\"0.00\",\"simple_departure_time\":\"07:45\",\"simple_arrival_time\":\"15:10\",\"stop\":\"1 Stop\",\"long_via\":\"Jakarta (CGK)\",\"full_via\":\"BPN - CGK (07:45 - 08:55), CGK - MES (12:50 - 15:10)\",\"duration\":\"8 h 25 m\",\"image\":\"http:\\/\\/www.sandbox.tiket.com\\/images\\/tiket2\\/icon_lion_2.jpg\",\"flight_infos\":{\"flight_info\":[{\"flight_number\":\"JT-673\",\"departure_city\":\"BPN\",\"arrival_city\":\"CGK\",\"simple_departure_time\":\"07:45\",\"simple_arrival_time\":\"08:55\"},{\"flight_number\":\"JT-382\",\"departure_city\":\"CGK\",\"arrival_city\":\"MES\",\"simple_departure_time\":\"12:50\",\"simple_arrival_time\":\"15:10\"}]}},{\"flight_id\":\"3789711\",\"airlines_name\":\"LION\",\"flight_number\":\"JT-763\\/JT-398\",\"price_value\":\"1126500.00\",\"timestamp\":\"2013-01-14 16:58:00\",\"price_adult\":\"1126500.00\",\"price_child\":\"0.00\",\"price_infant\":\"0.00\",\"simple_departure_time\":\"06:00\",\"simple_arrival_time\":\"14:40\",\"stop\":\"1 Stop\",\"long_via\":\"Jakarta (CGK)\",\"full_via\":\"BPN - CGK (06:00 - 07:10), CGK - MES (12:20 - 14:40)\",\"duration\":\"9 h 40 m\",\"image\":\"http:\\/\\/www.sandbox.tiket.com\\/images\\/tiket2\\/icon_lion_2.jpg\",\"flight_infos\":{\"flight_info\":[{\"flight_number\":\"JT-763\",\"departure_city\":\"BPN\",\"arrival_city\":\"CGK\",\"simple_departure_time\":\"06:00\",\"simple_arrival_time\":\"07:10\"},{\"flight_number\":\"JT-398\",\"departure_city\":\"CGK\",\"arrival_city\":\"MES\",\"simple_departure_time\":\"12:20\",\"simple_arrival_time\":\"14:40\"}]}},{\"flight_id\":\"3789715\",\"airlines_name\":\"LION\",\"flight_number\":\"JT-673\\/JT-384\",\"price_value\":\"1126500.00\",\"timestamp\":\"2013-01-14 16:58:00\",\"price_adult\":\"1126500.00\",\"price_child\":\"0.00\",\"price_infant\":\"0.00\",\"simple_departure_time\":\"07:45\",\"simple_arrival_time\":\"16:20\",\"stop\":\"1 Stop\",\"long_via\":\"Jakarta (CGK)\",\"full_via\":\"BPN - CGK (07:45 - 08:55), CGK - MES (14:00 - 16:20)\",\"duration\":\"9 h 35 m\",\"image\":\"http:\\/\\/www.sandbox.tiket.com\\/images\\/tiket2\\/icon_lion_2.jpg\",\"flight_infos\":{\"flight_info\":[{\"flight_number\":\"JT-673\",\"departure_city\":\"BPN\",\"arrival_city\":\"CGK\",\"simple_departure_time\":\"07:45\",\"simple_arrival_time\":\"08:55\"},{\"flight_number\":\"JT-384\",\"departure_city\":\"CGK\",\"arrival_city\":\"MES\",\"simple_departure_time\":\"14:00\",\"simple_arrival_time\":\"16:20\"}]}},{\"flight_id\":\"4755478\",\"airlines_name\":\"SRIWIJAYA\",\"flight_number\":\"SJ-231\\/SJ-020\",\"price_value\":\"2690000.00\",\"timestamp\":\"2013-01-14 16:57:55\",\"price_adult\":\"2690000.00\",\"price_child\":\"0.00\",\"price_infant\":\"0.00\",\"simple_departure_time\":\"09:00\",\"simple_arrival_time\":\"15:40\",\"stop\":\"3 Stops\",\"long_via\":\"Yogyakarta (JOG) - Jakarta (CGK) - Padang (PDG)\",\"full_via\":\"BPN - CGK (09:00 - 11:20), CGK - MES (12:30 - 15:40)\",\"duration\":\"7 h 40 m\",\"image\":\"http:\\/\\/www.sandbox.tiket.com\\/images\\/tiket2\\/icon_sriwijaya_2.jpg\",\"flight_infos\":{\"flight_info\":[{\"flight_number\":\"SJ-231\",\"departure_city\":\"BPN\",\"arrival_city\":\"CGK\",\"simple_departure_time\":\"09:00\",\"simple_arrival_time\":\"11:20\"},{\"flight_number\":\"SJ-020\",\"departure_city\":\"CGK\",\"arrival_city\":\"MES\",\"simple_departure_time\":\"12:30\",\"simple_arrival_time\":\"15:40\"}]}},{\"flight_id\":\"3789719\",\"airlines_name\":\"LION\",\"flight_number\":\"JT-367\\/JT-973\",\"price_value\":\"1814000.00\",\"timestamp\":\"2013-01-14 16:58:00\",\"price_adult\":\"1814000.00\",\"price_child\":\"0.00\",\"price_infant\":\"0.00\",\"simple_departure_time\":\"06:50\",\"simple_arrival_time\":\"16:00\",\"stop\":\"2 Stops\",\"long_via\":\"Surabaya (SUB)\",\"full_via\":\"BPN - SUB (06:50 - 07:20), SUB - MES (11:50 - 16:00)\",\"duration\":\"10 h 10 m\",\"image\":\"http:\\/\\/www.sandbox.tiket.com\\/images\\/tiket2\\/icon_lion_2.jpg\",\"flight_infos\":{\"flight_info\":[{\"flight_number\":\"JT-367\",\"departure_city\":\"BPN\",\"arrival_city\":\"SUB\",\"simple_departure_time\":\"06:50\",\"simple_arrival_time\":\"07:20\"},{\"flight_number\":\"JT-973\",\"departure_city\":\"SUB\",\"arrival_city\":\"MES\",\"simple_departure_time\":\"11:50\",\"simple_arrival_time\":\"16:00\"}]}},{\"flight_id\":\"3789718\",\"airlines_name\":\"LION\",\"flight_number\":\"JT-361\\/JT-973\",\"price_value\":\"1550000.00\",\"timestamp\":\"2013-01-14 16:58:00\",\"price_adult\":\"1550000.00\",\"price_child\":\"0.00\",\"price_infant\":\"0.00\",\"simple_departure_time\":\"09:15\",\"simple_arrival_time\":\"16:00\",\"stop\":\"2 Stops\",\"long_via\":\"Surabaya (SUB)\",\"full_via\":\"BPN - SUB (09:15 - 09:45), SUB - MES (11:50 - 16:00)\",\"duration\":\"7 h 45 m\",\"image\":\"http:\\/\\/www.sandbox.tiket.com\\/images\\/tiket2\\/icon_lion_2.jpg\",\"flight_infos\":{\"flight_info\":[{\"flight_number\":\"JT-361\",\"departure_city\":\"BPN\",\"arrival_city\":\"SUB\",\"simple_departure_time\":\"09:15\",\"simple_arrival_time\":\"09:45\"},{\"flight_number\":\"JT-973\",\"departure_city\":\"SUB\",\"arrival_city\":\"MES\",\"simple_departure_time\":\"11:50\",\"simple_arrival_time\":\"16:00\"}]}},{\"flight_id\":\"3789717\",\"airlines_name\":\"LION\",\"flight_number\":\"JT-761\\/JT-384\",\"price_value\":\"1126500.00\",\"timestamp\":\"2013-01-14 16:58:00\",\"price_adult\":\"1126500.00\",\"price_child\":\"0.00\",\"price_infant\":\"0.00\",\"simple_departure_time\":\"09:45\",\"simple_arrival_time\":\"16:20\",\"stop\":\"1 Stop\",\"long_via\":\"Jakarta (CGK)\",\"full_via\":\"BPN - CGK (09:45 - 10:55), CGK - MES (14:00 - 16:20)\",\"duration\":\"7 h 35 m\",\"image\":\"http:\\/\\/www.sandbox.tiket.com\\/images\\/tiket2\\/icon_lion_2.jpg\",\"flight_infos\":{\"flight_info\":[{\"flight_number\":\"JT-761\",\"departure_city\":\"BPN\",\"arrival_city\":\"CGK\",\"simple_departure_time\":\"09:45\",\"simple_arrival_time\":\"10:55\"},{\"flight_number\":\"JT-384\",\"departure_city\":\"CGK\",\"arrival_city\":\"MES\",\"simple_departure_time\":\"14:00\",\"simple_arrival_time\":\"16:20\"}]}},{\"flight_id\":\"3789709\",\"airlines_name\":\"LION\",\"flight_number\":\"JT-673\\/JT-398\",\"price_value\":\"1126500.00\",\"timestamp\":\"2013-01-14 16:58:00\",\"price_adult\":\"1126500.00\",\"price_child\":\"0.00\",\"price_infant\":\"0.00\",\"simple_departure_time\":\"07:45\",\"simple_arrival_time\":\"14:40\",\"stop\":\"1 Stop\",\"long_via\":\"Jakarta (CGK)\",\"full_via\":\"BPN - CGK (07:45 - 08:55), CGK - MES (12:20 - 14:40)\",\"duration\":\"7 h 55 m\",\"image\":\"http:\\/\\/www.sandbox.tiket.com\\/images\\/tiket2\\/icon_lion_2.jpg\",\"flight_infos\":{\"flight_info\":[{\"flight_number\":\"JT-673\",\"departure_city\":\"BPN\",\"arrival_city\":\"CGK\",\"simple_departure_time\":\"07:45\",\"simple_arrival_time\":\"08:55\"},{\"flight_number\":\"JT-398\",\"departure_city\":\"CGK\",\"arrival_city\":\"MES\",\"simple_departure_time\":\"12:20\",\"simple_arrival_time\":\"14:40\"}]}},{\"flight_id\":\"3789703\",\"airlines_name\":\"LION\",\"flight_number\":\"JT-763\\/JT-200\",\"price_value\":\"1126500.00\",\"timestamp\":\"2013-01-14 16:58:00\",\"price_adult\":\"1126500.00\",\"price_child\":\"0.00\",\"price_infant\":\"0.00\",\"simple_departure_time\":\"06:00\",\"simple_arrival_time\":\"12:10\",\"stop\":\"1 Stop\",\"long_via\":\"Jakarta (CGK)\",\"full_via\":\"BPN - CGK (06:00 - 07:10), CGK - MES (09:50 - 12:10)\",\"duration\":\"7 h 10 m\",\"image\":\"http:\\/\\/www.sandbox.tiket.com\\/images\\/tiket2\\/icon_lion_2.jpg\",\"flight_infos\":{\"flight_info\":[{\"flight_number\":\"JT-763\",\"departure_city\":\"BPN\",\"arrival_city\":\"CGK\",\"simple_departure_time\":\"06:00\",\"simple_arrival_time\":\"07:10\"},{\"flight_number\":\"JT-200\",\"departure_city\":\"CGK\",\"arrival_city\":\"MES\",\"simple_departure_time\":\"09:50\",\"simple_arrival_time\":\"12:10\"}]}},{\"flight_id\":\"3789702\",\"airlines_name\":\"LION\",\"flight_number\":\"JT-763\\/JT-214\",\"price_value\":\"1126500.00\",\"timestamp\":\"2013-01-14 16:58:00\",\"price_adult\":\"1126500.00\",\"price_child\":\"0.00\",\"price_infant\":\"0.00\",\"simple_departure_time\":\"06:00\",\"simple_arrival_time\":\"11:40\",\"stop\":\"1 Stop\",\"long_via\":\"Jakarta (CGK)\",\"full_via\":\"BPN - CGK (06:00 - 07:10), CGK - MES (09:20 - 11:40)\",\"duration\":\"6 h 40 m\",\"image\":\"http:\\/\\/www.sandbox.tiket.com\\/images\\/tiket2\\/icon_lion_2.jpg\",\"flight_infos\":{\"flight_info\":[{\"flight_number\":\"JT-763\",\"departure_city\":\"BPN\",\"arrival_city\":\"CGK\",\"simple_departure_time\":\"06:00\",\"simple_arrival_time\":\"07:10\"},{\"flight_number\":\"JT-214\",\"departure_city\":\"CGK\",\"arrival_city\":\"MES\",\"simple_departure_time\":\"09:20\",\"simple_arrival_time\":\"11:40\"}]}},{\"flight_id\":\"2765018\",\"airlines_name\":\"SRIWIJAYA\",\"flight_number\":\"SJ-161\\/SJ-014\",\"price_value\":\"1510000.00\",\"timestamp\":\"2013-01-14 16:57:55\",\"price_adult\":\"1510000.00\",\"price_child\":\"0.00\",\"price_infant\":\"0.00\",\"simple_departure_time\":\"13:20\",\"simple_arrival_time\":\"21:05\",\"stop\":\"1 Stop\",\"long_via\":\"Jakarta (CGK)\",\"full_via\":\"BPN - CGK (13:20 - 14:20), CGK - MES (18:50 - 21:05)\",\"duration\":\"8 h 45 m\",\"image\":\"http:\\/\\/www.sandbox.tiket.com\\/images\\/tiket2\\/icon_sriwijaya_2.jpg\",\"flight_infos\":{\"flight_info\":[{\"flight_number\":\"SJ-161\",\"departure_city\":\"BPN\",\"arrival_city\":\"CGK\",\"simple_departure_time\":\"13:20\",\"simple_arrival_time\":\"14:20\"},{\"flight_number\":\"SJ-014\",\"departure_city\":\"CGK\",\"arrival_city\":\"MES\",\"simple_departure_time\":\"18:50\",\"simple_arrival_time\":\"21:05\"}]}},{\"flight_id\":\"3789704\",\"airlines_name\":\"LION\",\"flight_number\":\"JT-763\\/JT-204\",\"price_value\":\"1126500.00\",\"timestamp\":\"2013-01-14 16:58:00\",\"price_adult\":\"1126500.00\",\"price_child\":\"0.00\",\"price_infant\":\"0.00\",\"simple_departure_time\":\"06:00\",\"simple_arrival_time\":\"13:10\",\"stop\":\"1 Stop\",\"long_via\":\"Jakarta (CGK)\",\"full_via\":\"BPN - CGK (06:00 - 07:10), CGK - MES (10:50 - 13:10)\",\"duration\":\"8 h 10 m\",\"image\":\"http:\\/\\/www.sandbox.tiket.com\\/images\\/tiket2\\/icon_lion_2.jpg\",\"flight_infos\":{\"flight_info\":[{\"flight_number\":\"JT-763\",\"departure_city\":\"BPN\",\"arrival_city\":\"CGK\",\"simple_departure_time\":\"06:00\",\"simple_arrival_time\":\"07:10\"},{\"flight_number\":\"JT-204\",\"departure_city\":\"CGK\",\"arrival_city\":\"MES\",\"simple_departure_time\":\"10:50\",\"simple_arrival_time\":\"13:10\"}]}},{\"flight_id\":\"3789705\",\"airlines_name\":\"LION\",\"flight_number\":\"JT-945\\/JT-911\",\"price_value\":\"1638000.00\",\"timestamp\":\"2013-01-14 16:58:00\",\"price_adult\":\"1638000.00\",\"price_child\":\"0.00\",\"price_infant\":\"0.00\",\"simple_departure_time\":\"07:35\",\"simple_arrival_time\":\"12:35\",\"stop\":\"2 Stops\",\"long_via\":\"Bandung (BDO)\",\"full_via\":\"BPN - BDO (07:35 - 09:30), BDO - MES (10:15 - 12:35)\",\"duration\":\"6 h 0 m\",\"image\":\"http:\\/\\/www.sandbox.tiket.com\\/images\\/tiket2\\/icon_lion_2.jpg\",\"flight_infos\":{\"flight_info\":[{\"flight_number\":\"JT-945\",\"departure_city\":\"BPN\",\"arrival_city\":\"BDO\",\"simple_departure_time\":\"07:35\",\"simple_arrival_time\":\"09:30\"},{\"flight_number\":\"JT-911\",\"departure_city\":\"BDO\",\"arrival_city\":\"MES\",\"simple_departure_time\":\"10:15\",\"simple_arrival_time\":\"12:35\"}]}},{\"flight_id\":\"3789708\",\"airlines_name\":\"LION\",\"flight_number\":\"JT-763\\/JT-306\",\"price_value\":\"1154000.00\",\"timestamp\":\"2013-01-14 16:58:00\",\"price_adult\":\"1154000.00\",\"price_child\":\"0.00\",\"price_infant\":\"0.00\",\"simple_departure_time\":\"06:00\",\"simple_arrival_time\":\"14:10\",\"stop\":\"1 Stop\",\"long_via\":\"Jakarta (CGK)\",\"full_via\":\"BPN - CGK (06:00 - 07:10), CGK - MES (11:50 - 14:10)\",\"duration\":\"9 h 10 m\",\"image\":\"http:\\/\\/www.sandbox.tiket.com\\/images\\/tiket2\\/icon_lion_2.jpg\",\"flight_infos\":{\"flight_info\":[{\"flight_number\":\"JT-763\",\"departure_city\":\"BPN\",\"arrival_city\":\"CGK\",\"simple_departure_time\":\"06:00\",\"simple_arrival_time\":\"07:10\"},{\"flight_number\":\"JT-306\",\"departure_city\":\"CGK\",\"arrival_city\":\"MES\",\"simple_departure_time\":\"11:50\",\"simple_arrival_time\":\"14:10\"}]}},{\"flight_id\":\"3789706\",\"airlines_name\":\"LION\",\"flight_number\":\"JT-673\\/JT-306\",\"price_value\":\"1154000.00\",\"timestamp\":\"2013-01-14 16:58:00\",\"price_adult\":\"1154000.00\",\"price_child\":\"0.00\",\"price_infant\":\"0.00\",\"simple_departure_time\":\"07:45\",\"simple_arrival_time\":\"14:10\",\"stop\":\"1 Stop\",\"long_via\":\"Jakarta (CGK)\",\"full_via\":\"BPN - CGK (07:45 - 08:55), CGK - MES (11:50 - 14:10)\",\"duration\":\"7 h 25 m\",\"image\":\"http:\\/\\/www.sandbox.tiket.com\\/images\\/tiket2\\/icon_lion_2.jpg\",\"flight_infos\":{\"flight_info\":[{\"flight_number\":\"JT-673\",\"departure_city\":\"BPN\",\"arrival_city\":\"CGK\",\"simple_departure_time\":\"07:45\",\"simple_arrival_time\":\"08:55\"},{\"flight_number\":\"JT-306\",\"departure_city\":\"CGK\",\"arrival_city\":\"MES\",\"simple_departure_time\":\"11:50\",\"simple_arrival_time\":\"14:10\"}]}},{\"flight_id\":\"2765017\",\"airlines_name\":\"SRIWIJAYA\",\"flight_number\":\"SJ-161\\/SJ-016\",\"price_value\":\"1440000.00\",\"timestamp\":\"2013-01-14 16:57:55\",\"price_adult\":\"1440000.00\",\"price_child\":\"0.00\",\"price_infant\":\"0.00\",\"simple_departure_time\":\"13:20\",\"simple_arrival_time\":\"18:45\",\"stop\":\"1 Stop\",\"long_via\":\"Jakarta (CGK)\",\"full_via\":\"BPN - CGK (13:20 - 14:20), CGK - MES (16:30 - 18:45)\",\"duration\":\"6 h 25 m\",\"image\":\"http:\\/\\/www.sandbox.tiket.com\\/images\\/tiket2\\/icon_sriwijaya_2.jpg\",\"flight_infos\":{\"flight_info\":[{\"flight_number\":\"SJ-161\",\"departure_city\":\"BPN\",\"arrival_city\":\"CGK\",\"simple_departure_time\":\"13:20\",\"simple_arrival_time\":\"14:20\"},{\"flight_number\":\"SJ-016\",\"departure_city\":\"CGK\",\"arrival_city\":\"MES\",\"simple_departure_time\":\"16:30\",\"simple_arrival_time\":\"18:45\"}]}}]},\"returns\":{\"result\":[{\"flight_id\":\"724202\",\"airlines_name\":\"LION\",\"flight_number\":\"JT-972\\/JT-730\",\"price_value\":\"1357500.00\",\"timestamp\":\"2013-01-11 10:08:26\",\"price_adult\":\"1357500.00\",\"price_child\":\"0.00\",\"price_infant\":\"0.00\",\"simple_departure_time\":\"12:55\",\"simple_arrival_time\":\"20:35\",\"stop\":\"2 Stops\",\"long_via\":\"Surabaya (SUB)\",\"full_via\":\"MES - SUB (12:55 - 17:05), SUB - BPN (18:05 - 20:35)\",\"duration\":\"6 h 40 m\",\"image\":\"http:\\/\\/www.sandbox.tiket.com\\/images\\/tiket2\\/icon_lion_2.jpg\",\"flight_infos\":{\"flight_info\":[{\"flight_number\":\"JT-972\",\"departure_city\":\"MES\",\"arrival_city\":\"SUB\",\"simple_departure_time\":\"12:55\",\"simple_arrival_time\":\"17:05\"},{\"flight_number\":\"JT-730\",\"departure_city\":\"SUB\",\"arrival_city\":\"BPN\",\"simple_departure_time\":\"18:05\",\"simple_arrival_time\":\"20:35\"}]}},{\"flight_id\":\"724201\",\"airlines_name\":\"LION\",\"flight_number\":\"JT-397\\/JT-766\",\"price_value\":\"1110000.00\",\"timestamp\":\"2013-01-11 10:08:26\",\"price_adult\":\"1110000.00\",\"price_child\":\"0.00\",\"price_infant\":\"0.00\",\"simple_departure_time\":\"07:50\",\"simple_arrival_time\":\"19:15\",\"stop\":\"1 Stop\",\"long_via\":\"Jakarta (CGK)\",\"full_via\":\"MES - CGK (07:50 - 10:15), CGK - BPN (16:10 - 19:15)\",\"duration\":\"10 h 25 m\",\"image\":\"http:\\/\\/www.sandbox.tiket.com\\/images\\/tiket2\\/icon_lion_2.jpg\",\"flight_infos\":{\"flight_info\":[{\"flight_number\":\"JT-397\",\"departure_city\":\"MES\",\"arrival_city\":\"CGK\",\"simple_departure_time\":\"07:50\",\"simple_arrival_time\":\"10:15\"},{\"flight_number\":\"JT-766\",\"departure_city\":\"CGK\",\"arrival_city\":\"BPN\",\"simple_departure_time\":\"16:10\",\"simple_arrival_time\":\"19:15\"}]}},{\"flight_id\":\"724200\",\"airlines_name\":\"LION\",\"flight_number\":\"JT-395\\/JT-766\",\"price_value\":\"1082500.00\",\"timestamp\":\"2013-01-11 10:08:26\",\"price_adult\":\"1082500.00\",\"price_child\":\"0.00\",\"price_infant\":\"0.00\",\"simple_departure_time\":\"11:00\",\"simple_arrival_time\":\"19:15\",\"stop\":\"1 Stop\",\"long_via\":\"Jakarta (CGK)\",\"full_via\":\"MES - CGK (11:00 - 13:25), CGK - BPN (16:10 - 19:15)\",\"duration\":\"7 h 15 m\",\"image\":\"http:\\/\\/www.sandbox.tiket.com\\/images\\/tiket2\\/icon_lion_2.jpg\",\"flight_infos\":{\"flight_info\":[{\"flight_number\":\"JT-395\",\"departure_city\":\"MES\",\"arrival_city\":\"CGK\",\"simple_departure_time\":\"11:00\",\"simple_arrival_time\":\"13:25\"},{\"flight_number\":\"JT-766\",\"departure_city\":\"CGK\",\"arrival_city\":\"BPN\",\"simple_departure_time\":\"16:10\",\"simple_arrival_time\":\"19:15\"}]}},{\"flight_id\":\"5085425\",\"airlines_name\":\"SRIWIJAYA\",\"flight_number\":\"SJ-017\\/SJ-160\",\"price_value\":\"1360000.00\",\"timestamp\":\"2013-01-11 10:08:19\",\"price_adult\":\"1360000.00\",\"price_child\":\"0.00\",\"price_infant\":\"0.00\",\"simple_departure_time\":\"19:30\",\"simple_arrival_time\":\"09:10\",\"stop\":\"1 Stop\",\"long_via\":\"Jakarta (CGK)\",\"full_via\":\"MES - CGK (19:30 - 21:50), CGK - BPN (06:10 - 09:10)\",\"duration\":\"12 h 40 m\",\"image\":\"http:\\/\\/www.sandbox.tiket.com\\/images\\/tiket2\\/icon_sriwijaya_2.jpg\",\"flight_infos\":{\"flight_info\":[{\"flight_number\":\"SJ-017\",\"departure_city\":\"MES\",\"arrival_city\":\"CGK\",\"simple_departure_time\":\"19:30\",\"simple_arrival_time\":\"21:50\"},{\"flight_number\":\"SJ-160\",\"departure_city\":\"CGK\",\"arrival_city\":\"BPN\",\"simple_departure_time\":\"06:10\",\"simple_arrival_time\":\"09:10\"}]}},{\"flight_id\":\"5085424\",\"airlines_name\":\"LION\",\"flight_number\":\"JT-960\\/JT-940\",\"price_value\":\"1396000.00\",\"timestamp\":\"2013-01-11 10:08:26\",\"price_adult\":\"1396000.00\",\"price_child\":\"0.00\",\"price_infant\":\"0.00\",\"simple_departure_time\":\"09:00\",\"simple_arrival_time\":\"20:10\",\"stop\":\"2 Stops\",\"long_via\":\"Bandung (BDO)\",\"full_via\":\"MES - BDO (09:00 - 11:20), BDO - BPN (16:10 - 20:10)\",\"duration\":\"10 h 10 m\",\"image\":\"http:\\/\\/www.sandbox.tiket.com\\/images\\/tiket2\\/icon_lion_2.jpg\",\"flight_infos\":{\"flight_info\":[{\"flight_number\":\"JT-960\",\"departure_city\":\"MES\",\"arrival_city\":\"BDO\",\"simple_departure_time\":\"09:00\",\"simple_arrival_time\":\"11:20\"},{\"flight_number\":\"JT-940\",\"departure_city\":\"BDO\",\"arrival_city\":\"BPN\",\"simple_departure_time\":\"16:10\",\"simple_arrival_time\":\"20:10\"}]}},{\"flight_id\":\"5085423\",\"airlines_name\":\"LION\",\"flight_number\":\"JT-902\\/JT-940\",\"price_value\":\"1451000.00\",\"timestamp\":\"2013-01-11 10:08:26\",\"price_adult\":\"1451000.00\",\"price_child\":\"0.00\",\"price_infant\":\"0.00\",\"simple_departure_time\":\"13:15\",\"simple_arrival_time\":\"20:10\",\"stop\":\"2 Stops\",\"long_via\":\"Bandung (BDO)\",\"full_via\":\"MES - BDO (13:15 - 15:35), BDO - BPN (16:10 - 20:10)\",\"duration\":\"5 h 55 m\",\"image\":\"http:\\/\\/www.sandbox.tiket.com\\/images\\/tiket2\\/icon_lion_2.jpg\",\"flight_infos\":{\"flight_info\":[{\"flight_number\":\"JT-902\",\"departure_city\":\"MES\",\"arrival_city\":\"BDO\",\"simple_departure_time\":\"13:15\",\"simple_arrival_time\":\"15:35\"},{\"flight_number\":\"JT-940\",\"departure_city\":\"BDO\",\"arrival_city\":\"BPN\",\"simple_departure_time\":\"16:10\",\"simple_arrival_time\":\"20:10\"}]}},{\"flight_id\":\"724199\",\"airlines_name\":\"LION\",\"flight_number\":\"JT-301\\/JT-766\",\"price_value\":\"1082500.00\",\"timestamp\":\"2013-01-11 10:08:26\",\"price_adult\":\"1082500.00\",\"price_child\":\"0.00\",\"price_infant\":\"0.00\",\"simple_departure_time\":\"10:00\",\"simple_arrival_time\":\"19:15\",\"stop\":\"1 Stop\",\"long_via\":\"Jakarta (CGK)\",\"full_via\":\"MES - CGK (10:00 - 12:25), CGK - BPN (16:10 - 19:15)\",\"duration\":\"8 h 15 m\",\"image\":\"http:\\/\\/www.sandbox.tiket.com\\/images\\/tiket2\\/icon_lion_2.jpg\",\"flight_infos\":{\"flight_info\":[{\"flight_number\":\"JT-301\",\"departure_city\":\"MES\",\"arrival_city\":\"CGK\",\"simple_departure_time\":\"10:00\",\"simple_arrival_time\":\"12:25\"},{\"flight_number\":\"JT-766\",\"departure_city\":\"CGK\",\"arrival_city\":\"BPN\",\"simple_departure_time\":\"16:10\",\"simple_arrival_time\":\"19:15\"}]}},{\"flight_id\":\"724198\",\"airlines_name\":\"LION\",\"flight_number\":\"JT-207\\/JT-766\",\"price_value\":\"1027500.00\",\"timestamp\":\"2013-01-11 10:08:26\",\"price_adult\":\"1027500.00\",\"price_child\":\"0.00\",\"price_infant\":\"0.00\",\"simple_departure_time\":\"08:40\",\"simple_arrival_time\":\"19:15\",\"stop\":\"1 Stop\",\"long_via\":\"Jakarta (CGK)\",\"full_via\":\"MES - CGK (08:40 - 11:05), CGK - BPN (16:10 - 19:15)\",\"duration\":\"9 h 35 m\",\"image\":\"http:\\/\\/www.sandbox.tiket.com\\/images\\/tiket2\\/icon_lion_2.jpg\",\"flight_infos\":{\"flight_info\":[{\"flight_number\":\"JT-207\",\"departure_city\":\"MES\",\"arrival_city\":\"CGK\",\"simple_departure_time\":\"08:40\",\"simple_arrival_time\":\"11:05\"},{\"flight_number\":\"JT-766\",\"departure_city\":\"CGK\",\"arrival_city\":\"BPN\",\"simple_departure_time\":\"16:10\",\"simple_arrival_time\":\"19:15\"}]}},{\"flight_id\":\"724192\",\"airlines_name\":\"LION\",\"flight_number\":\"JT-397\\/JT-764\",\"price_value\":\"1110000.00\",\"timestamp\":\"2013-01-11 10:08:26\",\"price_adult\":\"1110000.00\",\"price_child\":\"0.00\",\"price_infant\":\"0.00\",\"simple_departure_time\":\"07:50\",\"simple_arrival_time\":\"15:55\",\"stop\":\"1 Stop\",\"long_via\":\"Jakarta (CGK)\",\"full_via\":\"MES - CGK (07:50 - 10:15), CGK - BPN (12:50 - 15:55)\",\"duration\":\"7 h 5 m\",\"image\":\"http:\\/\\/www.sandbox.tiket.com\\/images\\/tiket2\\/icon_lion_2.jpg\",\"flight_infos\":{\"flight_info\":[{\"flight_number\":\"JT-397\",\"departure_city\":\"MES\",\"arrival_city\":\"CGK\",\"simple_departure_time\":\"07:50\",\"simple_arrival_time\":\"10:15\"},{\"flight_number\":\"JT-764\",\"departure_city\":\"CGK\",\"arrival_city\":\"BPN\",\"simple_departure_time\":\"12:50\",\"simple_arrival_time\":\"15:55\"}]}},{\"flight_id\":\"724191\",\"airlines_name\":\"LION\",\"flight_number\":\"JT-381\\/JT-764\",\"price_value\":\"1082500.00\",\"timestamp\":\"2013-01-11 10:08:26\",\"price_adult\":\"1082500.00\",\"price_child\":\"0.00\",\"price_infant\":\"0.00\",\"simple_departure_time\":\"06:45\",\"simple_arrival_time\":\"15:55\",\"stop\":\"1 Stop\",\"long_via\":\"Jakarta (CGK)\",\"full_via\":\"MES - CGK (06:45 - 09:10), CGK - BPN (12:50 - 15:55)\",\"duration\":\"8 h 10 m\",\"image\":\"http:\\/\\/www.sandbox.tiket.com\\/images\\/tiket2\\/icon_lion_2.jpg\",\"flight_infos\":{\"flight_info\":[{\"flight_number\":\"JT-381\",\"departure_city\":\"MES\",\"arrival_city\":\"CGK\",\"simple_departure_time\":\"06:45\",\"simple_arrival_time\":\"09:10\"},{\"flight_number\":\"JT-764\",\"departure_city\":\"CGK\",\"arrival_city\":\"BPN\",\"simple_departure_time\":\"12:50\",\"simple_arrival_time\":\"15:55\"}]}},{\"flight_id\":\"724190\",\"airlines_name\":\"LION\",\"flight_number\":\"JT-211\\/JT-764\",\"price_value\":\"1027500.00\",\"timestamp\":\"2013-01-11 10:08:26\",\"price_adult\":\"1027500.00\",\"price_child\":\"0.00\",\"price_infant\":\"0.00\",\"simple_departure_time\":\"05:45\",\"simple_arrival_time\":\"15:55\",\"stop\":\"1 Stop\",\"long_via\":\"Jakarta (CGK)\",\"full_via\":\"MES - CGK (05:45 - 08:10), CGK - BPN (12:50 - 15:55)\",\"duration\":\"9 h 10 m\",\"image\":\"http:\\/\\/www.sandbox.tiket.com\\/images\\/tiket2\\/icon_lion_2.jpg\",\"flight_infos\":{\"flight_info\":[{\"flight_number\":\"JT-211\",\"departure_city\":\"MES\",\"arrival_city\":\"CGK\",\"simple_departure_time\":\"05:45\",\"simple_arrival_time\":\"08:10\"},{\"flight_number\":\"JT-764\",\"departure_city\":\"CGK\",\"arrival_city\":\"BPN\",\"simple_departure_time\":\"12:50\",\"simple_arrival_time\":\"15:55\"}]}},{\"flight_id\":\"724189\",\"airlines_name\":\"LION\",\"flight_number\":\"JT-381\\/JT-756\",\"price_value\":\"1082500.00\",\"timestamp\":\"2013-01-11 10:08:26\",\"price_adult\":\"1082500.00\",\"price_child\":\"0.00\",\"price_infant\":\"0.00\",\"simple_departure_time\":\"06:45\",\"simple_arrival_time\":\"15:00\",\"stop\":\"1 Stop\",\"long_via\":\"Jakarta (CGK)\",\"full_via\":\"MES - CGK (06:45 - 09:10), CGK - BPN (11:55 - 15:00)\",\"duration\":\"7 h 15 m\",\"image\":\"http:\\/\\/www.sandbox.tiket.com\\/images\\/tiket2\\/icon_lion_2.jpg\",\"flight_infos\":{\"flight_info\":[{\"flight_number\":\"JT-381\",\"departure_city\":\"MES\",\"arrival_city\":\"CGK\",\"simple_departure_time\":\"06:45\",\"simple_arrival_time\":\"09:10\"},{\"flight_number\":\"JT-756\",\"departure_city\":\"CGK\",\"arrival_city\":\"BPN\",\"simple_departure_time\":\"11:55\",\"simple_arrival_time\":\"15:00\"}]}},{\"flight_id\":\"724193\",\"airlines_name\":\"LION\",\"flight_number\":\"JT-207\\/JT-768\",\"price_value\":\"1027500.00\",\"timestamp\":\"2013-01-11 10:08:26\",\"price_adult\":\"1027500.00\",\"price_child\":\"0.00\",\"price_infant\":\"0.00\",\"simple_departure_time\":\"08:40\",\"simple_arrival_time\":\"17:50\",\"stop\":\"1 Stop\",\"long_via\":\"Jakarta (CGK)\",\"full_via\":\"MES - CGK (08:40 - 11:05), CGK - BPN (14:45 - 17:50)\",\"duration\":\"8 h 10 m\",\"image\":\"http:\\/\\/www.sandbox.tiket.com\\/images\\/tiket2\\/icon_lion_2.jpg\",\"flight_infos\":{\"flight_info\":[{\"flight_number\":\"JT-207\",\"departure_city\":\"MES\",\"arrival_city\":\"CGK\",\"simple_departure_time\":\"08:40\",\"simple_arrival_time\":\"11:05\"},{\"flight_number\":\"JT-768\",\"departure_city\":\"CGK\",\"arrival_city\":\"BPN\",\"simple_departure_time\":\"14:45\",\"simple_arrival_time\":\"17:50\"}]}},{\"flight_id\":\"724194\",\"airlines_name\":\"LION\",\"flight_number\":\"JT-301\\/JT-768\",\"price_value\":\"1082500.00\",\"timestamp\":\"2013-01-11 10:08:26\",\"price_adult\":\"1082500.00\",\"price_child\":\"0.00\",\"price_infant\":\"0.00\",\"simple_departure_time\":\"10:00\",\"simple_arrival_time\":\"17:50\",\"stop\":\"1 Stop\",\"long_via\":\"Jakarta (CGK)\",\"full_via\":\"MES - CGK (10:00 - 12:25), CGK - BPN (14:45 - 17:50)\",\"duration\":\"6 h 50 m\",\"image\":\"http:\\/\\/www.sandbox.tiket.com\\/images\\/tiket2\\/icon_lion_2.jpg\",\"flight_infos\":{\"flight_info\":[{\"flight_number\":\"JT-301\",\"departure_city\":\"MES\",\"arrival_city\":\"CGK\",\"simple_departure_time\":\"10:00\",\"simple_arrival_time\":\"12:25\"},{\"flight_number\":\"JT-768\",\"departure_city\":\"CGK\",\"arrival_city\":\"BPN\",\"simple_departure_time\":\"14:45\",\"simple_arrival_time\":\"17:50\"}]}},{\"flight_id\":\"724197\",\"airlines_name\":\"LION\",\"flight_number\":\"JT-970\\/JT-366\",\"price_value\":\"1313500.00\",\"timestamp\":\"2013-01-11 10:08:26\",\"price_adult\":\"1313500.00\",\"price_child\":\"0.00\",\"price_infant\":\"0.00\",\"simple_departure_time\":\"07:00\",\"simple_arrival_time\":\"17:15\",\"stop\":\"2 Stops\",\"long_via\":\"Surabaya (SUB)\",\"full_via\":\"MES - SUB (07:00 - 11:10), SUB - BPN (14:45 - 17:15)\",\"duration\":\"9 h 15 m\",\"image\":\"http:\\/\\/www.sandbox.tiket.com\\/images\\/tiket2\\/icon_lion_2.jpg\",\"flight_infos\":{\"flight_info\":[{\"flight_number\":\"JT-970\",\"departure_city\":\"MES\",\"arrival_city\":\"SUB\",\"simple_departure_time\":\"07:00\",\"simple_arrival_time\":\"11:10\"},{\"flight_number\":\"JT-366\",\"departure_city\":\"SUB\",\"arrival_city\":\"BPN\",\"simple_departure_time\":\"14:45\",\"simple_arrival_time\":\"17:15\"}]}},{\"flight_id\":\"724196\",\"airlines_name\":\"LION\",\"flight_number\":\"JT-397\\/JT-768\",\"price_value\":\"1110000.00\",\"timestamp\":\"2013-01-11 10:08:26\",\"price_adult\":\"1110000.00\",\"price_child\":\"0.00\",\"price_infant\":\"0.00\",\"simple_departure_time\":\"07:50\",\"simple_arrival_time\":\"17:50\",\"stop\":\"1 Stop\",\"long_via\":\"Jakarta (CGK)\",\"full_via\":\"MES - CGK (07:50 - 10:15), CGK - BPN (14:45 - 17:50)\",\"duration\":\"9 h 0 m\",\"image\":\"http:\\/\\/www.sandbox.tiket.com\\/images\\/tiket2\\/icon_lion_2.jpg\",\"flight_infos\":{\"flight_info\":[{\"flight_number\":\"JT-397\",\"departure_city\":\"MES\",\"arrival_city\":\"CGK\",\"simple_departure_time\":\"07:50\",\"simple_arrival_time\":\"10:15\"},{\"flight_number\":\"JT-768\",\"departure_city\":\"CGK\",\"arrival_city\":\"BPN\",\"simple_departure_time\":\"14:45\",\"simple_arrival_time\":\"17:50\"}]}},{\"flight_id\":\"724195\",\"airlines_name\":\"LION\",\"flight_number\":\"JT-381\\/JT-768\",\"price_value\":\"1082500.00\",\"timestamp\":\"2013-01-11 10:08:26\",\"price_adult\":\"1082500.00\",\"price_child\":\"0.00\",\"price_infant\":\"0.00\",\"simple_departure_time\":\"06:45\",\"simple_arrival_time\":\"17:50\",\"stop\":\"1 Stop\",\"long_via\":\"Jakarta (CGK)\",\"full_via\":\"MES - CGK (06:45 - 09:10), CGK - BPN (14:45 - 17:50)\",\"duration\":\"10 h 5 m\",\"image\":\"http:\\/\\/www.sandbox.tiket.com\\/images\\/tiket2\\/icon_lion_2.jpg\",\"flight_infos\":{\"flight_info\":[{\"flight_number\":\"JT-381\",\"departure_city\":\"MES\",\"arrival_city\":\"CGK\",\"simple_departure_time\":\"06:45\",\"simple_arrival_time\":\"09:10\"},{\"flight_number\":\"JT-768\",\"departure_city\":\"CGK\",\"arrival_city\":\"BPN\",\"simple_departure_time\":\"14:45\",\"simple_arrival_time\":\"17:50\"}]}},{\"flight_id\":\"724188\",\"airlines_name\":\"LION\",\"flight_number\":\"JT-211\\/JT-756\",\"price_value\":\"1027500.00\",\"timestamp\":\"2013-01-11 10:08:26\",\"price_adult\":\"1027500.00\",\"price_child\":\"0.00\",\"price_infant\":\"0.00\",\"simple_departure_time\":\"05:45\",\"simple_arrival_time\":\"15:00\",\"stop\":\"1 Stop\",\"long_via\":\"Jakarta (CGK)\",\"full_via\":\"MES - CGK (05:45 - 08:10), CGK - BPN (11:55 - 15:00)\",\"duration\":\"8 h 15 m\",\"image\":\"http:\\/\\/www.sandbox.tiket.com\\/images\\/tiket2\\/icon_lion_2.jpg\",\"flight_infos\":{\"flight_info\":[{\"flight_number\":\"JT-211\",\"departure_city\":\"MES\",\"arrival_city\":\"CGK\",\"simple_departure_time\":\"05:45\",\"simple_arrival_time\":\"08:10\"},{\"flight_number\":\"JT-756\",\"departure_city\":\"CGK\",\"arrival_city\":\"BPN\",\"simple_departure_time\":\"11:55\",\"simple_arrival_time\":\"15:00\"}]}}]},\"nearby_go_date\":{\"nearby\":[{\"date\":\"2013-01-31\",\"price\":\"1000000.00\"},{\"date\":\"2013-02-01\",\"price\":\"1027500.00\"},{\"date\":\"2013-02-02\",\"price\":\"1027500.00\"},{\"date\":\"2013-02-03\",\"price\":\"1027500.00\"},{\"date\":\"2013-02-04\",\"price\":\"1027500.00\"},{\"date\":\"2013-02-05\",\"price\":\"1126500.00\"},{\"date\":\"2013-02-06\",\"price\":\"1126500.00\"},{\"date\":\"2013-02-07\",\"price\":\"1209000.00\"},{\"date\":\"2013-02-08\",\"price\":\"1374000.00\"},{\"date\":\"2013-02-09\",\"price\":\"1319000.00\"},{\"date\":\"2013-02-10\",\"price\":\"1027500.00\"}]},\"nearby_ret_date\":{\"nearby\":[{\"date\":\"2013-02-05\",\"price\":\"1126500.00\"},{\"date\":\"2013-02-06\",\"price\":\"1126500.00\"},{\"date\":\"2013-02-07\",\"price\":\"1209000.00\"},{\"date\":\"2013-02-08\",\"price\":\"1374000.00\"},{\"date\":\"2013-02-09\",\"price\":\"1319000.00\"},{\"date\":\"2013-02-10\",\"price\":\"1027500.00\"},{\"date\":\"2013-02-11\",\"price\":\"1027500.00\"},{\"date\":\"2013-02-12\",\"price\":\"1027500.00\"},{\"date\":\"2013-02-13\",\"price\":\"1027500.00\"},{\"date\":\"2013-02-14\",\"price\":\"1027500.00\"},{\"date\":\"2013-02-15\",\"price\":\"1027500.00\"}]},\"token\":\"7f6ba5da47c3a36159463ddddfa530ab\"}\n";
                             JSONObject testResponse = new JSONObject(test);
 
                             if (!testResponse.isNull("departures")) {
@@ -388,8 +408,24 @@ public class BookPlaneFragment extends Fragment {
 
             ArrayList<String> moreFlightInfo = map.get(key);
 
+            String[] splitPrice = moreFlightInfo.get(1).split("\\.");
+            String[] addCommaPrice = splitPrice[0].split("");
+
+            StringBuilder editedPrice = new StringBuilder();
+            int countZeros = 0;
+
+            for(int j = addCommaPrice.length - 1; j >= 0; j--) {
+                editedPrice.append(addCommaPrice[j]);
+                countZeros++;
+
+                if (countZeros == 3) {
+                    editedPrice.append(",");
+                    countZeros = 0;
+                }
+            }
+
             String airlineName = moreFlightInfo.get(0);
-            String priceValue = "IDR " + moreFlightInfo.get(1);
+            String priceValue = "Rp " + editedPrice.reverse().toString();
             String flightNumber = moreFlightInfo.get(2);
             String departTime = moreFlightInfo.get(3);
             String arriveTime = moreFlightInfo.get(4);
@@ -400,6 +436,8 @@ public class BookPlaneFragment extends Fragment {
         }
         Log.d("ALMOST", "Almost finished");
         FlightAdapter adapter = new FlightAdapter(this.getActivity(), availableFlights);
+
+        Objects.requireNonNull(getView()).findViewById(R.id.loadingPanel).setVisibility(View.GONE);
 
         listTravel.setAdapter(adapter);
         listTravel.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -432,16 +470,22 @@ public class BookPlaneFragment extends Fragment {
                             public void onClick(View view) {
 
                                 final TextView tvFlightNum = viewItem.findViewById(R.id.flightNumber);
-                                final TextView tvDepartCity = viewItem.findViewById(R.id.departCity);
-                                final TextView tvArriveCity = viewItem.findViewById(R.id.arriveCity);
                                 final TextView tvDepartTime = viewItem.findViewById(R.id.departTime);
                                 final TextView tvArriveTime = viewItem.findViewById(R.id.arriveTime);
 
-                                String flightNum = tvFlightNum.getText().toString();
-                                String departCity = tvDepartCity.getText().toString();
-                                String arriveCity = tvArriveCity.getText().toString();
+                                // Add for Airline Name & Price
+                                final TextView tvAirlineName = viewItem.findViewById(R.id.airlineName);
+                                String tvFlight = tvAirlineName.getText().toString() +"-"+ tvFlightNum.getText().toString();
+
+                                final TextView tvPrice = viewItem.findViewById(R.id.price);
+
+                                // For the city name located in the input box
+                                String startLoc = origin.getText().toString();
+                                String endLoc = destination.getText().toString();
+
                                 String departTime = tvDepartTime.getText().toString();
                                 String arriveTime = tvArriveTime.getText().toString();
+                                String price = tvPrice.getText().toString();
 
                                 if (prevActivity.equals("CreateNewPlanActivity")) {
                                     Event anEvent = new Event();
@@ -450,17 +494,17 @@ public class BookPlaneFragment extends Fragment {
                                     anEvent.setDate(date);
                                     anEvent.setType("flights");
 
-                                    anEvent.setOrigin(departCity);
-                                    anEvent.setDestination(arriveCity);
+                                    anEvent.setOrigin(startLoc);
+                                    anEvent.setDestination(endLoc);
                                     anEvent.setDeparture_time(departTime);
                                     anEvent.setArrival_time(arriveTime);
-                                    anEvent.setTransport_number(flightNum);
+                                    anEvent.setTransport_number(tvFlight);
+                                    anEvent.setPrice(price);
 
                                     events.add(anEvent);
                                     Intent intent = new Intent(getActivity(), CreateNewPlanActivity.class);
                                     intent.putParcelableArrayListExtra("events", (ArrayList<? extends Parcelable>) events);
-//                                    intent.putExtra("ACTIVITY", "Fragment_PlaceList");
-                                    
+
                                     getActivity().setResult(RESULT_OK, intent);
                                     getActivity().finish();
 
@@ -478,12 +522,13 @@ public class BookPlaneFragment extends Fragment {
                                     values.put(EventContract.EventEntry.COL_DESCRIPTION, "Flight for Transport");
                                     values.put(EventContract.EventEntry.COL_DATE, date);
                                     values.put(EventContract.EventEntry.COL_TYPE, "flights");
+                                    values.put(EventContract.EventEntry.COL_PRICE, price);
 
-                                    values.put(EventContract.EventEntry.COL_ORIGIN, departCity);
-                                    values.put(EventContract.EventEntry.COL_DESTINATION, arriveCity);
+                                    values.put(EventContract.EventEntry.COL_ORIGIN, startLoc);
+                                    values.put(EventContract.EventEntry.COL_DESTINATION, endLoc);
                                     values.put(EventContract.EventEntry.COL_DEPARTURE_TIME, departTime);
                                     values.put(EventContract.EventEntry.COL_ARRIVAL_TIME, arriveTime);
-                                    values.put(EventContract.EventEntry.COL_TRANS_NUMBER, flightNum);
+                                    values.put(EventContract.EventEntry.COL_TRANS_NUMBER, tvFlight);
 
                                     long newRowId = db.insert(EventContract.EventEntry.TABLE_NAME, null, values);
 
@@ -548,7 +593,7 @@ public class BookPlaneFragment extends Fragment {
         queue.add(stringRequest);
     }
 
-    private boolean validate() {
+    public boolean validate() {
         boolean valid = true;
 
         String startLoc = origin.getText().toString();
