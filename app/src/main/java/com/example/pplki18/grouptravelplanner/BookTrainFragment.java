@@ -566,14 +566,14 @@ public class BookTrainFragment extends Fragment {
         String startLoc = origin.getText().toString();
         String endLoc = destination.getText().toString();
 
-        if (startLoc.isEmpty()) {
-            Toast.makeText(BookTrainFragment.this.getActivity(), "Please write the origin",
+        if (startLoc.isEmpty() || !startLoc.contains(" | ")) {
+            Toast.makeText(BookTrainFragment.this.getActivity(), "Please write the correct origin",
                     Toast.LENGTH_LONG).show();
             valid = false;
         }
 
-        else if (endLoc.isEmpty()) {
-            Toast.makeText(BookTrainFragment.this.getActivity(), "Please write the destination",
+        else if (endLoc.isEmpty() || !endLoc.contains(" | ")) {
+            Toast.makeText(BookTrainFragment.this.getActivity(), "Please write the correct destination",
                     Toast.LENGTH_LONG).show();
             valid = false;
         }
