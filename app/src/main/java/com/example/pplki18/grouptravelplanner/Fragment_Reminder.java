@@ -1,6 +1,12 @@
 package com.example.pplki18.grouptravelplanner;
 
+import android.app.Activity;
+import android.app.Notification;
+import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.icu.text.SimpleDateFormat;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -14,11 +20,15 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
+import com.example.pplki18.grouptravelplanner.data.ReminderContract;
 import com.example.pplki18.grouptravelplanner.utils.RVAdapter_Reminder;
 
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static android.content.ContentValues.TAG;
@@ -31,6 +41,8 @@ public class Fragment_Reminder extends Fragment implements NavigationView.OnNavi
     private FloatingActionButton fab;
     List<Reminder> channelList;
     Reminder r;
+    Context context;
+    long i;
 
     @Nullable
     @Override
@@ -42,10 +54,13 @@ public class Fragment_Reminder extends Fragment implements NavigationView.OnNavi
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         init();
-        r = new Reminder("2001/9/11", "New York", 0);
+
+//        r = new Reminder("T2", "2018/10/25", i);
 //        r.setDate("2001/9/11");
 //        r.setDestination("New York");
 //        r.setChannel(0);
+        context = getActivity().getApplicationContext();
+
 
         //FAB: when clicked, open create new group interface
         fab.setOnClickListener(new View.OnClickListener() {
@@ -54,6 +69,11 @@ public class Fragment_Reminder extends Fragment implements NavigationView.OnNavi
                 Log.v("fab", "FAB Clicked");
                 Intent myIntent = new Intent(getActivity(), Activity_CreateReminder.class);
                 Fragment_Reminder.this.startActivity(myIntent);
+                // TO TEST generalInsert
+//                ((InHomeActivity) getActivity()).generalInsertNotifier("T1", "T2",
+//                        2018, 10, 30, 8, 20);
+//                Toast.makeText(getActivity().getApplicationContext(), "PRESSED FAB", Toast.LENGTH_SHORT).show();
+
             }
         });
 
@@ -69,16 +89,29 @@ public class Fragment_Reminder extends Fragment implements NavigationView.OnNavi
         Log.d(TAG, "populateGroupRecyclerView: Displaying list of groups in the ListView.");
 
         //get data and append to list
-        List<Reminder> reminderList = new ArrayList<Reminder>();
-        reminderList.add(r);
+        List<Reminder> reminderList = getAllReminders();
         RVAdapter_Reminder adapter = new RVAdapter_Reminder(reminderList, getActivity());
         recyclerViewGroup.setAdapter(adapter);
     }
 
     private List<Reminder> getAllReminders() {
-        channelList = Activity_CreateReminder.reminders;
-        return channelList;
+        return InHomeActivity.reminderList;
     }
+
+    public static List<Reminder> bubbleSort(List<Reminder> arr) {
+        for (int i = 0; i < arr.size(); i++) {
+            for (int j = 0; j < arr.size()-1-i; j++) {
+                if(arr.get(j).getDate().after(arr.get(j+1).getDate()))
+                {
+                    Reminder temp = arr.get(j);
+                    arr.set(j, arr.get(j+1));
+                    arr.set(j+1, temp);
+                }
+            }
+        }
+        return arr;
+    }
+
 
 
     private void init() {
@@ -87,6 +120,8 @@ public class Fragment_Reminder extends Fragment implements NavigationView.OnNavi
         databaseHelper = new DatabaseHelper(getActivity());
         fab = getView().findViewById(R.id.fab2);
     }
+
+
 
 
     @Override

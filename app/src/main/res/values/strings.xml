@@ -28,12 +28,11 @@
     <string name="bookMonth">Month</string>
     <string name="bookYear">Year</string>
     <string name="buttonFindFlight">FIND FLIGHT</string>
-    <string name="bookAirlineName">Airline Name</string>
+    <string name="bookTrainName">Airline Name</string>
     <string name="bookDivider">-</string>
     <string name="bookFlightNumber">Flight Number</string>
     <string name="bookDepartCity">Depart City</string>
     <string name="bookDepartTime">Depart Time</string>
-    <string name="bookArrow"><![CDATA[->]]></string>
     <string name="bookArriveCity">Arrive City</string>
     <string name="bookArriveTime">Arrive Time</string>
     <string name="bookPrice">Price</string>
@@ -41,7 +40,7 @@
     <string name="pick_destination">Pick Destination</string>
     <string name="open_now">Open Now</string>
     <string name="closed">Closed</string>
-
-
+    <string name="search_hotel">Search hotel</string>
+    <string name="arrow">Arrow</string>
 
 </resources>

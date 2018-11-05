@@ -11,12 +11,21 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.example.pplki18.grouptravelplanner.Reminder;
 import com.example.pplki18.grouptravelplanner.data.UserContract.UserEntry;
 import com.example.pplki18.grouptravelplanner.data.GroupContract.GroupEntry;
 import com.example.pplki18.grouptravelplanner.data.UserGroupContract.UserGroupEntry;
 import com.example.pplki18.grouptravelplanner.data.FriendsContract.FriendsEntry;
 import com.example.pplki18.grouptravelplanner.data.PlanContract.PlanEntry;
 import com.example.pplki18.grouptravelplanner.data.EventContract.EventEntry;
+//import com.example.pplki18.grouptravelplanner.data.PlanContract.RundownEntry;
+//import com.example.pplki18.grouptravelplanner.data.HotelContract.HotelEntry;
+//import com.example.pplki18.grouptravelplanner.data.RestaurantContract.RestaurantEntry;
+//import com.example.pplki18.grouptravelplanner.data.EntertainmentContract.EntertainmentEntry;
+//import com.example.pplki18.grouptravelplanner.data.FlightContract.FlightEntry;
+//import com.example.pplki18.grouptravelplanner.data.TrainContract.TrainEntry;
+//import com.example.pplki18.grouptravelplanner.data.OtherEventContract.OtherEventEntry;
+import com.example.pplki18.grouptravelplanner.data.ReminderContract.ReminderEntry;
 
 import java.io.ByteArrayOutputStream;
 
@@ -28,7 +37,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     /**
      * Database version. If you change the database schema, you must increment the database version.
      */
-    private static final int DATABASE_VERSION = 9;
+    private static final int DATABASE_VERSION = 11;
     private Context c2;
     /**
      * Constructs a new instance of {@link DatabaseHelper}.
@@ -133,6 +142,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + " REFERENCES " + PlanEntry.TABLE_NAME + "(" + PlanEntry._ID + ")"
                 + " ON DELETE CASCADE);";
 
+        //create notification table
+
+        String SQL_CREATE_REMINDER_TABLE = "CREATE TABLE " + ReminderEntry.TABLE_NAME + " ("
+                + ReminderEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + ReminderEntry.COL_USER_ID + " INTEGER, "
+                + ReminderEntry.COL_EVENT_ID + " INTEGER, "
+                + ReminderEntry.COL_ALARM_CHANNEL + " INTEGER, "
+
+
+                + "FOREIGN KEY(" + ReminderEntry.COL_USER_ID + ")"
+                + " REFERENCES " + UserEntry.TABLE_NAME + "(" + UserEntry._ID + "), "
+                + "FOREIGN KEY(" + ReminderEntry.COL_USER_ID + ")"
+                + " REFERENCES " + UserEntry.TABLE_NAME + "(" + UserEntry._ID + "));";
+
         // Execute the SQL statements
         db.execSQL(SQL_CREATE_USER_TABLE);
         db.execSQL(SQL_CREATE_GROUP_TABLE);
@@ -140,6 +163,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(SQL_CREATE_FRIENDS_REL);
         db.execSQL(SQL_CREATE_PLAN_TABLE);
         db.execSQL(SQL_CREATE_EVENT_TABLE);
+//        db.execSQL(SQL_CREATE_HOTEL_TABLE);
+//        db.execSQL(SQL_CREATE_RESTAURANT_TABLE);
+//        db.execSQL(SQL_CREATE_ENTERTAINMENT_TABLE);
+//        db.execSQL(SQL_CREATE_FLIGHT_TABLE);
+//        db.execSQL(SQL_CREATE_TRAIN_TABLE);
+//        db.execSQL(SQL_CREATE_OTHER_EVENT_TABLE);
+//        db.execSQL(SQL_CREATE_REMINDER_TABLE);
     }
 
     @Override

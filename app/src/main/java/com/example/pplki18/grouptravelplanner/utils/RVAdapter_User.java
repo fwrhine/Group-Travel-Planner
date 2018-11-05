@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.pplki18.grouptravelplanner.R;
+import com.example.pplki18.grouptravelplanner.data.User;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
@@ -21,10 +22,10 @@ import java.util.List;
 public class RVAdapter_User extends RecyclerView.Adapter<RVAdapter_User.UserViewHolder>{
 
     private static List<User> users;
-    private static List<Integer> user_ids;
+    private static List<String> user_ids;
     private final ClickListener listener;
 
-    public RVAdapter_User(List<User> users, List<Integer> user_ids, ClickListener listener){
+    public RVAdapter_User(List<User> users, List<String> user_ids, ClickListener listener){
         this.users = users;
         this.listener = listener;
         this.user_ids = user_ids;
@@ -44,7 +45,7 @@ public class RVAdapter_User extends RecyclerView.Adapter<RVAdapter_User.UserView
 
     @Override
     public void onBindViewHolder(UserViewHolder userViewHolder, int i) {
-        userViewHolder.userName.setText(users.get(i).getUser_name());
+        userViewHolder.userName.setText(users.get(i).getUsername());
 
 //        byte[] byteArray = users.get(i).getUser_image();
 //        Bitmap bmp = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
@@ -55,7 +56,7 @@ public class RVAdapter_User extends RecyclerView.Adapter<RVAdapter_User.UserView
 //        Log.d("USER_IDS INSIDE", user_ids.toString());
 //        Log.d("USER ID INSIDE", String.valueOf(users.get(i).getUser_id()));
 
-        if (user_ids.contains(users.get(i).getUser_id())) {
+        if (user_ids.contains(users.get(i).getId())) {
             userViewHolder.button.setImageResource(R.drawable.ic_check_circle);
         } else {
             userViewHolder.button.setImageResource(R.drawable.ic_radio_button_unchecked);

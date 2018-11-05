@@ -1,35 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/coordinatorLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     tools:context=".Activity_CreateReminder">
 
-    <android.support.design.widget.AppBarLayout
-        android:id="@+id/appBarLayout3"
+    <RelativeLayout
+        android:id="@+id/toolbarLayoutRem"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_height="50dp">
 
         <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
+            android:id="@+id/plan_toolbarRem"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="?attr/colorPrimary"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
-    </android.support.design.widget.AppBarLayout>
+        <ImageButton
+            android:id="@+id/btn_done_reminder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="20dp"
+            android:background="@null"
+            android:foregroundGravity="center"
+            android:src="@drawable/ic_check_white_24dp" />
 
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    </RelativeLayout>
+
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_below="@id/toolbarLayoutRem">
 
         <Button
             android:id="@+id/button_pick_notification"
@@ -40,10 +47,11 @@
 
         <TextView
             android:id="@+id/text_resultYear"
-            android:layout_width="wrap_content"
+            android:layout_width="70dp"
             android:layout_height="wrap_content"
             android:layout_below="@id/button_pick_notification"
-            android:text="Year: " />
+            android:text="Year: "
+            android:paddingRight="20dp"/>
 
         <TextView
             android:id="@+id/notifaction_resultYear"
@@ -54,10 +62,11 @@
 
         <TextView
             android:id="@+id/text_resultMonth"
-            android:layout_width="wrap_content"
+            android:layout_width="70dp"
             android:layout_height="wrap_content"
             android:layout_below="@id/text_resultYear"
-            android:text="Month: " />
+            android:text="Month: "
+            android:paddingRight="20dp"/>
 
         <TextView
             android:id="@+id/notifaction_resultMonth"
@@ -68,10 +77,11 @@
 
         <TextView
             android:id="@+id/text_resultDay"
-            android:layout_width="wrap_content"
+            android:layout_width="70dp"
             android:layout_height="wrap_content"
             android:layout_below="@id/text_resultMonth"
-            android:text="Day :" />
+            android:text="Day : "
+            android:paddingRight="20dp"/>
 
         <TextView
             android:id="@+id/notifaction_resultDay"
@@ -82,10 +92,11 @@
 
         <TextView
             android:id="@+id/text_resultTime"
-            android:layout_width="wrap_content"
+            android:layout_width="70dp"
             android:layout_height="wrap_content"
             android:layout_below="@id/text_resultDay"
-            android:text="Time: "/>
+            android:text="Time: "
+            android:paddingRight="20dp"/>
 
         <TextView
             android:id="@+id/notifaction_resultTime"
@@ -100,7 +111,8 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/notifaction_resultTime"
             android:layout_centerHorizontal="true"
-            android:hint="event location" />
+            android:hint="event location"
+            android:textColorHint="#9E9E9E"/>
 
         <Button
             android:id="@+id/button_create_notification"
@@ -110,6 +122,23 @@
             android:layout_centerHorizontal="true"
             android:text="Make a Notification" />
 
+        <Button
+            android:id="@+id/button_goto_cal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/button_create_notification"
+            android:layout_centerHorizontal="true"
+            android:text="Go To Calendar" />
+
+        <Button
+            android:id="@+id/button_del_event"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/button_goto_cal"
+            android:layout_centerHorizontal="true"
+            android:text="Cancel"
+            android:enabled="false"/>
+
 
     </RelativeLayout>
-</LinearLayout>
+</RelativeLayout>

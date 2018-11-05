@@ -7,8 +7,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Parcelable;
-import android.support.design.widget.FloatingActionButton;
+import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentTransaction;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -26,7 +27,15 @@ import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
 import com.example.pplki18.grouptravelplanner.data.EventContract;
 import com.example.pplki18.grouptravelplanner.data.PlanContract;
 import com.example.pplki18.grouptravelplanner.utils.Event;
+import com.example.pplki18.grouptravelplanner.utils.Plan;
 import com.example.pplki18.grouptravelplanner.utils.SessionManager;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -53,6 +62,10 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
     private SessionManager session;
     private HashMap<String, String> user;
 
+    private FirebaseAuth mAuth;
+    private FirebaseUser firebaseUser;
+    private FirebaseDatabase firebaseDatabase;
+
     private DatePickerDialog fromDatePickerDialog;
     private DatePickerDialog toDatePickerDialog;
     private SimpleDateFormat dateFormatter1;
@@ -62,6 +75,7 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
     private String plan_name;
 
     private List<Event> events;
+    private List<String> planIDs = new ArrayList<>();
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -99,6 +113,10 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
         databaseHelper = new DatabaseHelper(CreateNewPlanActivity.this);
         session = new SessionManager(getApplicationContext());
         user = session.getUserDetails();
+
+        mAuth = FirebaseAuth.getInstance();
+        firebaseUser = mAuth.getCurrentUser();
+        firebaseDatabase = FirebaseDatabase.getInstance();
 
         dateFormatter1 = new SimpleDateFormat("EEE, MMM d", Locale.US);
         dateFormatter2 = new SimpleDateFormat("d MMMM yyyy", Locale.US);
@@ -252,65 +270,128 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
         alert.show();
     }
 
-    private void savePlanToDB(String plan_name_fix, String plan_desc) {
-        SQLiteDatabase db = databaseHelper.getWritableDatabase();
-
-        String start_day = dateFormatter2.format(date_start);
-        String end_day = dateFormatter2.format(date_end);
-        int total_days = Integer.parseInt(trip_days.getText().toString());
-
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(PlanContract.PlanEntry.COL_PLAN_NAME, plan_name_fix);
-        contentValues.put(PlanContract.PlanEntry.COL_USER_ID, user.get(SessionManager.KEY_ID));
-        contentValues.put(PlanContract.PlanEntry.COL_START_DAY, start_day);
-        contentValues.put(PlanContract.PlanEntry.COL_END_DAY, end_day);
-        contentValues.put(PlanContract.PlanEntry.COL_TOTAL_DAY, total_days);
-        contentValues.put(PlanContract.PlanEntry.COL_DESCRIPTION, plan_desc);
-        long plan_id = db.insert(PlanContract.PlanEntry.TABLE_NAME, null, contentValues);
-
-        saveEventToDB(db, (int) plan_id);
+    private void savePlanToDB(final String plan_name_fix, final String plan_desc) {
+        savePlanHelper(plan_name_fix, plan_desc, new InsertPlanCallback() {
+            @Override
+            public void onCallback(String planId) {
+                savePlanToUser(planId);
+                saveEventToDB(planId);
+                Log.d("PLAN_ID", planId);
+            }
+        });
     }
 
-    private void saveEventToDB(SQLiteDatabase db, int plan_id) {
-        for(Event e : events) {
-//            Log.d("testtt", e.getTitle() + ", " + e.getDate());
-            String type = e.getType();
-            ContentValues contentValues = new ContentValues();
-            if (type.equals("restaurants") || type.equals("attractions") || type.equals("custom")) {
+    private void savePlanHelper(final String plan_name_fix, final String plan_desc, final InsertPlanCallback callback){
+        final String start_day = dateFormatter2.format(date_start);
+        final String end_day = dateFormatter2.format(date_end);
+        final int total_days = Integer.parseInt(trip_days.getText().toString());
 
-                contentValues.put(EventContract.EventEntry.COL_PLAN_ID, plan_id);
-                contentValues.put(EventContract.EventEntry.COL_QUERY_ID, e.getQuery_id());
-                contentValues.put(EventContract.EventEntry.COL_TITLE, e.getTitle());
-                contentValues.put(EventContract.EventEntry.COL_LOCATION, e.getLocation());
-                contentValues.put(EventContract.EventEntry.COL_DESCRIPTION, e.getDescription());
-                contentValues.put(EventContract.EventEntry.COL_DATE, e.getDate());
-                contentValues.put(EventContract.EventEntry.COL_TIME_START, e.getTime_start());
-                contentValues.put(EventContract.EventEntry.COL_TIME_END, e.getTime_end());
-                contentValues.put(EventContract.EventEntry.COL_PHONE, e.getPhone());
-                contentValues.put(EventContract.EventEntry.COL_TYPE, type);
-                contentValues.put(EventContract.EventEntry.COL_RATING, e.getRating());
-                contentValues.put(EventContract.EventEntry.COL_WEBSITE, e.getWebsite());
-                long event_id = db.insert(EventContract.EventEntry.TABLE_NAME, null, contentValues);
+        final DatabaseReference planRef = firebaseDatabase.getReference().child("plans");
 
-            } else if (type.equals("flights") || type.equals("trains")) {
-                contentValues.put(EventContract.EventEntry.COL_PLAN_ID, plan_id);
-                contentValues.put(EventContract.EventEntry.COL_TITLE, "Flight");
-                contentValues.put(EventContract.EventEntry.COL_DESCRIPTION, "Flight for Transport");
-                contentValues.put(EventContract.EventEntry.COL_DATE, e.getDate());
-                contentValues.put(EventContract.EventEntry.COL_TYPE, "flights");
-
-                contentValues.put(EventContract.EventEntry.COL_ORIGIN, e.getOrigin());
-                contentValues.put(EventContract.EventEntry.COL_DESTINATION, e.getDestination());
-                contentValues.put(EventContract.EventEntry.COL_DEPARTURE_TIME, e.getDeparture_time());
-                contentValues.put(EventContract.EventEntry.COL_ARRIVAL_TIME, e.getArrival_time());
-                contentValues.put(EventContract.EventEntry.COL_TRANS_NUMBER, e.getTransport_number());
-                long event_id = db.insert(EventContract.EventEntry.TABLE_NAME, null, contentValues);
-
-            } else if (type.equals("hotels")) {
-
+        final String planId = planRef.push().getKey();
+        planRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Plan plan = new Plan(planId, plan_name_fix, mAuth.getCurrentUser().getUid());
+                plan.setPlan_start_date(start_day);
+                plan.setPlan_end_date(end_day);
+                plan.setPlan_total_days(total_days);
+                plan.setPlan_overview(plan_desc);
+                planRef.child(planId).setValue(plan);
+                callback.onCallback(planId);
             }
 
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void savePlanToUser(final String newPlanID){
+        final DatabaseReference userRef = firebaseDatabase.getReference().child("users").child(firebaseUser.getUid());
+
+        getAllPlanIDs(new PlanIdCallback() {
+            @Override
+            public void onCallback(final List<String> planID) {
+                userRef.child("plans").addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        planID.add(newPlanID);
+                        userRef.child("plans").setValue(planID);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+            }
+        });
+    }
+
+    private void getAllPlanIDs(final PlanIdCallback callback){
+        final DatabaseReference userRef = firebaseDatabase.getReference().child("users").child(firebaseUser.getUid());
+
+        userRef.child("plans").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                planIDs.clear();
+                for (DataSnapshot postSnapshot: dataSnapshot.getChildren()){
+                    String planId = postSnapshot.getValue(String.class); // String of groupID
+                    planIDs.add(planId);
+                }
+                callback.onCallback(planIDs);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void saveEventToDB(String plan_id) {
+        final DatabaseReference planRef = firebaseDatabase.getReference().child("plans").child(plan_id).child("events");
+        final List<String> eventIDs = getEventIDs(planRef, plan_id);
+        planRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                planRef.setValue(eventIDs);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        final DatabaseReference eventRef = firebaseDatabase.getReference().child("events");
+        eventRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (Event e : events){
+                    eventRef.child(e.getEvent_id()).setValue(e);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
+    private List<String> getEventIDs(DatabaseReference eventRef, String planID){
+
+        List<String> eventIDs = new ArrayList<>();
+        for (Event e : events){
+            e.setEvent_id(eventRef.push().getKey());
+            e.setPlan_id(planID);
+            eventIDs.add(e.getEvent_id());
         }
+        return eventIDs;
     }
 
     private void setAddEventButton() {
@@ -328,11 +409,9 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
                             myIntent.putExtra("ACTIVITY", "CreateNewPlanActivity");
                             myIntent.putExtra("plan_name", plan_name);
                             myIntent.putExtra("date", date);
-                            myIntent.putExtra("date_start", date_start);
-                            myIntent.putExtra("date_end", date_end);
-
                             myIntent.putParcelableArrayListExtra("events", (ArrayList<? extends Parcelable>) events);
 
+//                            CreateNewPlanActivity.this.startActivity(myIntent);
                             startActivityForResult(myIntent, 1);
                             Toast.makeText(CreateNewPlanActivity.this, "Add Event", Toast.LENGTH_SHORT).show();
                         }
@@ -504,4 +583,11 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
                 new Fragment_EventList()).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN).commit();
     }
 
+    private interface InsertPlanCallback {
+        void onCallback(String planId);
+    }
+
+    private interface PlanIdCallback {
+        void onCallback(List<String> planID);
+    }
 }

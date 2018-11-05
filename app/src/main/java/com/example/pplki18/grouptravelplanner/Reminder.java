@@ -1,19 +1,20 @@
 package com.example.pplki18.grouptravelplanner;
 
-import java.util.List;
+import java.util.Date;
 
 public class Reminder {
 
     String destination;
-    String date;
-    Integer channel;
+    Date date;
+    Long eventID;
+    Integer alarmChannel;
 
     //constructor
 
-    public Reminder(String destination, String date, Integer channel) {
+    public Reminder(String destination, Date date, Long id) {
         this.destination = destination;
         this.date = date;
-        this.channel = channel;
+        this.eventID = id;
     }
 
     //setters
@@ -21,12 +22,12 @@ public class Reminder {
         this.destination = d;
     }
 
-    public void setDate(String d) {
+    public void setDate(Date d) {
         this.date = d;
     }
 
-    public void setChannel(Integer c) {
-        this.channel = c;
+    public void setEventID(Long eventID) {
+        this.eventID = eventID;
     }
 
     //getters
@@ -34,8 +35,11 @@ public class Reminder {
         return destination;
     }
 
-    public String getDate() {
+    public Date getDate() {
         return date;
     }
 
+    public Long getEventID() {
+        return eventID;
+    }
 }

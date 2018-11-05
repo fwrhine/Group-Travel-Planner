@@ -1,12 +1,15 @@
 package com.example.pplki18.grouptravelplanner;
 
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
 
 import com.example.pplki18.grouptravelplanner.utils.SessionManager;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class SplashScreenActivity extends AppCompatActivity {
     SessionManager sessionManager;
@@ -27,7 +30,6 @@ public class SplashScreenActivity extends AppCompatActivity {
 //        getSupportActionBar().hide();
         LogoLauncher logoLauncher = new LogoLauncher();
         logoLauncher.start();
-
     }
 
     private class LogoLauncher extends Thread{

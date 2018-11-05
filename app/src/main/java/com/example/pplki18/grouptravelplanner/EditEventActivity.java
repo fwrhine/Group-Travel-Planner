@@ -56,7 +56,7 @@ public class EditEventActivity extends AppCompatActivity implements View.OnClick
     private String s_date;
     private String initial_desc;
     private String type;
-    private int event_id;
+    private String event_id;
     private Date d_date;
 
     private DatabaseHelper databaseHelper;
@@ -97,7 +97,7 @@ public class EditEventActivity extends AppCompatActivity implements View.OnClick
         if (type.equals("restaurants") || type.equals("attractions")) {
             transport_layout.setVisibility(View.GONE);
 
-            event_id = bundle.getInt("event_id");
+            event_id = bundle.getString("event_id");
             date = bundle.getString("date");
             String name = bundle.getString("name");
             String description = bundle.getString("description");

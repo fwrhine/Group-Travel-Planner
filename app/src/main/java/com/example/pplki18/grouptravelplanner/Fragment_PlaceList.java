@@ -103,6 +103,7 @@ public class Fragment_PlaceList extends Fragment {
                     getActivity().setResult(RESULT_OK, intent);
                     getActivity().finish();
                 }
+
             }
         }
     }
@@ -205,7 +206,7 @@ public class Fragment_PlaceList extends Fragment {
 
     private void loadMorePlaces() {
         String url = "https://maps.googleapis.com/maps/api/place/textsearch/json?pagetoken="
-                + next_token + "&key=AIzaSyB4QT2f2fyMQ8gDILgUEi5xBl_NKiGt_fo";
+                + next_token + "&key=" + getString(R.string.api_key);
 
         // Request a string response from the provided URL.
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
@@ -382,8 +383,8 @@ public class Fragment_PlaceList extends Fragment {
         contentValues.put(EventContract.EventEntry.COL_WEBSITE, place.getWebsite());
         contentValues.put(EventContract.EventEntry.COL_DATE, event_date);
         //TODO ERROR PLACES GADA ADDRESS DLL ??!!
-//        Log.d("event location", place.getAddress());
-//        Log.d("event desc", place.getWebsite());
+//        Log.d("event location", places.get(position).getAddress());
+//        Log.d("event desc", places.get(position).getWebsite());
         contentValues.put(EventContract.EventEntry.COL_TIME_START, start_time);
         contentValues.put(EventContract.EventEntry.COL_TIME_END, end_time);
         contentValues.put(EventContract.EventEntry.COL_PHONE, place.getPhone_number());

@@ -1,8 +1,6 @@
 package com.example.pplki18.grouptravelplanner;
 
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -18,14 +16,21 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.Button;
 
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
-import com.example.pplki18.grouptravelplanner.data.GroupContract;
-import com.example.pplki18.grouptravelplanner.data.UserContract;
-import com.example.pplki18.grouptravelplanner.data.UserGroupContract;
-import com.example.pplki18.grouptravelplanner.utils.Group;
+import com.example.pplki18.grouptravelplanner.data.Group;
 import com.example.pplki18.grouptravelplanner.utils.RVAdapter_Group;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,10 +39,20 @@ public class Fragment_GroupList extends Fragment implements NavigationView.OnNav
 
     private static final String TAG = "ListGroupActivity";
 
+    FirebaseDatabase firebaseDatabase;
+    FirebaseAuth firebaseAuth;
+    FirebaseUser firebaseUser;
+    DatabaseReference userRef;
+    DatabaseReference groupRef;
+    StorageReference storageReference;
+
     DatabaseHelper databaseHelper;
     private RecyclerView recyclerViewGroup;
     private LinearLayoutManager linearLayoutManager;
     private FloatingActionButton fab;
+    private ProgressBar progressBar;
+    private List<String> groupIDs = new ArrayList<>();
+    private List<Group> groups = new ArrayList<>();
 
     @Nullable
     @Override
@@ -48,23 +63,47 @@ public class Fragment_GroupList extends Fragment implements NavigationView.OnNav
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        init();
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
+        if (firebaseUser == null) {
+            Intent errorIntent = new Intent(getActivity(), LoginActivity.class);
+            Fragment_GroupList.this.startActivity(errorIntent);
+            getActivity().finish();
+        }
+        else {
+            userRef = firebaseDatabase.getReference().child("users").child(firebaseUser.getUid());
+            groupRef = firebaseDatabase.getReference().child("groups");
+            storageReference = FirebaseStorage.getInstance().getReference();
 
-        //FAB: when clicked, open create new group interface
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.v("fab", "FAB Clicked");
-                Intent myIntent = new Intent(getActivity(), CreateNewGroupActivity.class);
-                Fragment_GroupList.this.startActivity(myIntent);
-            }
-        });
+            init();
+
+            //FAB: when clicked, open create new group interface
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Log.v("fab", "FAB Clicked");
+                    Intent myIntent = new Intent(getActivity(), CreateNewGroupActivity.class);
+                    Fragment_GroupList.this.startActivity(myIntent);
+                }
+            });
 
 
-        recyclerViewGroup.setHasFixedSize(true);
-        recyclerViewGroup.setLayoutManager(linearLayoutManager);
+            recyclerViewGroup.setHasFixedSize(true);
+            recyclerViewGroup.setLayoutManager(linearLayoutManager);
 
-        populateGroupRecyclerView();
+            progressBar.setVisibility(View.VISIBLE);
+
+            // TODO: TIME COMPLEXITY bakal meledak kalo jumlah group+user banyak
+            getAllGroupIDs(new UserIdCallback() {
+                @Override
+                public void onCallback(List<String> list) {
+                    groupIDs = list;
+                    populateGroupRecyclerView();
+                    progressBar.setVisibility(View.INVISIBLE);
+                }
+            });
+        }
     }
 
     //Todo: refactor? exactly the same code as the one in CreateNewGroup
@@ -72,72 +111,39 @@ public class Fragment_GroupList extends Fragment implements NavigationView.OnNav
         Log.d(TAG, "populateGroupRecyclerView: Displaying list of groups in the ListView.");
 
         //get data and append to list
-        List<Group> groups = getAllGroups();
+        getAllGroups(new GroupCallback() {
+            @Override
+            public void onCallback(List<Group> list) {
+                Log.d("NUM_OF_GROUP", list.size() + ".");
+                RVAdapter_Group adapter = new RVAdapter_Group(list, getActivity());
+                recyclerViewGroup.setAdapter(adapter);
+            }
+        });
 
-        RVAdapter_Group adapter = new RVAdapter_Group(groups, getActivity());
-        recyclerViewGroup.setAdapter(adapter);
     }
 
     /*
      * Get all groups
      * */
-    public List<Group> getAllGroups() {
-        List<Group> groups = new ArrayList<Group>();
-        String selectQuery = "SELECT * FROM " + GroupContract.GroupEntry.TABLE_NAME;
+    public void getAllGroups(final GroupCallback groupCallback){
+        groupRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                groups.clear();
+                for (DataSnapshot postSnapshot: dataSnapshot.getChildren()){
+                    Group group = postSnapshot.getValue(Group.class); // Group Objects
+                    if(groupIDs.contains(group.getGroup_id())){
+                        groups.add(group);
+                    }
+                }
+                groupCallback.onCallback(groups);
+            }
 
-        Log.e("GROUPS", selectQuery);
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
 
-        SQLiteDatabase db = databaseHelper.getReadableDatabase();
-        Cursor c = db.rawQuery(selectQuery, null);
-
-        // looping through all rows and adding to list
-        if (c.moveToFirst()) {
-            do {
-                Group group = new Group();
-                group.setGroup_name((c.getString(c.getColumnIndex(GroupContract.GroupEntry.COL_GROUP_NAME))));
-                group.setGroup_image(c.getBlob(c.getColumnIndex(GroupContract.GroupEntry.COL_GROUP_IMAGE)));
-
-                List<String> members = getAllGroupMember(c.getString(c.getColumnIndex(GroupContract.GroupEntry._ID)));
-                group.setGroup_members(members);
-
-                // adding to group list
-                groups.add(group);
-            } while (c.moveToNext());
-        }
-
-        c.close();
-
-        return groups;
-    }
-
-    /*
-     * Get all members of a group.
-     */
-    public List<String> getAllGroupMember(String group_id) {
-        List<String> members = new ArrayList<String>();
-
-        String selectQuery = "SELECT  * FROM " + GroupContract.GroupEntry.TABLE_NAME + " g, "
-                + UserContract.UserEntry.TABLE_NAME + " u, " + UserGroupContract.UserGroupEntry.TABLE_NAME
-                + " ug WHERE g." + GroupContract.GroupEntry._ID + " = '" + group_id + "'" + " AND g."
-                + GroupContract.GroupEntry._ID + " = " + "ug." + UserGroupContract.UserGroupEntry.COL_GROUP_ID
-                + " AND u." + UserGroupContract.UserGroupEntry._ID + " = " + "ug."
-                + UserGroupContract.UserGroupEntry.COL_USER_ID;
-
-        Log.e("USERGROUP", selectQuery);
-
-        SQLiteDatabase db = databaseHelper.getReadableDatabase();
-        Cursor c = db.rawQuery(selectQuery, null);
-
-        // looping through all rows and adding to list
-        if (c.moveToFirst()) {
-            do {
-                members.add(c.getString(c.getColumnIndex(UserContract.UserEntry.COL_FULLNAME)));
-            } while (c.moveToNext());
-        }
-
-        c.close();
-
-        return members;
+            }
+        });
     }
 
     private void init() {
@@ -145,6 +151,7 @@ public class Fragment_GroupList extends Fragment implements NavigationView.OnNav
         linearLayoutManager = new LinearLayoutManager(getActivity());
         databaseHelper = new DatabaseHelper(getActivity());
         fab = getView().findViewById(R.id.fab);
+        progressBar = getView().findViewById(R.id.progress_loader);
     }
 
 
@@ -152,5 +159,31 @@ public class Fragment_GroupList extends Fragment implements NavigationView.OnNav
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         return false;
+    }
+
+    private void getAllGroupIDs(final UserIdCallback userIdCallback){
+        userRef.child("groups").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                groupIDs.clear();
+                for (DataSnapshot postSnapshot: dataSnapshot.getChildren()){
+                    String groupId = postSnapshot.getValue(String.class); // String of groupID
+                    groupIDs.add(groupId);
+                }
+                userIdCallback.onCallback(groupIDs);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private interface UserIdCallback {
+        void onCallback(List<String> list);
+    }
+    private interface GroupCallback{
+        void onCallback(List<Group> list);
     }
 }

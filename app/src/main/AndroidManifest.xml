@@ -18,6 +18,7 @@
     <uses-permission android:name="android.permission.CALL_PHONE" />
 
     <application
+        android:name=".TravelApplication"
         android:fullBackupContent="true"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -44,7 +45,6 @@
             -->
         </activity>
         <activity android:name=".ForgotPasswordActivity" />
-        <activity android:name=".RecoverPasswordActivity" />
         <activity android:name=".UserProfileActivity" />
         <activity android:name=".SearchBarActivity" />
         <activity
@@ -77,11 +77,17 @@
 
         <activity android:name=".InHomeActivity" />
         <activity android:name=".CreateNewPlanActivity" />
-        <activity android:name=".EditPlanActivity" />
+        <activity android:name=".EditPlanActivity"/>
 
-        <!-- <activity android:name=".Activity_InHome"></activity> -->
-        <activity android:name=".Activity_CreateReminder" />
+        <!--<activity android:name=".Activity_InHome"></activity>-->
+        <activity android:name=".Activity_CreateReminder">
 
+        </activity>
+
+        <activity android:name=".Activity_EditReminder" />
+
+        <receiver android:name=".AlertReciever"/>
+        <!--<activity android:name=".Activity_ReminderList"/>-->
         <receiver android:name=".AlertReciever" />
         <!-- <activity android:name=".Activity_ReminderList"/> -->
         <activity android:name=".EditEventActivity" />

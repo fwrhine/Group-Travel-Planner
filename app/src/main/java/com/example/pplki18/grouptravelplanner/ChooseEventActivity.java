@@ -154,8 +154,8 @@ public class ChooseEventActivity extends AppCompatActivity {
         if (requestCode == REGION_AUTOCOMPLETE_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 Place place = PlaceAutocomplete.getPlace(this, data);
-                sessionManager.setCurrentRegion(place.getName().toString());
-//                region = place.getName().toString();
+                sessionManager.setCurrentRegion(place.getAddress().toString());
+
                 regionCoor = place.getLatLng();
 
 //                LatLngBounds.Builder builder = new LatLngBounds.Builder().include(place.getLatLng());
@@ -178,6 +178,11 @@ public class ChooseEventActivity extends AppCompatActivity {
                 // The user canceled the operation.
             }
         }
+//        else if (requestCode == REQUEST_FROM_PLACE_ACTIVITY) {
+//            for (Fragment fragment : getSupportFragmentManager().getFragments()) {
+//                fragment.onActivityResult(requestCode, resultCode, data);
+//            }
+//        }
     }
 
     private void init() {
