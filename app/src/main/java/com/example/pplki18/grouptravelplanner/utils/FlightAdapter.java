@@ -37,8 +37,8 @@ public class FlightAdapter extends ArrayAdapter<Flight> {
 
         // Populate the data into the template view using the data object
         assert flight != null;
-        tvAirlineName.setText(flight.getAirlineName());
-        tvFlightNum.setText(flight.getFlightNumber());
+        tvAirlineName.setText(flight.getAirlineName() + " ");
+        tvFlightNum.setText(" " + flight.getFlightNumber());
         tvDepartCity.setText(flight.getDepartureCity());
         tvArriveCity.setText(flight.getArrivalCity());
         tvDepartTime.setText(flight.getDepartureTime());
