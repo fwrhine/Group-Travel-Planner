@@ -89,12 +89,17 @@ public class RVAdapter_Reminder extends RecyclerView.Adapter<RVAdapter_Reminder.
             public void onClick(View v) {
                 // method to remove from calendar
                 ((InHomeActivity) context).deleteEventFromCalendar(eventID);
+                goBackToList();
                 Toast.makeText(context, "Deleted event", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-
+    public void goBackToList(){
+        Intent myIntent = new Intent(this.context , InHomeActivity.class);
+        myIntent.putExtra("fragment", "reminder");
+        context.startActivity(myIntent);
+    }
 
     public void editRemTest(Long eventID) {
         // go to edit page

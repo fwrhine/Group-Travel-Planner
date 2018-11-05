@@ -285,7 +285,6 @@ public class InHomeActivity extends AppCompatActivity implements NavigationView.
         deleteUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventID);
         cr.delete(deleteUri, null, null);
         Log.v("CALENDAR DELETE", "Event deleted");
-        Toast.makeText(getApplicationContext(), "Removed Event", Toast.LENGTH_SHORT).show();
     }
 
 
