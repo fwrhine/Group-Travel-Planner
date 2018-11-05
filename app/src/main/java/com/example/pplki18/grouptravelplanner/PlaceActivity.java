@@ -82,6 +82,7 @@ public class PlaceActivity extends AppCompatActivity {
     TextView eventDescription;
     RelativeLayout detailLayout;
     ImageButton editEvent;
+    private ArrayList<Event> events;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -145,6 +146,19 @@ public class PlaceActivity extends AppCompatActivity {
                 eventDuration.setText(duration);
                 eventDescription.setText(description);
 
+                String prevActivity = data.getStringExtra("PREV_ACTIVITY");
+                if (prevActivity != null && prevActivity.equals("CreateNewPlanActivity")) {
+                    getIntent().putParcelableArrayListExtra("events", data.getParcelableArrayListExtra("events"));
+                    getIntent().putExtra("ACTIVITY", prevActivity);
+                    getIntent().putExtra("TEST", "ini test");
+
+                    Log.d("TRALALA2", prevActivity);
+                    ArrayList<Event> events = data.getParcelableArrayListExtra("events");
+                    for (Event e : events) {
+                        Log.d("DESC", e.getDescription());
+                    }
+                    setResult(RESULT_OK, getIntent());
+                }
             }
         }
     }
@@ -311,23 +325,25 @@ public class PlaceActivity extends AppCompatActivity {
                         String start_time = startTime.getCurrentHour() + ":" + startTime.getCurrentMinute();
                         String end_time = endTime.getCurrentHour() + ":" + endTime.getCurrentMinute();
                         String prevActivity = getIntent().getStringExtra("ACTIVITY");
+                        Log.d("PREVVV", prevActivity);
+                        if (prevActivity != null) {
+                            if (prevActivity.equals("CreateNewPlanActivity")) {
+                                List<Event> events = getIntent().getParcelableArrayListExtra("events");
+                                Event anEvent = saveEventLocally(start_time, end_time);
+                                events.add(anEvent);
+                                Log.d("HEHHE", "test");
+                                Intent intent = new Intent(PlaceActivity.this, Fragment_PlaceList.class);
+                                intent.putParcelableArrayListExtra("events", (ArrayList<? extends Parcelable>) events);
 
-                        if (prevActivity != null && prevActivity.equals("CreateNewPlanActivity")) {
-                            List<Event> events = getIntent().getParcelableArrayListExtra("events");
-                            Event anEvent = saveEventLocally(start_time, end_time);
-                            events.add(anEvent);
-
-                            Intent intent = new Intent(PlaceActivity.this, Fragment_PlaceList.class);
-                            intent.putParcelableArrayListExtra("events", (ArrayList<? extends Parcelable>) events);
-
-                            setResult(Activity.RESULT_OK, intent);
-                            finish();
-                        } else {
-                            saveEventToPlan(start_time, end_time);
-                            Intent intent = new Intent(PlaceActivity.this, Fragment_PlaceList.class);
-                            intent.putExtra("ACTIVITY", "EditPlanActivity");
-                            setResult(Activity.RESULT_OK, intent);
-                            finish();
+                                setResult(RESULT_OK, intent);
+                                finish();
+                            } else {
+                                saveEventToPlan(start_time, end_time);
+                                Intent intent = new Intent(PlaceActivity.this, Fragment_PlaceList.class);
+                                intent.putExtra("ACTIVITY", "EditPlanActivity");
+                                setResult(RESULT_OK, intent);
+                                finish();
+                            }
                         }
                     }
                 });
@@ -419,12 +435,18 @@ public class PlaceActivity extends AppCompatActivity {
             public void onClick(View view) {
 //                SimpleDateFormat dateFormatter2 = new SimpleDateFormat("d MMMM yyyy", Locale.US);
 
-                int event_id = getIntent().getIntExtra("event_id", -1);
+//                int event_id = getIntent().getIntExtra("event_id", -1);
+
                 Bundle bundle = getIntent().getExtras();
                 bundle.putString("address", address.getText().toString());
                 bundle.putString("name", title.getText().toString());
                 bundle.putString("description", eventDescription.getText().toString());
-                bundle.putInt("event_id", event_id);
+                bundle.putParcelableArrayList("events", events);
+                String prevActivity = getIntent().getStringExtra("ACTIVITY");
+                if (prevActivity != null && prevActivity.equals("CreateNewPlanActivity")) {
+                    bundle.putString("PREV_ACTIVITY", "CreateNewPlanActivity");
+                }
+//                bundle.putInt("event_id", event_id);
 
                 Toast.makeText(PlaceActivity.this, "edit event", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(PlaceActivity.this, EditEventActivity.class);
@@ -453,6 +475,7 @@ public class PlaceActivity extends AppCompatActivity {
         queue = Volley.newRequestQueue(this);
         databaseHelper = new DatabaseHelper(this);
         String prevActivity = getIntent().getStringExtra("ACTIVITY");
+        String prevActivity2 = getIntent().getStringExtra("PREV_ACTIVITY");
 
         eventDate = (TextView) findViewById(R.id.event_detail_date);
         eventTime = (TextView) findViewById(R.id.event_detail_time);
@@ -462,9 +485,15 @@ public class PlaceActivity extends AppCompatActivity {
         editEvent = (ImageButton) findViewById(R.id.edit_event);
 
         if (prevActivity != null && (prevActivity.equals("PlanActivity"))) {
+            if (prevActivity2 != null && (prevActivity2.equals("CreateNewPlanActivity"))) {
+                events = getIntent().getParcelableArrayListExtra("events");
+                int index = getIntent().getIntExtra("index", -1);
+                place_id = events.get(index).getQuery_id();
+            }
             setEventDetail();
         } else {
             detailLayout.setVisibility(View.GONE);
         }
+
     }
 }

@@ -77,10 +77,12 @@
 
         <activity android:name=".InHomeActivity" />
         <activity android:name=".CreateNewPlanActivity" />
-        <activity android:name=".EditPlanActivity" />
+        <activity android:name=".EditPlanActivity"/>
 
-        <!-- <activity android:name=".Activity_InHome"></activity> -->
-        <activity android:name=".Activity_CreateReminder" />
+        <!--<activity android:name=".Activity_InHome"></activity>-->
+        <activity android:name=".Activity_CreateReminder">
+
+        </activity>
 
         <activity android:name=".Activity_EditReminder" />
 

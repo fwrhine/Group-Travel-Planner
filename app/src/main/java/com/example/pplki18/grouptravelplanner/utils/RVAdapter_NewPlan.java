@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.PopupMenu;
@@ -16,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.pplki18.grouptravelplanner.CreateNewPlanActivity;
 import com.example.pplki18.grouptravelplanner.EventDetailActivity;
 import com.example.pplki18.grouptravelplanner.PlaceActivity;
 import com.example.pplki18.grouptravelplanner.R;
@@ -31,6 +33,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -128,19 +131,30 @@ public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.Ne
                 String type = anEvent.getType();
 
                 if (type.equals("restaurants") || type.equals("attractions")) {
-                    setEventDetailOne(anEvent);
+                    setEventDetailOne(events, position);
                 } else {
-                    setEventDetailTwo(anEvent);
+                    setEventDetailTwo(events, position);
                 }
             }
         });
     }
 
-    public void setEventDetailOne(Event anEvent) {
+    public void setEventDetailOne(List<Event> events, int pos) {
         Intent myIntent = new Intent(mContext, PlaceActivity.class);
+        Intent intent =((Activity) mContext).getIntent();
+        Event anEvent = events.get(pos);
+        String prevActivity = intent.getStringExtra("ACTIVITY");
 
-        myIntent.putExtra("PLACE_ID", anEvent.getQuery_id());
+        if (prevActivity != null && prevActivity.equals("CreateNewPlanActivity")) {
+            Log.d("MASUK GA", "MASUK");
+            myIntent.putExtra("PREV_ACTIVITY", prevActivity);
+            myIntent.putParcelableArrayListExtra("events", (ArrayList<? extends Parcelable>) events);
+            myIntent.putExtra("index", pos);
+        }
+
+        Log.d("MASUK GA", "GA");
         myIntent.putExtra("ACTIVITY", "PlanActivity");
+        myIntent.putExtra("PLACE_ID", anEvent.getQuery_id());
         myIntent.putExtra("date", anEvent.getDate());
         myIntent.putExtra("time_start", anEvent.getTime_start());
         myIntent.putExtra("time_end", anEvent.getTime_end());
@@ -154,27 +168,35 @@ public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.Ne
             myIntent.putExtra("description", "");
         }
 
-        Intent intent =((Activity) mContext).getIntent();
         Date date_start = (Date) intent.getExtras().get("start_date");
         Date date_end = (Date) intent.getExtras().get("end_date");
         myIntent.putExtra("start_date", date_start);
         myIntent.putExtra("end_date", date_end);
+        ((Activity) mContext).startActivityForResult(myIntent, 5);
 
-        mContext.startActivity(myIntent);
     }
 
-    public void setEventDetailTwo(Event anEvent) {
+    public void setEventDetailTwo(List<Event> events, int pos) {
         Intent myIntent = new Intent(mContext, EventDetailActivity.class);
+        Intent intent =((Activity) mContext).getIntent();
+        Event anEvent = events.get(pos);
+        String prevActivity = intent.getStringExtra("ACTIVITY");
 
+        if (prevActivity != null && prevActivity.equals("CreateNewPlanActivity")) {
+            Log.d("MASUK GA", "MASUK");
+            myIntent.putExtra("PREV_ACTIVITY", prevActivity);
+            myIntent.putParcelableArrayListExtra("events", (ArrayList<? extends Parcelable>) events);
+            myIntent.putExtra("index", pos);
+        }
         myIntent.putExtra("event", anEvent);
 
-        Intent intent =((Activity) mContext).getIntent();
         Date date_start = (Date) intent.getExtras().get("start_date");
         Date date_end = (Date) intent.getExtras().get("end_date");
         myIntent.putExtra("start_date", date_start);
         myIntent.putExtra("end_date", date_end);
+        myIntent.putExtra("date", anEvent.getDate());
 
-        mContext.startActivity(myIntent);
+        ((Activity) mContext).startActivityForResult(myIntent, 5);
     }
 
     public void setCardViewLongClick(final NewPlanViewHolder holder, final int position,

@@ -206,7 +206,7 @@ public class Fragment_PlaceList extends Fragment {
 
     private void loadMorePlaces() {
         String url = "https://maps.googleapis.com/maps/api/place/textsearch/json?pagetoken="
-                + next_token + "&key=AIzaSyB4QT2f2fyMQ8gDILgUEi5xBl_NKiGt_fo";
+                + next_token + "&key=" + getString(R.string.api_key);
 
         // Request a string response from the provided URL.
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
@@ -291,10 +291,10 @@ public class Fragment_PlaceList extends Fragment {
                 intent.putParcelableArrayListExtra("events", (ArrayList<? extends Parcelable>) events);
                 if (prevActivity.equals("CreateNewPlanActivity")) {
                     intent.putExtra("ACTIVITY", "CreateNewPlanActivity");
-                    getActivity().startActivityForResult(intent, 3);
+                    startActivityForResult(intent, 3);
                 } else if (prevActivity.equals("EditPlanActivity")){
                     intent.putExtra("ACTIVITY", "EditPlanActivity");
-                    getActivity().startActivityForResult(intent, 3);
+                    startActivityForResult(intent, 3);
                 } else {
                     startActivity(intent);
                 }
@@ -336,6 +336,7 @@ public class Fragment_PlaceList extends Fragment {
 
                             Intent intent = new Intent(getActivity(), CreateNewPlanActivity.class);
                             intent.putParcelableArrayListExtra("events", (ArrayList<? extends Parcelable>) events);
+                            //TODO last changed
                             intent.putExtra("ACTIVITY", "Fragment_PlaceList");
                             Log.d("prev activity", "createnewplan");
                             getActivity().setResult(RESULT_OK, intent);
