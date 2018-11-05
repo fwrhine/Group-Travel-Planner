@@ -168,6 +168,7 @@ public class Activity_CreateReminder extends AppCompatActivity implements DatePi
     public void gotoCalendar() {
         Intent calIntent = new Intent(Intent.ACTION_INSERT);
         calIntent.setData(CalendarContract.Events.CONTENT_URI);
+        calIntent.putExtra(CalendarContract.Events.DESCRIPTION, "GTP");
         startActivity(calIntent);
 
     }
