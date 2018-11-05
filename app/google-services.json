@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "178310903494",
+    "firebase_url": "https://grouptravelplanner-217711.firebaseio.com",
+    "project_id": "grouptravelplanner-217711",
+    "storage_bucket": "grouptravelplanner-217711.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:178310903494:android:97c0fdd72cad188c",
+        "android_client_info": {
+          "package_name": "com.example.pplki18.grouptravelplanner"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "178310903494-fu2g8uf09o826tuejt9fiivc25r4kkou.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.pplki18.grouptravelplanner",
+            "certificate_hash": "18899d59a0026453e0f208186671924a0d4d8f4a"
+          }
+        },
+        {
+          "client_id": "178310903494-9q574gorcb5h6f04859e50kbnv55bifa.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAN_fXmkGz95Kmfk9bpRNOgDqfYodoenFc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "178310903494-9q574gorcb5h6f04859e50kbnv55bifa.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
