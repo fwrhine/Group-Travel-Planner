@@ -152,11 +152,11 @@ public class PlaceActivity extends AppCompatActivity {
                     getIntent().putExtra("ACTIVITY", prevActivity);
                     getIntent().putExtra("TEST", "ini test");
 
-                    Log.d("TRALALA2", prevActivity);
-                    ArrayList<Event> events = data.getParcelableArrayListExtra("events");
-                    for (Event e : events) {
-                        Log.d("DESC", e.getDescription());
-                    }
+//                    Log.d("TRALALA2", prevActivity);
+//                    ArrayList<Event> events = data.getParcelableArrayListExtra("events");
+//                    for (Event e : events) {
+//                        Log.d("DESC", e.getDescription());
+//                    }
                     setResult(RESULT_OK, getIntent());
                 }
             }

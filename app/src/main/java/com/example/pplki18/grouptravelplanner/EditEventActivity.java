@@ -61,6 +61,8 @@ public class EditEventActivity extends AppCompatActivity implements View.OnClick
 
     private DatabaseHelper databaseHelper;
 
+    // TODO ERROR IN CREATE NEW PLAN EDIT EVENT DATE, IF THERE ARE EVENTS ALREADY IN THE NEW DATE SELECTED THEN THE EVENTS THERE WILL BE REPLACED BY THE ONE THAT WAS EDITED
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
