@@ -72,6 +72,11 @@ public class Hotel {
     public String getPrice() {
         return price;
     }
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }
 
 

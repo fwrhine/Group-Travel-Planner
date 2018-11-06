@@ -68,7 +68,6 @@ public class RVAdapter_Hotel extends RecyclerView.Adapter<RecyclerView.ViewHolde
             case ITEM:
                 PlaceViewHolder placeViewHolder = (PlaceViewHolder) viewHolder;
                 placeViewHolder.hotelName.setText(hotels.get(i).getName());
-                placeViewHolder.hotelAddress.setText(hotels.get(i).getAddress());
                 placeViewHolder.hotelRating.setText(String.valueOf(hotels.get(i).getRating()) + "/5");
                 placeViewHolder.addIcon.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -193,7 +192,6 @@ public class RVAdapter_Hotel extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public static class PlaceViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private CardView cardView;
         private TextView hotelName;
-        private TextView hotelAddress;
         private TextView hotelRating;
         private ImageView hotelImage;
         private ImageView addIcon;
@@ -204,7 +202,6 @@ public class RVAdapter_Hotel extends RecyclerView.Adapter<RecyclerView.ViewHolde
             super(itemView);
             cardView = (CardView)itemView.findViewById(R.id.cv);
             hotelName = (TextView)itemView.findViewById(R.id.hotel_name);
-            hotelAddress = (TextView)itemView.findViewById(R.id.hotel_address);
             hotelRating = (TextView)itemView.findViewById(R.id.hotel_rating);
             hotelImage = (ImageView)itemView.findViewById(R.id.place_image);
             addIcon = (ImageView)itemView.findViewById(R.id.ic_add);

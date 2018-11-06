@@ -433,70 +433,103 @@ public class BookHotelFragment extends Fragment {
         infoDialog.show();
     }
 
-    public void generateToken() {
-        String secretKey = "6c484049beacda6541bf40c90e62e8e5";
-        String url = "https://api-sandbox.tiket.com/apiv1/payexpress"
-                + "?method=getToken&secretkey=" + secretKey + "&output=json";
+    public void getTripadvisorUrl() {
+        String url = "https://www.tripadvisor.com/Hotels-g60763-New_York_City_New_York-Hotels.html";
+        sendRequest(url);
 
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+    }
+
+    public void sendRequest(String url) {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
 
-                        try {
-                            JSONObject json = new JSONObject(response);
-                            String token = json.getString("token");
-
-                            Log.d("TOKEN HOTEL", token);
-
-
-                            sendRequest(token);
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.d("ERROR HOTEL", error.toString());
             }
-        });
-
-        queue.add(stringRequest);
-    }
-
-    public void sendRequest(String token) {
-        String startdate = dateFormatter4.format(checkInDate);
-        String enddate = dateFormatter4.format(checkOutDate);
-        String url = "https://api-sandbox.tiket.com/search/hotel?q=" + region + "&startdate=" +
-                startdate + "&night=" + nights + "&enddate=" + enddate + "&room=" + numOfRoom +
-                "&adult=" + numOfGuest + "&token=" + token + "&output=json";
-
-        Log.d("HOTEL REQUEST", url);
-
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        Log.d("HOTELS", response);
-                        populatePlaceRecyclerView(getHotels(response));
-
-                    }
-                }, new Response.ErrorListener() {
+        })
+        {
+            /** Passing some request headers* */
             @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d("ERROR ALL HOTELS", error.toString());
+            public Map getHeaders() throws AuthFailureError {
+                HashMap headers = new HashMap();
+                headers.put("Content-Type", "application/json");
+                headers.put("apiKey", "xxxxxxxxxxxxxxx");
+                return headers;
             }
-        });
-
-        stringRequest.setRetryPolicy(new DefaultRetryPolicy(
-                60000,
-                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        };
 
         queue.add(stringRequest);
     }
+
+//    public void generateToken() {
+//        String secretKey = "6c484049beacda6541bf40c90e62e8e5";
+//        String url = "https://api-sandbox.tiket.com/apiv1/payexpress"
+//                + "?method=getToken&secretkey=" + secretKey + "&output=json";
+//
+//        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+//                new Response.Listener<String>() {
+//                    @Override
+//                    public void onResponse(String response) {
+//
+//                        try {
+//                            JSONObject json = new JSONObject(response);
+//                            String token = json.getString("token");
+//
+//                            Log.d("TOKEN HOTEL", token);
+//
+//
+//                            sendRequest(token);
+//
+//                        } catch (JSONException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                }, new Response.ErrorListener() {
+//            @Override
+//            public void onErrorResponse(VolleyError error) {
+//                Log.d("ERROR HOTEL", error.toString());
+//            }
+//        });
+//
+//        queue.add(stringRequest);
+//    }
+//
+//    public void sendRequest(String token) {
+//        String startdate = dateFormatter4.format(checkInDate);
+//        String enddate = dateFormatter4.format(checkOutDate);
+//        String url = "https://api-sandbox.tiket.com/search/hotel?q=" + region + "&startdate=" +
+//                startdate + "&night=" + nights + "&enddate=" + enddate + "&room=" + numOfRoom +
+//                "&adult=" + numOfGuest + "&token=" + token + "&output=json";
+//
+//        Log.d("HOTEL REQUEST", url);
+//
+//        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+//                new Response.Listener<String>() {
+//                    @Override
+//                    public void onResponse(String response) {
+//                        Log.d("HOTELS", response);
+//                        populatePlaceRecyclerView(getHotels(response));
+//
+//                    }
+//                }, new Response.ErrorListener() {
+//            @Override
+//            public void onErrorResponse(VolleyError error) {
+//                Log.d("ERROR ALL HOTELS", error.toString());
+//            }
+//        });
+//
+//        stringRequest.setRetryPolicy(new DefaultRetryPolicy(
+//                60000,
+//                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+//                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+//
+//        queue.add(stringRequest);
+//    }
 
     public void searchHotel(String query) {
         String url = "https://www.tripadvisor.com/TypeAheadJson?action=API&query=" +
@@ -521,33 +554,33 @@ public class BookHotelFragment extends Fragment {
         queue.add(stringRequest);
     }
 
-    private List<Hotel> getHotels(String response) {
-        ArrayList<Hotel> hotels = new ArrayList<>();
-        try {
-            JSONObject obj = new JSONObject(response);
-            JSONObject results = obj.optJSONObject("results");
-            JSONArray listHotels = results.optJSONArray("result");
-
-            for (int i = 0 ; i < listHotels.length() ; i++)
-            {
-                JSONObject hotelObj = new JSONObject(listHotels.get(i).toString());
-
-                Hotel hotel = new Hotel();
-                hotel.setHotel_id(hotelObj.optString("id"));
-                hotel.setName(hotelObj.optString("name"));
-                hotel.setRating(hotelObj.optString("star_rating"));
-                hotel.setAddress(hotelObj.optString("regional", "-"));
-
-                hotels.add(hotel);
-            }
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-
-        return hotels;
-    }
+//    private List<Hotel> getHotels(String response) {
+//        ArrayList<Hotel> hotels = new ArrayList<>();
+//        try {
+//            JSONObject obj = new JSONObject(response);
+//            JSONObject results = obj.optJSONObject("results");
+//            JSONArray listHotels = results.optJSONArray("result");
+//
+//            for (int i = 0 ; i < listHotels.length() ; i++)
+//            {
+//                JSONObject hotelObj = new JSONObject(listHotels.get(i).toString());
+//
+//                Hotel hotel = new Hotel();
+//                hotel.setHotel_id(hotelObj.optString("id"));
+//                hotel.setName(hotelObj.optString("name"));
+//                hotel.setRating(hotelObj.optString("star_rating"));
+//                hotel.setAddress(hotelObj.optString("regional", "-"));
+//
+//                hotels.add(hotel);
+//            }
+//
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//
+//
+//        return hotels;
+//    }
 
     private List<Hotel> getHotelsSearch(String response) {
         ArrayList<Hotel> hotels = new ArrayList<>();
