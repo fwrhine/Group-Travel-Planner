@@ -17,12 +17,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.example.pplki18.grouptravelplanner.CreateNewPlanActivity;
 import com.example.pplki18.grouptravelplanner.EventDetailActivity;
 import com.example.pplki18.grouptravelplanner.PlaceActivity;
 import com.example.pplki18.grouptravelplanner.R;
-import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
-import com.example.pplki18.grouptravelplanner.data.EventContract;
 import com.github.vipulasri.timelineview.TimelineView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -89,6 +86,12 @@ public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.Ne
             time_start = event.getDeparture_time();
             timeString = time_start + " - " + event.getArrival_time() +
                     " (" + event.getTotal_time() + ")";
+        } else if (event.getType().equals("hotels")) {
+
+        } else if (event.getType().equals("custom")) {
+            time_start = event.getTime_start();
+            timeString = time_start + " - " + event.getTime_end() +
+                    " (" + event.getTotal_time() + ")";
         }
 
         if(event.getType() != null) {
@@ -102,6 +105,8 @@ public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.Ne
                 holder.eventIcon.setMarker(mContext.getDrawable(R.drawable.ic_train_black));
             } else if (event.getType().equals("hotels")) {
                 holder.eventIcon.setMarker(mContext.getDrawable(R.drawable.ic_hotel_black));
+            } else if (event.getType().equals("custom")) {
+                holder.eventIcon.setMarker(mContext.getDrawable(R.drawable.ic_event_note_black));
             }
         }
 
@@ -129,7 +134,6 @@ public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.Ne
 
                 Event anEvent = events.get(position);
                 String type = anEvent.getType();
-
                 if (type.equals("restaurants") || type.equals("attractions")) {
                     setEventDetailOne(events, position);
                 } else {

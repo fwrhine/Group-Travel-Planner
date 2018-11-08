@@ -387,6 +387,7 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
 
         List<String> eventIDs = new ArrayList<>();
         for (Event e : events){
+            e.setCreator_id(firebaseUser.getUid());
             e.setEvent_id(eventRef.push().getKey());
             e.setPlan_id(planID);
             eventIDs.add(e.getEvent_id());

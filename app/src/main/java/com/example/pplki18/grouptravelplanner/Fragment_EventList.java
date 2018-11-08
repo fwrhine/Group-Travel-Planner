@@ -92,34 +92,6 @@ public class Fragment_EventList extends Fragment {
 
     }
 
-//    @Override
-//    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//
-//        Log.d("RESULT0", "masuk");
-////        if (requestCode == EDIT_EVENT_REQUEST_CODE) {
-//            if (resultCode == RESULT_OK) {
-//                String prevActivity = data.getStringExtra("ACTIVITY");
-//                Log.d("RESULT", "masuk");
-//                if (prevActivity != null && prevActivity.equals("CreateNewPlanActivity")) {
-//                    String test = getActivity().getIntent().getStringExtra("TEST");
-//                    if (test != null) {
-//
-//                        Log.d("COBA", test);
-//                    }
-//                    Log.d("RESUMEGA", "resumekok");
-////                events = getAllEventsTemp(date);
-////            getActivity().getIntent().putExtra("ACTIVITY", "CreateNewPlanActivity");
-//                } else {
-////                events = getAllEvents(date);
-//                }
-//                adapter = new RVAdapter_NewPlan(events, getActivity());
-//                rvNewPlan.setAdapter(adapter);
-//                adapter.notifyDataSetChanged();
-//            }
-////        }
-//    }
-
     @Override
     public void onResume() {  // After a pause OR at startup
         super.onResume();
@@ -152,8 +124,9 @@ public class Fragment_EventList extends Fragment {
         String prevActivity = getActivity().getIntent().getStringExtra("ACTIVITY");
         if (prevActivity != null && prevActivity.equals("CreateNewPlanActivity")) {
             events = getAllEventsTemp(date);
-            RVAdapter_NewPlan adapter = new RVAdapter_NewPlan(events, getActivity());
+            adapter = new RVAdapter_NewPlan(events, getActivity());
             rvNewPlan.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
         } else {
             progressBar.setVisibility(View.VISIBLE);
             getAllEvents(date, new EventCallback() {
@@ -161,8 +134,9 @@ public class Fragment_EventList extends Fragment {
                 public void onCallback(List<Event> list) {
                     events = list;
                     progressBar.setVisibility(View.INVISIBLE);
-                    RVAdapter_NewPlan adapter = new RVAdapter_NewPlan(events, getActivity());
+                    adapter = new RVAdapter_NewPlan(events, getActivity());
                     rvNewPlan.setAdapter(adapter);
+                    adapter.notifyDataSetChanged();
                 }
             });
         }
