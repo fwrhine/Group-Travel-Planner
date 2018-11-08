@@ -37,15 +37,23 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.NetworkError;
+import com.android.volley.NetworkResponse;
+import com.android.volley.NoConnectionError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.pplki18.grouptravelplanner.utils.Event;
 import com.example.pplki18.grouptravelplanner.utils.Hotel;
+import com.example.pplki18.grouptravelplanner.utils.HtmlParser;
 import com.example.pplki18.grouptravelplanner.utils.PaginationScrollListener;
 import com.example.pplki18.grouptravelplanner.utils.Place;
 import com.example.pplki18.grouptravelplanner.utils.RVAdapter_Hotel;
@@ -56,15 +64,20 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Text;
 
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import static android.app.Activity.RESULT_OK;
+import static com.example.pplki18.grouptravelplanner.utils.HtmlParser.parse;
 
 public class BookHotelFragment extends Fragment {
     private RecyclerView recyclerViewPlace;
@@ -100,6 +113,7 @@ public class BookHotelFragment extends Fragment {
     private SimpleDateFormat dateFormatter2;
     private SimpleDateFormat dateFormatter3;
     private SimpleDateFormat dateFormatter4;
+    private SimpleDateFormat dateFormatter5;
 
     private String region;
     private String regionCode;
@@ -117,6 +131,9 @@ public class BookHotelFragment extends Fragment {
     private long nightsTemp = 1;
     private String numOfGuestTemp = "1";
     private String numOfRoomTemp = "1";
+
+    private String tripadvisorUrl;
+    private String nextPageUrl;
 
 
     private boolean isLoading = false;
@@ -147,7 +164,7 @@ public class BookHotelFragment extends Fragment {
             @Override
             protected void loadMoreItems() {
                 isLoading = true;
-//                loadMorePlaces();
+                sendRequest(true);
             }
 
             @Override
@@ -182,7 +199,7 @@ public class BookHotelFragment extends Fragment {
             public void onClick(View view) {
                 closeSearchView.setVisibility(View.GONE);
                 infoView.setVisibility(View.VISIBLE);
-                generateToken();
+                getTripadvisorUrl();
                 adapter.clear();
                 progressBar.setVisibility(View.VISIBLE);
             }
@@ -195,7 +212,7 @@ public class BookHotelFragment extends Fragment {
             }
         });
 
-        generateToken();
+        getTripadvisorUrl();
 
     }
 
@@ -225,7 +242,7 @@ public class BookHotelFragment extends Fragment {
             @Override
             public boolean onQueryTextChange(String newQuery) {
                 if (TextUtils.isEmpty(newQuery)){
-                    generateToken();
+                    getTripadvisorUrl();
                     adapter.clear();
                     progressBar.setVisibility(View.VISIBLE);
                 }
@@ -255,7 +272,9 @@ public class BookHotelFragment extends Fragment {
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-
+                adapter.clear();
+                progressBar.setVisibility(View.VISIBLE);
+                getTripadvisorUrl();
             }
         });
 
@@ -426,110 +445,161 @@ public class BookHotelFragment extends Fragment {
                 loadInfoView();
                 adapter.clear();
                 progressBar.setVisibility(View.VISIBLE);
-                generateToken();
+                getTripadvisorUrl();
             }
         });
 
         infoDialog.show();
     }
 
-    public void getTripadvisorUrl() {
-        String url = "https://www.tripadvisor.com/Hotels-g60763-New_York_City_New_York-Hotels.html";
-        sendRequest(url);
+    private void noConnection(VolleyError volleyError) {
+        String message = null;
+        if (volleyError instanceof NetworkError) {
+            message = "No internet connection.";
+        } else if (volleyError instanceof NoConnectionError) {
+            message = "No internet connection.";
+        } else if (volleyError instanceof TimeoutError) {
+            message = "Connection timeout.";
+        }
 
+        progressBar.setVisibility(View.GONE);
+        connectionText.setVisibility(View.VISIBLE);
+        toastMessage(message);
     }
 
-    public void sendRequest(String url) {
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
+    public void getTripadvisorUrl() {
+        String url = "https://www.tripadvisor.com/TypeAheadJson?action=API&startTime=" +
+                System.currentTimeMillis()+ "&uiOrigin=GEOSCOPE&source=GEOSCOPE&interleaved=true" +
+                "&types=geo,theme_park&neighborhood_geos=true&link_type=hotel&details=true" +
+                "&max=12&injectNeighborhoods=true&query=" + region;
+
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+                        try {
+                            JSONObject resp = new JSONObject(response);
+                            JSONArray results = resp.optJSONArray("results");
+                            JSONObject firstResult = new JSONObject(results.get(0).toString());
+                            tripadvisorUrl = "https://www.tripadvisor.com" + firstResult.optString("url");
 
+                            sendRequest(false);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                        populatePlaceRecyclerView(getHotelsSearch(response));
+                        adapter.removeLoadingFooter();
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.d("ERROR HOTEL", error.toString());
+                Log.d("ERROR ALL HOTELS", error.toString());
+                noConnection(error);
             }
-        })
-        {
-            /** Passing some request headers* */
-            @Override
-            public Map getHeaders() throws AuthFailureError {
-                HashMap headers = new HashMap();
-                headers.put("Content-Type", "application/json");
-                headers.put("apiKey", "xxxxxxxxxxxxxxx");
-                return headers;
-            }
-        };
+        });
 
         queue.add(stringRequest);
+
     }
 
-//    public void generateToken() {
-//        String secretKey = "6c484049beacda6541bf40c90e62e8e5";
-//        String url = "https://api-sandbox.tiket.com/apiv1/payexpress"
-//                + "?method=getToken&secretkey=" + secretKey + "&output=json";
-//
-//        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-//                new Response.Listener<String>() {
-//                    @Override
-//                    public void onResponse(String response) {
-//
-//                        try {
-//                            JSONObject json = new JSONObject(response);
-//                            String token = json.getString("token");
-//
-//                            Log.d("TOKEN HOTEL", token);
-//
-//
-//                            sendRequest(token);
-//
-//                        } catch (JSONException e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                }, new Response.ErrorListener() {
-//            @Override
-//            public void onErrorResponse(VolleyError error) {
-//                Log.d("ERROR HOTEL", error.toString());
-//            }
-//        });
-//
-//        queue.add(stringRequest);
-//    }
-//
-//    public void sendRequest(String token) {
-//        String startdate = dateFormatter4.format(checkInDate);
-//        String enddate = dateFormatter4.format(checkOutDate);
-//        String url = "https://api-sandbox.tiket.com/search/hotel?q=" + region + "&startdate=" +
-//                startdate + "&night=" + nights + "&enddate=" + enddate + "&room=" + numOfRoom +
-//                "&adult=" + numOfGuest + "&token=" + token + "&output=json";
-//
-//        Log.d("HOTEL REQUEST", url);
-//
-//        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-//                new Response.Listener<String>() {
-//                    @Override
-//                    public void onResponse(String response) {
-//                        Log.d("HOTELS", response);
-//                        populatePlaceRecyclerView(getHotels(response));
-//
-//                    }
-//                }, new Response.ErrorListener() {
-//            @Override
-//            public void onErrorResponse(VolleyError error) {
-//                Log.d("ERROR ALL HOTELS", error.toString());
-//            }
-//        });
-//
-//        stringRequest.setRetryPolicy(new DefaultRetryPolicy(
-//                60000,
-//                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-//                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-//
-//        queue.add(stringRequest);
-//    }
+    public void sendRequest(final boolean isNextPage) {
+        String url;
+
+        if (!isNextPage) {
+            url = tripadvisorUrl;
+        } else {
+            url = nextPageUrl;
+        }
+
+
+        try {
+            JSONObject jsonBody = new JSONObject();
+            jsonBody.put("changeSet", "TRAVEL_INFO");
+            jsonBody.put("showSnippets", false);
+            jsonBody.put("staydates", dateFormatter5.format(checkInDate) + "_" +
+                    dateFormatter5.format(checkOutDate));
+            jsonBody.put("uguests", numOfRoom + "_" + numOfGuest);
+            jsonBody.put("sortOrder", sortBy);
+            final String requestBody = jsonBody.toString();
+
+            StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            HtmlParser.HtmlParseResult result = parse(response);
+
+                            // check if last page
+                            if (result.getNextPage().isEmpty()) {
+                                isLastPage = true;
+                            } else {
+                                nextPageUrl = "https://www.tripadvisor.com" + result.getNextPage();
+                            }
+
+                            // check if loading next page
+                            if (!isNextPage) {
+                                populatePlaceRecyclerView(result.getHotels());
+                            } else {
+                                adapter.removeLoadingFooter();
+                                isLoading = false;
+
+                                adapter.addAll(result.getHotels());
+
+                                if (!isLastPage) adapter.addLoadingFooter();
+                            }
+                        }
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.d("ERROR HOTEL", error.toString());
+                }
+            })
+            {
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    Map<String, String> headers = new HashMap<>();
+                    headers.put("Accept", "text/html, */*");
+                    headers.put("Accept-Language", "en-US,en;q=0.5");
+                    headers.put("Cache-Control", "no-cache");
+                    headers.put("Connection", "keep-alive");
+                    headers.put("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
+                    headers.put("Host", "www.tripadvisor.com");
+                    headers.put("Pragma", "no-cache");
+                    headers.put("Referer", tripadvisorUrl);
+                    headers.put("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_1) " +
+                            "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36");
+                    headers.put("X-Requested-With", "XMLHttpRequest");
+                    return headers;
+                }
+
+                @Override
+                public byte[] getBody() {
+                    try {
+                        return requestBody == null ? null : requestBody.getBytes("utf-8");
+                    } catch (UnsupportedEncodingException uee) {
+                        VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", requestBody, "utf-8");
+                        return null;
+                    }
+                }
+
+                @Override
+                protected Response <String> parseNetworkResponse(NetworkResponse response) {
+                    String parsed;
+                    try {
+                        parsed = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
+                    } catch (UnsupportedEncodingException e) {
+                        parsed = new String(response.data);
+                    }
+                    return Response.success(parsed, HttpHeaderParser.parseCacheHeaders(response));
+
+                }
+            };
+
+            queue.add(stringRequest);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
 
     public void searchHotel(String query) {
         String url = "https://www.tripadvisor.com/TypeAheadJson?action=API&query=" +
@@ -670,6 +740,7 @@ public class BookHotelFragment extends Fragment {
         dateFormatter2 = new SimpleDateFormat("d MMMM yyyy", Locale.US);
         dateFormatter3 = new SimpleDateFormat("MMM d", Locale.US);
         dateFormatter4 = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+        dateFormatter5 = new SimpleDateFormat("yyyy_MM_dd", Locale.US);
         try {
             checkInDateTemp = dateFormatter2.parse(getArguments().getString("date"));
             checkInDate = checkInDateTemp;
