@@ -55,7 +55,7 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
     private Date date_start_temp;
     private Date date_end_temp;
 
-    private int plan_id;
+    private String plan_id;
     private String from_intent_plan_name;
     private String from_intent_end_date;
     private String from_intent_start_date;
@@ -98,7 +98,7 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
         dateFormatter2 = new SimpleDateFormat("d MMMM yyyy", Locale.US);
 
         intent = getIntent();
-        plan_id = intent.getIntExtra("plan_id", -1);
+        plan_id = intent.getStringExtra("plan_id");
         databaseHelper = new DatabaseHelper(EditPlanActivity.this);
         session = new SessionManager(getApplicationContext());
         user = session.getUserDetails();

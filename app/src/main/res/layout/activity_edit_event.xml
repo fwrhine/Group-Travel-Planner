@@ -70,7 +70,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignEnd="@id/name_layout"
-                android:src="@drawable/ic_event_note_black_24dp"
+                android:src="@drawable/ic_event_note_black"
                 android:layout_centerVertical="true"/>
         </RelativeLayout>
 
