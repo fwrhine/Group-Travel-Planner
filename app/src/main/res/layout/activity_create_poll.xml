@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Activity_CreatePoll">
+
+    <RelativeLayout
+        android:id="@+id/toolbarLayoutRem"
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/plan_toolbarRem"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/colorPrimary"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
+        <ImageButton
+            android:id="@+id/btn_done_poll"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="20dp"
+            android:background="@null"
+            android:foregroundGravity="center"
+            android:src="@drawable/ic_check_white_24dp" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/toolbarLayoutRem">
+
+        <EditText
+            android:id="@+id/poll_topicText"
+            android:layout_width="268dp"
+            android:layout_height="127dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="13dp"
+            android:hint="                   TOPIC"
+            android:textColorHint="#9E9E9E"
+            android:background="@drawable/textbox_border"
+            />
+
+        <EditText
+            android:id="@+id/poll_choiceText"
+            android:layout_width="wrap_content"
+            android:layout_height="49dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignStart="@id/poll_topicText"
+            android:layout_marginTop="194dp"
+            android:background="@drawable/textbox_border"
+            android:hint="      choices         "
+            android:textColorHint="#9E9E9E" />
+        />
+
+        <Button
+            android:id="@+id/btn_poll_add_choice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignTop="@id/poll_choiceText"
+            android:layout_marginEnd="89dp"
+            android:text="ADD"/>
+
+        <TextView
+            android:id="@+id/poll_text_choices"
+            android:layout_width="75dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginBottom="220dp"
+            android:layout_marginStart="11dp"
+            android:paddingRight="20dp"
+            android:text="Choices: " />
+
+        <TextView
+            android:id="@+id/poll_choicesList"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignTop="@+id/poll_text_choices"
+            android:layout_marginStart="119dp" />
+
+
+
+    </RelativeLayout>
+</RelativeLayout>
