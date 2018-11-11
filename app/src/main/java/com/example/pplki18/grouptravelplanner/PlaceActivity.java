@@ -450,7 +450,7 @@ public class PlaceActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 eventIDs.clear();
                 for (DataSnapshot postSnapshot: dataSnapshot.getChildren()){
-                    String eventId = postSnapshot.getValue(String.class); // String of groupID
+                    String eventId = postSnapshot.getValue(String.class); // String of eventID
                     eventIDs.add(eventId);
                 }
                 userIdCallback.onCallback(eventIDs);
