@@ -23,6 +23,10 @@ import android.widget.TimePicker;
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
 import com.example.pplki18.grouptravelplanner.data.EventContract;
 import com.example.pplki18.grouptravelplanner.utils.Event;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -33,13 +37,18 @@ import java.util.Locale;
 import java.util.Objects;
 
 public class EditEventActivity extends AppCompatActivity implements View.OnClickListener{
+
+    FirebaseDatabase firebaseDatabase;
+    FirebaseAuth firebaseAuth;
+    DatabaseReference eventRef;
+
     private Toolbar toolbar;
 
     private LinearLayout transport_layout;
     private LinearLayout location_layout;
 
-    private TextView event_name, event_address;
-    private EditText event_description, event_date, event_start_time, event_end_time;
+    private TextView event_address;
+    private EditText event_name, event_description, event_date, event_start_time, event_end_time;
     private TextView event_trans_num, event_origin, event_dest, event_price;
     private ImageView type_icon;
     private ImageButton save_event;
@@ -67,6 +76,10 @@ public class EditEventActivity extends AppCompatActivity implements View.OnClick
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_event);
+
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        firebaseAuth = FirebaseAuth.getInstance();
+
         init();
 
         setSupportActionBar(toolbar);
@@ -105,15 +118,8 @@ public class EditEventActivity extends AppCompatActivity implements View.OnClick
             start_time = getIntent().getStringExtra("time_start");
             end_time = getIntent().getStringExtra("time_end");
 
-            try {
-                d_date = dateFormatter2.parse(date);
-                s_date = dateFormatter1.format(d_date);
-                event_date.setText(s_date);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-
             event_name.setText(name);
+            event_name.setEnabled(false);
             event_description.setText(description);
 
             if (type.equals("restaurants")) {
@@ -136,14 +142,6 @@ public class EditEventActivity extends AppCompatActivity implements View.OnClick
             String description = event.getDescription();
             String price = event.getPrice();
             date = event.getDate();
-            Log.d("DATEOO", date);
-            try {
-                d_date = dateFormatter2.parse(date);
-                s_date = dateFormatter1.format(d_date);
-                event_date.setText(s_date);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
 
             event_name.setText(title);
             event_description.setText(description);
@@ -155,14 +153,41 @@ public class EditEventActivity extends AppCompatActivity implements View.OnClick
             start_time = event.getDeparture_time();
             end_time = event.getArrival_time();
 
+            event_name.setEnabled(false);
             event_start_time.setEnabled(false);
             event_end_time.setEnabled(false);
             event_date.setEnabled(false);
 
+        } else if (type.equals("custom")) {
+            transport_layout.setVisibility(View.GONE);
+            location_layout.setVisibility(View.GONE);
+
+            Event event = bundle.getParcelable("event");
+
+            event_id = event.getEvent_id();
+            String title = event.getTitle();
+            String description = event.getDescription();
+            date = event.getDate();
+
+            event_name.setText(title);
+            event_description.setText(description);
+
+            start_time = event.getDeparture_time();
+            end_time = event.getArrival_time();
+        }
+
+        try {
+            d_date = dateFormatter2.parse(date);
+            s_date = dateFormatter1.format(d_date);
+            event_date.setText(s_date);
+        } catch (ParseException e) {
+            e.printStackTrace();
         }
 
         event_start_time.setText(start_time);
         event_end_time.setText(end_time);
+
+        eventRef = firebaseDatabase.getReference().child("events").child(event_id);
 
         setDateField();
         setTimeField();
@@ -271,6 +296,7 @@ public class EditEventActivity extends AppCompatActivity implements View.OnClick
 
                     public void onClick(DialogInterface dialog, int whichButton) {
                         //your saving code
+                        String title = event_name.getText().toString();
                         String start_time = event_start_time.getText().toString();
                         String end_time = event_end_time.getText().toString();
                         String description = event_description.getText().toString();
@@ -292,7 +318,7 @@ public class EditEventActivity extends AppCompatActivity implements View.OnClick
                             data.putParcelableArrayListExtra("events", events);
                             data.putExtra("PREV_ACTIVITY", prevActivity);
                         } else {
-                            updateEvent(date, start_time, end_time, description);
+                            updateEvent(title, date, start_time, end_time, description);
                         }
 
                         data.putExtra("start_time", start_time);
@@ -317,30 +343,44 @@ public class EditEventActivity extends AppCompatActivity implements View.OnClick
         return myUpdateEventDialog;
     }
 
-    public void updateEvent(String date, String start_time, String end_time, String desc) {
-        SQLiteDatabase db = databaseHelper.getWritableDatabase();
+    public void updateEvent(String title, String date, String start_time, String end_time, String desc) {
+//        SQLiteDatabase db = databaseHelper.getWritableDatabase();
 
         if (type.equals("restaurants") || type.equals("attractions")) {
 
-            String updateQuery = "UPDATE " + EventContract.EventEntry.TABLE_NAME + " SET " +
-                    EventContract.EventEntry.COL_DATE + " = " + "\"" + date + "\", " +
-                    EventContract.EventEntry.COL_TIME_START + " = " + "\"" + start_time + "\", " +
-                    EventContract.EventEntry.COL_TIME_END + " = " + "\"" + end_time + "\", " +
-                    EventContract.EventEntry.COL_DESCRIPTION + " = " + "\"" + desc + "\" " +
-                    " WHERE " + EventContract.EventEntry._ID + " = " + event_id;
-            Log.d("updateQuery", updateQuery);
-            db.execSQL(updateQuery);
+//            String updateQuery = "UPDATE " + EventContract.EventEntry.TABLE_NAME + " SET " +
+//                    EventContract.EventEntry.COL_DATE + " = " + "\"" + date + "\", " +
+//                    EventContract.EventEntry.COL_TIME_START + " = " + "\"" + start_time + "\", " +
+//                    EventContract.EventEntry.COL_TIME_END + " = " + "\"" + end_time + "\", " +
+//                    EventContract.EventEntry.COL_DESCRIPTION + " = " + "\"" + desc + "\" " +
+//                    " WHERE " + EventContract.EventEntry._ID + " = " + event_id;
+//            Log.d("updateQuery", updateQuery);
+//            db.execSQL(updateQuery);
+
+            eventRef.child("date").setValue(date);
+            eventRef.child("time_start").setValue(start_time);
+            eventRef.child("time_end").setValue(end_time);
+            eventRef.child("description").setValue(desc);
 
         } else if (type.equals("flights") || type.equals("trains")) {
 
-            String updateQuery = "UPDATE " + EventContract.EventEntry.TABLE_NAME + " SET " +
-                    EventContract.EventEntry.COL_DESCRIPTION + " = " + "\"" + desc + "\" " +
-                    " WHERE " + EventContract.EventEntry._ID + " = " + event_id;
+//            String updateQuery = "UPDATE " + EventContract.EventEntry.TABLE_NAME + " SET " +
+//                    EventContract.EventEntry.COL_DESCRIPTION + " = " + "\"" + desc + "\" " +
+//                    " WHERE " + EventContract.EventEntry._ID + " = " + event_id;
+//
+//            db.execSQL(updateQuery);
 
-            db.execSQL(updateQuery);
+            eventRef.child("description").setValue(desc);
+        } else if (type.equals("custom")) {
+
+            eventRef.child("title").setValue(title);
+            eventRef.child("date").setValue(date);
+            eventRef.child("time_start").setValue(start_time);
+            eventRef.child("time_end").setValue(end_time);
+            eventRef.child("description").setValue(desc);
         }
 
-        db.close();
+//        db.close();
     }
 
     @Override
