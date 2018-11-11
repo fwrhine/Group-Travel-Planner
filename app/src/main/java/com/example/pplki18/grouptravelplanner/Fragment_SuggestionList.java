@@ -1,7 +1,9 @@
 package com.example.pplki18.grouptravelplanner;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,24 +21,24 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Fragment_SuggestionList extends Fragment {
 
-    private static final String TAG = "Fragment_PlanList";
+    private static final String TAG = "Fragment_SuggestionList";
 
-    private FirebaseDatabase firebaseDatabase;
-    private FirebaseAuth firebaseAuth;
-    private FirebaseUser firebaseUser;
     private DatabaseReference userRef;
 
+    private FloatingActionButton new_suggestion_button;
     private ProgressBar progressBar;
-    private List<String> planIDs = new ArrayList<>();
+    private List<String> suggestionIDs = new ArrayList<>();
+    private Intent myIntent;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        getActivity().setTitle("Suggestion List");
+        Objects.requireNonNull(getActivity()).setTitle("Suggestion List");
         return inflater.inflate(R.layout.fragment_suggestion_list, container, false);
     }
 
@@ -44,33 +46,45 @@ public class Fragment_SuggestionList extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         init();
+        setCreateSuggestionButton();
 
-        firebaseDatabase = FirebaseDatabase.getInstance();
-        firebaseAuth = FirebaseAuth.getInstance();
-        firebaseUser = firebaseAuth.getCurrentUser();
+        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+        assert firebaseUser != null;
         userRef = firebaseDatabase.getReference().child("users").child(firebaseUser.getUid()).child("plans");
 
         progressBar.setVisibility(View.VISIBLE);
-        getPlanIDs(new PlanIDCallback() {
+        getSuggestionIDs(new SuggestionIDCallback() {
             @Override
             public void onCallback(List<String> list) {
-                planIDs = list;
+                suggestionIDs = list;
                 progressBar.setVisibility(View.INVISIBLE);
             }
         });
     }
 
-    private void getPlanIDs(final PlanIDCallback callback) {
+    private void setCreateSuggestionButton() {
+        new_suggestion_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Fragment_SuggestionList.this.startActivity(myIntent);
+            }
+        });
+    }
+
+    private void getSuggestionIDs(final SuggestionIDCallback callback) {
         userRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                planIDs.clear();
+                suggestionIDs.clear();
                 for (DataSnapshot postSnapshot: dataSnapshot.getChildren()){
-                    String planId = postSnapshot.getValue(String.class); // String of groupID
-                    Log.d("PLAN_ID", planId);
-                    planIDs.add(planId);
+                    String suggestionId = postSnapshot.getValue(String.class); // String of groupID
+                    Log.d("SUGGESTION_ID", suggestionId);
+                    suggestionIDs.add(suggestionId);
                 }
-                callback.onCallback(planIDs);
+                callback.onCallback(suggestionIDs);
             }
 
             @Override
@@ -80,11 +94,16 @@ public class Fragment_SuggestionList extends Fragment {
         });
     }
 
-    public void init() {
-        progressBar = getView().findViewById(R.id.progress_loader);
+    private void init() {
+        progressBar = Objects.requireNonNull(getView()).findViewById(R.id.progress_loader);
+        new_suggestion_button = getView().findViewById(R.id.fab_add_suggestion);
+        myIntent = new Intent(getActivity(), TempChooseEventActivity.class);
+        myIntent.putExtra("prev_fragment", "Fragment_SuggestionList");
+
+        Log.d(TAG, "Init Suggestion List");
     }
 
-    private interface PlanIDCallback {
+    private interface SuggestionIDCallback {
         void onCallback(List<String> list);
     }
 }

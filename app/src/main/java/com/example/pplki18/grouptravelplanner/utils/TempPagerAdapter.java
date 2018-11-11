@@ -6,21 +6,18 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
 import com.example.pplki18.grouptravelplanner.BookHotelFragment;
-import com.example.pplki18.grouptravelplanner.BookPlaneFragment;
-import com.example.pplki18.grouptravelplanner.BookTrainFragment;
-
 
 import com.example.pplki18.grouptravelplanner.Fragment_CustomEvent;
 import com.example.pplki18.grouptravelplanner.Fragment_PlaceList;
 import com.google.android.gms.maps.model.LatLng;
 
-public class PagerAdapter extends FragmentStatePagerAdapter {
+public class TempPagerAdapter extends FragmentStatePagerAdapter {
     private int mNumOfTabs;
     private String region;
     private LatLng region_coor;
     private Bundle bundle;
 
-    public PagerAdapter(FragmentManager fm, int NumOfTabs, String region, LatLng region_coor, Bundle bundle) {
+    public TempPagerAdapter(FragmentManager fm, int NumOfTabs, String region, LatLng region_coor, Bundle bundle) {
         super(fm);
         this.mNumOfTabs = NumOfTabs;
         this.region = region;
@@ -30,10 +27,10 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        Bundle args = new Bundle();
+        //Bundle args = new Bundle();
 
-        int plan_id = bundle.getInt("plan_id");
-        args.putInt("plan_id", plan_id);
+        //int plan_id = bundle.getInt("plan_id");
+        //args.putInt("plan_id", plan_id);
 
         switch (position) {
 
@@ -44,18 +41,6 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
                 Fragment_PlaceList tab2 = newPlaceListInstance("attractions");
                 return tab2;
             case 2:
-                BookHotelFragment tab3 = new BookHotelFragment();
-                tab3.setArguments(bundle);
-                return tab3;
-            case 3:
-                BookPlaneFragment tab4 = new BookPlaneFragment();
-                tab4.setArguments(bundle);
-                return tab4;
-            case 4:
-                BookTrainFragment tab5 = new BookTrainFragment();
-                tab5.setArguments(bundle);
-                return tab5;
-            case 5:
                 Fragment_CustomEvent tab6 = new Fragment_CustomEvent();
                 tab6.setArguments(bundle);
                 return tab6;
@@ -69,14 +54,11 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
         return mNumOfTabs;
     }
 
-    @Override    public CharSequence getPageTitle(int position) {
+    @Override public CharSequence getPageTitle(int position) {
         switch (position) {
             case 0: return "Restaurant";
             case 1: return "Attraction";
-            case 2: return "Hotel";
-            case 3: return "Airplane";
-            case 4: return "Train";
-            case 5: return "Custom";
+            case 2: return "Custom";
             default: return null;
         }
     }
@@ -90,14 +72,13 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
         args.putString("LATITUDE", String.valueOf(region_coor.latitude));
         args.putString("LONGITUDE", String.valueOf(region_coor.longitude));
 
-        int plan_id = bundle.getInt("plan_id");
-        String date = bundle.getString("date");
-        args.putInt("plan_id", plan_id);
-        args.putString("date", date);
+        //int plan_id = bundle.getInt("plan_id");
+        //String date = bundle.getString("date");
+        //args.putInt("plan_id", plan_id);
+        //args.putString("date", date);
 
         myFragment.setArguments(args);
 
         return myFragment;
     }
-
 }

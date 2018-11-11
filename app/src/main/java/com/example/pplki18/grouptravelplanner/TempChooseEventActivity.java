@@ -1,11 +1,9 @@
 package com.example.pplki18.grouptravelplanner;
 
-import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -15,9 +13,8 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.example.pplki18.grouptravelplanner.utils.CustomTabLayout;
-import com.example.pplki18.grouptravelplanner.utils.PagerAdapter;
 import com.example.pplki18.grouptravelplanner.utils.SessionManager;
+import com.example.pplki18.grouptravelplanner.utils.TempPagerAdapter;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.Status;
@@ -28,9 +25,9 @@ import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.maps.model.LatLng;
 
-import java.util.List;
+import java.util.Objects;
 
-public class ChooseEventActivity extends AppCompatActivity {
+public class TempChooseEventActivity extends AppCompatActivity {
 
     private Toolbar toolbar;
     private TabLayout tabLayout;
@@ -39,16 +36,9 @@ public class ChooseEventActivity extends AppCompatActivity {
     private SessionManager sessionManager;
     private TextView textRegion;
     private LinearLayout pickDestination;
-//    SearchView searchView;
     private Bundle plan_bundle;
 
     private LatLng regionCoor;
-
-    //
-//    if(ContextCompat.checkSelfPermission(mActivity,Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED){
-//        // Camera permission granted
-//        PlaceLikelihoodBufferResponse currentPlace = PlaceDetectionClient.getCurrentPlace();
-
     private final int REGION_AUTOCOMPLETE_REQUEST_CODE = 1;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -66,8 +56,7 @@ public class ChooseEventActivity extends AppCompatActivity {
 
         setSupportActionBar(toolbar);
 
-//        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-        getSupportActionBar().setDisplayShowCustomEnabled(true);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayShowCustomEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         textRegion.setText(R.string.pick_destination);
@@ -82,7 +71,7 @@ public class ChooseEventActivity extends AppCompatActivity {
                     Intent intent =
                             new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY)
                                     .setFilter(typeFilter)
-                                    .build(ChooseEventActivity.this);
+                                    .build(TempChooseEventActivity.this);
                     startActivityForResult(intent, REGION_AUTOCOMPLETE_REQUEST_CODE);
                 } catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e) {
                     e.printStackTrace();
@@ -99,15 +88,11 @@ public class ChooseEventActivity extends AppCompatActivity {
 
         tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_restaurant));
         tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_sunny));
-
-        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_hotel));
-        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_airplane));
-        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_train));
         tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_add_white));
 
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
-        final PagerAdapter adapter = new PagerAdapter
+        final TempPagerAdapter adapter = new TempPagerAdapter
                 (getSupportFragmentManager(), tabLayout.getTabCount(),
                         sessionManager.getCurrentRegion(), regionCoor, plan_bundle);
 
@@ -144,7 +129,6 @@ public class ChooseEventActivity extends AppCompatActivity {
                 Log.i("ERROR SEARCH", "An error occurred: " + status);
             }
         });
-
     }
 
     @Override
@@ -160,14 +144,11 @@ public class ChooseEventActivity extends AppCompatActivity {
         if (requestCode == REGION_AUTOCOMPLETE_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 Place place = PlaceAutocomplete.getPlace(this, data);
-                sessionManager.setCurrentRegion(place.getAddress().toString());
+                sessionManager.setCurrentRegion(Objects.requireNonNull(place.getAddress()).toString());
 
                 regionCoor = place.getLatLng();
 
-//                LatLngBounds.Builder builder = new LatLngBounds.Builder().include(place.getLatLng());
-//                region_bounds = builder.build();
-
-                final PagerAdapter adapter = new PagerAdapter
+                final TempPagerAdapter adapter = new TempPagerAdapter
                         (getSupportFragmentManager(), tabLayout.getTabCount(),
                                 sessionManager.getCurrentRegion(), regionCoor, plan_bundle);
 
@@ -184,22 +165,16 @@ public class ChooseEventActivity extends AppCompatActivity {
                 // The user canceled the operation.
             }
         }
-//        else if (requestCode == REQUEST_FROM_PLACE_ACTIVITY) {
-//            for (Fragment fragment : getSupportFragmentManager().getFragments()) {
-//                fragment.onActivityResult(requestCode, resultCode, data);
-//            }
-//        }
     }
 
     private void init() {
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        textRegion = (TextView) toolbar.findViewById(R.id.region);
-        pickDestination = (LinearLayout)toolbar.findViewById(R.id.pick_destination);
-        tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+        toolbar = findViewById(R.id.toolbar);
+        textRegion = toolbar.findViewById(R.id.region);
+        pickDestination = toolbar.findViewById(R.id.pick_destination);
+        tabLayout = findViewById(R.id.tab_layout);
         autocompleteFragment = (PlaceAutocompleteFragment)
                 getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
-        viewPager = (ViewPager) findViewById(R.id.pager);
-//        searchView = (SearchView) findViewById(R.id.search_place);
+        viewPager = findViewById(R.id.pager);
         regionCoor = new LatLng(-6.17511, 106.8650395);
         sessionManager = new SessionManager(getApplicationContext());
         sessionManager.setCurrentRegion("Jakarta");

@@ -9,6 +9,7 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -415,7 +416,14 @@ public class Fragment_PlaceList extends Fragment {
         databaseHelper = new DatabaseHelper(getActivity());
         prevActivity = getActivity().getIntent().getStringExtra("ACTIVITY");
         queue = Volley.newRequestQueue(getActivity());
-        if (prevActivity.equals("CreateNewPlanActivity")) {
+
+        if (prevActivity == null) {
+            prevActivity = getActivity().getIntent().getStringExtra("prev_fragment");
+        }
+
+        Log.d("Prev Frag", prevActivity);
+
+        if (prevActivity.equals("Fragment_SuggestionList") | prevActivity.equals("CreateNewPlanActivity")) {
             events = getActivity().getIntent().getParcelableArrayListExtra("events");
         }
     }

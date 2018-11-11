@@ -69,6 +69,8 @@
             <!-- </intent-filter> -->
         </activity>
 
+        <activity android:name=".TempChooseEventActivity" />
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/api_key" />
