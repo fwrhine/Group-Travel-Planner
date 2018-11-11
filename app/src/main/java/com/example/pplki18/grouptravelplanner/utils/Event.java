@@ -178,7 +178,7 @@ public class Event implements Parcelable, Comparable<Event> {
 //            if (type.equals("restaurants") || type.equals("attractions") || type.equals("custom")) {
                 diff = format.parse(time_end).getTime() - format.parse(time_start).getTime();
 //            } else if (type.equals("flights") || type.equals("trains")) {
-//                diff = format.parse(arrival_time).getTime() - format.parse(departure_time).getTime();
+//                diff = format.parseHotelList(arrival_time).getTime() - format.parseHotelList(departure_time).getTime();
 //            }
 
         } catch (ParseException e) {
@@ -358,10 +358,10 @@ public class Event implements Parcelable, Comparable<Event> {
                 event_start = format.parse(event.getTime_start());
                 event_end = format.parse(event.getTime_end());
 //            } else if (type.equals("flights") || type.equals("trains")) {
-//                this_start = format.parse(this.getDeparture_time());
-//                this_end = format.parse(this.getArrival_time());
-//                event_start = format.parse(event.getDeparture_time());
-//                event_end = format.parse(event.getArrival_time());
+//                this_start = format.parseHotelList(this.getDeparture_time());
+//                this_end = format.parseHotelList(this.getArrival_time());
+//                event_start = format.parseHotelList(event.getDeparture_time());
+//                event_end = format.parseHotelList(event.getArrival_time());
 //            } else if (type.equals("hotels")) {
 //
 //            }

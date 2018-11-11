@@ -76,13 +76,16 @@ public class PlaceActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private RequestQueue queue;
 
-    TextView eventDate;
-    TextView eventTime;
-    TextView eventDuration;
-    TextView eventDescription;
-    RelativeLayout detailLayout;
-    ImageButton editEvent;
+    private TextView eventDate;
+    private TextView eventTime;
+    private TextView eventDuration;
+    private TextView eventDescription;
+    private RelativeLayout detailLayout;
+    private ImageButton editEvent;
     private ArrayList<Event> events;
+
+    private String prevActivity;
+    private String prevActivity2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,8 +105,11 @@ public class PlaceActivity extends AppCompatActivity {
             }
         });
 
-        sendRequest();
-
+        if (prevActivity != null && (prevActivity.equals("HotelFragment"))) {
+            sendRequestHotel();
+        } else {
+            sendRequestPlace();
+        }
     }
 
     @Override
@@ -163,7 +169,7 @@ public class PlaceActivity extends AppCompatActivity {
         }
     }
 
-    private void sendRequest() {
+    private void sendRequestPlace() {
         // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(this);
         String url = "https://maps.googleapis.com/maps/api/place/details/json?placeid="
@@ -274,7 +280,7 @@ public class PlaceActivity extends AppCompatActivity {
 //        google_button.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {
-//                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(place.getUrl()));
+//                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parseHotelList(place.getUrl()));
 //                startActivity(browserIntent);
 //            }
 //        });
@@ -474,8 +480,8 @@ public class PlaceActivity extends AppCompatActivity {
         progressBar = (ProgressBar) findViewById(R.id.main_progress);
         queue = Volley.newRequestQueue(this);
         databaseHelper = new DatabaseHelper(this);
-        String prevActivity = getIntent().getStringExtra("ACTIVITY");
-        String prevActivity2 = getIntent().getStringExtra("PREV_ACTIVITY");
+        prevActivity = getIntent().getStringExtra("ACTIVITY");
+        prevActivity2 = getIntent().getStringExtra("PREV_ACTIVITY");
 
         eventDate = (TextView) findViewById(R.id.event_detail_date);
         eventTime = (TextView) findViewById(R.id.event_detail_time);
@@ -493,6 +499,13 @@ public class PlaceActivity extends AppCompatActivity {
             setEventDetail();
         } else {
             detailLayout.setVisibility(View.GONE);
+        }
+
+        if (prevActivity != null && (prevActivity.equals("HotelFragment"))) {
+            open_hours.setVisibility(View.GONE);
+            setHotelDetail();
+        } else {
+            hotelLayout.setVisibility(View.GONE);
         }
 
     }

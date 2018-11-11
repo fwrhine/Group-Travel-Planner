@@ -3,9 +3,7 @@ package com.example.pplki18.grouptravelplanner;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
@@ -23,22 +21,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.DatePicker;
-import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.NumberPicker;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
-import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.NoConnectionError;
@@ -51,21 +43,17 @@ import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.example.pplki18.grouptravelplanner.utils.Event;
 import com.example.pplki18.grouptravelplanner.utils.Hotel;
 import com.example.pplki18.grouptravelplanner.utils.HtmlParser;
 import com.example.pplki18.grouptravelplanner.utils.PaginationScrollListener;
-import com.example.pplki18.grouptravelplanner.utils.Place;
 import com.example.pplki18.grouptravelplanner.utils.RVAdapter_Hotel;
 import com.example.pplki18.grouptravelplanner.utils.SessionManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -76,8 +64,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import static android.app.Activity.RESULT_OK;
-import static com.example.pplki18.grouptravelplanner.utils.HtmlParser.parse;
+import static com.example.pplki18.grouptravelplanner.utils.HtmlParser.parseHotelList;
 
 public class BookHotelFragment extends Fragment {
     private RecyclerView recyclerViewPlace;
@@ -527,7 +514,7 @@ public class BookHotelFragment extends Fragment {
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
-                            HtmlParser.HtmlParseResult result = parse(response);
+                            HtmlParser.HtmlParseResult result = parseHotelList(response);
 
                             // check if last page
                             if (result.getNextPage().isEmpty()) {

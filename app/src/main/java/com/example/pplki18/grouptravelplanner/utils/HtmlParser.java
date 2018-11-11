@@ -12,11 +12,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class HtmlParser {
-    public static HtmlParseResult parse(String html) {
+    public static HtmlParseResult parseHotelList(String html) {
         HtmlParseResult result = new HtmlParseResult();
         Document doc = Jsoup.parse(html);
 //            File input = new File("tripadvisor.html");
-//            Document doc = Jsoup.parse(input, "UTF-8", "");
+//            Document doc = Jsoup.parseHotelList(input, "UTF-8", "");
 
         Elements hotel_list = doc.select("div[class*='listItem']").select("div[class*='listing collapsed']");
 
@@ -65,6 +65,10 @@ public class HtmlParser {
         }
 
         return result;
+    }
+
+    public static Hotel parseHotel(String html) {
+        Document doc = Jsoup.parse(html);
     }
 
     public static class HtmlParseResult {
