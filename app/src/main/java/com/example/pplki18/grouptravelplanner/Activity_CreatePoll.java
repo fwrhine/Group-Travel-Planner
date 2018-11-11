@@ -1,5 +1,6 @@
 package com.example.pplki18.grouptravelplanner;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -10,15 +11,16 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+@SuppressLint("Registered")
 public class Activity_CreatePoll extends AppCompatActivity {
 
-    EditText topicInput;
-    EditText choiceInput;
-    TextView choiceText;
-    Button btnAddChoice;
-    ImageButton btndone;
-    ArrayList<String> choiceList;
-    String choices;
+    private EditText topicInput;
+    private EditText choiceInput;
+    private TextView choiceText;
+    private Button btnAddChoice;
+    private ImageButton btndone;
+    private ArrayList<String> choiceList;
+    private String choices;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +42,7 @@ public class Activity_CreatePoll extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 // Starts the function below
-                Poll newPoll = new Poll(choiceList);
+                @SuppressWarnings("unused") Poll newPoll = new Poll(choiceList);
             }
         });
     }

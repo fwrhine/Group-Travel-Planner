@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="5dp">
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/cv_row_poll_choice"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp">
+
+
+            <TextView
+                android:id="@+id/poll_choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TEST CHOICE"
+                android:textSize="25sp"
+                android:paddingRight="20dp"
+                android:layout_alignParentLeft="true"/>
+
+
+            <TextView
+                android:id="@+id/poll_choice_num"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="00"
+                android:textSize="25dp"
+                android:layout_toRightOf="@id/poll_choice"
+                />
+
+
+            <Button
+                android:id="@+id/poll_choice_increment"
+                android:text="+"
+                android:background="@color/red"
+                android:textColor="@android:color/white"
+                android:layout_margin="8dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/remove_notification"
+                android:layout_alignParentRight="true"/>
+
+
+        </RelativeLayout>
+
+    </android.support.v7.widget.CardView>
+
+</LinearLayout>

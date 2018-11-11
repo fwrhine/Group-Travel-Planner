@@ -45,16 +45,16 @@ import java.util.Objects;
 
 public class Activity_CreateReminder extends AppCompatActivity implements DatePickerDialog.OnDateSetListener,
         TimePickerDialog.OnTimeSetListener {
-    Button btn_pick;
-    Button btn_create;
-    Button btn_goto_cal;
-    Button btn_cancel_event;
-    ImageButton btn_done;
-    public TextView resultYear;
-    public TextView resultMonth;
-    public TextView resultDay;
-    public TextView resultTime;
-    EditText destination;
+    private Button btn_pick;
+    private Button btn_create;
+    private Button btn_goto_cal;
+    private Button btn_cancel_event;
+    private ImageButton btn_done;
+    private TextView resultYear;
+    private TextView resultMonth;
+    private TextView resultDay;
+    private TextView resultTime;
+    private EditText destination;
     public static String destText;
     String notificationTxt;
     Calendar alarmCal;

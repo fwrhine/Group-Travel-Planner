@@ -4,10 +4,9 @@ import java.util.Date;
 
 public class Reminder {
 
-    String destination;
-    Date date;
-    Long eventID;
-    Integer alarmChannel;
+    private String destination;
+    private Date date;
+    private Long eventID;
 
     //constructor
 

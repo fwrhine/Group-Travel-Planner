@@ -32,7 +32,7 @@ public class Poll {
         return choiceList;
     }
 
-    public HashMap<String, Integer> getChoiceMapc() {
+    public HashMap<String, Integer> getChoiceMap() {
         return choiceMap;
     }
 
