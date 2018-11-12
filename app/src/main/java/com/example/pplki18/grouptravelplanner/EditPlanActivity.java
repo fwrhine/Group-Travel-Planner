@@ -391,7 +391,7 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
                     public void onClick(View view) {
                         c_cur_date.add(Calendar.DATE, 1);
                         date_month_year.setText(dateFormatter2.format(c_cur_date.getTime()));
-                        day.setText(new SimpleDateFormat("EEEE").format(c_cur_date.getTime()));
+                        day.setText(new SimpleDateFormat("EEEE", Locale.US).format(c_cur_date.getTime()));
 
                         if (c_cur_date.getTime().getTime() == c_end_pin.getTime().getTime()) {
                             button_left.setEnabled(true);
