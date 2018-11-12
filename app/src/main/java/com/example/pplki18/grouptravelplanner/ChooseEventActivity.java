@@ -44,6 +44,8 @@ public class ChooseEventActivity extends AppCompatActivity {
 
     private LatLng regionCoor;
 
+    private boolean fromSuggestion;
+
     //
 //    if(ContextCompat.checkSelfPermission(mActivity,Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED){
 //        // Camera permission granted
@@ -100,9 +102,11 @@ public class ChooseEventActivity extends AppCompatActivity {
         tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_restaurant));
         tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_sunny));
 
-        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_hotel));
-        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_airplane));
-        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_train));
+        if (!fromSuggestion) {
+            tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_hotel));
+            tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_airplane));
+            tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_train));
+        }
         tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_add_white));
 
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
@@ -204,5 +208,13 @@ public class ChooseEventActivity extends AppCompatActivity {
         sessionManager = new SessionManager(getApplicationContext());
         sessionManager.setCurrentRegion("Jakarta");
         plan_bundle = getIntent().getExtras();
+
+        String checkPrevFrag = getIntent().getStringExtra("prev_fragment");
+        fromSuggestion = false;
+        if (checkPrevFrag != null) {
+            if (checkPrevFrag.equals("Fragment_SuggestionList")) {
+                fromSuggestion = true;
+            }
+        }
     }
 }

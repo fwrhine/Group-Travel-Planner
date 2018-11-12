@@ -97,7 +97,7 @@ public class Fragment_SuggestionList extends Fragment {
     private void init() {
         progressBar = Objects.requireNonNull(getView()).findViewById(R.id.progress_loader);
         new_suggestion_button = getView().findViewById(R.id.fab_add_suggestion);
-        myIntent = new Intent(getActivity(), TempChooseEventActivity.class);
+        myIntent = new Intent(getActivity(), ChooseEventActivity.class);
         myIntent.putExtra("prev_fragment", "Fragment_SuggestionList");
 
         Log.d(TAG, "Init Suggestion List");
