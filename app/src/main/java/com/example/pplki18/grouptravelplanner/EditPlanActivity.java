@@ -22,6 +22,9 @@ import android.widget.Toast;
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
 import com.example.pplki18.grouptravelplanner.data.PlanContract;
 import com.example.pplki18.grouptravelplanner.utils.SessionManager;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -31,6 +34,10 @@ import java.util.HashMap;
 import java.util.Locale;
 
 public class EditPlanActivity extends AppCompatActivity implements View.OnClickListener{
+
+    FirebaseDatabase firebaseDatabase;
+    FirebaseAuth firebaseAuth;
+    DatabaseReference planRef;
 
     private static final String TAG = "EditPlanActivity";
 
@@ -55,7 +62,7 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
     private Date date_start_temp;
     private Date date_end_temp;
 
-    private int plan_id;
+    private String plan_id;
     private String from_intent_plan_name;
     private String from_intent_end_date;
     private String from_intent_start_date;
@@ -65,6 +72,9 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_plan);
+
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        firebaseAuth = FirebaseAuth.getInstance();
 
         findViewById();
 
@@ -98,7 +108,7 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
         dateFormatter2 = new SimpleDateFormat("d MMMM yyyy", Locale.US);
 
         intent = getIntent();
-        plan_id = intent.getIntExtra("plan_id", -1);
+        plan_id = intent.getStringExtra("plan_id");
         databaseHelper = new DatabaseHelper(EditPlanActivity.this);
         session = new SessionManager(getApplicationContext());
         user = session.getUserDetails();
@@ -132,6 +142,9 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
         } catch (ParseException e) {
             e.printStackTrace();
         }
+
+        planRef = firebaseDatabase.getReference().child("plans").child(plan_id);;
+
         setAddEventButton();
     }
 
@@ -143,8 +156,8 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
 
     @Override
     public void onBackPressed() {
-        Log.d("dateeeeee", dateFormatter1.format(date_start));
-        Log.d("dateeeeee", dateFormatter1.format(date_end));
+//        Log.d("dateeeeee", dateFormatter1.format(date_start));
+//        Log.d("dateeeeee", dateFormatter1.format(date_end));
         if (!trip_start_date.getText().toString().equals(dateFormatter1.format(date_start)) ||
                 !trip_end_date.getText().toString().equals(dateFormatter1.format(date_end))) {
             AlertDialog box;
@@ -204,19 +217,22 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void updatePlanDate() {
-        SQLiteDatabase db = databaseHelper.getWritableDatabase();
-
+//        SQLiteDatabase db = databaseHelper.getWritableDatabase();
+//
         String start_day = dateFormatter2.format(date_start_temp);
         String end_day = dateFormatter2.format(date_end_temp);
         int total_days = Integer.parseInt(trip_days.getText().toString());
-        String updateQuery = "UPDATE " + PlanContract.PlanEntry.TABLE_NAME + " SET " +
-                PlanContract.PlanEntry.COL_START_DAY + " = " + "\"" + start_day + "\", " +
-                PlanContract.PlanEntry.COL_END_DAY + " = " + "\"" + end_day + "\", " +
-                PlanContract.PlanEntry.COL_TOTAL_DAY + " = " + total_days + " WHERE " +
-                PlanContract.PlanEntry._ID + " = " + plan_id;
-        Log.d("updateQuery", updateQuery);
-        db.execSQL(updateQuery);
-        db.close();
+//        String updateQuery = "UPDATE " + PlanContract.PlanEntry.TABLE_NAME + " SET " +
+//                PlanContract.PlanEntry.COL_START_DAY + " = " + "\"" + start_day + "\", " +
+//                PlanContract.PlanEntry.COL_END_DAY + " = " + "\"" + end_day + "\", " +
+//                PlanContract.PlanEntry.COL_TOTAL_DAY + " = " + total_days + " WHERE " +
+//                PlanContract.PlanEntry._ID + " = " + plan_id;
+//        Log.d("updateQuery", updateQuery);
+//        db.execSQL(updateQuery);
+//        db.close();
+        planRef.child("plan_start_date").setValue(start_day);
+        planRef.child("plan_end_date").setValue(end_day);
+        planRef.child("total_days").setValue(total_days);
 
     }
 
@@ -307,6 +323,7 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
     }
 
     public void setDateChanger() throws ParseException {
+        button_left.setEnabled(false);
         date_month_year.setText(dateFormatter2.format(date_start_temp));
         date_month_year.setTextColor(getResources().getColor(R.color.colorBlack));
         day.setText(new SimpleDateFormat("EEEE", Locale.US).format(date_start_temp));

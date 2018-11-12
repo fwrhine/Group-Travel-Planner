@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
@@ -25,13 +26,32 @@ import com.example.pplki18.grouptravelplanner.EditPlanActivity;
 import com.example.pplki18.grouptravelplanner.R;
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
 import com.example.pplki18.grouptravelplanner.data.PlanContract;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 public class RVAdapter_Plan extends RecyclerView.Adapter<RVAdapter_Plan.PlanViewHolder>{
+
+    FirebaseDatabase firebaseDatabase;
+    FirebaseAuth firebaseAuth;
+    FirebaseUser firebaseUser;
+    DatabaseReference planRef;
+    DatabaseReference eventRef;
+    StorageReference storageReference;
+
+    List<String> eventIDs = new ArrayList<>();
 
     List<Plan> plans;
     Context context;
@@ -42,6 +62,13 @@ public class RVAdapter_Plan extends RecyclerView.Adapter<RVAdapter_Plan.PlanView
         this.context = context;
         dateFormatter1 = new SimpleDateFormat("EEE, MMM d", Locale.US);
         dateFormatter2 = new SimpleDateFormat("d MMMM yyyy", Locale.US);
+
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
+
+        eventRef = firebaseDatabase.getReference().child("events");
+        storageReference = FirebaseStorage.getInstance().getReference();
     }
 
     @Override
@@ -167,15 +194,91 @@ public class RVAdapter_Plan extends RecyclerView.Adapter<RVAdapter_Plan.PlanView
     }
 
     private void deletePlan(Plan plan) {
-        DatabaseHelper myDb = new DatabaseHelper(context);
-        SQLiteDatabase db = myDb.getWritableDatabase();
+//        DatabaseHelper myDb = new DatabaseHelper(context);
+//        SQLiteDatabase db = myDb.getWritableDatabase();
+//
+//        String deleteQuery = "DELETE FROM " + PlanContract.PlanEntry.TABLE_NAME + " WHERE " +
+//                PlanContract.PlanEntry._ID + " = " + plan.getPlan_id();
+//
+//        db.execSQL(deleteQuery);
+//        db.close();
+//        notifyDataSetChanged();
 
-        String deleteQuery = "DELETE FROM " + PlanContract.PlanEntry.TABLE_NAME + " WHERE " +
-                PlanContract.PlanEntry._ID + " = " + plan.getPlan_id();
+        if (plan.getPlan_id() != null) {
+            deleteHelper(plan, new DeleteEventCallback() {
+                @Override
+                public void onCallback() {
+                    notifyDataSetChanged();
+                }
+            });
+        }
+    }
 
-        db.execSQL(deleteQuery);
-        db.close();
-        notifyDataSetChanged();
+    private void deleteHelper(Plan plan, final DeleteEventCallback callback) {
+
+        String plan_id = plan.getPlan_id();
+        planRef = firebaseDatabase.getReference().child("plans").child(plan_id);
+
+        getAllEventIDs(new EventIdCallback() {
+            @Override
+            public void onCallback(List<String> list) {
+                eventIDs = list;
+
+                planRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        for (String event_id : eventIDs) {
+                            final DatabaseReference eventRef = firebaseDatabase.getReference().child("events").child(event_id);
+                            eventRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    eventRef.removeValue();
+                                    callback.onCallback();
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                }
+                            });
+                        }
+                        planRef.removeValue();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+            }
+        });
+    }
+
+    private interface DeleteEventCallback {
+        void onCallback();
+    }
+
+    private void getAllEventIDs(final EventIdCallback userIdCallback){
+        planRef.child("events").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                eventIDs.clear();
+                for (DataSnapshot postSnapshot: dataSnapshot.getChildren()){
+                    String eventId = postSnapshot.getValue(String.class); // String of eventID
+                    eventIDs.add(eventId);
+                }
+                userIdCallback.onCallback(eventIDs);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private interface EventIdCallback{
+        void onCallback(List<String> list);
     }
 
     private AlertDialog renameDialog(final int position, String name) {

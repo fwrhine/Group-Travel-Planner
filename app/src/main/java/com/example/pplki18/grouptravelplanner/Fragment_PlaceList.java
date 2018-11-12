@@ -1,9 +1,7 @@
 package com.example.pplki18.grouptravelplanner;
 
-import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
@@ -34,12 +32,20 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
-import com.example.pplki18.grouptravelplanner.data.EventContract;
 import com.example.pplki18.grouptravelplanner.utils.Event;
 import com.example.pplki18.grouptravelplanner.utils.PaginationScrollListener;
 import com.example.pplki18.grouptravelplanner.utils.Place;
 import com.example.pplki18.grouptravelplanner.utils.RVAdapter_Place;
 import com.example.pplki18.grouptravelplanner.utils.SessionManager;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -51,6 +57,13 @@ import java.util.List;
 import static android.app.Activity.RESULT_OK;
 
 public class Fragment_PlaceList extends Fragment {
+
+    FirebaseDatabase firebaseDatabase;
+    FirebaseAuth firebaseAuth;
+    FirebaseUser firebaseUser;
+    DatabaseReference planRef;
+    DatabaseReference eventRef;
+    StorageReference storageReference;
 
     private RecyclerView recyclerViewPlace;
     private LinearLayoutManager linearLayoutManager;
@@ -68,10 +81,12 @@ public class Fragment_PlaceList extends Fragment {
     private String next_token;
     private RequestQueue queue;
 
-    private int plan_id;
+    private String plan_id;
     private String event_date;
     private String prevActivity;
-    private List<Event> events;
+
+    private List<String> eventIDs = new ArrayList<>();
+    private List<Event> events = new ArrayList<>();
 
     private boolean isLoading = false;
     private boolean isLastPage = false;
@@ -111,6 +126,14 @@ public class Fragment_PlaceList extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
+
+        eventRef = firebaseDatabase.getReference().child("events");
+        storageReference = FirebaseStorage.getInstance().getReference();
+
         init();
 
         textView.setVisibility(View.GONE);
@@ -372,26 +395,79 @@ public class Fragment_PlaceList extends Fragment {
     }
 
     private void saveEventToPlan(Place place, String start_time, String end_time) {
-        Log.d("SAVEVENT", "MASUK");
-        SQLiteDatabase db = databaseHelper.getWritableDatabase();
+//        Log.d("SAVEVENT", "MASUK");
+//        SQLiteDatabase db = databaseHelper.getWritableDatabase();
+//
+//        ContentValues contentValues = new ContentValues();
+//        contentValues.put(EventContract.EventEntry.COL_QUERY_ID, place.getPlace_id());
+//        contentValues.put(EventContract.EventEntry.COL_PLAN_ID, plan_id);
+//        contentValues.put(EventContract.EventEntry.COL_TITLE, place.getName());
+//        contentValues.put(EventContract.EventEntry.COL_LOCATION, place.getAddress());
+//        contentValues.put(EventContract.EventEntry.COL_WEBSITE, place.getWebsite());
+//        contentValues.put(EventContract.EventEntry.COL_DATE, event_date);
+//        //TODO ERROR PLACES GADA ADDRESS DLL ??!!
+//        contentValues.put(EventContract.EventEntry.COL_TIME_START, start_time);
+//        contentValues.put(EventContract.EventEntry.COL_TIME_END, end_time);
+//        contentValues.put(EventContract.EventEntry.COL_PHONE, place.getPhone_number());
+//        contentValues.put(EventContract.EventEntry.COL_TYPE, type);
+//        contentValues.put(EventContract.EventEntry.COL_RATING, place.getRating());
+//        long event_id = db.insert(EventContract.EventEntry.TABLE_NAME, null, contentValues);
+        Event anEvent = new Event(place.getName(), event_date, start_time, end_time, type);
+        anEvent.setQuery_id(place.getPlace_id());
+        anEvent.setLocation(place.getAddress());
+        anEvent.setWebsite(place.getWebsite());
+        anEvent.setPhone(place.getPhone_number());
+        anEvent.setRating(place.getRating());
 
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(EventContract.EventEntry.COL_QUERY_ID, place.getPlace_id());
-        contentValues.put(EventContract.EventEntry.COL_PLAN_ID, plan_id);
-        contentValues.put(EventContract.EventEntry.COL_TITLE, place.getName());
-        contentValues.put(EventContract.EventEntry.COL_LOCATION, place.getAddress());
-        contentValues.put(EventContract.EventEntry.COL_WEBSITE, place.getWebsite());
-        contentValues.put(EventContract.EventEntry.COL_DATE, event_date);
-        //TODO ERROR PLACES GADA ADDRESS DLL ??!!
-//        Log.d("event location", places.get(position).getAddress());
-//        Log.d("event desc", places.get(position).getWebsite());
-        contentValues.put(EventContract.EventEntry.COL_TIME_START, start_time);
-        contentValues.put(EventContract.EventEntry.COL_TIME_END, end_time);
-        contentValues.put(EventContract.EventEntry.COL_PHONE, place.getPhone_number());
-        contentValues.put(EventContract.EventEntry.COL_TYPE, type);
-        contentValues.put(EventContract.EventEntry.COL_RATING, place.getRating());
-        long event_id = db.insert(EventContract.EventEntry.TABLE_NAME, null, contentValues);
+        final String eventId = eventRef.push().getKey();
+        anEvent.setEvent_id(eventId);
+        anEvent.setPlan_id(plan_id);
+        anEvent.setCreator_id(firebaseUser.getUid());
+        eventRef.child(eventId).setValue(anEvent);
 
+        planRef = firebaseDatabase.getReference().child("plans").child(plan_id).child("events");
+        getAllEventIDs(new EventIdCallback() {
+            @Override
+            public void onCallback(List<String> list) {
+                eventIDs = list;
+                eventIDs.add(eventId);
+
+                planRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        planRef.setValue(eventIDs);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+            }
+        });
+    }
+
+    private void getAllEventIDs(final EventIdCallback userIdCallback){
+        planRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                eventIDs.clear();
+                for (DataSnapshot postSnapshot: dataSnapshot.getChildren()){
+                    String eventId = postSnapshot.getValue(String.class); // String of groupID
+                    eventIDs.add(eventId);
+                }
+                userIdCallback.onCallback(eventIDs);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private interface EventIdCallback{
+        void onCallback(List<String> list);
     }
 
     private void toastMessage(String message) {
@@ -410,7 +486,7 @@ public class Fragment_PlaceList extends Fragment {
         latitude = getArguments().getString("LATITUDE");
         longitude = getArguments().getString("LONGITUDE");
         adapter = new RVAdapter_Place(getContext());
-        plan_id = getArguments().getInt("plan_id");
+        plan_id = getArguments().getString("plan_id");
         event_date = getArguments().getString("date");
         databaseHelper = new DatabaseHelper(getActivity());
         prevActivity = getActivity().getIntent().getStringExtra("ACTIVITY");
