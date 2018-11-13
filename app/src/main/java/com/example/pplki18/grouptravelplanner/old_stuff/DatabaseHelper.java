@@ -1,4 +1,4 @@
-package com.example.pplki18.grouptravelplanner.data;
+package com.example.pplki18.grouptravelplanner.old_stuff;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -11,21 +11,20 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.example.pplki18.grouptravelplanner.Reminder;
-import com.example.pplki18.grouptravelplanner.data.UserContract.UserEntry;
-import com.example.pplki18.grouptravelplanner.data.GroupContract.GroupEntry;
-import com.example.pplki18.grouptravelplanner.data.UserGroupContract.UserGroupEntry;
-import com.example.pplki18.grouptravelplanner.data.FriendsContract.FriendsEntry;
-import com.example.pplki18.grouptravelplanner.data.PlanContract.PlanEntry;
-import com.example.pplki18.grouptravelplanner.data.EventContract.EventEntry;
-//import com.example.pplki18.grouptravelplanner.data.PlanContract.RundownEntry;
+import com.example.pplki18.grouptravelplanner.old_stuff.UserContract.UserEntry;
+import com.example.pplki18.grouptravelplanner.old_stuff.GroupContract.GroupEntry;
+import com.example.pplki18.grouptravelplanner.old_stuff.UserGroupContract.UserGroupEntry;
+import com.example.pplki18.grouptravelplanner.old_stuff.FriendsContract.FriendsEntry;
+import com.example.pplki18.grouptravelplanner.old_stuff.PlanContract.PlanEntry;
+import com.example.pplki18.grouptravelplanner.old_stuff.EventContract.EventEntry;
+//import com.example.pplki18.grouptravelplanner.old_stuff.PlanContract.RundownEntry;
 //import com.example.pplki18.grouptravelplanner.data.HotelContract.HotelEntry;
 //import com.example.pplki18.grouptravelplanner.data.RestaurantContract.RestaurantEntry;
 //import com.example.pplki18.grouptravelplanner.data.EntertainmentContract.EntertainmentEntry;
 //import com.example.pplki18.grouptravelplanner.data.FlightContract.FlightEntry;
 //import com.example.pplki18.grouptravelplanner.data.TrainContract.TrainEntry;
 //import com.example.pplki18.grouptravelplanner.data.OtherEventContract.OtherEventEntry;
-import com.example.pplki18.grouptravelplanner.data.ReminderContract.ReminderEntry;
+import com.example.pplki18.grouptravelplanner.old_stuff.ReminderContract.ReminderEntry;
 
 import java.io.ByteArrayOutputStream;
 

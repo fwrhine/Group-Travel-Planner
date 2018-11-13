@@ -1,4 +1,4 @@
-package com.example.pplki18.grouptravelplanner.utils;
+package com.example.pplki18.grouptravelplanner.data;
 
 import android.os.Parcel;
 import android.os.Parcelable;

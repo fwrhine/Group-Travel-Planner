@@ -17,9 +17,9 @@
 //import android.widget.TextView;
 //import android.widget.Toast;
 //
-//import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
-//import com.example.pplki18.grouptravelplanner.data.FriendsContract;
-//import com.example.pplki18.grouptravelplanner.data.UserContract;
+//import com.example.pplki18.grouptravelplanner.old_stuff.DatabaseHelper;
+//import com.example.pplki18.grouptravelplanner.old_stuff.FriendsContract;
+//import com.example.pplki18.grouptravelplanner.old_stuff.UserContract;
 //import com.example.pplki18.grouptravelplanner.utils.SessionManager;
 //
 //import java.util.ArrayList;

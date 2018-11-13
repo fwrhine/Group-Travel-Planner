@@ -2,10 +2,6 @@ package com.example.pplki18.grouptravelplanner;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
-import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -18,8 +14,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.pplki18.grouptravelplanner.R;
-import com.example.pplki18.grouptravelplanner.utils.Event;
+import com.example.pplki18.grouptravelplanner.data.Event;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
