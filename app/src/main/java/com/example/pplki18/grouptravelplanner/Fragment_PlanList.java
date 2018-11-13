@@ -157,6 +157,7 @@ public class Fragment_PlanList extends Fragment {
     public void onResume() {  // After a pause OR at startup
         Log.d("RESUME", "masuk resume");
         super.onResume();
+        this.onActivityCreated(null);
 //        plans = getAllPlans();
 //        adapter = new RVAdapter_Plan(plans, getActivity());
 //        recyclerViewPlan.setAdapter(adapter);

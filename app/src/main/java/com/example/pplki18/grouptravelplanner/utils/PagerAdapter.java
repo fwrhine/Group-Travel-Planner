@@ -105,9 +105,9 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
         args.putString("LATITUDE", String.valueOf(region_coor.latitude));
         args.putString("LONGITUDE", String.valueOf(region_coor.longitude));
 
-        int plan_id = bundle.getInt("plan_id");
+        String plan_id = bundle.getString("plan_id");
         String date = bundle.getString("date");
-        args.putInt("plan_id", plan_id);
+        args.putString("plan_id", plan_id);
         args.putString("date", date);
 
         myFragment.setArguments(args);

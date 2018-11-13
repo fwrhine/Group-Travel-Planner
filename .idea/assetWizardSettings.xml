@@ -73,7 +73,7 @@
                                 <PersistentState>
                                   <option name="values">
                                     <map>
-                                      <entry key="url" value="jar:file:/Applications/Android%20Studio.app/Contents/plugins/android/lib/android.jar!/images/material_design_icons/navigation/ic_close_black_24dp.xml" />
+                                      <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/notification/ic_event_note_black_24dp.xml" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -83,8 +83,9 @@
                         </option>
                         <option name="values">
                           <map>
-                            <entry key="outputName" value="ic_close" />
-                            <entry key="sourceFile" value="$USER_HOME$" />
+                            <entry key="color" value="feffff" />
+                            <entry key="outputName" value="ic_event_note" />
+                            <entry key="sourceFile" value="C:\Users\vasun" />
                           </map>
                         </option>
                       </PersistentState>
