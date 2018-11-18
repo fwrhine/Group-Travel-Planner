@@ -69,4 +69,8 @@ public class Poll {
     public void setChoiceList(ArrayList<String> list) {
         this.choiceList = list;
     }
+
+    public void setChoiceMap(HashMap<String, Integer> map) {
+        this.choiceMap = map;
+    }
 }

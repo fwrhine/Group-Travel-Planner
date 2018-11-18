@@ -47,19 +47,23 @@ public class Activity_CreatePoll extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_poll);
         init();
+//        choiceText.setText("dummy");
         btnAddChoice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // Starts the function below
-                String newChoice = choiceText.getText().toString();
+                String newChoice = choiceInput.getText().toString();
                 if (!choiceList.contains(newChoice)) {
                     choiceList.add(newChoice);
-                    choices += newChoice + " ";
+                    choices += ", " + newChoice;
                     choiceText.setText(choices);
-                    Intent intent = getIntent();
-                    intent.putExtra("topic", topicInput.getText());
-                    finish();
-                    startActivity(intent);
+//                    Intent intent = getIntent();
+//                    intent.putExtra("topic", topicInput.getText());
+//                    finish();
+//                    startActivity(intent);
+                    Toast.makeText(getApplicationContext(), "Added choice", Toast.LENGTH_SHORT).show();
+                    Log.v("CHOICE LIST", choiceList.toString());
+
                 }
             }
         });
@@ -73,7 +77,12 @@ public class Activity_CreatePoll extends AppCompatActivity {
                     Poll newPoll = new Poll();
                     newPoll.setPollQuestion(topic);
                     newPoll.setChoiceList(choiceList);
+                    HashMap<String, Integer> choiceMap = new HashMap<>();
 
+                    for (String x : choiceList) {
+                        choiceMap.put(x, 0);
+                    }
+                    newPoll.setChoiceMap(choiceMap);
 //                ArrayList<String> voters = new ArrayList<>() ;
 //                voters.add("DUMMY1");
 //                voters.add("DUMMY2");
@@ -102,7 +111,8 @@ public class Activity_CreatePoll extends AppCompatActivity {
                 }
 
                 else {
-                    Toast.makeText(getApplicationContext(), "Created Poll", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Write a topic and at least 2 " +
+                            "choices must be made", Toast.LENGTH_SHORT).show();
                 }
             }
         });
