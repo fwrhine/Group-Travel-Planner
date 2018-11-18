@@ -183,7 +183,14 @@ public class Fragment_CustomEvent extends Fragment {
         event_date = getArguments().getString("date");
 
         prevActivity = getActivity().getIntent().getStringExtra("ACTIVITY");
-        if (prevActivity.equals("CreateNewPlanActivity")) {
+
+        if (prevActivity == null) {
+            prevActivity = getActivity().getIntent().getStringExtra("prev_fragment");
+        }
+
+        Log.d("Prev Frag", prevActivity);
+
+        if (prevActivity.equals("Fragment_SuggestionList") | prevActivity.equals("CreateNewPlanActivity")) {
             events = getActivity().getIntent().getParcelableArrayListExtra("events");
         }
     }

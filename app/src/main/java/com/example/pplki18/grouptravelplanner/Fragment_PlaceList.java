@@ -7,7 +7,6 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -33,6 +32,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
+import com.example.pplki18.grouptravelplanner.data.Group;
+import com.example.pplki18.grouptravelplanner.utils.Suggestion;
 import com.example.pplki18.grouptravelplanner.utils.Event;
 import com.example.pplki18.grouptravelplanner.utils.PaginationScrollListener;
 import com.example.pplki18.grouptravelplanner.utils.Place;
@@ -91,6 +92,8 @@ public class Fragment_PlaceList extends Fragment {
 
     private boolean isLoading = false;
     private boolean isLastPage = false;
+
+    private Group group;
 
     @Nullable
     @Override
@@ -325,7 +328,16 @@ public class Fragment_PlaceList extends Fragment {
             }
 
             @Override public void addImageOnClick(View v, int position) {
-                setTime(adapter.getAll().get(position));
+                String prevFrag = getActivity().getIntent().getStringExtra("prev_fragment");
+
+                if(prevFrag == null) {
+                    setTime(adapter.getAll().get(position));
+                }
+                else {
+                    if (prevFrag.equals("Fragment_SuggestionList")) {
+                        saveEventToSuggestion(adapter.getAll().get(position));
+                    }
+                }
             }
         };
 
@@ -406,14 +418,16 @@ public class Fragment_PlaceList extends Fragment {
 //        contentValues.put(EventContract.EventEntry.COL_LOCATION, place.getAddress());
 //        contentValues.put(EventContract.EventEntry.COL_WEBSITE, place.getWebsite());
 //        contentValues.put(EventContract.EventEntry.COL_DATE, event_date);
-//        //TODO ERROR PLACES GADA ADDRESS DLL ??!!
+//
 //        contentValues.put(EventContract.EventEntry.COL_TIME_START, start_time);
 //        contentValues.put(EventContract.EventEntry.COL_TIME_END, end_time);
 //        contentValues.put(EventContract.EventEntry.COL_PHONE, place.getPhone_number());
 //        contentValues.put(EventContract.EventEntry.COL_TYPE, type);
 //        contentValues.put(EventContract.EventEntry.COL_RATING, place.getRating());
 //        long event_id = db.insert(EventContract.EventEntry.TABLE_NAME, null, contentValues);
+
         Event anEvent = new Event(place.getName(), event_date, start_time, end_time, type);
+
         anEvent.setQuery_id(place.getPlace_id());
         anEvent.setLocation(place.getAddress());
         anEvent.setWebsite(place.getWebsite());
@@ -427,6 +441,47 @@ public class Fragment_PlaceList extends Fragment {
         eventRef.child(eventId).setValue(anEvent);
 
         planRef = firebaseDatabase.getReference().child("plans").child(plan_id).child("events");
+
+        getAllEventIDs(new EventIdCallback() {
+            @Override
+            public void onCallback(List<String> list) {
+                eventIDs = list;
+                eventIDs.add(eventId);
+
+                planRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        planRef.setValue(eventIDs);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+            }
+        });
+    }
+
+    private void saveEventToSuggestion(Place place) {
+        Suggestion aSuggestion = new Suggestion(place.getName(), type);
+
+        aSuggestion.setQuery_id(place.getPlace_id());
+        aSuggestion.setLocation(place.getAddress());
+        aSuggestion.setWebsite(place.getWebsite());
+        aSuggestion.setPhone(place.getPhone_number());
+        aSuggestion.setRating(place.getRating());
+
+        String groupId = getActivity().getIntent().getStringExtra("group_id");
+
+        final String eventId = eventRef.push().getKey();
+        aSuggestion.setEvent_id(eventId);
+        aSuggestion.setGroup_id(groupId);   // TODO Fix problem for group_id
+        aSuggestion.setCreator_id(firebaseUser.getUid());
+        eventRef.child(eventId).setValue(aSuggestion);
+
+        planRef = firebaseDatabase.getReference().child("groups").child(groupId).child("suggestion");
+
         getAllEventIDs(new EventIdCallback() {
             @Override
             public void onCallback(List<String> list) {
