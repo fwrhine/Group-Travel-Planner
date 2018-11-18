@@ -59,6 +59,7 @@ public class Fragment_GroupChat extends Fragment {
     private ImageButton photoPickerButton;
     private EditText messageEditText;
     private Button sendButton;
+    private Button pollButton;
 
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference messageDatabaseReference;
@@ -164,6 +165,7 @@ public class Fragment_GroupChat extends Fragment {
         photoPickerButton = getView().findViewById(R.id.photoPickerButton);
         messageEditText = getView().findViewById(R.id.messageEditText);
         sendButton = getView().findViewById(R.id.sendButton);
+        pollButton = getView().findViewById(R.id.pollButton);
         messageRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         List<Message> messages = new ArrayList<>();
@@ -178,6 +180,14 @@ public class Fragment_GroupChat extends Fragment {
                 intent.setType("image/jpeg");
                 intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
                 startActivityForResult(Intent.createChooser(intent, "Complete action using"), RC_PHOTO_PICKER);
+            }
+        });
+
+        pollButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent myIntent = new Intent(getActivity(), Activity_CreatePoll.class);
+                Fragment_GroupChat.this.startActivity(myIntent);
             }
         });
 

@@ -16,14 +16,20 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.pplki18.grouptravelplanner.data.Group;
+import com.example.pplki18.grouptravelplanner.data.User;
 import com.example.pplki18.grouptravelplanner.utils.RVAdapter_PollChoices;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static android.content.ContentValues.TAG;
@@ -38,10 +44,11 @@ public class Fragment_PollChoices extends Fragment implements NavigationView.OnN
     StorageReference storageReference;
     private RecyclerView recyclerViewGroup;
     private LinearLayoutManager linearLayoutManager;
-    private FloatingActionButton fab;
     private List<Poll> pollList;
     private Context context;
     long i;
+
+    private List<Group> polls = new ArrayList<>();
 
     @Nullable
     @Override
@@ -64,7 +71,6 @@ public class Fragment_PollChoices extends Fragment implements NavigationView.OnN
             getActivity().finish();
         }
         else {
-            userRef = firebaseDatabase.getReference().child("users").child(firebaseUser.getUid());
             pollRef = firebaseDatabase.getReference().child("polls");
             storageReference = FirebaseStorage.getInstance().getReference();
 
@@ -88,6 +94,27 @@ public class Fragment_PollChoices extends Fragment implements NavigationView.OnN
         return  null;
     }
 
+//    public void getAllPollChoices(final PollCallback pollCallback, String id){
+//        pollRef.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                polls.clear();
+//                for (DataSnapshot postSnapshot: dataSnapshot.getChildren()){
+//                    Poll poll = postSnapshot.getValue(Poll.class); // Group Objects
+//                    if(poll.contains(group.getGroup_id())){
+//                        polls.add(group);
+//                    }
+//                }
+//                pollCallback.onCallback(groups);
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
+//    }
+
     private void init() {
         recyclerViewGroup = (RecyclerView) getView().findViewById(R.id.rv2);
         linearLayoutManager = new LinearLayoutManager(getActivity());
@@ -100,6 +127,10 @@ public class Fragment_PollChoices extends Fragment implements NavigationView.OnN
 
     private void getPollList(){
 
+    }
+
+    private interface PollCallback{
+        void onCallback(List<String> list);
     }
 
 }

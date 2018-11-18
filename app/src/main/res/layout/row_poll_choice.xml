@@ -22,6 +22,7 @@
                 android:text="TEST CHOICE"
                 android:textSize="25sp"
                 android:paddingRight="20dp"
+                android:paddingTop="20dp"
                 android:layout_alignParentLeft="true"/>
 
 
@@ -31,7 +32,14 @@
                 android:layout_height="wrap_content"
                 android:text="00"
                 android:textSize="25dp"
+                android:paddingTop="20dp"
                 android:layout_toRightOf="@id/poll_choice"
+                />
+            <TextView
+                android:id="@+id/poll_id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="invisible"
                 />
 
 

@@ -27,11 +27,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".SplashScreenActivity">
-            <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.MAIN" />-->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-                <!--<category android:name="android.intent.category.LAUNCHER" />-->
-            <!--</intent-filter>-->
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity android:name=".SignUpActivity" />
         <activity android:name=".LoginActivity">
@@ -83,11 +83,11 @@
         <activity android:name=".Activity_CreateReminder"></activity>
         <activity android:name=".Activity_EditReminder" />
         <activity android:name=".Activity_CreatePoll">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN" />-->
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
         </activity>
 
 
