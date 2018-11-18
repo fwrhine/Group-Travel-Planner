@@ -21,8 +21,8 @@ import java.util.List;
 
 public class RVAdapter_User extends RecyclerView.Adapter<RVAdapter_User.UserViewHolder>{
 
-    private static List<User> users;
-    private static List<String> user_ids;
+    private final List<User> users;
+    private final List<String> user_ids;
     private final ClickListener listener;
 
     public RVAdapter_User(List<User> users, List<String> user_ids, ClickListener listener){
@@ -39,8 +39,7 @@ public class RVAdapter_User extends RecyclerView.Adapter<RVAdapter_User.UserView
     @Override
     public UserViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
         View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.row_user, viewGroup, false);
-        UserViewHolder pvh = new UserViewHolder(v, listener);
-        return pvh;
+        return new UserViewHolder(v, listener);
     }
 
     @Override
@@ -63,17 +62,12 @@ public class RVAdapter_User extends RecyclerView.Adapter<RVAdapter_User.UserView
         }
     }
 
-    @Override
-    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
-        super.onAttachedToRecyclerView(recyclerView);
-    }
-
     public static class UserViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        private CardView cardView;
-        private TextView userName;
-        private ImageView userImage;
-        private ImageView button;
-        private WeakReference<ClickListener> listenerRef;
+        private final CardView cardView;
+        private final TextView userName;
+        private final ImageView userImage;
+        private final ImageView button;
+        private final WeakReference<ClickListener> listenerRef;
 
         UserViewHolder(View itemView, ClickListener listener) {
             super(itemView);

@@ -56,24 +56,18 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class CreateNewGroupActivity extends AppCompatActivity {
     private static final String TAG = "CreateNewGroupActivity";
 
-    private DatabaseHelper databaseHelper;
     private Button btnCreate;
     private FloatingActionButton fab_pic;
     private EditText editText;
     private CircleImageView circleImageView;
     private Toolbar toolbar;
-    private SessionManager sessionManager;
     private ArrayList<String> user_ids;
     private RecyclerView recyclerViewUser;
     private LinearLayoutManager linearLayoutManager;
     private SearchView searchView;
-    private HashMap<String, String> user;
-    private String currId;
     private final int GALLERY = 1;
     private final int CAMERA = 2;
 
-    private FirebaseDatabase firebaseDatabase;
-    private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
     private DatabaseReference userRef;
     private DatabaseReference groupRef;
@@ -87,8 +81,8 @@ public class CreateNewGroupActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_group);
 
-        firebaseDatabase = FirebaseDatabase.getInstance();
-        firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
         userRef = firebaseDatabase.getReference().child("users");
         groupRef = firebaseDatabase.getReference().child("groups");
@@ -225,7 +219,7 @@ public class CreateNewGroupActivity extends AppCompatActivity {
                 == PackageManager.PERMISSION_DENIED){
             ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.CAMERA}, CAMERA);
         }
-        startActivityForResult(intent, CAMERA);;
+        startActivityForResult(intent, CAMERA);
     }
 
     // TODO: Benerin biar ga crash waktu ngambil foto dari kamera.
@@ -281,7 +275,7 @@ public class CreateNewGroupActivity extends AppCompatActivity {
      * Search user by full name
      * */
     // TODO: Benerin biar cuma cari temen. Sekarang masih cari semua user.
-    public List<User> searchUser(final String query) {
+    private List<User> searchUser(final String query) {
         final List<User> users = new ArrayList<>();
 
         userRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -324,15 +318,15 @@ public class CreateNewGroupActivity extends AppCompatActivity {
         circleImageView = findViewById(R.id.group_image);
         fab_pic = findViewById(R.id.fab_pic);
         btnCreate = findViewById(R.id.btnCreate);
-        databaseHelper = new DatabaseHelper(this);
-        sessionManager = new SessionManager(getApplicationContext());
+        DatabaseHelper databaseHelper = new DatabaseHelper(this);
+        SessionManager sessionManager = new SessionManager(getApplicationContext());
         recyclerViewUser = (RecyclerView)findViewById(R.id.rv);
         linearLayoutManager = new LinearLayoutManager(this);
         user_ids = new ArrayList<>();
         user_ids.add(firebaseUser.getUid());
         searchView = (SearchView) findViewById(R.id.search_user);
-        user = sessionManager.getUserDetails();
-        currId = user.get(SessionManager.KEY_ID);
+        HashMap<String, String> user = sessionManager.getUserDetails();
+        String currId = user.get(SessionManager.KEY_ID);
     }
 
     private void createGroup(final String group_name){
@@ -395,7 +389,7 @@ public class CreateNewGroupActivity extends AppCompatActivity {
      * This method updates the user's information.
      * Assign the users to the created group.
      */
-    public void updateUsers(List<String> user_ids, final String groupId){
+    private void updateUsers(List<String> user_ids, final String groupId){
         for(String userId : user_ids){
             final DatabaseReference groupsRef = userRef.child(userId).child("groups");
             final List<String> groups = new ArrayList<>();

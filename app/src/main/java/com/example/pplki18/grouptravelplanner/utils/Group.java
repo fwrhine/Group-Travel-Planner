@@ -1,14 +1,12 @@
 package com.example.pplki18.grouptravelplanner.utils;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.List;
 
-public class Group {
+class Group {
 
-    String group_name;
-    byte[] group_image;
-    List<String> group_members;
+    private String group_name;
+    private byte[] group_image;
+    private List<String> group_members;
 
     //constructor
     public Group() {

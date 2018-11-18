@@ -2,6 +2,7 @@ package com.example.pplki18.grouptravelplanner.utils;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -24,9 +25,9 @@ import java.util.List;
 
 public class RVAdapter_Place extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
 
-    private List<Place> places;
+    private final List<Place> places;
     private ClickListener listener;
-    private Context context;
+    private final Context context;
     private boolean isLoadingAdded = false;
 
     private static final int ITEM = 0;
@@ -41,8 +42,9 @@ public class RVAdapter_Place extends RecyclerView.Adapter<RecyclerView.ViewHolde
         this.listener = listener;
     }
 
+    @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         RecyclerView.ViewHolder viewHolder = null;
         LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
 
@@ -62,7 +64,7 @@ public class RVAdapter_Place extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int i) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
         final int pos = i;
         switch (getItemViewType(i)) {
             case ITEM:
@@ -189,24 +191,24 @@ public class RVAdapter_Place extends RecyclerView.Adapter<RecyclerView.ViewHolde
    _________________________________________________________________________________________________
     */
 
-    public static class PlaceViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        private CardView cardView;
-        private TextView placeName;
-        private TextView placeAddress;
-        private TextView placeRating;
-        private ImageView placeImage;
-        private ImageView addIcon;
-        private WeakReference<ClickListener> listenerRef;
+    static class PlaceViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        private final CardView cardView;
+        private final TextView placeName;
+        private final TextView placeAddress;
+        private final TextView placeRating;
+        private final ImageView placeImage;
+        private final ImageView addIcon;
+        private final WeakReference<ClickListener> listenerRef;
 
 
         PlaceViewHolder(View itemView,  ClickListener listener) {
             super(itemView);
-            cardView = (CardView)itemView.findViewById(R.id.cv);
-            placeName = (TextView)itemView.findViewById(R.id.place_name);
-            placeAddress = (TextView)itemView.findViewById(R.id.place_address);
-            placeRating = (TextView)itemView.findViewById(R.id.place_rating);
-            placeImage = (ImageView)itemView.findViewById(R.id.place_image);
-            addIcon = (ImageView)itemView.findViewById(R.id.ic_add);
+            cardView = itemView.findViewById(R.id.cv);
+            placeName = itemView.findViewById(R.id.place_name);
+            placeAddress = itemView.findViewById(R.id.place_address);
+            placeRating = itemView.findViewById(R.id.place_rating);
+            placeImage = itemView.findViewById(R.id.place_image);
+            addIcon = itemView.findViewById(R.id.ic_add);
 
             listenerRef = new WeakReference<>(listener);
 
@@ -221,7 +223,7 @@ public class RVAdapter_Place extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     }
 
-    public static class LoadingViewHolder extends RecyclerView.ViewHolder {
+    static class LoadingViewHolder extends RecyclerView.ViewHolder {
 
         LoadingViewHolder(View itemView) {
             super(itemView);

@@ -8,14 +8,14 @@ import android.support.v7.widget.RecyclerView;
  * Created by Suleiman19 on 10/15/16.
  * Copyright (c) 2016. Suleiman Ali Shakir. All rights reserved.
  */
+@SuppressWarnings("SpellCheckingInspection")
 public abstract class PaginationScrollListener extends RecyclerView.OnScrollListener {
 
-    private LinearLayoutManager layoutManager;
+    private final LinearLayoutManager layoutManager;
 
     /**
-     * Supporting only LinearLayoutManager for now.
      *
-     * @param layoutManager
+     * @param layoutManager Supporting only LinearLayoutManager for now.
      */
     public PaginationScrollListener(LinearLayoutManager layoutManager) {
         this.layoutManager = layoutManager;

@@ -19,13 +19,14 @@ import java.util.Map;
 import static com.example.pplki18.grouptravelplanner.utils.HtmlParser.parseHotelList;
 
 public class VolleyUtils {
-    private static Context context;
+    private final Context context;
 
     public VolleyUtils(Context context) {
         this.context = context;
     }
 
-    public static void getRequest(String url, final VolleyResponseListener listener) {
+    public void getRequest(String url, final VolleyResponseListener listener) {
+
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
@@ -38,12 +39,14 @@ public class VolleyUtils {
                 listener.onError(error);
             }
         });
+
         // Access the RequestQueue through singleton class.
         VolleySingleton.getInstance(context).addToRequestQueue(stringRequest);
     }
 
-    public static void postRequest(String url, final String requestBody, final Map<String, String>
+    public void postRequest(String url, final String requestBody, final Map<String, String>
             headers, final VolleyResponseListener listener) {
+
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
                 new Response.Listener<String>() {
                     @Override
@@ -58,7 +61,7 @@ public class VolleyUtils {
         })
         {
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
+            public Map<String, String> getHeaders() {
                 return headers;
             }
 
@@ -84,6 +87,7 @@ public class VolleyUtils {
 
             }
         };
+
         // Access the RequestQueue through singleton class.
         VolleySingleton.getInstance(context).addToRequestQueue(stringRequest);
     }

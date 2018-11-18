@@ -73,13 +73,23 @@
 
         </android.support.constraint.ConstraintLayout>
 
+        <TextView
+            android:id="@+id/hotel_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/header"
+            android:text="IDR"
+            android:paddingTop="30dp"
+            android:paddingLeft="30dp"
+            android:textSize="25sp"
+            android:textStyle="bold"/>
+
         <RelativeLayout
             android:id="@+id/detail_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/sep_line1"
             android:orientation="horizontal"
-            app:layout_constraintTop_toBottomOf="@+id/header"
+            app:layout_constraintTop_toBottomOf="@+id/hotel_price"
             android:paddingLeft="30dp"
             android:paddingRight="30dp"
             android:paddingTop="10dp"
@@ -189,14 +199,14 @@
             app1:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/detail_layout">
 
-            <ImageView
-                android:id="@+id/ic_location"
-                android:layout_width="30dp"
-                android:layout_height="29dp"
-                android:src="@drawable/ic_location"
-                app1:layout_constraintStart_toStartOf="parent"
-                app1:layout_constraintTop_toTopOf="@+id/address"
-                tools:layout_editor_absoluteY="87dp" />
+            <!--<ImageView-->
+                <!--android:id="@+id/ic_location"-->
+                <!--android:layout_width="30dp"-->
+                <!--android:layout_height="29dp"-->
+                <!--android:src="@drawable/ic_location"-->
+                <!--app1:layout_constraintStart_toStartOf="parent"-->
+                <!--app1:layout_constraintTop_toTopOf="@+id/address"-->
+                <!--tools:layout_editor_absoluteY="87dp" />-->
 
             <TextView
                 android:id="@+id/address"
@@ -204,19 +214,21 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="2dp"
                 android:layout_marginTop="30dp"
+                android:drawableLeft="@drawable/ic_location"
+                android:drawablePadding="5dp"
                 android:background="@drawable/label_bg"
                 android:paddingRight="30dp"
                 app1:layout_constraintStart_toEndOf="@+id/ic_location" />
 
-            <ImageView
-                android:id="@+id/ic_website"
-                android:layout_width="23dp"
-                android:layout_height="23dp"
-                android:layout_marginStart="4dp"
-                android:layout_marginTop="8dp"
-                android:src="@drawable/ic_website"
-                app1:layout_constraintStart_toStartOf="parent"
-                app1:layout_constraintTop_toBottomOf="@+id/address" />
+            <!--<ImageView-->
+                <!--android:id="@+id/ic_website"-->
+                <!--android:layout_width="23dp"-->
+                <!--android:layout_height="23dp"-->
+                <!--android:layout_marginStart="4dp"-->
+                <!--android:layout_marginTop="8dp"-->
+                <!--android:src="@drawable/ic_website"-->
+                <!--app1:layout_constraintStart_toStartOf="parent"-->
+                <!--app1:layout_constraintTop_toBottomOf="@+id/address" />-->
 
             <TextView
                 android:id="@+id/website"
@@ -224,21 +236,22 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
                 android:layout_marginTop="11dp"
+                android:drawableLeft="@drawable/ic_website"
+                android:drawablePadding="5dp"
                 android:autoLink="web"
                 android:background="@drawable/label_bg"
                 android:paddingRight="30dp"
-                app1:layout_constraintStart_toEndOf="@+id/ic_website"
                 app1:layout_constraintTop_toBottomOf="@+id/address" />
 
-            <ImageView
-                android:id="@+id/ic_phone"
-                android:layout_width="22dp"
-                android:layout_height="22dp"
-                android:layout_marginStart="4dp"
-                android:layout_marginTop="8dp"
-                android:src="@drawable/ic_phone"
-                app1:layout_constraintStart_toStartOf="parent"
-                app1:layout_constraintTop_toBottomOf="@+id/website" />
+            <!--<ImageView-->
+                <!--android:id="@+id/ic_phone"-->
+                <!--android:layout_width="22dp"-->
+                <!--android:layout_height="22dp"-->
+                <!--android:layout_marginStart="4dp"-->
+                <!--android:layout_marginTop="8dp"-->
+                <!--android:src="@drawable/ic_phone"-->
+                <!--app1:layout_constraintStart_toStartOf="parent"-->
+                <!--app1:layout_constraintTop_toBottomOf="@+id/website" />-->
 
             <TextView
                 android:id="@+id/phone"
@@ -246,20 +259,21 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
                 android:layout_marginTop="11dp"
+                android:drawableLeft="@drawable/ic_phone"
+                android:drawablePadding="5dp"
                 android:autoLink="phone"
                 android:background="@drawable/label_bg"
-                app1:layout_constraintStart_toEndOf="@+id/ic_website"
                 app1:layout_constraintTop_toBottomOf="@+id/website" />
 
-            <ImageView
-                android:id="@+id/ic_time"
-                android:layout_width="22dp"
-                android:layout_height="22dp"
-                android:layout_marginStart="4dp"
-                android:layout_marginTop="8dp"
-                android:src="@drawable/ic_time"
-                app1:layout_constraintStart_toStartOf="parent"
-                app1:layout_constraintTop_toBottomOf="@+id/ic_phone" />
+            <!--<ImageView-->
+                <!--android:id="@+id/ic_time"-->
+                <!--android:layout_width="22dp"-->
+                <!--android:layout_height="22dp"-->
+                <!--android:layout_marginStart="4dp"-->
+                <!--android:layout_marginTop="8dp"-->
+                <!--android:src="@drawable/ic_time"-->
+                <!--app1:layout_constraintStart_toStartOf="parent"-->
+                <!--app1:layout_constraintTop_toBottomOf="@+id/phone" />-->
 
             <TextView
                 android:id="@+id/open_now"
@@ -267,8 +281,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
                 android:layout_marginTop="11dp"
+                android:drawableLeft="@drawable/ic_time"
+                android:drawablePadding="5dp"
                 android:textStyle="bold"
-                app1:layout_constraintStart_toEndOf="@+id/ic_time"
                 app1:layout_constraintTop_toBottomOf="@+id/phone" />
 
             <TextView
@@ -277,8 +292,18 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
                 android:layout_marginTop="11dp"
-                app1:layout_constraintStart_toEndOf="@+id/ic_time"
+                app1:layout_constraintStart_toEndOf="@+id/open_now"
                 app1:layout_constraintTop_toBottomOf="@+id/open_now" />
+
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/open_hours">
+
+
+
+
+            </android.support.constraint.ConstraintLayout>
 
         </android.support.constraint.ConstraintLayout>
 

@@ -1,8 +1,10 @@
 package com.example.pplki18.grouptravelplanner;
 
+import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -28,19 +30,16 @@ import android.widget.NumberPicker;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkError;
-import com.android.volley.NetworkResponse;
 import com.android.volley.NoConnectionError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
-import com.android.volley.VolleyLog;
-import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.pplki18.grouptravelplanner.utils.Hotel;
@@ -48,12 +47,13 @@ import com.example.pplki18.grouptravelplanner.utils.HtmlParser;
 import com.example.pplki18.grouptravelplanner.utils.PaginationScrollListener;
 import com.example.pplki18.grouptravelplanner.utils.RVAdapter_Hotel;
 import com.example.pplki18.grouptravelplanner.utils.SessionManager;
+import com.example.pplki18.grouptravelplanner.utils.VolleyResponseListener;
+import com.example.pplki18.grouptravelplanner.utils.VolleyUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -63,6 +63,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 import static com.example.pplki18.grouptravelplanner.utils.HtmlParser.parseHotelList;
 
@@ -71,6 +72,7 @@ public class BookHotelFragment extends Fragment {
     private LinearLayoutManager linearLayoutManager;
     private RVAdapter_Hotel adapter;
     private RequestQueue queue;
+    private VolleyUtils volleyUtils;
     private SessionManager sessionManager;
 
     private TextView connectionText;
@@ -100,10 +102,11 @@ public class BookHotelFragment extends Fragment {
     private SimpleDateFormat dateFormatter2;
     private SimpleDateFormat dateFormatter3;
     private SimpleDateFormat dateFormatter4;
-    private SimpleDateFormat dateFormatter5;
 
     private String region;
     private String regionCode;
+    private int plan_id;
+    private String event_date;
 
     private String sortBy = "popularity";
     private int sortByInt = 0;
@@ -139,7 +142,7 @@ public class BookHotelFragment extends Fragment {
 
         connectionText.setVisibility(View.GONE);
         closeSearchView.setVisibility(View.GONE);
-        progressBar.setVisibility(View.VISIBLE);
+//        progressBar.setVisibility(View.VISIBLE);
 
         loadInfoView();
 
@@ -203,7 +206,7 @@ public class BookHotelFragment extends Fragment {
 
     }
 
-    public void loadInfoView() {
+    private void loadInfoView() {
         String date = dateFormatter3.format(checkInDate) + " - " + dateFormatter3.format(checkOutDate);
 
         infoDate.setText(date);
@@ -211,9 +214,9 @@ public class BookHotelFragment extends Fragment {
         infoRoom.setText(numOfRoom);
     }
 
-    public void showSearchPopup() {
+    private void showSearchPopup() {
         searchDialog.setContentView(R.layout.search_dialog);
-        SearchView searchView = (SearchView) searchDialog.findViewById(R.id.search_hotel);
+        SearchView searchView = searchDialog.findViewById(R.id.search_hotel);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String newQuery) {
@@ -240,7 +243,7 @@ public class BookHotelFragment extends Fragment {
         searchView.requestFocus();
     }
 
-    public void showSortPopup() {
+    private void showSortPopup() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle("Sort by");
 
@@ -269,7 +272,7 @@ public class BookHotelFragment extends Fragment {
         dialog.show();
     }
 
-    public void showInfoPopup() {
+    private void showInfoPopup() {
         infoDialog.setContentView(R.layout.hotel_dialog);
 
         // set position
@@ -282,14 +285,14 @@ public class BookHotelFragment extends Fragment {
         infoDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
 
         // elements in infoDialog
-        final TextView dialogCheckIn = (TextView) infoDialog.findViewById(R.id.start_date);
-        final TextView dialogCheckOut = (TextView) infoDialog.findViewById(R.id.end_date);
-        final RelativeLayout checkInLayout = (RelativeLayout) infoDialog.findViewById(R.id.check_in);
-        final RelativeLayout checkOutLayout = (RelativeLayout) infoDialog.findViewById(R.id.check_out);
-        final TextView dialogGuest = (TextView) infoDialog.findViewById(R.id.guest);
-        final TextView dialogRoom = (TextView) infoDialog.findViewById(R.id.room);
-        final Button dialogSearch = (Button) infoDialog.findViewById(R.id.search_button);
-        final TextView dialogDays = (TextView) infoDialog.findViewById(R.id.days);
+        final TextView dialogCheckIn = infoDialog.findViewById(R.id.start_date);
+        final TextView dialogCheckOut = infoDialog.findViewById(R.id.end_date);
+        final RelativeLayout checkInLayout = infoDialog.findViewById(R.id.check_in);
+        final RelativeLayout checkOutLayout = infoDialog.findViewById(R.id.check_out);
+        final TextView dialogGuest = infoDialog.findViewById(R.id.guest);
+        final TextView dialogRoom = infoDialog.findViewById(R.id.room);
+        final Button dialogSearch = infoDialog.findViewById(R.id.search_button);
+        final TextView dialogDays = infoDialog.findViewById(R.id.days);
 
         final Calendar newCalendar = Calendar.getInstance();
 
@@ -313,6 +316,7 @@ public class BookHotelFragment extends Fragment {
 
                 fromDatePickerDialog = new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener() {
 
+                    @SuppressLint("SetTextI18n")
                     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                         Calendar newDate = Calendar.getInstance();
                         newDate.set(year, monthOfYear, dayOfMonth);
@@ -454,7 +458,7 @@ public class BookHotelFragment extends Fragment {
         toastMessage(message);
     }
 
-    public void getTripadvisorUrl() {
+    private void getTripadvisorUrl() {
         String url = "https://www.tripadvisor.com/TypeAheadJson?action=API&startTime=" +
                 System.currentTimeMillis()+ "&uiOrigin=GEOSCOPE&source=GEOSCOPE&interleaved=true" +
                 "&types=geo,theme_park&neighborhood_geos=true&link_type=hotel&details=true" +
@@ -474,9 +478,6 @@ public class BookHotelFragment extends Fragment {
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-
-                        populatePlaceRecyclerView(getHotelsSearch(response));
-                        adapter.removeLoadingFooter();
                     }
                 }, new Response.ErrorListener() {
             @Override
@@ -490,125 +491,168 @@ public class BookHotelFragment extends Fragment {
 
     }
 
-    public void sendRequest(final boolean isNextPage) {
+    private void sendRequest(final boolean isNextPage) {
         String url;
-
         if (!isNextPage) {
             url = tripadvisorUrl;
         } else {
             url = nextPageUrl;
         }
 
-
+        //request body
+        String requestBody = "{}";
         try {
             JSONObject jsonBody = new JSONObject();
             jsonBody.put("changeSet", "TRAVEL_INFO");
             jsonBody.put("showSnippets", false);
-            jsonBody.put("staydates", dateFormatter5.format(checkInDate) + "_" +
-                    dateFormatter5.format(checkOutDate));
+            jsonBody.put("staydates", dateFormatter4.format(checkInDate) + "_" +
+                    dateFormatter4.format(checkOutDate));
             jsonBody.put("uguests", numOfRoom + "_" + numOfGuest);
             jsonBody.put("sortOrder", sortBy);
-            final String requestBody = jsonBody.toString();
-
-            StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
-                    new Response.Listener<String>() {
-                        @Override
-                        public void onResponse(String response) {
-                            HtmlParser.HtmlParseResult result = parseHotelList(response);
-
-                            // check if last page
-                            if (result.getNextPage().isEmpty()) {
-                                isLastPage = true;
-                            } else {
-                                nextPageUrl = "https://www.tripadvisor.com" + result.getNextPage();
-                            }
-
-                            // check if loading next page
-                            if (!isNextPage) {
-                                populatePlaceRecyclerView(result.getHotels());
-                            } else {
-                                adapter.removeLoadingFooter();
-                                isLoading = false;
-
-                                adapter.addAll(result.getHotels());
-
-                                if (!isLastPage) adapter.addLoadingFooter();
-                            }
-                        }
-                    }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    Log.d("ERROR HOTEL", error.toString());
-                }
-            })
-            {
-                @Override
-                public Map<String, String> getHeaders() throws AuthFailureError {
-                    Map<String, String> headers = new HashMap<>();
-                    headers.put("Accept", "text/html, */*");
-                    headers.put("Accept-Language", "en-US,en;q=0.5");
-                    headers.put("Cache-Control", "no-cache");
-                    headers.put("Connection", "keep-alive");
-                    headers.put("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
-                    headers.put("Host", "www.tripadvisor.com");
-                    headers.put("Pragma", "no-cache");
-                    headers.put("Referer", tripadvisorUrl);
-                    headers.put("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_1) " +
-                            "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36");
-                    headers.put("X-Requested-With", "XMLHttpRequest");
-                    return headers;
-                }
-
-                @Override
-                public byte[] getBody() {
-                    try {
-                        return requestBody == null ? null : requestBody.getBytes("utf-8");
-                    } catch (UnsupportedEncodingException uee) {
-                        VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", requestBody, "utf-8");
-                        return null;
-                    }
-                }
-
-                @Override
-                protected Response <String> parseNetworkResponse(NetworkResponse response) {
-                    String parsed;
-                    try {
-                        parsed = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
-                    } catch (UnsupportedEncodingException e) {
-                        parsed = new String(response.data);
-                    }
-                    return Response.success(parsed, HttpHeaderParser.parseCacheHeaders(response));
-
-                }
-            };
-
-            queue.add(stringRequest);
+            requestBody = jsonBody.toString();
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
+        //headers
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Accept", "text/html, */*");
+        headers.put("Accept-Language", "en-US,en;q=0.5");
+        headers.put("Cache-Control", "no-cache");
+        headers.put("Connection", "keep-alive");
+        headers.put("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
+        headers.put("Host", "www.tripadvisor.com");
+        headers.put("Pragma", "no-cache");
+        headers.put("Referer", tripadvisorUrl);
+        headers.put("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_1) " +
+                "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36");
+        headers.put("X-Requested-With", "XMLHttpRequest");
+
+        volleyUtils.postRequest(url, requestBody, headers, new VolleyResponseListener() {
+            @Override
+            public void onResponse(String response) {
+                HtmlParser.HtmlParseResult result = parseHotelList(response);
+
+                // check if last page
+                if (result.getNextPage().isEmpty()) {
+                    isLastPage = true;
+                } else {
+                    nextPageUrl = "https://www.tripadvisor.com" + result.getNextPage();
+                }
+
+                // check if loading next page
+                if (!isNextPage) {
+                    populatePlaceRecyclerView(result.getHotels());
+                } else {
+                    adapter.removeLoadingFooter();
+                    isLoading = false;
+
+                    adapter.addAll(result.getHotels());
+
+                    if (!isLastPage) adapter.addLoadingFooter();
+                }
+            }
+            @Override
+            public void onError(VolleyError error) {
+                Log.d("ERROR HOTEL", error.toString());
+            }
+        });
+
+//            StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
+//                    new Response.Listener<String>() {
+//                        @Override
+//                        public void onResponse(String response) {
+//                            HtmlParser.HtmlParseResult result = parseHotelList(response);
+//
+//                            // check if last page
+//                            if (result.getNextPage().isEmpty()) {
+//                                isLastPage = true;
+//                            } else {
+//                                nextPageUrl = "https://www.tripadvisor.com" + result.getNextPage();
+//                            }
+//
+//                            // check if loading next page
+//                            if (!isNextPage) {
+//                                populatePlaceRecyclerView(result.getHotels());
+//                            } else {
+//                                adapter.removeLoadingFooter();
+//                                isLoading = false;
+//
+//                                adapter.addAll(result.getHotels());
+//
+//                                if (!isLastPage) adapter.addLoadingFooter();
+//                            }
+//                        }
+//                    }, new Response.ErrorListener() {
+//                @Override
+//                public void onErrorResponse(VolleyError error) {
+//                    Log.d("ERROR HOTEL", error.toString());
+//                }
+//            })
+//            {
+//                @Override
+//                public Map<String, String> getHeaders() {
+//                    Map<String, String> headers = new HashMap<>();
+//                    headers.put("Accept", "text/html, */*");
+//                    headers.put("Accept-Language", "en-US,en;q=0.5");
+//                    headers.put("Cache-Control", "no-cache");
+//                    headers.put("Connection", "keep-alive");
+//                    headers.put("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
+//                    headers.put("Host", "www.tripadvisor.com");
+//                    headers.put("Pragma", "no-cache");
+//                    headers.put("Referer", tripadvisorUrl);
+//                    headers.put("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_1) " +
+//                            "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36");
+//                    headers.put("X-Requested-With", "XMLHttpRequest");
+//                    return headers;
+//                }
+//
+//                @Override
+//                public byte[] getBody() {
+//                    try {
+//                        return requestBody == null ? null : requestBody.getBytes("utf-8");
+//                    } catch (UnsupportedEncodingException uee) {
+//                        VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", requestBody, "utf-8");
+//                        return null;
+//                    }
+//                }
+//
+//                @Override
+//                protected Response <String> parseNetworkResponse(NetworkResponse response) {
+//                    String parsed;
+//                    try {
+//                        parsed = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
+//                    } catch (UnsupportedEncodingException e) {
+//                        parsed = new String(response.data);
+//                    }
+//                    return Response.success(parsed, HttpHeaderParser.parseCacheHeaders(response));
+//
+//                }
+//            };
+//
+//            queue.add(stringRequest);
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
     }
 
-    public void searchHotel(String query) {
+    private void searchHotel(String query) {
         String url = "https://www.tripadvisor.com/TypeAheadJson?action=API&query=" +
                 query + "&interleaved=true&types=hotel&filter=nobroad&parentids=" +
                 regionCode + "&name_depth=1&details=true&legacy_format=true&max=8";
 
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        Log.d("HOTEL SEARCH RESULT", response);
-                        populatePlaceRecyclerView(getHotelsSearch(response));
-                        adapter.removeLoadingFooter();
-                    }
-                }, new Response.ErrorListener() {
+        volleyUtils.getRequest(url, new VolleyResponseListener() {
             @Override
-            public void onErrorResponse(VolleyError error) {
+            public void onResponse(String response) {
+                Log.d("HOTEL SEARCH RESULT", response);
+                populatePlaceRecyclerView(getHotelsSearch(response));
+                adapter.removeLoadingFooter();
+            }
+            @Override
+            public void onError(VolleyError error) {
                 Log.d("ERROR ALL HOTELS", error.toString());
             }
         });
-
-        queue.add(stringRequest);
     }
 
 //    private List<Hotel> getHotels(String response) {
@@ -671,18 +715,17 @@ public class BookHotelFragment extends Fragment {
 
         RVAdapter_Hotel.ClickListener clickListener = new RVAdapter_Hotel.ClickListener() {
             @Override public void cardViewOnClick(View v, int position) {
-//                Log.d("SELECTED PLACE ID", String.valueOf(adapter.getAll().get(position).getPlace_id()));
-//
-//                Intent intent = new Intent(getActivity(), PlaceActivity.class);
-//                intent.putExtra("PLACE_ID", String.valueOf(adapter.getAll().get(position).getPlace_id()));
-//                intent.putExtra("plan_id", plan_id);
-//                intent.putExtra("date", event_date);
-//                intent.putExtra("type", type);
-//                startActivity(intent);
+                Intent intent = new Intent(getActivity(), PlaceActivity.class);
+                intent.putExtra("PLACE_ID", String.valueOf(adapter.getAll().get(position).getHotel_id()));
+                intent.putExtra("ACTIVITY", "HotelFragment");
+                intent.putExtra("plan_id", plan_id);
+                intent.putExtra("date", event_date);
+                intent.putExtra("type", "Hotel");
+                startActivity(intent);
             }
 
             @Override public void addImageOnClick(View v, int position) {
-//                setTime(adapter.getAll().get(position));
+                setTime(adapter.getAll().get(position));
             }
         };
         Log.d("HOTELS OBJECTS", hotels.toString());
@@ -695,39 +738,84 @@ public class BookHotelFragment extends Fragment {
         if (!isLastPage) adapter.addLoadingFooter();
     }
 
+    private void setTime(final Hotel hotel) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(Objects.requireNonNull(getActivity()));
+        LayoutInflater inflater = getLayoutInflater();
+        //TODO HELP
+        ViewGroup parent = Objects.requireNonNull(getView()).findViewById(R.id.container);
+        View dialogLayout = inflater.inflate(R.layout.set_time_dialog, parent, false);
+        final TimePicker startTime = dialogLayout.findViewById(R.id.start_time);
+        final TimePicker endTime = dialogLayout.findViewById(R.id.end_time);
+
+        builder.setTitle("Set time");
+        builder.setView(dialogLayout);
+
+        builder.setPositiveButton("OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+//                        String start_time = startTime.getCurrentHour() + ":" + startTime.getCurrentMinute();
+//                        String end_time = endTime.getCurrentHour() + ":" + endTime.getCurrentMinute();
+//                        Log.d("prev_activity", prevActivity);
+//                        if (prevActivity.equals("CreateNewPlanActivity")) {
+//                            Event anEvent = saveEventLocally(place, start_time, end_time);
+//                            events.add(anEvent);
+//
+//                            Intent intent = new Intent(getActivity(), CreateNewPlanActivity.class);
+//                            intent.putParcelableArrayListExtra("events", (ArrayList<? extends Parcelable>) events);
+//                            //TODO last changed
+//                            intent.putExtra("ACTIVITY", "Fragment_PlaceList");
+//                            //noinspection SpellCheckingInspection
+//                            Log.d("prev activity", "createnewplan");
+//                            getActivity().setResult(RESULT_OK, intent);
+//                            getActivity().finish();
+//                        } else {
+//                            saveEventToPlan(place, start_time, end_time);
+//                            getActivity().finish();
+//                        }
+                    }
+                });
+        builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        builder.show();
+    }
+
     private void toastMessage(String message) {
         Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
     }
 
     private void init() {
-        recyclerViewPlace = (RecyclerView) getView().findViewById(R.id.rv);
+        recyclerViewPlace = getView().findViewById(R.id.rv);
         linearLayoutManager = new LinearLayoutManager(getActivity());
         queue = Volley.newRequestQueue(getActivity());
+        volleyUtils = new VolleyUtils(getContext());
         sessionManager = new SessionManager(getActivity().getApplicationContext());
         adapter = new RVAdapter_Hotel(getContext());
 
-        progressBar = (ProgressBar) getView().findViewById(R.id.main_progress);
-        connectionText = (TextView) getView().findViewById(R.id.connection);
+
+        progressBar = getView().findViewById(R.id.main_progress);
+        connectionText = getView().findViewById(R.id.connection);
 
         //info
-        infoView = (ConstraintLayout) getView().findViewById(R.id.info);
-        search = (ImageView) getView().findViewById(R.id.search);
-        sort = (ImageView) getView().findViewById(R.id.sort);
+        infoView = getView().findViewById(R.id.info);
+        search = getView().findViewById(R.id.search);
+        sort = getView().findViewById(R.id.sort);
         infoDialog = new Dialog(getContext(), R.style.Theme_Dialog);
-        infoDate = (TextView) getView().findViewById(R.id.date);
-        infoGuest = (TextView) getView().findViewById(R.id.guest);
-        infoRoom = (TextView) getView().findViewById(R.id.room);
+        infoDate = getView().findViewById(R.id.date);
+        infoGuest = getView().findViewById(R.id.guest);
+        infoRoom = getView().findViewById(R.id.room);
 
         //search
-        closeSearchView = (ConstraintLayout) getView().findViewById(R.id.close_search_view);
-        close = (ImageView) getView().findViewById(R.id.close);
+        closeSearchView = getView().findViewById(R.id.close_search_view);
+        close = getView().findViewById(R.id.close);
         searchDialog = new Dialog(getContext());
 
         dateFormatter1 = new SimpleDateFormat("EEE, MMM d", Locale.US);
         dateFormatter2 = new SimpleDateFormat("d MMMM yyyy", Locale.US);
         dateFormatter3 = new SimpleDateFormat("MMM d", Locale.US);
-        dateFormatter4 = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
-        dateFormatter5 = new SimpleDateFormat("yyyy_MM_dd", Locale.US);
+        dateFormatter4 = new SimpleDateFormat("yyyy_MM_dd", Locale.US);
         try {
             checkInDateTemp = dateFormatter2.parse(getArguments().getString("date"));
             checkInDate = checkInDateTemp;
@@ -744,5 +832,7 @@ public class BookHotelFragment extends Fragment {
 
         region = sessionManager.getCurrentRegion();
         regionCode = "294226";
+        plan_id = getArguments().getInt("plan_id");
+        event_date = getArguments().getString("date");
     }
 }
