@@ -14,8 +14,8 @@ import android.widget.ProgressBar;
 
 import com.example.pplki18.grouptravelplanner.data.Group;
 import com.example.pplki18.grouptravelplanner.utils.Event;
-import com.example.pplki18.grouptravelplanner.utils.RVAdapter_Place;
-import com.example.pplki18.grouptravelplanner.utils.Suggestion;
+import com.example.pplki18.grouptravelplanner.utils.RVAdapter_Plan;
+import com.example.pplki18.grouptravelplanner.utils.RVAdapter_Suggest;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -40,7 +40,7 @@ public class Fragment_SuggestionList extends Fragment {
     private ProgressBar progressBar;
     private List<String> suggestionIDs = new ArrayList<>();
     private List<Event> suggestions = new ArrayList<>();
-    private RVAdapter_Place adapter;
+    private RVAdapter_Suggest adapter;
     private Intent myIntent;
     private Group group;
 
@@ -73,6 +73,8 @@ public class Fragment_SuggestionList extends Fragment {
                 progressBar.setVisibility(View.INVISIBLE);
             }
         });
+
+        populatePlanRecyclerView();
     }
 
     private void setCreateSuggestionButton() {
@@ -85,20 +87,18 @@ public class Fragment_SuggestionList extends Fragment {
         });
     }
 
-    /*
     private void populatePlanRecyclerView() {
         Log.d(TAG, "populatePlanRecyclerView: Displaying list of plans in the ListView.");
         getAllSuggestion(new SuggestionCallback() {
             @Override
             public void onCallback(List<Event> list) {
-                adapter = new RVAdapter_Place(suggestions, getActivity());  // TODO should I add another adapter???
+                adapter = new RVAdapter_Suggest(suggestions, getActivity());  // TODO should I add another adapter???
 
                 recyclerViewSuggestion.setAdapter(adapter);
                 adapter.notifyDataSetChanged();
             }
         });
     }
-    */
 
     private void getAllSuggestion(final SuggestionCallback callback) {
         //TODO: FIREBASE
@@ -153,7 +153,6 @@ public class Fragment_SuggestionList extends Fragment {
         Intent i = getActivity().getIntent();
         group = i.getParcelableExtra("group");
 
-        Log.d("GROUP-ID-SUGGEST", (group == null)+"");
         myIntent.putExtra("group_id", group.getGroup_id());
 
         Log.d(TAG, "Init Suggestion List");

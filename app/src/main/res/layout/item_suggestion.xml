@@ -37,18 +37,10 @@
                 android:gravity="center"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="this is the time of the event"
-                android:id="@+id/item_time_detail"
-                android:layout_below="@id/item_title"/>
-
-            <TextView
-                android:gravity="center"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
                 android:text="event description"
                 android:textStyle="italic"
                 android:id="@+id/item_desc_detail"
-                android:layout_below="@id/item_time_detail"/>
+                android:layout_below="@id/item_title"/>
 
             <View
                 android:id="@+id/item_line"
