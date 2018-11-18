@@ -2,6 +2,7 @@ package com.example.pplki18.grouptravelplanner.utils;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -33,6 +34,7 @@ public class RVAdapter_PollChoices extends RecyclerView.Adapter<RVAdapter_PollCh
             return pollChoiceList.size();
         }
 
+        @NonNull
         @Override
         public RVAdapter_PollChoices.PollChoiceViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
             View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.row_reminder, viewGroup, false);

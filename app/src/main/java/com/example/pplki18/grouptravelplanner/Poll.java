@@ -2,13 +2,16 @@ package com.example.pplki18.grouptravelplanner;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class Poll {
 
+    private String id;
     private ArrayList<String> voters;
     private ArrayList<String> alreadyVoted;
     private ArrayList<String> choiceList;
     private HashMap<String, Integer> choiceMap;
+    private String pollQuestion;
 
     public Poll(ArrayList<String> list){
         this.choiceList = list;
@@ -18,7 +21,14 @@ public class Poll {
         }
     }
 
+    public Poll(){
+
+    }
+
     //Getter
+    public String getId() {
+        return id;
+    }
 
     public ArrayList<String> getVoters() {
         return voters;
@@ -36,7 +46,14 @@ public class Poll {
         return choiceMap;
     }
 
+    public String getPollQuestion(){
+        return pollQuestion;
+    }
     //Setter
+    public void setId(String newID) {
+        this.id = newID;
+    }
+
     public void setVoters(ArrayList<String> voters) {
         this.voters = voters;
     }
@@ -45,4 +62,11 @@ public class Poll {
         this.alreadyVoted = alreadyVoted;
     }
 
+    public void setPollQuestion(String question){
+        this.pollQuestion = question;
+    }
+
+    public void setChoiceList(ArrayList<String> list) {
+        this.choiceList = list;
+    }
 }

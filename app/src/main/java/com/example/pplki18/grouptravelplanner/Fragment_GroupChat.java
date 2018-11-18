@@ -48,6 +48,8 @@ public class Fragment_GroupChat extends Fragment {
 
     private final int VIEW_TYPE_MESSAGE_SENT = 1;
     private final int VIEW_TYPE_MESSAGE_RECEIVED = 2;
+    private final int VIEW_TYPE_POLL_SENT = 3;
+    private final int VIEW_TYPE_POLL_RECEIVED = 4;
     private static final int RC_PHOTO_PICKER = 2;
     private Group group;
     private SessionManager sessionManager;
@@ -113,6 +115,11 @@ public class Fragment_GroupChat extends Fragment {
                                 break;
                             case VIEW_TYPE_MESSAGE_RECEIVED:
                                 holder.bind(model);
+                            case VIEW_TYPE_POLL_SENT:
+                                holder.bind(model);
+                                break;
+                            case VIEW_TYPE_POLL_RECEIVED:
+                                holder.bind(model);
                         }
                     }
 
@@ -125,6 +132,12 @@ public class Fragment_GroupChat extends Fragment {
 
                             case VIEW_TYPE_MESSAGE_RECEIVED:
                                 return new ReceivedMessageHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_message_received, parent, false));
+                                //TODO case for poll send and receive and do viewholder
+                            case VIEW_TYPE_POLL_SENT:
+                                return new SentMessageHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_poll_sent, parent, false));
+
+                            case VIEW_TYPE_POLL_RECEIVED:
+                                return new ReceivedMessageHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_poll_received, parent, false));
                         }
                         return null;
                     }

@@ -1,6 +1,7 @@
 package com.example.pplki18.grouptravelplanner;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -16,6 +17,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.pplki18.grouptravelplanner.utils.RVAdapter_PollChoices;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.List;
 
@@ -23,11 +30,16 @@ import static android.content.ContentValues.TAG;
 
 public class Fragment_PollChoices extends Fragment implements NavigationView.OnNavigationItemSelectedListener{
 
+    private FirebaseDatabase firebaseDatabase;
+    private FirebaseAuth firebaseAuth;
+    private FirebaseUser firebaseUser;
+    DatabaseReference userRef;
+    DatabaseReference pollRef;
+    StorageReference storageReference;
     private RecyclerView recyclerViewGroup;
     private LinearLayoutManager linearLayoutManager;
     private FloatingActionButton fab;
     private List<Poll> pollList;
-    Reminder r;
     private Context context;
     long i;
 
@@ -42,18 +54,30 @@ public class Fragment_PollChoices extends Fragment implements NavigationView.OnN
         super.onActivityCreated(savedInstanceState);
         init();
 
-        context = getActivity().getApplicationContext();
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
 
-        recyclerViewGroup.setHasFixedSize(true);
-        recyclerViewGroup.setLayoutManager(linearLayoutManager);
+        if (firebaseUser == null) {
+            Intent errorIntent = new Intent(getActivity(), LoginActivity.class);
+            Fragment_PollChoices.this.startActivity(errorIntent);
+            getActivity().finish();
+        }
+        else {
+            userRef = firebaseDatabase.getReference().child("users").child(firebaseUser.getUid());
+            pollRef = firebaseDatabase.getReference().child("polls");
+            storageReference = FirebaseStorage.getInstance().getReference();
 
-        populateReminderRecyclerView();
+            context = getActivity().getApplicationContext();
+
+            recyclerViewGroup.setHasFixedSize(true);
+            recyclerViewGroup.setLayoutManager(linearLayoutManager);
+
+            populateReminderRecyclerView();
+        }
     }
 
-    //Todo: refactor? exactly the same code as the one in CreateNewGroup
     private void populateReminderRecyclerView() {
-        Log.d(TAG, "populateGroupRecyclerView: Displaying list of groups in the ListView.");
-
         pollList = getAllPollChoices();
         RVAdapter_PollChoices adapter = new RVAdapter_PollChoices(pollList, getActivity());
         recyclerViewGroup.setAdapter(adapter);
@@ -69,12 +93,13 @@ public class Fragment_PollChoices extends Fragment implements NavigationView.OnN
         linearLayoutManager = new LinearLayoutManager(getActivity());
     }
 
-
-
-
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         return false;
+    }
+
+    private void getPollList(){
+
     }
 
 }
