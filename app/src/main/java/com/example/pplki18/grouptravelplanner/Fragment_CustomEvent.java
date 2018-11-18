@@ -20,6 +20,7 @@ import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
 import com.example.pplki18.grouptravelplanner.data.EventContract;
 import com.example.pplki18.grouptravelplanner.utils.Event;
 import com.example.pplki18.grouptravelplanner.utils.Place;
+import com.example.pplki18.grouptravelplanner.utils.Suggestion;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -87,9 +88,15 @@ public class Fragment_CustomEvent extends Fragment {
                 Event anEvent = new Event(title, event_date, start_time, end_time, "custom");
                 anEvent.setDescription(description);
 
+                Suggestion aSuggestion = new Suggestion(title, "custom");
+
                 if (prevActivity.equals("CreateNewPlanActivity")) {
                     saveEventLocally(anEvent);
-                } else {
+                }
+                else if (prevActivity.equals("Fragment_SuggestionList")) {
+                    saveEventToSuggestion(aSuggestion);
+                }
+                else {
                     saveEventToPlan(anEvent);
                 }
                 getActivity().finish();
@@ -128,6 +135,37 @@ public class Fragment_CustomEvent extends Fragment {
         eventRef.child(eventId).setValue(anEvent);
 
         planRef = firebaseDatabase.getReference().child("plans").child(plan_id).child("events");
+        getAllEventIDs(new EventIdCallback() {
+            @Override
+            public void onCallback(List<String> list) {
+                eventIDs = list;
+                eventIDs.add(eventId);
+
+                planRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        planRef.setValue(eventIDs);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+            }
+        });
+    }
+
+    private void saveEventToSuggestion(Suggestion aSuggestion) {
+        String groupId = getActivity().getIntent().getStringExtra("group_id");
+
+        final String eventId = eventRef.push().getKey();
+        aSuggestion.setEvent_id(eventId);
+        aSuggestion.setGroup_id(groupId);
+        aSuggestion.setCreator_id(firebaseUser.getUid());
+        eventRef.child(eventId).setValue(aSuggestion);
+
+        planRef = firebaseDatabase.getReference().child("groups").child(groupId).child("suggestion");
         getAllEventIDs(new EventIdCallback() {
             @Override
             public void onCallback(List<String> list) {

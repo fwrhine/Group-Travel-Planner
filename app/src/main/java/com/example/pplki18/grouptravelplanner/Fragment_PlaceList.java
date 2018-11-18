@@ -336,6 +336,7 @@ public class Fragment_PlaceList extends Fragment {
                 else {
                     if (prevFrag.equals("Fragment_SuggestionList")) {
                         saveEventToSuggestion(adapter.getAll().get(position));
+                        getActivity().finish();
                     }
                 }
             }
