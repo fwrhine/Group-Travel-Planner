@@ -28,9 +28,12 @@ public class HtmlParser {
             String name = hotel_title.text();
 
             // rating
+            String rating = "-";
             Element hotel_rating = hotel_list.get(i).selectFirst("span[class*='rating']");
-            String[] rating_long = hotel_rating.attr("alt").split(" ");
-            String rating = rating_long[0];
+            if (hotel_rating != null) {
+                String[] rating_long = hotel_rating.attr("alt").split(" ");
+                rating = rating_long[0];
+            }
 
             // price
             @SuppressWarnings("SpellCheckingInspection") Element hotel_price = hotel_list.get(i).selectFirst("div[data-sizegroup*='mini-meta-price']");
@@ -72,12 +75,18 @@ public class HtmlParser {
         Element hotel_name = doc.selectFirst("h1[class*='ui_header h1']");
         String name = hotel_name.text();
 
-        Element hotel_rating = doc.selectFirst("span[class*='ui_bubble_rating bubble_50']");
+        Element hotel_rating = doc.selectFirst("span[class*='ui_bubble_rating']");
         String[] rating_long = hotel_rating.attr("alt").split(" ");
         String rating = rating_long[0];
 
         Element hotel_price = doc.selectFirst("div[class*='bb_price_text']");
-        String price = (hotel_price != null) ? hotel_price.text() : "";
+        String price;
+        if (hotel_price == null) {
+            hotel_price = doc.selectFirst("div[class*='price __resizeWatch']");
+            price = (hotel_price != null) ? hotel_price.text() : "";
+        } else {
+            price = hotel_price.text();
+        }
 
         Element hotel_phone = doc.selectFirst("span[class*='is-hidden-mobile detail']");
         String phone = (hotel_phone != null) ? hotel_phone.text() : "";
@@ -88,15 +97,49 @@ public class HtmlParser {
         Element hotel_locality = doc.selectFirst("span[class*='locality']");
         String locality = (hotel_locality != null) ? hotel_locality.text() : "";
 
-//        Element hotel_photo = doc.selectFirst("div[class*='mainImg']").selectFirst("img");
-//        String photo = hotel_photo.attr("src");
+        Element hotel_desc = doc.selectFirst("span[class*='introText']");
+        String desc = (hotel_desc != null) ? hotel_desc.text() : "";
+
+        hotel_desc = doc.selectFirst("span[class*='introTextExtension']");
+        if (desc.length() > 0 && hotel_desc != null) {
+            desc = desc.substring(0, desc.length()-5) + hotel_desc.text();
+        }
+
+        Elements hotel_amenities = doc.select("div[class*='HighlightedAmenities__amenities" +
+                "--nJlGF']");
+
+        if (hotel_amenities != null) {
+            hotel_amenities = hotel_amenities.select("div[class*='ui_column is-6']");
+        }
+
+
+        ArrayList<ArrayList<String>> amenities = new ArrayList<>();
+        for (Element amenity_elem: hotel_amenities) {
+            ArrayList<String> amenities_sub = new ArrayList<>();
+            Elements amenities_sub_elem = amenity_elem.select("div[class*='HighlightedAmenities__" +
+                    "amenityItem--Lh1nP']");
+            for (Element amenity_sub_elem: amenities_sub_elem) {
+                String amenity = amenity_sub_elem.text();
+                amenities_sub.add(amenity);
+            }
+            amenities.add(amenities_sub);
+        }
+
+
+        Element hotel_photo = doc.selectFirst("meta[property*='og:image']");
+        String photo = hotel_photo.attr("content");
 
         hotel.setName(name);
         hotel.setRating(rating);
         hotel.setPrice(price);
         hotel.setPhone_number(phone);
+
         hotel.setAddress(street_address + ", " + locality);
-//        hotel.setPhoto(photo);
+        if (desc.length() > 0) {
+            hotel.setDescription(desc.substring(0, desc.length()-4));
+        }
+        hotel.setAmenities(amenities);
+        hotel.setPhoto(photo);
 
         System.out.println("hotel rating: " + hotel_rating.attr("alt"));
         return hotel;

@@ -1,40 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:padding="2dp">
 
-    <android.support.v7.widget.CardView
-        android:id="@+id/cv"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <RelativeLayout
-            android:id="@+id/relative_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="10dp">
-
-            <ImageView
-                android:id="@+id/ic_check"
-                android:src="@drawable/ic_check_black"
-                android:layout_width="15dp"
-                android:layout_height="15dp"
-                android:layout_alignParentLeft="true"
-                android:layout_centerVertical="true"
-                android:layout_marginRight="16dp"
-                android:layout_marginLeft="10dp"/>
-
-            <TextView
-                android:id="@+id/user_name"
-                android:text="Hello"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_toRightOf="@+id/ic_check"
-                android:layout_centerVertical="true" />
-
-        </RelativeLayout>
-
-    </android.support.v7.widget.CardView>
-
-</LinearLayout>
+<TextView android:layout_height="wrap_content"
+    android:layout_width="wrap_content"
+    android:id="@+id/amenity"
+    android:layout_weight="1"
+    android:singleLine="false"
+    android:drawableLeft="@drawable/ic_check_black"
+    android:drawablePadding="10dp"
+    xmlns:android="http://schemas.android.com/apk/res/android" />

@@ -1,5 +1,7 @@
 package com.example.pplki18.grouptravelplanner.utils;
 
+import java.util.ArrayList;
+
 public class Hotel {
     private String hotel_id;
     private String name;
@@ -10,6 +12,7 @@ public class Hotel {
     private String website;
     private String price;
     private String description;
+    private ArrayList<ArrayList<String>> amenities;
 
 
     public Hotel() {
@@ -50,6 +53,10 @@ public class Hotel {
         this.description = description;
     }
 
+    public void setAmenities(ArrayList<ArrayList<String>> amenities) {
+        this.amenities = amenities;
+    }
+
     public String getHotel_id() {
         return hotel_id;
     }
@@ -82,6 +89,10 @@ public class Hotel {
 
     public String getDescription() {
         return description;
+    }
+
+    public ArrayList<ArrayList<String>> getAmenities() {
+        return amenities;
     }
 
     @Override

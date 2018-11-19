@@ -8,14 +8,21 @@ import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Parcelable;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.animation.OvershootInterpolator;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -38,6 +45,9 @@ import com.example.pplki18.grouptravelplanner.data.EventContract;
 import com.example.pplki18.grouptravelplanner.utils.Event;
 import com.example.pplki18.grouptravelplanner.utils.Hotel;
 import com.example.pplki18.grouptravelplanner.utils.Place;
+import com.example.pplki18.grouptravelplanner.utils.RVAdapter_Amenities;
+import com.example.pplki18.grouptravelplanner.utils.RVAdapter_User;
+import com.example.pplki18.grouptravelplanner.utils.Utility;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -46,6 +56,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import at.blogc.android.views.ExpandableTextView;
 
 import static com.example.pplki18.grouptravelplanner.utils.HtmlParser.parseHotel;
 
@@ -70,6 +82,13 @@ public class PlaceActivity extends AppCompatActivity {
 
     //hotel
     private TextView hotel_price;
+    private ExpandableTextView hotel_desc;
+    private Button button_toggle;
+    private RecyclerView hotel_amenities1;
+    private RecyclerView hotel_amenities2;
+    private LinearLayoutManager linearLayoutManager1;
+    private LinearLayoutManager linearLayoutManager2;
+    private ConstraintLayout hotel_detail;
 
     private ProgressBar progressBar;
     private RequestQueue queue;
@@ -103,6 +122,13 @@ public class PlaceActivity extends AppCompatActivity {
 
         if (prevActivity != null && (prevActivity.equals("HotelFragment"))) {
             sendRequestHotel();
+            hotel_amenities1.setHasFixedSize(true);
+            hotel_amenities1.setLayoutManager(linearLayoutManager1);
+            hotel_amenities1.setItemAnimator(new DefaultItemAnimator());
+
+            hotel_amenities2.setHasFixedSize(true);
+            hotel_amenities2.setLayoutManager(linearLayoutManager2);
+            hotel_amenities2.setItemAnimator(new DefaultItemAnimator());
         } else {
             sendRequestPlace();
         }
@@ -305,13 +331,16 @@ public class PlaceActivity extends AppCompatActivity {
     private void populateHotelView(final Hotel hotel) {
         title.setText(hotel.getName());
         rating_num.setText(hotel.getRating());
-        rating.setRating(Float.valueOf(hotel.getRating()));
+        if (hotel.getRating().length() > 0) {
+            rating.setRating(Float.valueOf(hotel.getRating()));
+        }
         address.setText(hotel.getAddress());
 
         address.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Uri gmmIntentUri = Uri.parse("geo:0,0?q=" + hotel.getName());
+                Uri gmmIntentUri = Uri.parse("geo:0,0?q=" + hotel.getName() + ", "
+                        + hotel.getAddress());
                 Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
                 mapIntent.setPackage("com.google.android.apps.maps");
                 startActivity(mapIntent);
@@ -320,9 +349,60 @@ public class PlaceActivity extends AppCompatActivity {
 
         phone.setText(hotel.getPhone_number());
 
-        hotel_price.setText("IDR " + hotel.getPrice());
+        hotel_price.setText(hotel.getPrice());
+        hotel_desc.setText(hotel.getDescription());
 
-        getHotelPhoto(hotel.getPhoto());
+        // set interpolators for both expanding and collapsing animations
+        hotel_desc.setInterpolator(new OvershootInterpolator());
+
+        if (hotel.getDescription().length() > 0) {
+            button_toggle.setText("More");
+            button_toggle.setCompoundDrawablesWithIntrinsicBounds(0, 0,
+                    R.drawable.ic_arrow_down_grey, 0);
+        }
+
+        // toggle the ExpandableTextView
+        button_toggle.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(final View v)
+            {
+                if (hotel_desc.isExpanded())
+                {
+                    hotel_desc.collapse();
+                    button_toggle.setText("More");
+                    button_toggle.setCompoundDrawablesWithIntrinsicBounds(0, 0,
+                            R.drawable.ic_arrow_down_grey, 0);
+                }
+                else
+                {
+                    hotel_desc.expand();
+                    button_toggle.setText("Less");
+                    button_toggle.setCompoundDrawablesWithIntrinsicBounds(0, 0,
+                            R.drawable.ic_arrow_up, 0);
+                }
+            }
+        });
+
+        RVAdapter_Amenities adapter = new RVAdapter_Amenities(hotel.getAmenities().get(0));
+        hotel_amenities1.setAdapter(adapter);
+
+        ArrayList<String> amenities2 = hotel.getAmenities().get(1);
+        amenities2.remove(amenities2.size()-1);
+        adapter = new RVAdapter_Amenities(amenities2);
+        hotel_amenities2.setAdapter(adapter);
+
+//        hotel_amenities1.setAdapter(new ArrayAdapter<String>(PlaceActivity.this,
+//                R.layout.row_amenities, hotel.getAmenities().get(0)));
+//
+//        hotel_amenities2.setAdapter(new ArrayAdapter<String>(PlaceActivity.this,
+//                R.layout.row_amenities, hotel.getAmenities().get(1)));
+
+//        Utility.setListViewHeightBasedOnChildren(hotel_amenities1);
+
+        System.out.println(hotel.getAmenities().get(0).toString());
+
+        getHotelPhoto(hotel.getPhoto().replace("photo-s", "photo-o"));
     }
 
     private void getPlacePhoto(String photo_reference) {
@@ -535,6 +615,13 @@ public class PlaceActivity extends AppCompatActivity {
 
         //hotel
         hotel_price = findViewById(R.id.hotel_price);
+        hotel_desc = findViewById(R.id.hotel_desc);
+        button_toggle = findViewById(R.id.button_toggle);
+        hotel_amenities1 = findViewById(R.id.list1);
+        hotel_amenities2 = findViewById(R.id.list2);
+        linearLayoutManager1 = new LinearLayoutManager(this);
+        linearLayoutManager2 = new LinearLayoutManager(this);
+        hotel_detail = findViewById(R.id.hotel_detail);
 
 
         progressBar = findViewById(R.id.main_progress);
@@ -566,6 +653,7 @@ public class PlaceActivity extends AppCompatActivity {
             website.setVisibility(View.GONE);
         } else {
             hotel_price.setVisibility(View.GONE);
+            hotel_detail.setVisibility(View.GONE);
         }
 
     }

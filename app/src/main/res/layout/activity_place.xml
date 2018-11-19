@@ -78,7 +78,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@+id/header"
-            android:text="IDR"
             android:paddingTop="30dp"
             android:paddingLeft="30dp"
             android:textSize="25sp"
@@ -298,9 +297,46 @@
             <android.support.constraint.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:id="@+id/hotel_detail"
                 app:layout_constraintTop_toBottomOf="@id/open_hours">
 
+                <!--<TextView-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:id="@+id/hotel_desc" />-->
 
+                <at.blogc.android.views.ExpandableTextView
+                    android:id="@+id/hotel_desc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxLines="3"
+                    android:ellipsize="end"
+                    app:animation_duration="750"/>
+
+                <Button
+                    android:id="@+id/button_toggle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@id/hotel_desc"
+                    android:textAllCaps="false"
+                    android:background="@color/fui_transparent"/>
+
+                <android.support.v7.widget.RecyclerView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/list1"
+                    app:layout_constraintTop_toBottomOf="@id/button_toggle"
+                    android:layout_marginTop="20dp"/>
+
+                <android.support.v7.widget.RecyclerView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/list2"
+                    app:layout_constraintLeft_toRightOf="@+id/list1"
+                    app:layout_constraintTop_toBottomOf="@id/button_toggle"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginLeft="10dp"/>
 
 
             </android.support.constraint.ConstraintLayout>
