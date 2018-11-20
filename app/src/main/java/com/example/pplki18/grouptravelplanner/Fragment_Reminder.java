@@ -1,12 +1,7 @@
 package com.example.pplki18.grouptravelplanner;
 
-import android.app.Activity;
-import android.app.Notification;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.icu.text.SimpleDateFormat;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -20,15 +15,10 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
-import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
-import com.example.pplki18.grouptravelplanner.data.ReminderContract;
+import com.example.pplki18.grouptravelplanner.old_stuff.DatabaseHelper;
 import com.example.pplki18.grouptravelplanner.utils.RVAdapter_Reminder;
 
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import static android.content.ContentValues.TAG;

@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
@@ -20,6 +21,8 @@ import android.widget.TextView;
 import com.example.pplki18.grouptravelplanner.EventDetailActivity;
 import com.example.pplki18.grouptravelplanner.PlaceActivity;
 import com.example.pplki18.grouptravelplanner.R;
+import com.example.pplki18.grouptravelplanner.data.Event;
+import com.example.pplki18.grouptravelplanner.data.Group;
 import com.github.vipulasri.timelineview.TimelineView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -33,6 +36,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by HP-HP on 05-12-2015.
@@ -41,6 +45,7 @@ public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.Ne
 
     private List<Event> events;
     private Context mContext;
+    private Bundle bundle;
     private LayoutInflater mLayoutInflater;
 
     private FirebaseAuth mAuth;
@@ -52,6 +57,16 @@ public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.Ne
         this.mContext = context;
         mAuth = FirebaseAuth.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance();
+    }
+
+    public RVAdapter_NewPlan(List<Event> events, Context context, Bundle bundle) {
+        this.events = events;
+        this.mContext = context;
+        this.bundle = bundle;
+        mAuth = FirebaseAuth.getInstance();
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        mAuth = FirebaseAuth.getInstance();
+        firebaseUser = mAuth.getCurrentUser();
     }
 
     @Override
@@ -74,7 +89,7 @@ public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.Ne
     public void onBindViewHolder(NewPlanViewHolder holder, int position) {
 
         Event event = events.get(position);
-        SimpleDateFormat format = new SimpleDateFormat("HH:mm");
+        SimpleDateFormat format = new SimpleDateFormat("HH:mm", Locale.US);
 
         String time_start = "";
         String timeString = "";
@@ -122,7 +137,6 @@ public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.Ne
             holder.eventDescription.setText(desc);
         }
 
-
         setEventDetailOnClick(holder, position);
         setCardViewLongClick(holder, position, event.getTitle());
     }
@@ -163,6 +177,9 @@ public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.Ne
         myIntent.putExtra("duration", anEvent.getTotal_time());
         myIntent.putExtra("event_id", anEvent.getEvent_id());
         myIntent.putExtra("type", anEvent.getType());
+        if (bundle != null) {
+            myIntent.putExtra("bundle", bundle);
+        }
 
         if (anEvent.getDescription() != null) {
             myIntent.putExtra("description", anEvent.getDescription());
@@ -196,6 +213,9 @@ public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.Ne
         myIntent.putExtra("start_date", date_start);
         myIntent.putExtra("end_date", date_end);
         myIntent.putExtra("date", anEvent.getDate());
+        if (bundle != null) {
+            myIntent.putExtra("bundle", bundle);
+        }
 
         ((Activity) mContext).startActivityForResult(myIntent, 5);
     }
@@ -228,6 +248,13 @@ public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.Ne
                 return true;
             }
         });
+
+        if (bundle != null) {
+            Group group = bundle.getParcelable("group");
+            if (group != null && !group.getCreator_id().equals(firebaseUser.getUid())) {
+                holder.cardView.setLongClickable(false);
+            }
+        }
     }
 
     private AlertDialog deleteConfirmation(final int position, String title) {
@@ -272,8 +299,9 @@ public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.Ne
     }
 
     public void deleteHelper(Event event, final DeleteEventCallback callback){
-        //TODO: CHECK
+        //TODO: REMOVE planRef by position --> put position when inserting new event
         String plan_id = event.getPlan_id();
+        Log.d("PLANKEY", plan_id);
         final String event_id = event.getEvent_id();
         final DatabaseReference planRef = firebaseDatabase.getReference().child("plans").child(plan_id).child("events").child(event_id);
         planRef.addListenerForSingleValueEvent(new ValueEventListener() {

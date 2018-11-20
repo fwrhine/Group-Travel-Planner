@@ -1,6 +1,7 @@
 package com.example.pplki18.grouptravelplanner.data;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class User {
@@ -14,7 +15,7 @@ public class User {
     public String birthday;
     public String photoUrl;
     public String status;
-    public List<String> friends;
+    private HashMap<String, Boolean> friends;
 
     public User(){}
 
@@ -28,7 +29,7 @@ public class User {
         this.birthday = "none";
         this.photoUrl = "none";
         this.status = "0";
-        this.friends = new ArrayList<>();
+        this.friends = new HashMap<>();
     }
 
     public String getId() {

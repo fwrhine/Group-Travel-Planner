@@ -2,11 +2,10 @@ package com.example.pplki18.grouptravelplanner;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
-import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Parcelable;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentTransaction;
 import android.support.design.widget.FloatingActionButton;
@@ -23,12 +22,8 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
-import com.example.pplki18.grouptravelplanner.data.EventContract;
-import com.example.pplki18.grouptravelplanner.data.PlanContract;
-import com.example.pplki18.grouptravelplanner.utils.Event;
-import com.example.pplki18.grouptravelplanner.utils.Plan;
-import com.example.pplki18.grouptravelplanner.utils.SessionManager;
+import com.example.pplki18.grouptravelplanner.data.Event;
+import com.example.pplki18.grouptravelplanner.data.Plan;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -42,7 +37,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -50,7 +44,6 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
 
     private static final String TAG = "CreateNewPlanActivity";
 
-    DatabaseHelper databaseHelper;
     Toolbar plan_toolbar;
 
     TextView trip_start_date, trip_end_date, trip_days;
@@ -59,12 +52,12 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
     FloatingActionButton fab_add_event;
     ViewGroup parent;
     Intent intent;
-    private SessionManager session;
-    private HashMap<String, String> user;
 
     private FirebaseAuth mAuth;
     private FirebaseUser firebaseUser;
     private FirebaseDatabase firebaseDatabase;
+
+    private String group_id;
 
     private DatePickerDialog fromDatePickerDialog;
     private DatePickerDialog toDatePickerDialog;
@@ -110,9 +103,7 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
 
         intent = getIntent();
 
-        databaseHelper = new DatabaseHelper(CreateNewPlanActivity.this);
-        session = new SessionManager(getApplicationContext());
-        user = session.getUserDetails();
+        group_id = intent.getStringExtra("group_id");
 
         mAuth = FirebaseAuth.getInstance();
         firebaseUser = mAuth.getCurrentUser();
@@ -274,8 +265,8 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
         savePlanHelper(plan_name_fix, plan_desc, new InsertPlanCallback() {
             @Override
             public void onCallback(String planId) {
-                savePlanToUser(planId);
-                saveEventToDB(planId);
+                savePlanToFirebase(planId);
+                saveEventToFirebase(planId);
                 Log.d("PLAN_ID", planId);
             }
         });
@@ -308,17 +299,25 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
         });
     }
 
-    private void savePlanToUser(final String newPlanID){
-        final DatabaseReference userRef = firebaseDatabase.getReference().child("users").child(firebaseUser.getUid());
+    private void savePlanToFirebase(final String newPlanID){
+        String prev = intent.getStringExtra("ACTIVITY_GROUP");
+        final DatabaseReference reference;
+        if (prev != null && prev.equals("Fragment_GroupPlanList")) {
+            reference = firebaseDatabase.getReference().child("groups").child(group_id);
+            Log.d("BUATPLANGROUP", "masuk");
+        } else {
+            Log.d("BUATPLANGROUP", "salahmasuk");
+            reference = firebaseDatabase.getReference().child("users").child(firebaseUser.getUid());
+        }
 
         getAllPlanIDs(new PlanIdCallback() {
             @Override
             public void onCallback(final List<String> planID) {
-                userRef.child("plans").addListenerForSingleValueEvent(new ValueEventListener() {
+                reference.child("plans").addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         planID.add(newPlanID);
-                        userRef.child("plans").setValue(planID);
+                        reference.child("plans").setValue(planID);
                     }
 
                     @Override
@@ -331,9 +330,15 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
     }
 
     private void getAllPlanIDs(final PlanIdCallback callback){
-        final DatabaseReference userRef = firebaseDatabase.getReference().child("users").child(firebaseUser.getUid());
+        String prev = intent.getStringExtra("ACTIVITY_GROUP");
+        final DatabaseReference reference;
+        if (prev != null && prev.equals("Fragment_GroupPlanList")) {
+            reference = firebaseDatabase.getReference().child("groups").child(group_id);
+        } else {
+            reference = firebaseDatabase.getReference().child("users").child(firebaseUser.getUid());
+        }
 
-        userRef.child("plans").addListenerForSingleValueEvent(new ValueEventListener() {
+        reference.child("plans").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 planIDs.clear();
@@ -351,7 +356,7 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
         });
     }
 
-    private void saveEventToDB(String plan_id) {
+    private void saveEventToFirebase(String plan_id) {
         final DatabaseReference planRef = firebaseDatabase.getReference().child("plans").child(plan_id).child("events");
         final List<String> eventIDs = getEventIDs(planRef, plan_id);
         planRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -421,6 +426,7 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
         );
     }
 
+    //TODO MAKE SURE USER CANNOT ADD NEW PLAN IF THE DATE IS ALREADY USED FOR OTHER PLAN
     private void setDateTimeField() {
         trip_start_date.setOnClickListener(this);
         trip_end_date.setOnClickListener(this);

@@ -1,4 +1,4 @@
-package com.example.pplki18.grouptravelplanner.utils;
+package com.example.pplki18.grouptravelplanner.data;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 public class Event implements Parcelable, Comparable<Event> {
     private String event_id;
@@ -181,7 +182,7 @@ public class Event implements Parcelable, Comparable<Event> {
     }
 
     public String getTotal_time() {
-        SimpleDateFormat format = new SimpleDateFormat("HH:mm");
+        SimpleDateFormat format = new SimpleDateFormat("HH:mm", Locale.US);
         long diff = 0;
 
         try {
@@ -357,7 +358,7 @@ public class Event implements Parcelable, Comparable<Event> {
 
     @Override
     public int compareTo(@NonNull Event event) {
-        SimpleDateFormat format = new SimpleDateFormat("HH:mm");
+        SimpleDateFormat format = new SimpleDateFormat("HH:mm", Locale.US);
         try {
             Date this_start = null;
             Date this_end = null;
