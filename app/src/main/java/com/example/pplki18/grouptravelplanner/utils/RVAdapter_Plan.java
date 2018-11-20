@@ -193,7 +193,7 @@ public class RVAdapter_Plan extends RecyclerView.Adapter<RVAdapter_Plan.PlanView
         return new AlertDialog.Builder(context)
                 //set message, title, and icon
                 .setTitle("Delete")
-                .setMessage("Do you want to delete " + name + "?")
+                .setMessage("Do you want to delete \"" + name + "\"?")
 
                 .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
 
@@ -309,7 +309,7 @@ public class RVAdapter_Plan extends RecyclerView.Adapter<RVAdapter_Plan.PlanView
         final EditText edtText = new EditText(context);
         return new AlertDialog.Builder(context)
                 //set message, title, and icon
-                .setTitle("Rename " + name)
+                .setTitle("Rename \"" + name + "\"?")
                 .setMessage("Insert new name below!")
                 .setView(edtText)
                 .setPositiveButton("Rename", new DialogInterface.OnClickListener() {
@@ -335,16 +335,18 @@ public class RVAdapter_Plan extends RecyclerView.Adapter<RVAdapter_Plan.PlanView
                 .create();
     }
 
-    public void renamePlan(Plan plan, String new_name) {
-        DatabaseHelper myDb = new DatabaseHelper(context);
-        SQLiteDatabase db = myDb.getWritableDatabase();
-
-        String updateQuery = "UPDATE " + PlanContract.PlanEntry.TABLE_NAME + " SET " +
-                PlanContract.PlanEntry.COL_PLAN_NAME + " = " + "\"" + new_name + "\"" +
-                " WHERE " + PlanContract.PlanEntry._ID + " = " + plan.getPlan_id();
-
-        db.execSQL(updateQuery);
-        db.close();
+    private void renamePlan(Plan plan, String new_name) {
+//        DatabaseHelper myDb = new DatabaseHelper(context);
+//        SQLiteDatabase db = myDb.getWritableDatabase();
+//
+//        String updateQuery = "UPDATE " + PlanContract.PlanEntry.TABLE_NAME + " SET " +
+//                PlanContract.PlanEntry.COL_PLAN_NAME + " = " + "\"" + new_name + "\"" +
+//                " WHERE " + PlanContract.PlanEntry._ID + " = " + plan.getPlan_id();
+//
+//        db.execSQL(updateQuery);
+//        db.close();
+        planRef = firebaseDatabase.getReference().child("plans").child(plan.getPlan_id());
+        planRef.child("plan_name").setValue(new_name);
         notifyDataSetChanged();
     }
 

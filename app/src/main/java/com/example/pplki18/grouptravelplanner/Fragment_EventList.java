@@ -97,7 +97,7 @@ public class Fragment_EventList extends Fragment {
         final Bundle bundle = new Bundle();
         if (myBundle != null) {
             bundle.putParcelable("group", myBundle.getParcelable("group"));
-            bundle.putString("ACTIVITY", "FragmentGroupPlanList");
+            bundle.putString("ACTIVITY", "Fragment_GroupPlanList");
         }
 
         if (prevActivity != null && prevActivity.equals("CreateNewPlanActivity")) {

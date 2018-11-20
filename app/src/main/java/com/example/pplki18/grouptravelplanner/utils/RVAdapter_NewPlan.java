@@ -11,6 +11,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -298,8 +299,9 @@ public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.Ne
     }
 
     public void deleteHelper(Event event, final DeleteEventCallback callback){
-        //TODO: CHECK
+        //TODO: REMOVE planRef by position --> put position when inserting new event
         String plan_id = event.getPlan_id();
+        Log.d("PLANKEY", plan_id);
         final String event_id = event.getEvent_id();
         final DatabaseReference planRef = firebaseDatabase.getReference().child("plans").child(plan_id).child("events").child(event_id);
         planRef.addListenerForSingleValueEvent(new ValueEventListener() {

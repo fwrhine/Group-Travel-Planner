@@ -300,11 +300,13 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
     }
 
     private void savePlanToFirebase(final String newPlanID){
-        String prev = intent.getStringExtra("ACTIVITY");
+        String prev = intent.getStringExtra("ACTIVITY_GROUP");
         final DatabaseReference reference;
         if (prev != null && prev.equals("Fragment_GroupPlanList")) {
             reference = firebaseDatabase.getReference().child("groups").child(group_id);
+            Log.d("BUATPLANGROUP", "masuk");
         } else {
+            Log.d("BUATPLANGROUP", "salahmasuk");
             reference = firebaseDatabase.getReference().child("users").child(firebaseUser.getUid());
         }
 
@@ -328,7 +330,7 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
     }
 
     private void getAllPlanIDs(final PlanIdCallback callback){
-        String prev = intent.getStringExtra("ACTIVITY");
+        String prev = intent.getStringExtra("ACTIVITY_GROUP");
         final DatabaseReference reference;
         if (prev != null && prev.equals("Fragment_GroupPlanList")) {
             reference = firebaseDatabase.getReference().child("groups").child(group_id);
