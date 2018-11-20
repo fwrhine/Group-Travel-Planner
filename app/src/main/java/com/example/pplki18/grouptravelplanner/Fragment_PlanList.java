@@ -154,7 +154,7 @@ public class Fragment_PlanList extends Fragment {
 
     @Override
     public void onResume() {  // After a pause OR at startup
-        Log.d("RESUME", "masuk resume");
+        Log.d("RESUME", "masuk resumeeee");
         super.onResume();
         this.onActivityCreated(null);
 //        plans = getAllPlans();
@@ -169,7 +169,7 @@ public class Fragment_PlanList extends Fragment {
         getAllPlans(new PlanCallback() {
             @Override
             public void onCallback(List<Plan> list) {
-                adapter = new RVAdapter_Plan(plans, getActivity());
+                adapter = new RVAdapter_Plan(list, getActivity());
 
                 recyclerViewPlan.setAdapter(adapter);
                 adapter.notifyDataSetChanged();
@@ -178,7 +178,7 @@ public class Fragment_PlanList extends Fragment {
     }
 
     /*
-     * Get all groups
+     * Get all plans
      * */
     private void getAllPlans(final PlanCallback callback) {
         //TODO: FIREBASE

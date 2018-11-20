@@ -1,28 +1,74 @@
 package com.example.pplki18.grouptravelplanner;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.CardView;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.text.Layout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import com.example.pplki18.grouptravelplanner.data.Group;
+import com.example.pplki18.grouptravelplanner.data.Plan;
+import com.example.pplki18.grouptravelplanner.utils.RVAdapter_Plan;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class Fragment_GroupPlanList extends Fragment {
+    private static final String TAG = "Fragment_GroupPlanList";
 
+    private FirebaseUser firebaseUser;
+    private DatabaseReference groupRef;
+    private DatabaseReference planRef;
+
+    private RecyclerView recyclerViewGroupPlan;
+    private LinearLayoutManager linearLayoutManager;
+    private ProgressBar progressBar;
     private LinearLayout top_layout;
-    private TextView warning;
+    private TextView warning, warning1, planName, planDate, planOverview, planCreated;
+    private CardView cardView;
+    private ImageButton planMenuButton;
+    private LinearLayout included;
     private FloatingActionButton fab_add_plan;
-    private Bundle bundle;
     private String type;
+    private Group group;
+
+    private Date today;
+    private SimpleDateFormat dateFormatter;
+    private Plan currentPlan;
+    private List<String> planIDs = new ArrayList<>();
+    private List<Plan> plans = new ArrayList<>();
+
+    private RVAdapter_Plan adapter;
 
     @Nullable
     @Override
@@ -34,25 +80,197 @@ public class Fragment_GroupPlanList extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        Bundle bundle = getArguments();
+        type = bundle.getString("type");
+        group = bundle.getParcelable("group");
+
+        today = Calendar.getInstance().getTime();
+        dateFormatter = new SimpleDateFormat("d MMMM yyyy", Locale.US);
+        try {
+            today = dateFormatter.parse(dateFormatter.format(today));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
+
+        groupRef = firebaseDatabase.getReference().child("groups").child(group.getGroup_id()).child("plans");
+        planRef = firebaseDatabase.getReference().child("plans");
+
         init();
+
+        progressBar.setVisibility(View.VISIBLE);
+        getPlanIDs(new PlanIDCallback() {
+            @Override
+            public void onCallback(List<String> list) {
+                planIDs = list;
+                populatePlanRecyclerView();
+                progressBar.setVisibility(View.INVISIBLE);
+            }
+        });
+
+        recyclerViewGroupPlan.setHasFixedSize(true);
+        recyclerViewGroupPlan.setLayoutManager(linearLayoutManager);
     }
 
     public void init() {
         findViewById();
-        bundle = getArguments();
-        type = bundle.getString("type");
+
+        Log.d("CREATORID", group.getCreator_id());
+
+        if (!group.getCreator_id().equals(firebaseUser.getUid())) {
+            fab_add_plan.setVisibility(View.GONE);
+        } else {
+            warning.setText("You don\'t have any plan in progress...\nCreate a plan now!");
+            setCreatePlanButton();
+        }
 
         if (type.equals("past")) {
             top_layout.setVisibility(View.GONE);
             fab_add_plan.setVisibility(View.GONE);
-            warning.setText("You have never finish a plan. Go make one!");
+            warning1.setText("You have never finished a plan. Go make one!");
+        } else {
+            setCurrentPlan();
+        }
+    }
+
+    public void setCurrentPlan() {
+        if (currentPlan == null) {
+            included.setVisibility(View.GONE);
+        } else {
+            included.setVisibility(View.VISIBLE);
+            warning.setVisibility(View.GONE);
+
+            String dateString = currentPlan.getPlan_start_date() + " - "
+                    + currentPlan.getPlan_end_date() + currentPlan.getPlan_total_days();
+            String createdString = "Modified: " + currentPlan.getPlan_modified() + " / "
+                    + "Created: " + currentPlan.getPlan_created();
+
+            planName.setText(currentPlan.getPlan_name());
+            planDate.setText(dateString);
+            planOverview.setText(currentPlan.getPlan_overview());
+            planCreated.setText(createdString);
+        }
+
+        if (!plans.isEmpty()) {
+            warning1.setVisibility(View.GONE);
         }
     }
 
     public void findViewById() {
         top_layout = getView().findViewById(R.id.top_layout);
         warning = getView().findViewById(R.id.warning);
+        warning1 = getView().findViewById(R.id.warning1);
+        included = getView().findViewById(R.id.included_row_plan);
         fab_add_plan = getView().findViewById(R.id.fab_add_plan);
+
+        cardView = getView().findViewById(R.id.cv_plan);
+        planName = getView().findViewById(R.id.plan_name);
+        planDate = getView().findViewById(R.id.plan_date);
+        planOverview = getView().findViewById(R.id.plan_overview);
+        planCreated = getView().findViewById(R.id.plan_created);
+        planMenuButton = getView().findViewById(R.id.plan_menu_button);
+
+        progressBar = getView().findViewById(R.id.progress_loader);
+        recyclerViewGroupPlan = getView().findViewById(R.id.rv_group_plan_list);
+        linearLayoutManager = new LinearLayoutManager(this.getActivity());
+    }
+
+    public void setCreatePlanButton() {
+        fab_add_plan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent myIntent = new Intent(getActivity(), CreateNewPlanActivity.class);
+                myIntent.putExtra("group_id", group.getGroup_id());
+                myIntent.putExtra("ACTIVITY", "Fragment_GroupPlanList");
+                startActivity(myIntent);
+            }
+        });
+    }
+
+    //Todo: refactor? exactly the same code as the one in CreateNewGroup
+    private void populatePlanRecyclerView() {
+        Log.d(TAG, "populateGroupPlanRecyclerView: Displaying list of plans in the ListView.");
+        getAllPlans(new PlanCallback() {
+            @Override
+            public void onCallback(List<Plan> list) {
+                adapter = new RVAdapter_Plan(list, getActivity());
+                for (Plan p : list) {
+                    Log.d("DATE", p.getPlan_start_date());
+                }
+                recyclerViewGroupPlan.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
+                setCurrentPlan();
+            }
+        });
+    }
+
+    /*
+     * Get all group plans
+     * */
+    private void getAllPlans(final PlanCallback callback) {
+
+        planRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                plans.clear();
+                for (DataSnapshot postSnapshot: dataSnapshot.getChildren()){
+                    Plan plan = postSnapshot.getValue(Plan.class); // Plan Objects
+                    if (planIDs.contains(plan.getPlan_id())){
+                        try {
+                            Date start_date = dateFormatter.parse(plan.getPlan_start_date());
+                            Date end_date = dateFormatter.parse(plan.getPlan_end_date());
+                            if (today.getTime() >= start_date.getTime() &&
+                                    today.getTime() <= end_date.getTime()) {
+                                currentPlan = plan;
+                                setCurrentPlan();
+                            } else {
+                                plans.add(plan);
+                            }
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                callback.onCallback(plans);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void getPlanIDs(final PlanIDCallback callback) {
+        groupRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                planIDs.clear();
+                for (DataSnapshot postSnapshot: dataSnapshot.getChildren()){
+                    String planId = postSnapshot.getValue(String.class); // String of groupID
+//                    Log.d("PLAN_ID", planId);
+                    planIDs.add(planId);
+                }
+                callback.onCallback(planIDs);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private interface PlanIDCallback {
+        void onCallback(List<String> list);
+    }
+
+    private interface PlanCallback {
+        void onCallback(List<Plan> list);
     }
 
 }
