@@ -29,6 +29,14 @@ public class Plan {
 
     }
 
+    public String getCreatorId() {
+        return creatorId;
+    }
+
+    public void setCreatorId(String creatorId) {
+        this.creatorId = creatorId;
+    }
+
     public String getPlan_id() {
         return plan_id;
     }

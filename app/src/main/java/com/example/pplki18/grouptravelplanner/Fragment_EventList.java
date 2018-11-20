@@ -181,7 +181,6 @@ public class Fragment_EventList extends Fragment {
                         Plan plan = postSnapshot.getValue(Plan.class);
                         if (plan_id.equals(plan.getPlan_id())) {
                             eventIDs = plan.getEvents();
-                            Log.d("EVENT_IDS", eventIDs.get(0));
                             break;
                         }
                     }

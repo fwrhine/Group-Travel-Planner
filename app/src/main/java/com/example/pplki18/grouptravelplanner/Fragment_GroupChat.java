@@ -1,6 +1,7 @@
 package com.example.pplki18.grouptravelplanner;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -17,17 +18,27 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.pplki18.grouptravelplanner.data.Group;
 import com.example.pplki18.grouptravelplanner.data.Message;
+import com.example.pplki18.grouptravelplanner.utils.Chat.ChatViewHolder;
+import com.example.pplki18.grouptravelplanner.utils.Chat.ReceivedMessageHolder;
+import com.example.pplki18.grouptravelplanner.utils.Chat.SentMessageHolder;
 import com.example.pplki18.grouptravelplanner.utils.MessageAdapter;
 import com.example.pplki18.grouptravelplanner.utils.SessionManager;
-import com.example.pplki18.grouptravelplanner.utils.User;
+import com.example.pplki18.grouptravelplanner.data.User;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -38,9 +49,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static android.app.Activity.RESULT_OK;
 
 public class Fragment_GroupChat extends Fragment {
 
@@ -96,13 +110,11 @@ public class Fragment_GroupChat extends Fragment {
 
         addSendButtonClickListener();
 
-        options =
-                new FirebaseRecyclerOptions.Builder<Message>()
+        options = new FirebaseRecyclerOptions.Builder<Message>()
                         .setQuery(messageDatabaseReference, Message.class)
                         .build();
 
-        adapter =
-                new FirebaseRecyclerAdapter<Message, ChatViewHolder>(options) {
+        adapter = new FirebaseRecyclerAdapter<Message, ChatViewHolder>(options) {
 
 
                     @Override
@@ -151,7 +163,11 @@ public class Fragment_GroupChat extends Fragment {
         photoPickerButton = getView().findViewById(R.id.photoPickerButton);
         messageEditText = getView().findViewById(R.id.messageEditText);
         sendButton = getView().findViewById(R.id.sendButton);
-        messageRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        linearLayoutManager.setStackFromEnd(true);
+
+        messageRecyclerView.setLayoutManager(linearLayoutManager);
 
         List<Message> messages = new ArrayList<>();
 
@@ -161,9 +177,7 @@ public class Fragment_GroupChat extends Fragment {
         photoPickerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                intent.setType("image/jpeg");
-                intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
+                Intent intent =  new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                 startActivityForResult(Intent.createChooser(intent, "Complete action using"), RC_PHOTO_PICKER);
             }
         });
@@ -195,6 +209,7 @@ public class Fragment_GroupChat extends Fragment {
                 // TODO: Send messages on click
                 Message message = new Message(firebaseUser.getUid(), messageEditText.getText().toString(), null, System.currentTimeMillis());
                 messageDatabaseReference.push().setValue(message);
+                messageRecyclerView.smoothScrollToPosition(messageRecyclerView.getAdapter().getItemCount());
 
                 // Clear input box
                 messageEditText.setText("");
@@ -209,136 +224,36 @@ public class Fragment_GroupChat extends Fragment {
         messageRecyclerView.setAdapter(adapter);
     }
 
-    public abstract static class ChatViewHolder extends RecyclerView.ViewHolder {
-        public ChatViewHolder(View itemView) {
-            super(itemView);
-        }
-        public abstract void bind(Message message);
-    }
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data){
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == RC_PHOTO_PICKER && resultCode == RESULT_OK) {
+            Log.d("SENDING PHOTO", true + "");
+            Uri selectedImageUri = data.getData();
+            final StorageReference photoRef = chatPhotoStorageReference.child(selectedImageUri.getLastPathSegment());
 
-    private static class SentMessageHolder extends ChatViewHolder {
-        TextView messageText, messageTimeText, photoTimeText;
-        ImageView photoImageView;
-
-        public SentMessageHolder(View itemView) {
-            super(itemView);
-
-            messageText = itemView.findViewById(R.id.text_message_body);
-            photoImageView = itemView.findViewById(R.id.photoImageView);
-            messageTimeText = itemView.findViewById(R.id.text_message_time);
-            photoTimeText = itemView.findViewById(R.id.photo_message_time);
-        }
-
-        @Override
-        public void bind(Message message) {
-            boolean isPhoto = message.getPhotoUrl() != null;
-
-            if (isPhoto) {
-                messageText.setVisibility(View.GONE);
-                messageTimeText.setVisibility(View.GONE);
-                photoImageView.setVisibility(View.VISIBLE);
-                photoTimeText.setVisibility(View.VISIBLE);
-                Glide.with(photoImageView.getContext())
-                        .load(message.getPhotoUrl())
-                        .into(photoImageView);
-            } else {
-                messageText.setVisibility(View.VISIBLE);
-                messageTimeText.setVisibility(View.VISIBLE);
-                photoImageView.setVisibility(View.GONE);
-                photoTimeText.setVisibility(View.GONE);
-                messageText.setText(message.getText());
-            }
-        }
-            // Format the stored timestamp into a readable String using method.
-//            timeText.setText(Utils.formatDateTime(message.getCreatedAt()));
-    }
-
-    private class ReceivedMessageHolder extends ChatViewHolder {
-        TextView messageText, messageTimeText, photoTimeText, nameText;
-        ImageView photoImageView, profileImage;
-
-        ReceivedMessageHolder(View itemView) {
-            super(itemView);
-
-            messageText = (TextView) itemView.findViewById(R.id.text_message_body);
-            messageTimeText = (TextView) itemView.findViewById(R.id.text_message_time);
-            photoImageView = itemView.findViewById(R.id.photoImageView);
-            messageTimeText = itemView.findViewById(R.id.text_message_time);
-            photoTimeText = itemView.findViewById(R.id.photo_message_time);
-            nameText = (TextView) itemView.findViewById(R.id.text_message_name);
-            profileImage = (ImageView) itemView.findViewById(R.id.image_message_profile);
-        }
-
-        @Override
-        public void bind(final Message message) {
-            userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            // Upload photo and push message
+            photoRef.putFile(selectedImageUri).continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
                 @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                        User user = postSnapshot.getValue(User.class);
-                        if (message.getSenderId().equals(user.getUser_id())) {
-                            nameText.setText(user.getUser_name());
-
-                            Glide.with(photoImageView.getContext())
-                                    .load(user.getUser_image())
-                                    .into(photoImageView);
-                        }
+                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                    if (!task.isSuccessful()) {
+                        throw task.getException();
+                    }
+                    return photoRef.getDownloadUrl();
+                }
+            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                @Override
+                public void onComplete(@NonNull Task<Uri> task) {
+                    if (task.isSuccessful()) {
+                        Uri downloadUri = task.getResult();
+                        Message message = new Message(firebaseUser.getUid(), null, downloadUri.toString(), System.currentTimeMillis());
+                        messageDatabaseReference.push().setValue(message);
+                        messageRecyclerView.smoothScrollToPosition(messageRecyclerView.getAdapter().getItemCount());
+                    } else {
+                        Toast.makeText(getContext(), "upload failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
             });
-
-            boolean isPhoto = message.getPhotoUrl() != null;
-            if (isPhoto) {
-                messageText.setVisibility(View.GONE);
-                messageTimeText.setVisibility(View.GONE);
-                photoImageView.setVisibility(View.VISIBLE);
-                photoTimeText.setVisibility(View.VISIBLE);
-                Glide.with(photoImageView.getContext())
-                        .load(message.getPhotoUrl())
-                        .into(photoImageView);
-            } else {
-                messageText.setVisibility(View.VISIBLE);
-                messageTimeText.setVisibility(View.VISIBLE);
-                photoImageView.setVisibility(View.GONE);
-                photoTimeText.setVisibility(View.GONE);
-                messageText.setText(message.getText());
-            }
-        }
-    }
-
-    private void attachDatabaseReadListener() {
-        if (childEventListener == null) {
-            childEventListener = new ChildEventListener() {
-                @Override
-                public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                    Message message = dataSnapshot.getValue(Message.class);
-                }
-
-                @Override
-                public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                }
-
-                @Override
-                public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-                }
-
-                @Override
-                public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            };
         }
     }
 }

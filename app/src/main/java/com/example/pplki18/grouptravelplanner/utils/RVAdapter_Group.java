@@ -121,7 +121,6 @@ public class RVAdapter_Group extends RecyclerView.Adapter<RVAdapter_Group.GroupV
         groupViewHolder.itemView.findViewById(R.id.cv).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(context, "CLICKED " + i, Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(context, InGroupActivity.class);
                 intent.putExtra("group", group);
                 context.startActivity(intent);
