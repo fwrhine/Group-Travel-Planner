@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -35,7 +36,8 @@ public class EventDetailActivity extends AppCompatActivity {
     private TextView eventDate, eventTime, eventDuration, eventDescription;
     private ImageButton editEvent;
     private Toolbar toolbar;
-    FloatingActionButton ic_event;
+    private RelativeLayout constraintLayout;
+    private FloatingActionButton ic_event;
     private Event event;
     private Intent intent;
     private String type;
@@ -130,6 +132,7 @@ public class EventDetailActivity extends AppCompatActivity {
             initTrain();
         } else if (type.equals("custom")) {
             initCustom();
+
         }
 
         setEditEventButton();
@@ -143,12 +146,13 @@ public class EventDetailActivity extends AppCompatActivity {
         image.setImageResource(R.drawable.train);
         ic_event.setImageResource(R.drawable.ic_train);
         ic_transport.setImageResource(R.drawable.ic_train_black);
-
     }
 
     //TODO custom event
     public void initCustom() {
-
+        image.setImageResource(R.drawable.notes_icon);
+        ic_event.setImageResource(R.drawable.ic_event_note);
+        constraintLayout.setVisibility(View.GONE);
     }
 
     public void setEditEventButton() {
@@ -190,6 +194,8 @@ public class EventDetailActivity extends AppCompatActivity {
         origin = findViewById(R.id.origin);
         destination = findViewById(R.id.destination);
         money = findViewById(R.id.money);
+
+        constraintLayout = findViewById(R.id.constraintLayout);
 
         eventDate = (TextView) findViewById(R.id.event_detail_date);
         eventTime = (TextView) findViewById(R.id.event_detail_time);

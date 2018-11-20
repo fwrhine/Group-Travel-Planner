@@ -92,41 +92,11 @@ public class Fragment_EventList extends Fragment {
 
     }
 
-//    @Override
-//    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//
-//        Log.d("RESULT0", "masuk");
-////        if (requestCode == EDIT_EVENT_REQUEST_CODE) {
-//            if (resultCode == RESULT_OK) {
-//                String prevActivity = data.getStringExtra("ACTIVITY");
-//                Log.d("RESULT", "masuk");
-//                if (prevActivity != null && prevActivity.equals("CreateNewPlanActivity")) {
-//                    String test = getActivity().getIntent().getStringExtra("TEST");
-//                    if (test != null) {
-//
-//                        Log.d("COBA", test);
-//                    }
-//                    Log.d("RESUMEGA", "resumekok");
-////                events = getAllEventsTemp(date);
-////            getActivity().getIntent().putExtra("ACTIVITY", "CreateNewPlanActivity");
-//                } else {
-////                events = getAllEvents(date);
-//                }
-//                adapter = new RVAdapter_NewPlan(events, getActivity());
-//                rvNewPlan.setAdapter(adapter);
-//                adapter.notifyDataSetChanged();
-//            }
-////        }
-//    }
-
     @Override
     public void onResume() {  // After a pause OR at startup
-//        Log.d("RESUME", "masuk resume");
         super.onResume();
         Date date = (Date) intent.getExtras().get("date");
         String prevActivity = getActivity().getIntent().getStringExtra("ACTIVITY");
-//        Log.d("HALALA", prevActivity);
         if (prevActivity != null && prevActivity.equals("CreateNewPlanActivity")) {
             events = getAllEventsTemp(date);
             adapter = new RVAdapter_NewPlan(events, getActivity());
@@ -154,8 +124,9 @@ public class Fragment_EventList extends Fragment {
         String prevActivity = getActivity().getIntent().getStringExtra("ACTIVITY");
         if (prevActivity != null && prevActivity.equals("CreateNewPlanActivity")) {
             events = getAllEventsTemp(date);
-            RVAdapter_NewPlan adapter = new RVAdapter_NewPlan(events, getActivity());
+            adapter = new RVAdapter_NewPlan(events, getActivity());
             rvNewPlan.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
         } else {
             progressBar.setVisibility(View.VISIBLE);
             getAllEvents(date, new EventCallback() {
@@ -163,8 +134,9 @@ public class Fragment_EventList extends Fragment {
                 public void onCallback(List<Event> list) {
                     events = list;
                     progressBar.setVisibility(View.INVISIBLE);
-                    RVAdapter_NewPlan adapter = new RVAdapter_NewPlan(events, getActivity());
+                    adapter = new RVAdapter_NewPlan(events, getActivity());
                     rvNewPlan.setAdapter(adapter);
+                    adapter.notifyDataSetChanged();
                 }
             });
         }
@@ -176,11 +148,12 @@ public class Fragment_EventList extends Fragment {
             planRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    eventIDs.clear();
+//                    eventIDs.clear();
                     for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                         Plan plan = postSnapshot.getValue(Plan.class);
                         if (plan_id.equals(plan.getPlan_id())) {
                             eventIDs = plan.getEvents();
+//                            Log.d("EVENT_IDS", eventIDs.get(0));
                             break;
                         }
                     }
@@ -205,7 +178,7 @@ public class Fragment_EventList extends Fragment {
         getEventIDs(new EventIdCallback() {
             @Override
             public void onCallback(List<String> list) {
-                if (list.size() != 0) {
+                if (list != null) {
                     eventIDs = list;
                     final String str_cur_date = dateFormatter1.format(cur_date);
                     // this one is to check the transport date (saved in different format)

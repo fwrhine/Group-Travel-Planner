@@ -51,13 +51,14 @@
                 android:id="@+id/name_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:paddingRight="25dp"
                 android:orientation="vertical">
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="15sp"
                     android:text="Event name"/>
-                <TextView
+                <EditText
                     android:id="@+id/event_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -70,7 +71,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignEnd="@id/name_layout"
-                android:src="@drawable/ic_event_note_black_24dp"
+                android:src="@drawable/ic_event_note_black"
                 android:layout_centerVertical="true"/>
         </RelativeLayout>
 

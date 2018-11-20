@@ -9,6 +9,7 @@ public class Hotel {
     private String address;
     private String photo;
     private String website;
+    private String price;
 
 
     public Hotel() {
@@ -39,6 +40,10 @@ public class Hotel {
         this.website = website;
     }
 
+    public void setPrice(String price) {
+        this.price = price;
+    }
+
 
     public String getHotel_id() {
         return hotel_id;
@@ -62,6 +67,10 @@ public class Hotel {
 
     public String getWebsite() {
         return website;
+    }
+
+    public String getPrice() {
+        return price;
     }
 }
 

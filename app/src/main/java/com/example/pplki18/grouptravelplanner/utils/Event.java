@@ -12,6 +12,7 @@ public class Event implements Parcelable, Comparable<Event> {
     private String event_id;
     private String plan_id;
 
+    private String creator_id;
     private String query_id;
     private String title;
     private String location;
@@ -65,6 +66,7 @@ public class Event implements Parcelable, Comparable<Event> {
     }
 
     protected Event(Parcel in) {
+        creator_id = in.readString();
         event_id = in.readString();
         query_id = in.readString();
         title = in.readString();
@@ -101,6 +103,14 @@ public class Event implements Parcelable, Comparable<Event> {
             return new Event[size];
         }
     };
+
+    public String getCreator_id() {
+        return creator_id;
+    }
+
+    public void setCreator_id(String creator_id) {
+        this.creator_id = creator_id;
+    }
 
     public String getEvent_id() {
         return event_id;
@@ -319,6 +329,7 @@ public class Event implements Parcelable, Comparable<Event> {
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(creator_id);
         parcel.writeString(event_id);
         parcel.writeString(query_id);
         parcel.writeString(title);

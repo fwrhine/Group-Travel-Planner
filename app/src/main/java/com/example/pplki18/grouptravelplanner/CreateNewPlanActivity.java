@@ -80,14 +80,10 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Log.d("KOKSINI", "sini");
         if (requestCode == 1 || requestCode == 5) {
             if(resultCode == RESULT_OK) {
                 events = data.getParcelableArrayListExtra("events");
-//                for(Event e : events) {
-//                    Log.d("testtt", e.getTitle());
-//                }
-//                Log.d("RESULT_OK", "masuk sini");
+
                 getIntent().putParcelableArrayListExtra("events", (ArrayList<? extends Parcelable>) events);
                 getIntent().putExtra("ACTIVITY", "CreateNewPlanActivity");
                 beginFragmentEventList();
@@ -113,15 +109,6 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
         events = new ArrayList<>();
 
         intent = getIntent();
-
-//        String prevActivity = intent.getStringExtra("ACTIVITY");
-////        if (prevActivity != null && prevActivity.equals("PlaceActivity")) {
-////            events = intent.getParcelableArrayListExtra("events");
-//////            for(Event e : events) {
-//////                Log.d("testtt2", e.getTitle());
-//////            }
-////            beginFragmentEventList();
-////        }
 
         databaseHelper = new DatabaseHelper(CreateNewPlanActivity.this);
         session = new SessionManager(getApplicationContext());
@@ -400,6 +387,7 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
 
         List<String> eventIDs = new ArrayList<>();
         for (Event e : events){
+            e.setCreator_id(firebaseUser.getUid());
             e.setEvent_id(eventRef.push().getKey());
             e.setPlan_id(planID);
             eventIDs.add(e.getEvent_id());
@@ -504,6 +492,7 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
     }
 
     public void setDateChanger() throws ParseException {
+        button_left.setEnabled(false);
         date_month_year.setText(dateFormatter2.format(date_start));
         date_month_year.setTextColor(getResources().getColor(R.color.colorBlack));
         day.setText(new SimpleDateFormat("EEEE", Locale.US).format(date_start));

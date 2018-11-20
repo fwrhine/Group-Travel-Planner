@@ -141,19 +141,23 @@ public class Activity_EditReminder  extends AppCompatActivity implements DatePic
             public void onClick(View view) {
                 // Starts the function below
                 deleteEventFromCalendar(event_id);
+                goBackToList();
             }
         });
 
         btn_done.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent myIntent = new Intent(Activity_EditReminder.this , InHomeActivity.class);
-                myIntent.putExtra("fragment", "reminder");
-                startActivity(myIntent);
+                goBackToList();
             }
         });
     }
 
+    public void goBackToList(){
+        Intent myIntent = new Intent(Activity_EditReminder.this , InHomeActivity.class);
+        myIntent.putExtra("fragment", "reminder");
+        startActivity(myIntent);
+    }
 
     public void changeNotifier(String title, String destination, Integer year, Integer month,
                                       Integer day, Integer hour, Integer minute, long event_id) {

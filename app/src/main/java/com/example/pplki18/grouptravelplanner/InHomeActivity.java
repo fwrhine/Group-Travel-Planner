@@ -70,9 +70,9 @@ public class InHomeActivity extends AppCompatActivity implements NavigationView.
         init();
 
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED) {
-            readCalendar(getApplicationContext());
-        }
+//        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED) {
+//            readCalendar(getApplicationContext());
+//        }
         navigationView.setNavigationItemSelectedListener(this);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
@@ -285,7 +285,6 @@ public class InHomeActivity extends AppCompatActivity implements NavigationView.
         deleteUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventID);
         cr.delete(deleteUri, null, null);
         Log.v("CALENDAR DELETE", "Event deleted");
-        Toast.makeText(getApplicationContext(), "Removed Event", Toast.LENGTH_SHORT).show();
     }
 
 

@@ -34,6 +34,15 @@ import com.example.pplki18.grouptravelplanner.data.EventContract;
 import com.example.pplki18.grouptravelplanner.utils.Event;
 import com.example.pplki18.grouptravelplanner.utils.Train;
 import com.example.pplki18.grouptravelplanner.utils.TrainAdapter;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -51,10 +60,17 @@ import static android.app.Activity.RESULT_OK;
 
 public class BookTrainFragment extends Fragment {
 
+    FirebaseDatabase firebaseDatabase;
+    FirebaseAuth firebaseAuth;
+    FirebaseUser firebaseUser;
+    DatabaseReference planRef;
+    DatabaseReference eventRef;
+    StorageReference storageReference;
+
     private AutoCompleteTextView origin, destination;
     private Button searchButton;
 
-    private int plan_id;
+    private String plan_id;
 
     private String date;
     private String startDate;
@@ -66,7 +82,8 @@ public class BookTrainFragment extends Fragment {
     private ListView listTravel;
 
     private String prevActivity;
-    private List<Event> events;
+    private List<String> eventIDs = new ArrayList<>();
+    private List<Event> events = new ArrayList<>();
 
     @Nullable
     @Override
@@ -79,13 +96,20 @@ public class BookTrainFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
+
+        eventRef = firebaseDatabase.getReference().child("events");
+        storageReference = FirebaseStorage.getInstance().getReference();
+
         origin = Objects.requireNonNull(getView()).findViewById(R.id.origin);
         destination = getView().findViewById(R.id.destination);
 
         searchButton = getView().findViewById(R.id.searchButton);
         listTravel = getView().findViewById(R.id.listTravel);
 
-        plan_id = getArguments().getInt("plan_id");
+        plan_id = getArguments().getString("plan_id");
 
         date = getArguments().getString("date");
 
@@ -516,40 +540,51 @@ public class BookTrainFragment extends Fragment {
 
                                 } else {
 
-                                    DatabaseHelper myDb = new DatabaseHelper(BookTrainFragment.this.getActivity());
-                                    SQLiteDatabase db = myDb.getReadableDatabase();
+//                                    DatabaseHelper myDb = new DatabaseHelper(BookTrainFragment.this.getActivity());
+//                                    SQLiteDatabase db = myDb.getReadableDatabase();
+//
+//                                    final String date = startDate;
+//
+//                                    ContentValues values = new ContentValues();
+//
+//                                    values.put(EventContract.EventEntry.COL_PLAN_ID, plan_id);
+//                                    values.put(EventContract.EventEntry.COL_TITLE, "Train");
+//                                    values.put(EventContract.EventEntry.COL_DESCRIPTION, "Train for Transport");
+//                                    values.put(EventContract.EventEntry.COL_DATE, date);
+//                                    values.put(EventContract.EventEntry.COL_TYPE, "trains");
+//                                    values.put(EventContract.EventEntry.COL_PRICE, price);
+//
+//                                    values.put(EventContract.EventEntry.COL_ORIGIN, startLoc);
+//                                    values.put(EventContract.EventEntry.COL_DESTINATION, endLoc);
+//                                    values.put(EventContract.EventEntry.COL_DEPARTURE_TIME, departTime);
+//                                    values.put(EventContract.EventEntry.COL_ARRIVAL_TIME, arriveTime);
+//                                    values.put(EventContract.EventEntry.COL_TRANS_NUMBER, tvTrainName.getText().toString());
+//
+//                                    long newRowId = db.insert(EventContract.EventEntry.TABLE_NAME, null, values);
+//
+//                                    if (newRowId != -1) {
+//                                        Toast.makeText(BookTrainFragment.this.getActivity(), "Selected Train : "
+//                                                + tvTrainName.getText().toString(), Toast.LENGTH_LONG).show();
+//                                        dialog.dismiss();
+//                                        getActivity().finish();
+//                                    }
+//
+//                                    else {
+//                                        Toast.makeText(BookTrainFragment.this.getActivity(),
+//                                                "Selection Failed!", Toast.LENGTH_LONG).show();
+//                                        dialog.dismiss();
+//                                    }
 
-                                    final String date = startDate;
+                                    Event anEvent = new Event("Train", date, departTime, arriveTime, "trains");
+                                    anEvent.setPlan_id(plan_id);
+                                    anEvent.setDescription("Train for Transport");
+                                    anEvent.setPrice(price);
+                                    anEvent.setOrigin(startLoc);
+                                    anEvent.setDestination(endLoc);
+                                    anEvent.setTransport_number(tvTrainName.getText().toString());
 
-                                    ContentValues values = new ContentValues();
-
-                                    values.put(EventContract.EventEntry.COL_PLAN_ID, plan_id);
-                                    values.put(EventContract.EventEntry.COL_TITLE, "Train");
-                                    values.put(EventContract.EventEntry.COL_DESCRIPTION, "Train for Transport");
-                                    values.put(EventContract.EventEntry.COL_DATE, date);
-                                    values.put(EventContract.EventEntry.COL_TYPE, "trains");
-                                    values.put(EventContract.EventEntry.COL_PRICE, price);
-
-                                    values.put(EventContract.EventEntry.COL_ORIGIN, startLoc);
-                                    values.put(EventContract.EventEntry.COL_DESTINATION, endLoc);
-                                    values.put(EventContract.EventEntry.COL_DEPARTURE_TIME, departTime);
-                                    values.put(EventContract.EventEntry.COL_ARRIVAL_TIME, arriveTime);
-                                    values.put(EventContract.EventEntry.COL_TRANS_NUMBER, tvTrainName.getText().toString());
-
-                                    long newRowId = db.insert(EventContract.EventEntry.TABLE_NAME, null, values);
-
-                                    if (newRowId != -1) {
-                                        Toast.makeText(BookTrainFragment.this.getActivity(), "Selected Train : "
-                                                + tvTrainName.getText().toString(), Toast.LENGTH_LONG).show();
-                                        dialog.dismiss();
-                                        getActivity().finish();
-                                    }
-
-                                    else {
-                                        Toast.makeText(BookTrainFragment.this.getActivity(),
-                                                "Selection Failed!", Toast.LENGTH_LONG).show();
-                                        dialog.dismiss();
-                                    }
+                                    saveEventToPlan(anEvent);
+                                    getActivity().finish();
                                 }
                             }
                         }
@@ -560,20 +595,72 @@ public class BookTrainFragment extends Fragment {
 
     }
 
+    private void saveEventToPlan(Event anEvent) {
+        final String eventId = eventRef.push().getKey();
+        anEvent.setEvent_id(eventId);
+        anEvent.setPlan_id(plan_id);
+        anEvent.setCreator_id(firebaseUser.getUid());
+        eventRef.child(eventId).setValue(anEvent);
+
+        planRef = firebaseDatabase.getReference().child("plans").child(plan_id).child("events");
+        getAllEventIDs(new EventIdCallback() {
+            @Override
+            public void onCallback(List<String> list) {
+                eventIDs = list;
+                eventIDs.add(eventId);
+
+                planRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        planRef.setValue(eventIDs);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+            }
+        });
+    }
+
+    private void getAllEventIDs(final EventIdCallback userIdCallback){
+        planRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                eventIDs.clear();
+                for (DataSnapshot postSnapshot: dataSnapshot.getChildren()){
+                    String eventId = postSnapshot.getValue(String.class); // String of groupID
+                    eventIDs.add(eventId);
+                }
+                userIdCallback.onCallback(eventIDs);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private interface EventIdCallback{
+        void onCallback(List<String> list);
+    }
+
     private boolean validate() {
         boolean valid = true;
 
         String startLoc = origin.getText().toString();
         String endLoc = destination.getText().toString();
 
-        if (startLoc.isEmpty()) {
-            Toast.makeText(BookTrainFragment.this.getActivity(), "Please write the origin",
+        if (startLoc.isEmpty() || !startLoc.contains(" | ")) {
+            Toast.makeText(BookTrainFragment.this.getActivity(), "Please write the correct origin",
                     Toast.LENGTH_LONG).show();
             valid = false;
         }
 
-        else if (endLoc.isEmpty()) {
-            Toast.makeText(BookTrainFragment.this.getActivity(), "Please write the destination",
+        else if (endLoc.isEmpty() || !endLoc.contains(" | ")) {
+            Toast.makeText(BookTrainFragment.this.getActivity(), "Please write the correct destination",
                     Toast.LENGTH_LONG).show();
             valid = false;
         }
