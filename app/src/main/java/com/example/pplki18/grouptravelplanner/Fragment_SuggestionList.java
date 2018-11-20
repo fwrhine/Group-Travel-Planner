@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,8 +15,8 @@ import android.widget.ProgressBar;
 
 import com.example.pplki18.grouptravelplanner.data.Group;
 import com.example.pplki18.grouptravelplanner.utils.Event;
-import com.example.pplki18.grouptravelplanner.utils.RVAdapter_Plan;
 import com.example.pplki18.grouptravelplanner.utils.RVAdapter_Suggest;
+import com.example.pplki18.grouptravelplanner.utils.Suggestion;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -34,12 +35,13 @@ public class Fragment_SuggestionList extends Fragment {
 
     private DatabaseReference groupRef;
     private DatabaseReference suggestRef;
+    private LinearLayoutManager linearLayoutManager;
     private RecyclerView recyclerViewSuggestion;
 
     private FloatingActionButton new_suggestion_button;
     private ProgressBar progressBar;
     private List<String> suggestionIDs = new ArrayList<>();
-    private List<Event> suggestions = new ArrayList<>();
+    private List<Suggestion> suggestions = new ArrayList<>();
     private RVAdapter_Suggest adapter;
     private Intent myIntent;
     private Group group;
@@ -87,13 +89,31 @@ public class Fragment_SuggestionList extends Fragment {
         });
     }
 
+    @Override
+    public void onResume() {  // After a pause OR at startup
+        super.onResume();
+            progressBar.setVisibility(View.VISIBLE);
+            getAllSuggestion(new SuggestionCallback() {
+                @Override
+                public void onCallback(List<Suggestion> list) {
+                    suggestions = list;
+                    progressBar.setVisibility(View.INVISIBLE);
+                    adapter = new RVAdapter_Suggest(suggestions, getActivity());
+                    recyclerViewSuggestion.setAdapter(adapter);
+                    adapter.notifyDataSetChanged();
+                }
+            });
+    }
+
     private void populatePlanRecyclerView() {
         Log.d(TAG, "populatePlanRecyclerView: Displaying list of plans in the ListView.");
         getAllSuggestion(new SuggestionCallback() {
             @Override
-            public void onCallback(List<Event> list) {
-                adapter = new RVAdapter_Suggest(suggestions, getActivity());  // TODO should I add another adapter???
-
+            public void onCallback(List<Suggestion> list) {
+                suggestions = list;
+                Log.d("SUGGESTION-LIST", list.size()+"");
+                adapter = new RVAdapter_Suggest(suggestions, getActivity());
+                Log.d("ADAPTER-COUNT", adapter.getItemCount()+"");
                 recyclerViewSuggestion.setAdapter(adapter);
                 adapter.notifyDataSetChanged();
             }
@@ -101,16 +121,14 @@ public class Fragment_SuggestionList extends Fragment {
     }
 
     private void getAllSuggestion(final SuggestionCallback callback) {
-        //TODO: FIREBASE
-
         suggestRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 suggestions.clear();
                 for (DataSnapshot postSnapshot: dataSnapshot.getChildren()){
-                    Event event = postSnapshot.getValue(Event.class); // TODO What is postSnapshot?
-                    if(suggestionIDs.contains(event.getEvent_id())){
-                        suggestions.add(event);
+                    Suggestion suggestion = postSnapshot.getValue(Suggestion.class);
+                    if(suggestionIDs.contains(suggestion.getEvent_id())){
+                        suggestions.add(suggestion);
                     }
                 }
                 callback.onCallback(suggestions);
@@ -144,7 +162,9 @@ public class Fragment_SuggestionList extends Fragment {
     }
 
     private void init() {
+        linearLayoutManager = new LinearLayoutManager(getActivity());
         recyclerViewSuggestion = getView().findViewById(R.id.rv_suggestion_list);
+        recyclerViewSuggestion.setLayoutManager(linearLayoutManager);
         progressBar = Objects.requireNonNull(getView()).findViewById(R.id.progress_loader);
         new_suggestion_button = getView().findViewById(R.id.fab_add_suggestion);
         myIntent = new Intent(getActivity(), ChooseEventActivity.class);
@@ -163,6 +183,6 @@ public class Fragment_SuggestionList extends Fragment {
     }
 
     private interface SuggestionCallback {
-        void onCallback(List<Event> list);
+        void onCallback(List<Suggestion> list);
     }
 }

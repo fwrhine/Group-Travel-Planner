@@ -38,6 +38,7 @@ import com.android.volley.toolbox.Volley;
 import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
 import com.example.pplki18.grouptravelplanner.utils.Event;
 import com.example.pplki18.grouptravelplanner.utils.Place;
+import com.example.pplki18.grouptravelplanner.utils.Suggestion;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -116,6 +117,17 @@ public class PlaceActivity extends AppCompatActivity {
         ic_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                String prevFrag = getIntent().getStringExtra("prev_fragment");
+
+                if(prevFrag == null) {
+                    setTime();
+                }
+                else {
+                    if (prevFrag.equals("Fragment_SuggestionList")) {
+                        saveEventToSuggestion();
+                        finish();
+                    }
+                }
                 setTime();
             }
         });
@@ -423,6 +435,48 @@ public class PlaceActivity extends AppCompatActivity {
         eventRef.child(eventId).setValue(anEvent);
 
         planRef = firebaseDatabase.getReference().child("plans").child(plan_id).child("events");
+        getAllEventIDs(new EventIdCallback() {
+            @Override
+            public void onCallback(List<String> list) {
+                eventIDs = list;
+                eventIDs.add(eventId);
+
+                planRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        planRef.setValue(eventIDs);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+            }
+        });
+    }
+
+    private void saveEventToSuggestion() {
+        String type = getIntent().getStringExtra("type");
+
+        Suggestion aSuggestion = new Suggestion(title.getText().toString(), type);
+
+        aSuggestion.setQuery_id(place_id);
+        aSuggestion.setLocation(address.getText().toString());
+        aSuggestion.setWebsite(website.getText().toString());
+        aSuggestion.setPhone(phone.getText().toString());
+        aSuggestion.setRating(rating_num.getText().toString());
+
+        String groupId = getIntent().getStringExtra("group_id");
+
+        final String eventId = eventRef.push().getKey();
+        aSuggestion.setEvent_id(eventId);
+        aSuggestion.setGroup_id(groupId);
+        aSuggestion.setCreator_id(firebaseUser.getUid());
+        eventRef.child(eventId).setValue(aSuggestion);
+
+        planRef = firebaseDatabase.getReference().child("groups").child(groupId).child("suggestion");
+
         getAllEventIDs(new EventIdCallback() {
             @Override
             public void onCallback(List<String> list) {
