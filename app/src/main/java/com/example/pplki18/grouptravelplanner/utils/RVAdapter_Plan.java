@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.PopupMenu;
@@ -19,6 +20,7 @@ import android.widget.TextView;
 
 import com.example.pplki18.grouptravelplanner.EditPlanActivity;
 import com.example.pplki18.grouptravelplanner.R;
+import com.example.pplki18.grouptravelplanner.data.Group;
 import com.example.pplki18.grouptravelplanner.old_stuff.DatabaseHelper;
 import com.example.pplki18.grouptravelplanner.data.Plan;
 import com.example.pplki18.grouptravelplanner.old_stuff.PlanContract;
@@ -48,6 +50,7 @@ public class RVAdapter_Plan extends RecyclerView.Adapter<RVAdapter_Plan.PlanView
 
     List<String> eventIDs = new ArrayList<>();
 
+    Bundle bundle;
     List<Plan> plans;
     Context context;
     SimpleDateFormat dateFormatter1, dateFormatter2;
@@ -55,6 +58,21 @@ public class RVAdapter_Plan extends RecyclerView.Adapter<RVAdapter_Plan.PlanView
     public RVAdapter_Plan(List<Plan> plans, Context context) {
         this.plans = plans;
         this.context = context;
+        dateFormatter1 = new SimpleDateFormat("EEE, MMM d", Locale.US);
+        dateFormatter2 = new SimpleDateFormat("d MMMM yyyy", Locale.US);
+
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
+
+        eventRef = firebaseDatabase.getReference().child("events");
+        storageReference = FirebaseStorage.getInstance().getReference();
+    }
+
+    public RVAdapter_Plan(List<Plan> plans, Context context, Bundle bundle) {
+        this.plans = plans;
+        this.context = context;
+        this.bundle = bundle;
         dateFormatter1 = new SimpleDateFormat("EEE, MMM d", Locale.US);
         dateFormatter2 = new SimpleDateFormat("d MMMM yyyy", Locale.US);
 
@@ -110,6 +128,13 @@ public class RVAdapter_Plan extends RecyclerView.Adapter<RVAdapter_Plan.PlanView
         final int position = i;
         final String name = plan.getPlan_name();
 
+        if (bundle != null) {
+            Group group = bundle.getParcelable("group");
+            if (!group.getCreator_id().equals(firebaseUser.getUid())) {
+                planViewHolder.planMenuButton.setVisibility(View.GONE);
+            }
+        }
+
         planViewHolder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -119,6 +144,10 @@ public class RVAdapter_Plan extends RecyclerView.Adapter<RVAdapter_Plan.PlanView
                 intent.putExtra("plan_date_start", plan.getPlan_start_date());
                 intent.putExtra("plan_date_end", plan.getPlan_end_date());
                 intent.putExtra("plan_total_days", plan.getPlan_total_days());
+
+                if (bundle != null) {
+                    intent.putExtra("bundle", bundle);
+                }
                 context.startActivity(intent);
             }
         });

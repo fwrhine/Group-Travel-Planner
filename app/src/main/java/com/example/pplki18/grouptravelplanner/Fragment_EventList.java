@@ -18,6 +18,7 @@ import com.example.pplki18.grouptravelplanner.data.Event;
 //import com.example.pplki18.grouptravelplanner.data.Plan;
 import com.example.pplki18.grouptravelplanner.data.Plan;
 import com.example.pplki18.grouptravelplanner.utils.RVAdapter_NewPlan;
+import com.example.pplki18.grouptravelplanner.utils.RVAdapter_Plan;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -48,8 +49,9 @@ public class Fragment_EventList extends Fragment {
     private SimpleDateFormat dateFormatter2;
     private List<Event> events = new ArrayList<>();
     private List<String> eventIDs = new ArrayList<>();
-    RVAdapter_NewPlan adapter;
-    DatabaseHelper myDb;
+    private RVAdapter_NewPlan adapter;
+    private DatabaseHelper myDb;
+    private Bundle myBundle;
 
     private FirebaseDatabase firebaseDatabase;
     private FirebaseAuth firebaseAuth;
@@ -90,9 +92,18 @@ public class Fragment_EventList extends Fragment {
         super.onResume();
         Date date = (Date) intent.getExtras().get("date");
         String prevActivity = getActivity().getIntent().getStringExtra("ACTIVITY");
+
+
+        final Bundle bundle = new Bundle();
+        if (myBundle != null) {
+            bundle.putParcelable("group", myBundle.getParcelable("group"));
+            bundle.putString("ACTIVITY", "FragmentGroupPlanList");
+        }
+
         if (prevActivity != null && prevActivity.equals("CreateNewPlanActivity")) {
             events = getAllEventsTemp(date);
-            adapter = new RVAdapter_NewPlan(events, getActivity());
+
+            adapter = new RVAdapter_NewPlan(events, getActivity(), bundle);
             rvNewPlan.setAdapter(adapter);
             adapter.notifyDataSetChanged();
         } else {
@@ -102,7 +113,7 @@ public class Fragment_EventList extends Fragment {
                 public void onCallback(List<Event> list) {
                     events = list;
                     progressBar.setVisibility(View.INVISIBLE);
-                    adapter = new RVAdapter_NewPlan(events, getActivity());
+                    adapter = new RVAdapter_NewPlan(events, getActivity(), bundle);
                     rvNewPlan.setAdapter(adapter);
                     adapter.notifyDataSetChanged();
                 }
@@ -299,6 +310,8 @@ public class Fragment_EventList extends Fragment {
         progressBar = getView().findViewById(R.id.progress_loader);
         dateFormatter1 = new SimpleDateFormat("d MMMM yyyy", Locale.US);
         dateFormatter2 = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+
+        myBundle = intent.getBundleExtra("bundle");
     }
 
     private interface EventIdCallback {

@@ -424,6 +424,7 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
         );
     }
 
+    //TODO MAKE SURE USER CANNOT ADD NEW PLAN IF THE DATE IS ALREADY USED FOR OTHER PLAN
     private void setDateTimeField() {
         trip_start_date.setOnClickListener(this);
         trip_end_date.setOnClickListener(this);

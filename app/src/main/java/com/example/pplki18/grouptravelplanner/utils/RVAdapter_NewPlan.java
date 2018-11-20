@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
@@ -20,6 +21,7 @@ import com.example.pplki18.grouptravelplanner.EventDetailActivity;
 import com.example.pplki18.grouptravelplanner.PlaceActivity;
 import com.example.pplki18.grouptravelplanner.R;
 import com.example.pplki18.grouptravelplanner.data.Event;
+import com.example.pplki18.grouptravelplanner.data.Group;
 import com.github.vipulasri.timelineview.TimelineView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -42,6 +44,7 @@ public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.Ne
 
     private List<Event> events;
     private Context mContext;
+    private Bundle bundle;
     private LayoutInflater mLayoutInflater;
 
     private FirebaseAuth mAuth;
@@ -53,6 +56,16 @@ public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.Ne
         this.mContext = context;
         mAuth = FirebaseAuth.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance();
+    }
+
+    public RVAdapter_NewPlan(List<Event> events, Context context, Bundle bundle) {
+        this.events = events;
+        this.mContext = context;
+        this.bundle = bundle;
+        mAuth = FirebaseAuth.getInstance();
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        mAuth = FirebaseAuth.getInstance();
+        firebaseUser = mAuth.getCurrentUser();
     }
 
     @Override
@@ -123,7 +136,6 @@ public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.Ne
             holder.eventDescription.setText(desc);
         }
 
-
         setEventDetailOnClick(holder, position);
         setCardViewLongClick(holder, position, event.getTitle());
     }
@@ -164,6 +176,9 @@ public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.Ne
         myIntent.putExtra("duration", anEvent.getTotal_time());
         myIntent.putExtra("event_id", anEvent.getEvent_id());
         myIntent.putExtra("type", anEvent.getType());
+        if (bundle != null) {
+            myIntent.putExtra("bundle", bundle);
+        }
 
         if (anEvent.getDescription() != null) {
             myIntent.putExtra("description", anEvent.getDescription());
@@ -197,6 +212,9 @@ public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.Ne
         myIntent.putExtra("start_date", date_start);
         myIntent.putExtra("end_date", date_end);
         myIntent.putExtra("date", anEvent.getDate());
+        if (bundle != null) {
+            myIntent.putExtra("bundle", bundle);
+        }
 
         ((Activity) mContext).startActivityForResult(myIntent, 5);
     }
@@ -229,6 +247,13 @@ public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.Ne
                 return true;
             }
         });
+
+        if (bundle != null) {
+            Group group = bundle.getParcelable("group");
+            if (group != null && !group.getCreator_id().equals(firebaseUser.getUid())) {
+                holder.cardView.setLongClickable(false);
+            }
+        }
     }
 
     private AlertDialog deleteConfirmation(final int position, String title) {

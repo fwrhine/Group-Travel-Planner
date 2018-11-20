@@ -58,13 +58,14 @@
                     android:layout_height="wrap_content"
                     android:textSize="15sp"
                     android:text="Event name"/>
+
                 <EditText
                     android:id="@+id/event_name"
-                    android:inputType="text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textStyle="bold"
-                    android:text="event name"/>
+                    android:inputType="text"
+                    android:text="event name"
+                    android:textStyle="bold" />
             </LinearLayout>
 
             <ImageView

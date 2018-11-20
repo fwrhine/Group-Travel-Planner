@@ -35,6 +35,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.pplki18.grouptravelplanner.data.Group;
 import com.example.pplki18.grouptravelplanner.old_stuff.DatabaseHelper;
 import com.example.pplki18.grouptravelplanner.data.Event;
 import com.example.pplki18.grouptravelplanner.data.Place;
@@ -94,6 +95,7 @@ public class PlaceActivity extends AppCompatActivity {
     private String plan_id;
     private List<String> eventIDs = new ArrayList<>();
     private List<Event> events = new ArrayList<>();
+    private Bundle bundle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -501,7 +503,16 @@ public class PlaceActivity extends AppCompatActivity {
         } else {
             ic_add.setImageResource(R.drawable.ic_event_note_black);
         }
-        setEditEventButton();
+        if (bundle != null) {
+            Group group = bundle.getParcelable("group");
+            if (group != null && !group.getCreator_id().equals(firebaseUser.getUid())) {
+                editEvent.setVisibility(View.GONE);
+            } else {
+                setEditEventButton();
+            }
+        } else {
+            setEditEventButton();
+        }
     }
 
     public void setEditEventButton() {
@@ -562,6 +573,8 @@ public class PlaceActivity extends AppCompatActivity {
         detailLayout = (RelativeLayout) findViewById(R.id.detail_layout);
         editEvent = (ImageButton) findViewById(R.id.edit_event);
 
+        bundle = getIntent().getBundleExtra("bundle");
+
         if (prevActivity != null && (prevActivity.equals("PlanActivity"))) {
             if (prevActivity2 != null && (prevActivity2.equals("CreateNewPlanActivity"))) {
                 events = getIntent().getParcelableArrayListExtra("events");
@@ -569,6 +582,7 @@ public class PlaceActivity extends AppCompatActivity {
                 place_id = events.get(index).getQuery_id();
             }
             setEventDetail();
+
         } else {
             detailLayout.setVisibility(View.GONE);
         }

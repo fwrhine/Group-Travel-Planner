@@ -144,8 +144,16 @@ public class Fragment_GroupPlanList extends Fragment {
             included.setVisibility(View.VISIBLE);
             warning.setVisibility(View.GONE);
 
+            String total_day_str;
+            int total_day = currentPlan.getPlan_total_days();
+            if (total_day == 1 || total_day == 0) {
+                total_day_str = "(" + total_day + " day trip)";
+            } else {
+                total_day_str = "(" + total_day + " days trip)";
+            }
+
             String dateString = currentPlan.getPlan_start_date() + " - "
-                    + currentPlan.getPlan_end_date() + currentPlan.getPlan_total_days();
+                    + currentPlan.getPlan_end_date() + "\n" + total_day_str;
             String createdString = "Modified: " + currentPlan.getPlan_modified() + " / "
                     + "Created: " + currentPlan.getPlan_created();
 
@@ -153,6 +161,7 @@ public class Fragment_GroupPlanList extends Fragment {
             planDate.setText(dateString);
             planOverview.setText(currentPlan.getPlan_overview());
             planCreated.setText(createdString);
+
         }
 
         if (!plans.isEmpty()) {
@@ -197,7 +206,10 @@ public class Fragment_GroupPlanList extends Fragment {
         getAllPlans(new PlanCallback() {
             @Override
             public void onCallback(List<Plan> list) {
-                adapter = new RVAdapter_Plan(list, getActivity());
+                Bundle bundle = new Bundle();
+                bundle.putParcelable("group", group);
+                bundle.putString("ACTIVITY", "FragmentGroupPlanList");
+                adapter = new RVAdapter_Plan(list, getActivity(), bundle);
                 for (Plan p : list) {
                     Log.d("DATE", p.getPlan_start_date());
                 }

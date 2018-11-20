@@ -15,9 +15,11 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.pplki18.grouptravelplanner.data.Group;
 import com.example.pplki18.grouptravelplanner.old_stuff.DatabaseHelper;
 import com.example.pplki18.grouptravelplanner.utils.SessionManager;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -32,6 +34,7 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
 
     FirebaseDatabase firebaseDatabase;
     FirebaseAuth firebaseAuth;
+    FirebaseUser firebaseUser;
     DatabaseReference planRef;
 
     private static final String TAG = "EditPlanActivity";
@@ -70,6 +73,7 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
 
         firebaseDatabase = FirebaseDatabase.getInstance();
         firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
 
         findViewById();
 
@@ -139,6 +143,15 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
         }
 
         planRef = firebaseDatabase.getReference().child("plans").child(plan_id);;
+
+        Bundle bundle = intent.getBundleExtra("bundle");
+
+        if (bundle != null) {
+            Group group = bundle.getParcelable("group");
+            if (!group.getCreator_id().equals(firebaseUser.getUid())) {
+                fab_add_event.setVisibility(View.GONE);
+            }
+        }
 
         setAddEventButton();
     }
