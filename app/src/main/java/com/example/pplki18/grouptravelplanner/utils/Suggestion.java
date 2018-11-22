@@ -4,7 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class Suggestion implements Parcelable {
-    private String event_id;
+    private String suggestion_id;
     private String group_id;
 
     private String creator_id;
@@ -33,7 +33,7 @@ public class Suggestion implements Parcelable {
 
     protected Suggestion(Parcel in) {
         creator_id = in.readString();
-        event_id = in.readString();
+        suggestion_id = in.readString();
         query_id = in.readString();
         title = in.readString();
         location = in.readString();
@@ -69,12 +69,12 @@ public class Suggestion implements Parcelable {
         this.creator_id = creator_id;
     }
 
-    public String getEvent_id() {
-        return event_id;
+    public String getSuggestion_id() {
+        return suggestion_id;
     }
 
-    public void setEvent_id(String id) {
-        this.event_id = id;
+    public void setSuggestion_id(String id) {
+        this.suggestion_id = id;
     }
 
     public static Creator<Suggestion> getCREATOR() {
@@ -193,7 +193,7 @@ public class Suggestion implements Parcelable {
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(creator_id);
-        parcel.writeString(event_id);
+        parcel.writeString(suggestion_id);
         parcel.writeString(query_id);
         parcel.writeString(title);
         parcel.writeString(location);

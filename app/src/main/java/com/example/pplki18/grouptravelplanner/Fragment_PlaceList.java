@@ -64,7 +64,7 @@ public class Fragment_PlaceList extends Fragment {
     FirebaseAuth firebaseAuth;
     FirebaseUser firebaseUser;
     DatabaseReference planRef;
-    DatabaseReference eventRef;
+    DatabaseReference suggestRef;
     StorageReference storageReference;
 
     private RecyclerView recyclerViewPlace;
@@ -135,7 +135,7 @@ public class Fragment_PlaceList extends Fragment {
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
 
-        eventRef = firebaseDatabase.getReference().child("events");
+        suggestRef = firebaseDatabase.getReference().child("suggestions");
         storageReference = FirebaseStorage.getInstance().getReference();
 
         init();
@@ -435,11 +435,11 @@ public class Fragment_PlaceList extends Fragment {
         anEvent.setPhone(place.getPhone_number());
         anEvent.setRating(place.getRating());
 
-        final String eventId = eventRef.push().getKey();
+        final String eventId = suggestRef.push().getKey();
         anEvent.setEvent_id(eventId);
         anEvent.setPlan_id(plan_id);
         anEvent.setCreator_id(firebaseUser.getUid());
-        eventRef.child(eventId).setValue(anEvent);
+        suggestRef.child(eventId).setValue(anEvent);
 
         planRef = firebaseDatabase.getReference().child("plans").child(plan_id).child("events");
 
@@ -475,11 +475,11 @@ public class Fragment_PlaceList extends Fragment {
 
         String groupId = getActivity().getIntent().getStringExtra("group_id");
 
-        final String eventId = eventRef.push().getKey();
-        aSuggestion.setEvent_id(eventId);
+        final String eventId = suggestRef.push().getKey();
+        aSuggestion.setSuggestion_id(eventId);
         aSuggestion.setGroup_id(groupId);   // TODO Fix problem for group_id
         aSuggestion.setCreator_id(firebaseUser.getUid());
-        eventRef.child(eventId).setValue(aSuggestion);
+        suggestRef.child(eventId).setValue(aSuggestion);
 
         planRef = firebaseDatabase.getReference().child("groups").child(groupId).child("suggestion");
 

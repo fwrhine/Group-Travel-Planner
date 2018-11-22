@@ -160,7 +160,7 @@ public class Fragment_CustomEvent extends Fragment {
         String groupId = getActivity().getIntent().getStringExtra("group_id");
 
         final String eventId = eventRef.push().getKey();
-        aSuggestion.setEvent_id(eventId);
+        aSuggestion.setSuggestion_id(eventId);
         aSuggestion.setGroup_id(groupId);
         aSuggestion.setCreator_id(firebaseUser.getUid());
         eventRef.child(eventId).setValue(aSuggestion);

@@ -27,25 +27,26 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.List;
+import com.example.pplki18.grouptravelplanner.data.Group;
 
 public class RVAdapter_Suggest extends RecyclerView.Adapter<RVAdapter_Suggest.SuggestionViewHolder> {
 
     private List<Suggestion> suggestions;
     private Context context;
-    private LayoutInflater mLayoutInflater;
 
+    private FirebaseDatabase firebaseDatabase;
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
-    private FirebaseDatabase firebaseDatabase;
+    private Group group;
 
-    public RVAdapter_Suggest(List<Suggestion> suggestions, Context context) {
+    public RVAdapter_Suggest(List<Suggestion> suggestions, Group group, Context context) {
         this.suggestions = suggestions;
+        this.group = group;
         this.context = context;
 
         firebaseDatabase = FirebaseDatabase.getInstance();
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
-
     }
 
     @Override
@@ -53,84 +54,93 @@ public class RVAdapter_Suggest extends RecyclerView.Adapter<RVAdapter_Suggest.Su
         return suggestions.size();
     }
 
+    @NonNull
     @Override
-    public SuggestionViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+    public SuggestionViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         context = viewGroup.getContext();
-        mLayoutInflater = LayoutInflater.from(context);
         View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_suggestion, viewGroup, false);
         return new SuggestionViewHolder(v);
     }
 
     @Override
-    public void onBindViewHolder(SuggestionViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull SuggestionViewHolder holder, int position) {
         Suggestion suggestion = suggestions.get(position);
 
-        holder.eventName.setText(suggestion.getTitle());
-        holder.eventDesc.setVisibility(View.GONE);
+        holder.suggestName.setText(suggestion.getTitle());
+        holder.suggestDesc.setVisibility(View.GONE);
 
         if (suggestion.getDescription() != null) {
-            holder.eventDesc.setVisibility(View.VISIBLE);
+            holder.suggestDesc.setVisibility(View.VISIBLE);
             String desc = suggestion.getDescription();
             if (desc.length() > 45) desc = desc.substring(0,42) + "...";
-            holder.eventDesc.setText(desc);
+            holder.suggestDesc.setText(desc);
         }
 
-        setEventDetailOnClick(holder, position);
-        //setCardViewLongClick(holder, position, suggestion.getTitle());
+        setSuggestDetailOnClick(holder, position);
+        setCardViewLongClick(holder, position, suggestion.getTitle());
     }
 
-    public void setEventDetailOnClick(final SuggestionViewHolder holder, final int position) {
-        holder.eventDetail.setOnClickListener(new View.OnClickListener() {
+    private void setSuggestDetailOnClick(final SuggestionViewHolder holder, final int position) {
+        holder.suggestDetail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
                 Suggestion aSuggest = suggestions.get(position);
                 String type = aSuggest.getType();
                 if (type.equals("restaurants") || type.equals("attractions")) {
-                    setEventDetailOne(suggestions, position);
+                    setSuggestDetailOne(suggestions, position);
                 } else {
-                    setEventDetailTwo(suggestions, position);
+                    setSuggestDetailTwo(suggestions, position);
                 }
             }
         });
     }
 
-    public void setEventDetailOne(List<Suggestion> events, int pos) {
+    private void setSuggestDetailOne(List<Suggestion> suggestions, int pos) {
         Intent myIntent = new Intent(context, PlaceActivity.class);
-        Suggestion anEvent = events.get(pos);
+        Suggestion aSuggest = suggestions.get(pos);
 
-        myIntent.putExtra("PLACE_ID", anEvent.getQuery_id());
-        myIntent.putExtra("event_id", anEvent.getEvent_id());
-        myIntent.putExtra("type", anEvent.getType());
+        myIntent.putExtra("PLACE_ID", aSuggest.getQuery_id());
+        myIntent.putExtra("event_id", aSuggest.getSuggestion_id());
+        myIntent.putExtra("type", aSuggest.getType());
 
-        if (anEvent.getDescription() != null) {
-            myIntent.putExtra("description", anEvent.getDescription());
+        if (aSuggest.getDescription() != null) {
+            myIntent.putExtra("description", aSuggest.getDescription());
         } else {
             myIntent.putExtra("description", "");
         }
 
         ((Activity) context).startActivityForResult(myIntent, 5);
-
     }
 
-    public void setEventDetailTwo(List<Suggestion> events, int pos) {
+    private void setSuggestDetailTwo(List<Suggestion> suggestions, int pos) {
         Intent myIntent = new Intent(context, EventDetailActivity.class);
-        Suggestion anEvent = events.get(pos);
+        Suggestion aSuggest = suggestions.get(pos);
 
-        myIntent.putExtra("event", anEvent);
+        myIntent.putExtra("event", aSuggest);
 
         ((Activity) context).startActivityForResult(myIntent, 5);
     }
-/*
-    public void setCardViewLongClick(final SuggestionViewHolder holder, final int position,
-                                     final String title) {
+
+    private void setCardViewLongClick(final SuggestionViewHolder holder, final int position, final String title) {
         holder.cardView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
                 //creating a popup menu
                 PopupMenu popup = new PopupMenu(context, holder.cardView);
+
+                String userId = firebaseUser.getUid();
+                String groupLeaderId = group.getCreator_id();
+
                 //inflating menu from xml resource
-                popup.inflate(R.menu.event_menu);
+                if (userId.equals(groupLeaderId)) {
+                    popup.inflate(R.menu.event_menu_leader);
+                }
+
+                else {
+                    popup.inflate(R.menu.event_menu);
+                }
+
                 //adding click listener
                 popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
@@ -141,6 +151,9 @@ public class RVAdapter_Suggest extends RecyclerView.Adapter<RVAdapter_Suggest.Su
                                 box = deleteConfirmation(position, title);
                                 box.show();
                                 break;
+                            case R.id.add_suggest:
+                                //box = addConfirmation();
+                                //box.show();
                         }
                         return false;
                     }
@@ -152,7 +165,7 @@ public class RVAdapter_Suggest extends RecyclerView.Adapter<RVAdapter_Suggest.Su
     }
 
     private AlertDialog deleteConfirmation(final int position, String title) {
-        AlertDialog myQuittingDialogBox = new AlertDialog.Builder(context)
+        return new AlertDialog.Builder(context)
                 //set message, title, and icon
                 .setTitle("Delete")
                 .setMessage("Do you want to delete " + title + "?")
@@ -161,7 +174,7 @@ public class RVAdapter_Suggest extends RecyclerView.Adapter<RVAdapter_Suggest.Su
 
                     public void onClick(DialogInterface dialog, int whichButton) {
                         //your deleting code
-                        deleteEvent(suggestions.get(position));
+                        deleteSuggest(suggestions.get(position));
                         suggestions.remove(position);
                         notifyDataSetChanged();
                         dialog.dismiss();
@@ -173,17 +186,14 @@ public class RVAdapter_Suggest extends RecyclerView.Adapter<RVAdapter_Suggest.Su
                     public void onClick(DialogInterface dialog, int which) {
 
                         dialog.dismiss();
-
                     }
                 })
                 .create();
-        return myQuittingDialogBox;
     }
 
-    private void deleteEvent(Suggestion event) {
-
-        if (event.getEvent_id() != null){
-            deleteHelper(event, new DeleteEventCallback() {
+    private void deleteSuggest(Suggestion suggestion) {
+        if (suggestion.getSuggestion_id() != null){
+            deleteHelper(suggestion, new DeleteSuggestionCallback() {
                 @Override
                 public void onCallback() {
                     notifyDataSetChanged();
@@ -192,16 +202,14 @@ public class RVAdapter_Suggest extends RecyclerView.Adapter<RVAdapter_Suggest.Su
         }
     }
 
-    public void deleteHelper(Suggestion event, final DeleteEventCallback callback){
-        //TODO: CHECK
-        //String plan_id = event.getPlan_id();
-        String groupId = event.getGroup_id();
-        final String event_id = event.getEvent_id();
-        final DatabaseReference planRef = firebaseDatabase.getReference().child("groups").child(groupId).child("events").child(event_id);
-        planRef.addListenerForSingleValueEvent(new ValueEventListener() {
+    private void deleteHelper(Suggestion suggestion, final DeleteSuggestionCallback callback){
+        String groupId = suggestion.getGroup_id();
+        final String event_id = suggestion.getSuggestion_id();
+        final DatabaseReference suggestionRef = firebaseDatabase.getReference().child("groups").child(groupId).child("suggestion").child(event_id);
+        suggestionRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                planRef.removeValue();
+                suggestionRef.removeValue();
                 final DatabaseReference eventRef = firebaseDatabase.getReference().child("events").child(event_id);
                 eventRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -223,29 +231,28 @@ public class RVAdapter_Suggest extends RecyclerView.Adapter<RVAdapter_Suggest.Su
             }
         });
     }
-*/
+
     @Override
-    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+    public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
     }
 
     public static class SuggestionViewHolder extends RecyclerView.ViewHolder {
         CardView cardView;
-        TextView eventName;
-        TextView eventDesc;
-        TextView eventDetail;   // TEXT BUTTON
+        TextView suggestName;
+        TextView suggestDesc;
+        TextView suggestDetail;   // TEXT BUTTON
 
         SuggestionViewHolder(View itemView) {
             super(itemView);
-            cardView = itemView.findViewById(R.id.cv_event);
-            eventName = itemView.findViewById(R.id.item_title);
-            eventDesc = itemView.findViewById(R.id.item_desc_detail);
-            eventDetail = itemView.findViewById(R.id.item_detail);
+            cardView = itemView.findViewById(R.id.cv_suggest);
+            suggestName = itemView.findViewById(R.id.item_title);
+            suggestDesc = itemView.findViewById(R.id.item_desc_detail);
+            suggestDetail = itemView.findViewById(R.id.item_detail);
         }
     }
 
-    private interface DeleteEventCallback {
+    private interface DeleteSuggestionCallback {
         void onCallback();
     }
 }
-

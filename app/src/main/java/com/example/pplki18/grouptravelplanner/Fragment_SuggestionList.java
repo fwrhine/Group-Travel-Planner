@@ -14,7 +14,6 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import com.example.pplki18.grouptravelplanner.data.Group;
-import com.example.pplki18.grouptravelplanner.utils.Event;
 import com.example.pplki18.grouptravelplanner.utils.RVAdapter_Suggest;
 import com.example.pplki18.grouptravelplanner.utils.Suggestion;
 import com.google.firebase.auth.FirebaseAuth;
@@ -65,7 +64,7 @@ public class Fragment_SuggestionList extends Fragment {
         FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
         assert firebaseUser != null;
         groupRef = firebaseDatabase.getReference().child("groups").child(group.getGroup_id()).child("suggestion");
-        suggestRef = firebaseDatabase.getReference().child("events");
+        suggestRef = firebaseDatabase.getReference().child("suggestions");
 
         progressBar.setVisibility(View.VISIBLE);
         getSuggestionIDs(new SuggestionIDCallback() {
@@ -98,7 +97,7 @@ public class Fragment_SuggestionList extends Fragment {
                 public void onCallback(List<Suggestion> list) {
                     suggestions = list;
                     progressBar.setVisibility(View.INVISIBLE);
-                    adapter = new RVAdapter_Suggest(suggestions, getActivity());
+                    adapter = new RVAdapter_Suggest(suggestions, group, getActivity());
                     recyclerViewSuggestion.setAdapter(adapter);
                     adapter.notifyDataSetChanged();
                 }
@@ -112,7 +111,7 @@ public class Fragment_SuggestionList extends Fragment {
             public void onCallback(List<Suggestion> list) {
                 suggestions = list;
                 Log.d("SUGGESTION-LIST", list.size()+"");
-                adapter = new RVAdapter_Suggest(suggestions, getActivity());
+                adapter = new RVAdapter_Suggest(suggestions, group, getActivity());
                 Log.d("ADAPTER-COUNT", adapter.getItemCount()+"");
                 recyclerViewSuggestion.setAdapter(adapter);
                 adapter.notifyDataSetChanged();
@@ -125,10 +124,19 @@ public class Fragment_SuggestionList extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 suggestions.clear();
+                Log.d("REFERENCE", dataSnapshot.getRef().toString());
                 for (DataSnapshot postSnapshot: dataSnapshot.getChildren()){
                     Suggestion suggestion = postSnapshot.getValue(Suggestion.class);
-                    if(suggestionIDs.contains(suggestion.getEvent_id())){
+                    if(suggestionIDs.contains(suggestion.getSuggestion_id())){
                         suggestions.add(suggestion);
+                    } else {
+                        String removeEventId = suggestion.getSuggestion_id();
+
+                        Log.d("EVENT-EXIST", (removeEventId != null) + "");
+
+                        DatabaseReference suggestionRemoveRef = FirebaseDatabase.getInstance().getReference()
+                                .child("groups").child(group.getGroup_id()).child("suggestion").child(removeEventId);
+                        suggestionRemoveRef.removeValue();
                     }
                 }
                 callback.onCallback(suggestions);
