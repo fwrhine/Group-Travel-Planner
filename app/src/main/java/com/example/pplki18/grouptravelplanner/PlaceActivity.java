@@ -50,6 +50,7 @@ import com.example.pplki18.grouptravelplanner.utils.RVAdapter_Amenities;
 import com.example.pplki18.grouptravelplanner.utils.RVAdapter_User;
 import com.example.pplki18.grouptravelplanner.utils.Utility;
 import com.example.pplki18.grouptravelplanner.utils.VolleyResponseListener;
+import com.example.pplki18.grouptravelplanner.utils.VolleySingleton;
 import com.example.pplki18.grouptravelplanner.utils.VolleyUtils;
 
 import org.json.JSONArray;
@@ -94,7 +95,6 @@ public class PlaceActivity extends AppCompatActivity {
     private ConstraintLayout hotel_detail;
 
     private ProgressBar progressBar;
-    private RequestQueue queue;
     private VolleyUtils volleyUtils;
 
     private TextView eventDate;
@@ -396,7 +396,6 @@ public class PlaceActivity extends AppCompatActivity {
         String url = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=900&photoreference="
                 + photo_reference + "&key=" + getString(R.string.api_key);
 
-
         // Request an image response from the provided URL.
         ImageRequest imageRequest = new ImageRequest(url,
                 new Response.Listener<Bitmap>() {
@@ -411,8 +410,8 @@ public class PlaceActivity extends AppCompatActivity {
             }
         });
 
-        // Add the request to the RequestQueue.
-        queue.add(imageRequest);
+        // Access the RequestQueue through singleton class.
+        VolleySingleton.getInstance(this).addToRequestQueue(imageRequest);
     }
 
     private void getHotelPhoto(String photo_url) {
@@ -430,8 +429,8 @@ public class PlaceActivity extends AppCompatActivity {
                     }
                 });
 
-        // Add the request to the RequestQueue.
-        queue.add(imageRequest);
+        // Access the RequestQueue through singleton class.
+        VolleySingleton.getInstance(this).addToRequestQueue(imageRequest);
     }
 
     private void setTime() {
@@ -612,7 +611,6 @@ public class PlaceActivity extends AppCompatActivity {
 
 
         progressBar = findViewById(R.id.main_progress);
-        queue = Volley.newRequestQueue(this);
         volleyUtils = new VolleyUtils(this);
         prevActivity = getIntent().getStringExtra("ACTIVITY");
         prevActivity2 = getIntent().getStringExtra("PREV_ACTIVITY");

@@ -162,10 +162,6 @@ public class RVAdapter_Hotel extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     private void getPhoto(final PlaceViewHolder placeViewHolder, String url) {
-        // Instantiate the RequestQueue.
-        RequestQueue queue = Volley.newRequestQueue(context);
-
-
         // Request an image response from the provided URL.
         ImageRequest imageRequest = new ImageRequest(url,
                 new Response.Listener<Bitmap>() {
@@ -180,8 +176,8 @@ public class RVAdapter_Hotel extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     }
                 });
 
-        // Add the request to the RequestQueue.
-        queue.add(imageRequest);
+        // Access the RequestQueue through singleton class.
+        VolleySingleton.getInstance(context).addToRequestQueue(imageRequest);
     }
 
 

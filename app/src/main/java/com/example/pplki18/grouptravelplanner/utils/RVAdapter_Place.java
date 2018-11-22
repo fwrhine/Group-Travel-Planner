@@ -12,11 +12,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageRequest;
-import com.android.volley.toolbox.Volley;
 import com.example.pplki18.grouptravelplanner.R;
 
 import java.lang.ref.WeakReference;
@@ -161,8 +159,6 @@ public class RVAdapter_Place extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     private void getPhoto(final PlaceViewHolder placeViewHolder, String photo_reference) {
-        // Instantiate the RequestQueue.
-        RequestQueue queue = Volley.newRequestQueue(context);
         String url = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=300&photoreference="
                 + photo_reference + "&key=" + context.getString(R.string.api_key);
 
@@ -181,8 +177,8 @@ public class RVAdapter_Place extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     }
                 });
 
-        // Add the request to the RequestQueue.
-        queue.add(imageRequest);
+        // Access the RequestQueue through singleton class.
+        VolleySingleton.getInstance(context).addToRequestQueue(imageRequest);
     }
 
 
