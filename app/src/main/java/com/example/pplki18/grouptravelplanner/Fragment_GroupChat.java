@@ -75,6 +75,7 @@ public class Fragment_GroupChat extends Fragment {
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference messageDatabaseReference;
     private DatabaseReference userRef;
+    private DatabaseReference readStampsRef;
     private ChildEventListener childEventListener;
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
@@ -105,7 +106,8 @@ public class Fragment_GroupChat extends Fragment {
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
         userRef = firebaseDatabase.getReference().child("users");
-        messageDatabaseReference = firebaseDatabase.getReference().child("message").child(group.getGroup_id());
+
+        messageDatabaseReference = firebaseDatabase.getReference().child("messages").child(group.getGroup_id());
         chatPhotoStorageReference = firebaseStorage.getReference().child("chat_photos").child(group.getGroup_id());
 
         addSendButtonClickListener();
@@ -136,7 +138,7 @@ public class Fragment_GroupChat extends Fragment {
                                 return new SentMessageHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_message_sent, parent, false));
 
                             case VIEW_TYPE_MESSAGE_RECEIVED:
-                                return new ReceivedMessageHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_message_received, parent, false));
+                                return new ReceivedMessageHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_message_received, parent, false), group.getGroup_id());
                         }
                         return null;
                     }
@@ -207,8 +209,9 @@ public class Fragment_GroupChat extends Fragment {
             @Override
             public void onClick(View view) {
                 // TODO: Send messages on click
-                Message message = new Message(firebaseUser.getUid(), messageEditText.getText().toString(), null, System.currentTimeMillis());
-                messageDatabaseReference.push().setValue(message);
+                String msgKey = messageDatabaseReference.push().getKey();
+                Message message = new Message(msgKey, firebaseUser.getUid(), messageEditText.getText().toString(), null, System.currentTimeMillis());
+                messageDatabaseReference.child(msgKey).setValue(message);
                 messageRecyclerView.smoothScrollToPosition(messageRecyclerView.getAdapter().getItemCount());
 
                 // Clear input box
@@ -246,8 +249,9 @@ public class Fragment_GroupChat extends Fragment {
                 public void onComplete(@NonNull Task<Uri> task) {
                     if (task.isSuccessful()) {
                         Uri downloadUri = task.getResult();
-                        Message message = new Message(firebaseUser.getUid(), null, downloadUri.toString(), System.currentTimeMillis());
-                        messageDatabaseReference.push().setValue(message);
+                        String msgKey = messageDatabaseReference.push().getKey();
+                        Message message = new Message(msgKey, firebaseUser.getUid(), null, downloadUri.toString(), System.currentTimeMillis());
+                        messageDatabaseReference.child(msgKey).setValue(message);
                         messageRecyclerView.smoothScrollToPosition(messageRecyclerView.getAdapter().getItemCount());
                     } else {
                         Toast.makeText(getContext(), "upload failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
