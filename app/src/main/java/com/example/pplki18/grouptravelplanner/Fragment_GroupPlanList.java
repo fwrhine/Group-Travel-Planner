@@ -42,6 +42,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 
 /**
@@ -314,8 +315,26 @@ public class Fragment_GroupPlanList extends Fragment {
 
     private void deleteHelper(Plan plan, final DeleteEventCallback callback) {
 
-        String plan_id = plan.getPlan_id();
+        final String plan_id = plan.getPlan_id();
         planRef = firebaseDatabase.getReference().child("plans").child(plan_id);
+        final DatabaseReference ref = firebaseDatabase.getReference().child("groups").child(group.getGroup_id()).child("plans");
+
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                    if (Objects.equals(postSnapshot.getValue(String.class), plan_id)) {
+                        ref.child(Objects.requireNonNull(postSnapshot.getKey())).removeValue();
+                        break;
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
         getAllEventIDs(new EventIdCallback() {
             @Override

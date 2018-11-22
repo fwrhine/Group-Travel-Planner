@@ -38,6 +38,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 public class RVAdapter_Plan extends RecyclerView.Adapter<RVAdapter_Plan.PlanViewHolder>{
 
@@ -240,8 +241,27 @@ public class RVAdapter_Plan extends RecyclerView.Adapter<RVAdapter_Plan.PlanView
 
     private void deleteHelper(Plan plan, final DeleteEventCallback callback) {
 
-        String plan_id = plan.getPlan_id();
+        final String plan_id = plan.getPlan_id();
         planRef = firebaseDatabase.getReference().child("plans").child(plan_id);
+
+        final DatabaseReference ref = firebaseDatabase.getReference().child("users").child(firebaseUser.getUid()).child("plans");
+
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                    if (Objects.equals(postSnapshot.getValue(String.class), plan_id)) {
+                        ref.child(Objects.requireNonNull(postSnapshot.getKey())).removeValue();
+                        break;
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
         getAllEventIDs(new EventIdCallback() {
             @Override
