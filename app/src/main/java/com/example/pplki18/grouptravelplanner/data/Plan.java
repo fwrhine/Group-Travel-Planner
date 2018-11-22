@@ -1,4 +1,4 @@
-package com.example.pplki18.grouptravelplanner.utils;
+package com.example.pplki18.grouptravelplanner.data;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +27,14 @@ public class Plan {
         events = new ArrayList<>();
 //        this.user_image = user_image;
 
+    }
+
+    public String getCreatorId() {
+        return creatorId;
+    }
+
+    public void setCreatorId(String creatorId) {
+        this.creatorId = creatorId;
     }
 
     public String getPlan_id() {

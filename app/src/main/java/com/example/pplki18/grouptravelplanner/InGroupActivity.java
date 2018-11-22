@@ -71,6 +71,9 @@ public class InGroupActivity extends AppCompatActivity implements NavigationView
             case R.id.nav_suggestion:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                         new Fragment_SuggestionList()).commit();
+            case R.id.nav_plan:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                        new Fragment_GroupPlan()).commit();
                 break;
             case R.id.nav_close_group:
                 Intent intent = new Intent(InGroupActivity.this, InHomeActivity.class);

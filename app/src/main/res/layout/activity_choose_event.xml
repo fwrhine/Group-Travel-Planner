@@ -24,7 +24,8 @@
             android:layout_height="wrap_content"
             android:id="@+id/pick_destination"
             android:gravity="center"
-            android:layout_gravity="center">
+            android:layout_gravity="center"
+            tools:ignore="UseCompoundDrawables">
 
             <TextView
                 android:layout_width="wrap_content"

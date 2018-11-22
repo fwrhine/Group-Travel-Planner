@@ -2,9 +2,7 @@ package com.example.pplki18.grouptravelplanner;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.AlarmManager;
 import android.app.DatePickerDialog;
-import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.ContentResolver;
 import android.content.ContentUris;
@@ -12,7 +10,6 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.CalendarContract;
@@ -33,15 +30,12 @@ import android.widget.TimePicker;
 import android.text.format.DateFormat;
 import android.widget.Toast;
 
-import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
-import com.example.pplki18.grouptravelplanner.data.ReminderContract;
+import com.example.pplki18.grouptravelplanner.old_stuff.DatabaseHelper;
 import com.example.pplki18.grouptravelplanner.utils.SessionManager;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 
 public class Activity_CreateReminder extends AppCompatActivity implements DatePickerDialog.OnDateSetListener,
         TimePickerDialog.OnTimeSetListener {

@@ -5,27 +5,25 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
-import android.provider.ContactsContract;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.view.ContextMenu;
 import android.view.LayoutInflater;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.pplki18.grouptravelplanner.EditPlanActivity;
 import com.example.pplki18.grouptravelplanner.R;
-import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
-import com.example.pplki18.grouptravelplanner.data.PlanContract;
+import com.example.pplki18.grouptravelplanner.data.Group;
+import com.example.pplki18.grouptravelplanner.old_stuff.DatabaseHelper;
+import com.example.pplki18.grouptravelplanner.data.Plan;
+import com.example.pplki18.grouptravelplanner.old_stuff.PlanContract;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -36,7 +34,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,6 +50,7 @@ public class RVAdapter_Plan extends RecyclerView.Adapter<RVAdapter_Plan.PlanView
 
     List<String> eventIDs = new ArrayList<>();
 
+    Bundle bundle;
     List<Plan> plans;
     Context context;
     SimpleDateFormat dateFormatter1, dateFormatter2;
@@ -60,6 +58,21 @@ public class RVAdapter_Plan extends RecyclerView.Adapter<RVAdapter_Plan.PlanView
     public RVAdapter_Plan(List<Plan> plans, Context context) {
         this.plans = plans;
         this.context = context;
+        dateFormatter1 = new SimpleDateFormat("EEE, MMM d", Locale.US);
+        dateFormatter2 = new SimpleDateFormat("d MMMM yyyy", Locale.US);
+
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
+
+        eventRef = firebaseDatabase.getReference().child("events");
+        storageReference = FirebaseStorage.getInstance().getReference();
+    }
+
+    public RVAdapter_Plan(List<Plan> plans, Context context, Bundle bundle) {
+        this.plans = plans;
+        this.context = context;
+        this.bundle = bundle;
         dateFormatter1 = new SimpleDateFormat("EEE, MMM d", Locale.US);
         dateFormatter2 = new SimpleDateFormat("d MMMM yyyy", Locale.US);
 
@@ -115,6 +128,13 @@ public class RVAdapter_Plan extends RecyclerView.Adapter<RVAdapter_Plan.PlanView
         final int position = i;
         final String name = plan.getPlan_name();
 
+        if (bundle != null) {
+            Group group = bundle.getParcelable("group");
+            if (!group.getCreator_id().equals(firebaseUser.getUid())) {
+                planViewHolder.planMenuButton.setVisibility(View.GONE);
+            }
+        }
+
         planViewHolder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -124,6 +144,10 @@ public class RVAdapter_Plan extends RecyclerView.Adapter<RVAdapter_Plan.PlanView
                 intent.putExtra("plan_date_start", plan.getPlan_start_date());
                 intent.putExtra("plan_date_end", plan.getPlan_end_date());
                 intent.putExtra("plan_total_days", plan.getPlan_total_days());
+
+                if (bundle != null) {
+                    intent.putExtra("bundle", bundle);
+                }
                 context.startActivity(intent);
             }
         });
@@ -169,7 +193,7 @@ public class RVAdapter_Plan extends RecyclerView.Adapter<RVAdapter_Plan.PlanView
         return new AlertDialog.Builder(context)
                 //set message, title, and icon
                 .setTitle("Delete")
-                .setMessage("Do you want to delete " + name + "?")
+                .setMessage("Do you want to delete \"" + name + "\"?")
 
                 .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
 
@@ -285,7 +309,7 @@ public class RVAdapter_Plan extends RecyclerView.Adapter<RVAdapter_Plan.PlanView
         final EditText edtText = new EditText(context);
         return new AlertDialog.Builder(context)
                 //set message, title, and icon
-                .setTitle("Rename " + name)
+                .setTitle("Rename \"" + name + "\"?")
                 .setMessage("Insert new name below!")
                 .setView(edtText)
                 .setPositiveButton("Rename", new DialogInterface.OnClickListener() {
@@ -311,16 +335,18 @@ public class RVAdapter_Plan extends RecyclerView.Adapter<RVAdapter_Plan.PlanView
                 .create();
     }
 
-    public void renamePlan(Plan plan, String new_name) {
-        DatabaseHelper myDb = new DatabaseHelper(context);
-        SQLiteDatabase db = myDb.getWritableDatabase();
-
-        String updateQuery = "UPDATE " + PlanContract.PlanEntry.TABLE_NAME + " SET " +
-                PlanContract.PlanEntry.COL_PLAN_NAME + " = " + "\"" + new_name + "\"" +
-                " WHERE " + PlanContract.PlanEntry._ID + " = " + plan.getPlan_id();
-
-        db.execSQL(updateQuery);
-        db.close();
+    private void renamePlan(Plan plan, String new_name) {
+//        DatabaseHelper myDb = new DatabaseHelper(context);
+//        SQLiteDatabase db = myDb.getWritableDatabase();
+//
+//        String updateQuery = "UPDATE " + PlanContract.PlanEntry.TABLE_NAME + " SET " +
+//                PlanContract.PlanEntry.COL_PLAN_NAME + " = " + "\"" + new_name + "\"" +
+//                " WHERE " + PlanContract.PlanEntry._ID + " = " + plan.getPlan_id();
+//
+//        db.execSQL(updateQuery);
+//        db.close();
+        planRef = firebaseDatabase.getReference().child("plans").child(plan.getPlan_id());
+        planRef.child("plan_name").setValue(new_name);
         notifyDataSetChanged();
     }
 

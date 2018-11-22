@@ -1,7 +1,6 @@
 package com.example.pplki18.grouptravelplanner;
 
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.support.annotation.NonNull;
@@ -15,15 +14,12 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.support.v7.widget.Toolbar;
 
-import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
-import com.example.pplki18.grouptravelplanner.data.UserContract;
 import com.example.pplki18.grouptravelplanner.utils.SessionManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.util.HashMap;
 import java.util.Locale;
 
 public class EditPhoneNoActivity extends AppCompatActivity {

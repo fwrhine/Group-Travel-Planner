@@ -1,7 +1,7 @@
-package com.example.pplki18.grouptravelplanner.utils;
+package com.example.pplki18.grouptravelplanner.data;
 
-public class Train {
-    private String trainName;
+public class Flight {
+    private String airlineName;
     private String flightNumber;
     private String departureTime;
     private String arrivalTime;
@@ -9,16 +9,16 @@ public class Train {
     private String departureCity;
     private String arrivalCity;
 
-    public Train() {
+    public Flight() {
 
     }
 
-    public String getTrainName() {
-        return trainName;
+    public String getAirlineName() {
+        return airlineName;
     }
 
-    public void setTrainName(String trainName) {
-        this.trainName = trainName;
+    public void setAirlineName(String airlineName) {
+        this.airlineName = airlineName;
     }
 
     public String getFlightNumber() {
