@@ -33,6 +33,7 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.android.volley.NetworkError;
+import com.android.volley.NoConnectionError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -48,6 +49,8 @@ import com.example.pplki18.grouptravelplanner.utils.Place;
 import com.example.pplki18.grouptravelplanner.utils.RVAdapter_Amenities;
 import com.example.pplki18.grouptravelplanner.utils.RVAdapter_User;
 import com.example.pplki18.grouptravelplanner.utils.Utility;
+import com.example.pplki18.grouptravelplanner.utils.VolleyResponseListener;
+import com.example.pplki18.grouptravelplanner.utils.VolleyUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -92,15 +95,18 @@ public class PlaceActivity extends AppCompatActivity {
 
     private ProgressBar progressBar;
     private RequestQueue queue;
+    private VolleyUtils volleyUtils;
 
     private TextView eventDate;
     private TextView eventTime;
     private TextView eventDuration;
     private TextView eventDescription;
+    private RelativeLayout detailLayout;
     private ImageButton editEvent;
     private ArrayList<Event> events;
 
     private String prevActivity;
+    private String prevActivity2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -140,20 +146,6 @@ public class PlaceActivity extends AppCompatActivity {
         return true;
     }
 
-    private void noConnection(VolleyError volleyError) {
-        String message = null;
-        if (volleyError instanceof NetworkError) {
-            message = "No internet connection.";
-//        } else if (volleyError instanceof NoConnectionError) {
-//            message = "No internet connection.";
-        } else if (volleyError instanceof TimeoutError) {
-            message = "Connection timeout.";
-        }
-
-        progressBar.setVisibility(View.GONE);
-        toastMessage(message);
-    }
-
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
@@ -190,51 +182,55 @@ public class PlaceActivity extends AppCompatActivity {
         }
     }
 
+    private void noConnection(VolleyError volleyError) {
+        String message = null;
+        if (volleyError instanceof NetworkError) {
+            message = "No internet connection.";
+        } else if (volleyError instanceof NoConnectionError) {
+            message = "No internet connection.";
+        } else if (volleyError instanceof TimeoutError) {
+            message = "Connection timeout.";
+        }
+
+        progressBar.setVisibility(View.GONE);
+        toastMessage(message);
+    }
+
     private void sendRequestPlace() {
         String url = "https://maps.googleapis.com/maps/api/place/details/json?placeid="
                 + place_id + "&fields=name,formatted_address,rating,photo," +
                 "opening_hours,website,international_phone_number,url&key="
                 + getString(R.string.api_key);
 
-
-        // Request a string response from the provided URL.
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        populatePlaceView(getPlace(response));
-                        progressBar.setVisibility(View.GONE);
-                    }
-                }, new Response.ErrorListener() {
+        volleyUtils.getRequest(url, new VolleyResponseListener() {
             @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d(TAG, "REQUEST ERROR");
+            public void onResponse(String response) {
+                Log.d(TAG, "REQUEST PLACE DETAIL");
+                populatePlaceView(getPlace(response));
+                progressBar.setVisibility(View.GONE);
+            }
+            @Override
+            public void onError(VolleyError error) {
+                Log.d(TAG, "PLACE DETAIL ERROR");
                 noConnection(error);
             }
         });
-
-        // Add the request to the RequestQueue.
-        queue.add(stringRequest);
     }
 
     private void sendRequestHotel() {
-        Log.d("NOW", "SEND REQUEST HOTEL");
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, place_id,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        populateHotelView(parseHotel(response));
-                        progressBar.setVisibility(View.GONE);
-                    }
-                }, new Response.ErrorListener() {
+        volleyUtils.getRequest(place_id, new VolleyResponseListener() {
             @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d(TAG, "REQUEST ERROR");
+            public void onResponse(String response) {
+                Log.d(TAG, "REQUEST HOTEL DETAIL");
+                populateHotelView(parseHotel(response));
+                progressBar.setVisibility(View.GONE);
+            }
+            @Override
+            public void onError(VolleyError error) {
+                Log.d(TAG, "HOTEL DETAIL ERROR");
                 noConnection(error);
             }
         });
-
-        queue.add(stringRequest);
     }
 
     private Place getPlace(String response) {
@@ -324,7 +320,6 @@ public class PlaceActivity extends AppCompatActivity {
 //            }
 //        });
 
-        Log.d("populate", place.getPhoto());
         getPlacePhoto(place.getPhoto());
     }
 
@@ -355,7 +350,7 @@ public class PlaceActivity extends AppCompatActivity {
         // set interpolators for both expanding and collapsing animations
         hotel_desc.setInterpolator(new OvershootInterpolator());
 
-        if (hotel.getDescription().length() > 0) {
+        if (hotel.getDescription() != null) {
             button_toggle.setText("More");
             button_toggle.setCompoundDrawablesWithIntrinsicBounds(0, 0,
                     R.drawable.ic_arrow_down_grey, 0);
@@ -384,23 +379,15 @@ public class PlaceActivity extends AppCompatActivity {
             }
         });
 
-        RVAdapter_Amenities adapter = new RVAdapter_Amenities(hotel.getAmenities().get(0));
-        hotel_amenities1.setAdapter(adapter);
+        if (!hotel.getAmenities().isEmpty()) {
+            RVAdapter_Amenities adapter = new RVAdapter_Amenities(hotel.getAmenities().get(0));
+            hotel_amenities1.setAdapter(adapter);
 
-        ArrayList<String> amenities2 = hotel.getAmenities().get(1);
-        amenities2.remove(amenities2.size()-1);
-        adapter = new RVAdapter_Amenities(amenities2);
-        hotel_amenities2.setAdapter(adapter);
-
-//        hotel_amenities1.setAdapter(new ArrayAdapter<String>(PlaceActivity.this,
-//                R.layout.row_amenities, hotel.getAmenities().get(0)));
-//
-//        hotel_amenities2.setAdapter(new ArrayAdapter<String>(PlaceActivity.this,
-//                R.layout.row_amenities, hotel.getAmenities().get(1)));
-
-//        Utility.setListViewHeightBasedOnChildren(hotel_amenities1);
-
-        System.out.println(hotel.getAmenities().get(0).toString());
+            ArrayList<String> amenities2 = hotel.getAmenities().get(1);
+            amenities2.remove(amenities2.size()-1);
+            adapter = new RVAdapter_Amenities(amenities2);
+            hotel_amenities2.setAdapter(adapter);
+        }
 
         getHotelPhoto(hotel.getPhoto().replace("photo-s", "photo-o"));
     }
@@ -626,14 +613,16 @@ public class PlaceActivity extends AppCompatActivity {
 
         progressBar = findViewById(R.id.main_progress);
         queue = Volley.newRequestQueue(this);
+        volleyUtils = new VolleyUtils(this);
         prevActivity = getIntent().getStringExtra("ACTIVITY");
-        String prevActivity2 = getIntent().getStringExtra("PREV_ACTIVITY");
+        prevActivity2 = getIntent().getStringExtra("PREV_ACTIVITY");
+
 
         eventDate = findViewById(R.id.event_detail_date);
         eventTime = findViewById(R.id.event_detail_time);
         eventDuration = findViewById(R.id.event_detail_duration);
         eventDescription = findViewById(R.id.event_detail_desc);
-        RelativeLayout detailLayout = findViewById(R.id.detail_layout);
+        detailLayout = findViewById(R.id.detail_layout);
         editEvent = findViewById(R.id.edit_event);
 
         if (prevActivity != null && (prevActivity.equals("PlanActivity"))) {

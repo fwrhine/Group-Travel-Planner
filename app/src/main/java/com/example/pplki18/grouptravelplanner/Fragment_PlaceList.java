@@ -24,6 +24,7 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.android.volley.NetworkError;
+import com.android.volley.NoConnectionError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -38,6 +39,8 @@ import com.example.pplki18.grouptravelplanner.utils.PaginationScrollListener;
 import com.example.pplki18.grouptravelplanner.utils.Place;
 import com.example.pplki18.grouptravelplanner.utils.RVAdapter_Place;
 import com.example.pplki18.grouptravelplanner.utils.SessionManager;
+import com.example.pplki18.grouptravelplanner.utils.VolleyResponseListener;
+import com.example.pplki18.grouptravelplanner.utils.VolleyUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -61,7 +64,7 @@ public class Fragment_PlaceList extends Fragment {
     private String type;
     private String region;
     private String next_token;
-    private RequestQueue queue;
+    private VolleyUtils volleyUtils;
 
     private int plan_id;
     private String event_date;
@@ -161,8 +164,8 @@ public class Fragment_PlaceList extends Fragment {
         String message = null;
         if (volleyError instanceof NetworkError) {
             message = "No internet connection.";
-//        } else if (volleyError instanceof NoConnectionError) {
-//            message = "No internet connection.";
+        } else if (volleyError instanceof NoConnectionError) {
+            message = "No internet connection.";
         } else if (volleyError instanceof TimeoutError) {
             message = "Connection timeout.";
         }
@@ -177,55 +180,41 @@ public class Fragment_PlaceList extends Fragment {
                 "+in+" + region + "&fields=id,name,types,rating,formatted_address" +
                 "&key=" + getString(R.string.api_key);
 
-        Log.d("REQUEST", url);
-
-        // Request a string response from the provided URL.
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        Log.d("LIST RESPONSE", response);
-                        populatePlaceRecyclerView(getPlaces(response));
-                    }
-                }, new Response.ErrorListener() {
+        volleyUtils.getRequest(url, new VolleyResponseListener() {
             @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d("LIST REQUEST ERROR", error.toString());
+            public void onResponse(String response) {
+                Log.d("PLACE LIST", response);
+                populatePlaceRecyclerView(getPlaces(response));
+            }
+            @Override
+            public void onError(VolleyError error) {
+                Log.d("ERROR PLACE LIST", error.toString());
                 noConnection(error);
             }
         });
-
-        // Add the request to the RequestQueue.
-        queue.add(stringRequest);
     }
 
     private void loadMorePlaces() {
         String url = "https://maps.googleapis.com/maps/api/place/textsearch/json?pagetoken="
                 + next_token + "&key=" + getString(R.string.api_key);
 
-        // Request a string response from the provided URL.
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        Log.d("NEXT PAGE RESPONSE", response);
-                        adapter.removeLoadingFooter();
-                        isLoading = false;
-
-                        adapter.addAll(getPlaces(response));
-
-                        if (!isLastPage) adapter.addLoadingFooter();
-                    }
-                }, new Response.ErrorListener() {
+        volleyUtils.getRequest(url, new VolleyResponseListener() {
             @Override
-            public void onErrorResponse(VolleyError error) {
+            public void onResponse(String response) {
+                Log.d("NEXT PAGE RESPONSE", response);
+                adapter.removeLoadingFooter();
+                isLoading = false;
+
+                adapter.addAll(getPlaces(response));
+
+                if (!isLastPage) adapter.addLoadingFooter();
+            }
+            @Override
+            public void onError(VolleyError error) {
                 Log.d("NEXT PAGE REQUEST ERROR", error.toString());
                 noConnection(error);
             }
         });
-
-        // Add the request to the RequestQueue.
-        queue.add(stringRequest);
     }
 
     private List<Place> getPlaces(String response) {
@@ -265,15 +254,10 @@ public class Fragment_PlaceList extends Fragment {
             e.printStackTrace();
         }
 
-
-        Log.d("LIST OF PLACES", places.toString());
-//        allPlaces.addAll(places);
         return places;
     }
 
     private void populatePlaceRecyclerView(final List<Place> places) {
-        Log.d("POPULATE LIST", "Displaying list of places.");
-
         RVAdapter_Place.ClickListener clickListener = new RVAdapter_Place.ClickListener() {
             @Override public void cardViewOnClick(View v, int position) {
                 Log.d("SELECTED PLACE ID", String.valueOf(adapter.getAll().get(position).getPlace_id()));
@@ -412,7 +396,7 @@ public class Fragment_PlaceList extends Fragment {
         plan_id = getArguments().getInt("plan_id");
         event_date = getArguments().getString("date");
         prevActivity = getActivity().getIntent().getStringExtra("ACTIVITY");
-        queue = Volley.newRequestQueue(getActivity());
+        volleyUtils = new VolleyUtils(getContext());
         if (prevActivity.equals("CreateNewPlanActivity")) {
             events = getActivity().getIntent().getParcelableArrayListExtra("events");
         }

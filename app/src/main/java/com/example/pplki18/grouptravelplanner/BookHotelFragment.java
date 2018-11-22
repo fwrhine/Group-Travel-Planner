@@ -71,7 +71,6 @@ public class BookHotelFragment extends Fragment {
     private RecyclerView recyclerViewPlace;
     private LinearLayoutManager linearLayoutManager;
     private RVAdapter_Hotel adapter;
-    private RequestQueue queue;
     private VolleyUtils volleyUtils;
     private SessionManager sessionManager;
 
@@ -142,7 +141,6 @@ public class BookHotelFragment extends Fragment {
 
         connectionText.setVisibility(View.GONE);
         closeSearchView.setVisibility(View.GONE);
-//        progressBar.setVisibility(View.VISIBLE);
 
         loadInfoView();
 
@@ -464,30 +462,27 @@ public class BookHotelFragment extends Fragment {
                 "&types=geo,theme_park&neighborhood_geos=true&link_type=hotel&details=true" +
                 "&max=12&injectNeighborhoods=true&query=" + region;
 
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        try {
-                            JSONObject resp = new JSONObject(response);
-                            JSONArray results = resp.optJSONArray("results");
-                            JSONObject firstResult = new JSONObject(results.get(0).toString());
-                            tripadvisorUrl = "https://www.tripadvisor.com" + firstResult.optString("url");
-
-                            sendRequest(false);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }, new Response.ErrorListener() {
+        volleyUtils.getRequest(url, new VolleyResponseListener() {
             @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d("ERROR ALL HOTELS", error.toString());
+            public void onResponse(String response) {
+                try {
+                    JSONObject resp = new JSONObject(response);
+                    JSONArray results = resp.optJSONArray("results");
+                    JSONObject firstResult = new JSONObject(results.get(0).toString());
+                    tripadvisorUrl = "https://www.tripadvisor.com" +
+                            firstResult.optString("url");
+
+                    sendRequest(false);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            @Override
+            public void onError(VolleyError error) {
+                Log.d("ERROR GETTRIPADVISORURL", error.toString());
                 noConnection(error);
             }
         });
-
-        queue.add(stringRequest);
 
     }
 
@@ -554,86 +549,9 @@ public class BookHotelFragment extends Fragment {
             }
             @Override
             public void onError(VolleyError error) {
-                Log.d("ERROR HOTEL", error.toString());
+                Log.d("ERROR HOTEL LIST", error.toString());
             }
         });
-
-//            StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
-//                    new Response.Listener<String>() {
-//                        @Override
-//                        public void onResponse(String response) {
-//                            HtmlParser.HtmlParseResult result = parseHotelList(response);
-//
-//                            // check if last page
-//                            if (result.getNextPage().isEmpty()) {
-//                                isLastPage = true;
-//                            } else {
-//                                nextPageUrl = "https://www.tripadvisor.com" + result.getNextPage();
-//                            }
-//
-//                            // check if loading next page
-//                            if (!isNextPage) {
-//                                populatePlaceRecyclerView(result.getHotels());
-//                            } else {
-//                                adapter.removeLoadingFooter();
-//                                isLoading = false;
-//
-//                                adapter.addAll(result.getHotels());
-//
-//                                if (!isLastPage) adapter.addLoadingFooter();
-//                            }
-//                        }
-//                    }, new Response.ErrorListener() {
-//                @Override
-//                public void onErrorResponse(VolleyError error) {
-//                    Log.d("ERROR HOTEL", error.toString());
-//                }
-//            })
-//            {
-//                @Override
-//                public Map<String, String> getHeaders() {
-//                    Map<String, String> headers = new HashMap<>();
-//                    headers.put("Accept", "text/html, */*");
-//                    headers.put("Accept-Language", "en-US,en;q=0.5");
-//                    headers.put("Cache-Control", "no-cache");
-//                    headers.put("Connection", "keep-alive");
-//                    headers.put("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
-//                    headers.put("Host", "www.tripadvisor.com");
-//                    headers.put("Pragma", "no-cache");
-//                    headers.put("Referer", tripadvisorUrl);
-//                    headers.put("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_1) " +
-//                            "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36");
-//                    headers.put("X-Requested-With", "XMLHttpRequest");
-//                    return headers;
-//                }
-//
-//                @Override
-//                public byte[] getBody() {
-//                    try {
-//                        return requestBody == null ? null : requestBody.getBytes("utf-8");
-//                    } catch (UnsupportedEncodingException uee) {
-//                        VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", requestBody, "utf-8");
-//                        return null;
-//                    }
-//                }
-//
-//                @Override
-//                protected Response <String> parseNetworkResponse(NetworkResponse response) {
-//                    String parsed;
-//                    try {
-//                        parsed = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
-//                    } catch (UnsupportedEncodingException e) {
-//                        parsed = new String(response.data);
-//                    }
-//                    return Response.success(parsed, HttpHeaderParser.parseCacheHeaders(response));
-//
-//                }
-//            };
-//
-//            queue.add(stringRequest);
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
     }
 
     private void searchHotel(String query) {
@@ -644,44 +562,17 @@ public class BookHotelFragment extends Fragment {
         volleyUtils.getRequest(url, new VolleyResponseListener() {
             @Override
             public void onResponse(String response) {
-                Log.d("HOTEL SEARCH RESULT", response);
+                Log.d("HOTEL SEARCH", response);
                 populatePlaceRecyclerView(getHotelsSearch(response));
                 adapter.removeLoadingFooter();
             }
             @Override
             public void onError(VolleyError error) {
-                Log.d("ERROR ALL HOTELS", error.toString());
+                Log.d("ERROR HOTEL SEARCH", error.toString());
+                noConnection(error);
             }
         });
     }
-
-//    private List<Hotel> getHotels(String response) {
-//        ArrayList<Hotel> hotels = new ArrayList<>();
-//        try {
-//            JSONObject obj = new JSONObject(response);
-//            JSONObject results = obj.optJSONObject("results");
-//            JSONArray listHotels = results.optJSONArray("result");
-//
-//            for (int i = 0 ; i < listHotels.length() ; i++)
-//            {
-//                JSONObject hotelObj = new JSONObject(listHotels.get(i).toString());
-//
-//                Hotel hotel = new Hotel();
-//                hotel.setHotel_id(hotelObj.optString("id"));
-//                hotel.setName(hotelObj.optString("name"));
-//                hotel.setRating(hotelObj.optString("star_rating"));
-//                hotel.setAddress(hotelObj.optString("regional", "-"));
-//
-//                hotels.add(hotel);
-//            }
-//
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//
-//
-//        return hotels;
-//    }
 
     private List<Hotel> getHotelsSearch(String response) {
         ArrayList<Hotel> hotels = new ArrayList<>();
@@ -711,8 +602,6 @@ public class BookHotelFragment extends Fragment {
     }
 
     private void populatePlaceRecyclerView(final List<Hotel> hotels) {
-        Log.d("POPULATE LIST", "Displaying list of places.");
-
         RVAdapter_Hotel.ClickListener clickListener = new RVAdapter_Hotel.ClickListener() {
             @Override public void cardViewOnClick(View v, int position) {
                 Intent intent = new Intent(getActivity(), PlaceActivity.class);
@@ -728,7 +617,6 @@ public class BookHotelFragment extends Fragment {
                 setTime(adapter.getAll().get(position));
             }
         };
-        Log.d("HOTELS OBJECTS", hotels.toString());
         progressBar.setVisibility(View.GONE);
         adapter.setListener(clickListener);
         adapter.addAll(hotels);
@@ -789,7 +677,6 @@ public class BookHotelFragment extends Fragment {
     private void init() {
         recyclerViewPlace = getView().findViewById(R.id.rv);
         linearLayoutManager = new LinearLayoutManager(getActivity());
-        queue = Volley.newRequestQueue(getActivity());
         volleyUtils = new VolleyUtils(getContext());
         sessionManager = new SessionManager(getActivity().getApplicationContext());
         adapter = new RVAdapter_Hotel(getContext());

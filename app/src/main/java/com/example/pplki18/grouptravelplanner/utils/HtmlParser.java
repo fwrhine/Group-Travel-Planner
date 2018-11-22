@@ -1,5 +1,7 @@
 package com.example.pplki18.grouptravelplanner.utils;
 
+import android.util.Log;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -16,7 +18,7 @@ public class HtmlParser {
 //            File input = new File("tripadvisor.html");
 //            Document doc = Jsoup.parseHotelList(input, "UTF-8", "");
 
-        Elements hotel_list = doc.select("div[class*='listItem']").select("div[class*='listing collapsed']");
+        Elements hotel_list = doc.select("div[class*='listItem'] > div[class*='listing collapsed']");
 
         ArrayList<Hotel> hotels = new ArrayList<>();
         for (int i = 1; i < hotel_list.size(); i++) {
@@ -72,52 +74,61 @@ public class HtmlParser {
         Document doc = Jsoup.parse(html);
 
         Hotel hotel = new Hotel();
+
+        // name
         Element hotel_name = doc.selectFirst("h1[class*='ui_header h1']");
         String name = hotel_name.text();
 
+        // rating
         Element hotel_rating = doc.selectFirst("span[class*='ui_bubble_rating']");
         String[] rating_long = hotel_rating.attr("alt").split(" ");
         String rating = rating_long[0];
 
+        // price
+        // TODO
         Element hotel_price = doc.selectFirst("div[class*='bb_price_text']");
         String price;
         if (hotel_price == null) {
-            hotel_price = doc.selectFirst("div[class*='price __resizeWatch']");
+            hotel_price = doc.selectFirst("div[data-sizegroup*='hr_chevron_prices']");
             price = (hotel_price != null) ? hotel_price.text() : "";
         } else {
             price = hotel_price.text();
         }
 
+        // phone
         Element hotel_phone = doc.selectFirst("span[class*='is-hidden-mobile detail']");
         String phone = (hotel_phone != null) ? hotel_phone.text() : "";
 
+        // street address
         Element hotel_address = doc.selectFirst("span[class*='street-address']");
         String street_address = (hotel_address != null) ? hotel_address.text() : "";
 
+        // locality
         Element hotel_locality = doc.selectFirst("span[class*='locality']");
         String locality = (hotel_locality != null) ? hotel_locality.text() : "";
 
+        // description
         Element hotel_desc = doc.selectFirst("span[class*='introText']");
         String desc = (hotel_desc != null) ? hotel_desc.text() : "";
 
+        // description extension
         hotel_desc = doc.selectFirst("span[class*='introTextExtension']");
         if (desc.length() > 0 && hotel_desc != null) {
             desc = desc.substring(0, desc.length()-5) + hotel_desc.text();
         }
 
-        Elements hotel_amenities = doc.select("div[class*='HighlightedAmenities__amenities" +
-                "--nJlGF']");
-
+        // amenities
+        // TODO
+        Elements hotel_amenities = doc.select("div[class*='HighlightedAmenities__amenities']");
         if (hotel_amenities != null) {
             hotel_amenities = hotel_amenities.select("div[class*='ui_column is-6']");
         }
-
 
         ArrayList<ArrayList<String>> amenities = new ArrayList<>();
         for (Element amenity_elem: hotel_amenities) {
             ArrayList<String> amenities_sub = new ArrayList<>();
             Elements amenities_sub_elem = amenity_elem.select("div[class*='HighlightedAmenities__" +
-                    "amenityItem--Lh1nP']");
+                    "amenityItem']");
             for (Element amenity_sub_elem: amenities_sub_elem) {
                 String amenity = amenity_sub_elem.text();
                 amenities_sub.add(amenity);
@@ -125,7 +136,7 @@ public class HtmlParser {
             amenities.add(amenities_sub);
         }
 
-
+        // photo
         Element hotel_photo = doc.selectFirst("meta[property*='og:image']");
         String photo = hotel_photo.attr("content");
 
@@ -133,7 +144,6 @@ public class HtmlParser {
         hotel.setRating(rating);
         hotel.setPrice(price);
         hotel.setPhone_number(phone);
-
         hotel.setAddress(street_address + ", " + locality);
         if (desc.length() > 0) {
             hotel.setDescription(desc.substring(0, desc.length()-4));
@@ -141,7 +151,6 @@ public class HtmlParser {
         hotel.setAmenities(amenities);
         hotel.setPhoto(photo);
 
-        System.out.println("hotel rating: " + hotel_rating.attr("alt"));
         return hotel;
     }
 
@@ -150,7 +159,6 @@ public class HtmlParser {
         private String nextPage;
 
         HtmlParseResult() {
-
         }
 
         void setHotels(ArrayList<Hotel> hotels) {
@@ -168,8 +176,5 @@ public class HtmlParser {
         public String getNextPage() {
             return nextPage;
         }
-
-
-
     }
 }
