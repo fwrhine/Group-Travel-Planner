@@ -322,7 +322,6 @@ public class RVAdapter_Plan extends RecyclerView.Adapter<RVAdapter_Plan.PlanView
                         notifyDataSetChanged();
                         dialog.dismiss();
                     }
-
                 })
 
                 .setNegativeButton("cancel", new DialogInterface.OnClickListener() {

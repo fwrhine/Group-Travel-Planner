@@ -13,7 +13,6 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
-import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -226,6 +225,10 @@ public class Fragment_GroupPlanList extends Fragment {
         }
     }
 
+    public void setPastPlan() {
+        warning1.setVisibility(View.GONE);
+    }
+
     private AlertDialog renameDialog(String name) {
         final EditText edtText = new EditText(getActivity());
         return new AlertDialog.Builder(getActivity())
@@ -282,7 +285,6 @@ public class Fragment_GroupPlanList extends Fragment {
                     public void onClick(DialogInterface dialog, int which) {
 
                         dialog.dismiss();
-
                     }
                 })
                 .create();
@@ -424,6 +426,7 @@ public class Fragment_GroupPlanList extends Fragment {
                 recyclerViewGroupPlan.setAdapter(adapter);
                 adapter.notifyDataSetChanged();
                 setCurrentPlan();
+                if (!list.isEmpty() && type.equals("past")) setPastPlan();
             }
         });
     }
@@ -448,7 +451,15 @@ public class Fragment_GroupPlanList extends Fragment {
                                 currentPlan = plan;
                                 setCurrentPlan();
                             } else {
-                                plans.add(plan);
+                                if (type.equals("past")) {
+                                    if (end_date.getTime() < today.getTime()) {
+                                        plans.add(plan);
+                                    }
+                                } else {
+                                    if (start_date.getTime() > today.getTime()) {
+                                        plans.add(plan);
+                                    }
+                                }
                             }
 
                         } catch (ParseException e) {
