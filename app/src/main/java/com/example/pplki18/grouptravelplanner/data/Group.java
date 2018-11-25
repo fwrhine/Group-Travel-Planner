@@ -10,11 +10,11 @@ import java.util.List;
 
 public class Group implements Parcelable{
 
-    public String group_id;
-    public String group_name;
-    public String group_image_url;
-    public String creator_id;
-    public List<String> members;
+    private String group_id;
+    private String group_name;
+    private String group_image_url;
+    private String creator_id;
+    private List<String> members;
 
     private static final int MEMBERS_SHOWN = 4;
 

@@ -5,7 +5,6 @@ import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Parcelable;
-import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentTransaction;
 import android.support.design.widget.FloatingActionButton;
@@ -67,6 +66,7 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
     private Date date_end;
     private String plan_name;
 
+    private List<Plan> plans;
     private List<Event> events;
     private List<String> planIDs = new ArrayList<>();
 
@@ -102,6 +102,8 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
         events = new ArrayList<>();
 
         intent = getIntent();
+
+        plans = intent.getParcelableArrayListExtra("plans");
 
         group_id = intent.getStringExtra("group_id");
 
@@ -207,7 +209,11 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
                 trip_end_date.getText().toString().equals("Date")) {
             saveAlertDialog();
         } else {
-            askPlanNameDialog();
+            if (!checkDateAvailability()) {
+                dateNotAvailableDialog();
+            } else {
+                askPlanNameDialog();
+            }
         }
     }
 
@@ -227,13 +233,73 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
         alert.show();
     }
 
+    private boolean checkDateAvailability() {
+        Date start_date = null;
+        Date end_date = null;
+        try {
+            start_date = dateFormatter2.parse(dateFormatter2.format(date_start));
+            end_date = dateFormatter2.parse(dateFormatter2.format(date_end));
+//            Log.d("COBASTART", dateFormatter2.format(date_start));
+//            Log.d("COBAEND", dateFormatter2.format(date_end));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        for (Plan p : plans) {
+            try {
+                Date p_start = dateFormatter2.parse(p.getPlan_start_date());
+                Date p_end = dateFormatter2.parse(p.getPlan_end_date());
+
+//                Log.d("COBASTART2", p.getPlan_start_date());
+//                Log.d("COBAEND2", p.getPlan_end_date());
+//
+//                Log.d("TANGGAL_A", start_date.getTime() + "");
+//                Log.d("TANGGAL_A_P", p_start.getTime() + "");
+//                Log.d("TANGGAL_B", end_date.getTime() + "");
+//                Log.d("TANGGAL_B_P", p_end.getTime() + "");
+
+                if ((start_date.getTime() <= p_start.getTime() & end_date.getTime() >= p_end.getTime()) ||
+                        (start_date.getTime() >= p_start.getTime() & end_date.getTime() <= p_end.getTime())) {
+                    return false;
+                }
+                if ((start_date.getTime() >= p_start.getTime() & start_date.getTime() <= p_end.getTime()) ||
+                        (end_date.getTime() >= p_start.getTime() & end_date.getTime() <= p_end.getTime())) {
+                    return false;
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+        return true;
+    }
+
+    private void dateNotAvailableDialog() {
+        String message = "You already have a plan from " + trip_start_date.getText().toString() +
+                " until " + trip_end_date.getText().toString() + "\nPlease select another date!";
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder
+                .setTitle("Date Not Available")
+                .setMessage(message)
+                .setCancelable(true)
+                .setIcon(R.drawable.ic_error_black_24dp)
+                .setNeutralButton("Ok", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
     private void askPlanNameDialog() {
         LayoutInflater factory = LayoutInflater.from(this);
         final View linearLayout = factory.inflate(R.layout.save_plan_dialog, parent, false);
 
         final EditText edtTextName = (EditText) linearLayout.findViewById(R.id.editText_planName);
-        plan_name = intent.getStringExtra("plan_name");
-        edtTextName.setText(plan_name);
+
+        int init_name = intent.getIntExtra("init_name", -1);
+        String name = "New Plan (" + init_name + ")";
+        edtTextName.setText(name);
 
         final EditText edtTextDesc = (EditText) linearLayout.findViewById(R.id.editText_planDesc);
 
@@ -304,9 +370,9 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
         final DatabaseReference reference;
         if (prev != null && prev.equals("Fragment_GroupPlanList")) {
             reference = firebaseDatabase.getReference().child("groups").child(group_id);
-            Log.d("BUATPLANGROUP", "masuk");
+//            Log.d("BUATPLANGROUP", "masuk");
         } else {
-            Log.d("BUATPLANGROUP", "salahmasuk");
+//            Log.d("BUATPLANGROUP", "salahmasuk");
             reference = firebaseDatabase.getReference().child("users").child(firebaseUser.getUid());
         }
 

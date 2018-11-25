@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -292,15 +293,6 @@ public class Fragment_GroupPlanList extends Fragment {
     }
 
     private void deletePlan(Plan plan) {
-//        DatabaseHelper myDb = new DatabaseHelper(context);
-//        SQLiteDatabase db = myDb.getWritableDatabase();
-//
-//        String deleteQuery = "DELETE FROM " + PlanContract.PlanEntry.TABLE_NAME + " WHERE " +
-//                PlanContract.PlanEntry._ID + " = " + plan.getPlan_id();
-//
-//        db.execSQL(deleteQuery);
-//        db.close();
-//        notifyDataSetChanged();
 
         if (plan.getPlan_id() != null) {
             deleteHelper(plan, new DeleteEventCallback() {
@@ -422,11 +414,21 @@ public class Fragment_GroupPlanList extends Fragment {
             @Override
             public void onClick(View view) {
                 Intent myIntent = new Intent(getActivity(), CreateNewPlanActivity.class);
+                myIntent.putExtra("init_name", setPlanName());
+                myIntent.putParcelableArrayListExtra("plans", (ArrayList<? extends Parcelable>) plans);
                 myIntent.putExtra("group_id", group.getGroup_id());
                 myIntent.putExtra("ACTIVITY_GROUP", "Fragment_GroupPlanList");
                 startActivity(myIntent);
             }
         });
+    }
+
+    private int setPlanName() {
+        if (plans != null) {
+            return plans.size()+1;
+        } else {
+            return 1;
+        }
     }
 
     //Todo: refactor? exactly the same code as the one in CreateNewGroup

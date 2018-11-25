@@ -301,7 +301,7 @@ public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.Ne
 
     public void deleteHelper(Event event, final DeleteEventCallback callback){
         String plan_id = event.getPlan_id();
-        Log.d("PLANKEY", plan_id);
+//        Log.d("PLANKEY", plan_id);
         final String event_id = event.getEvent_id();
         final DatabaseReference planRef = firebaseDatabase.getReference().child("plans").child(plan_id).child("events");
         planRef.addListenerForSingleValueEvent(new ValueEventListener() {

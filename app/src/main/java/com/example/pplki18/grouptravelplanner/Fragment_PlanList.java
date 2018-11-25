@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -99,6 +100,7 @@ public class Fragment_PlanList extends Fragment {
 //                int plan_id = createNewPlan();
 //                myIntent.putExtra("plan_id", plan_id);
                 setPlanName();
+                myIntent.putParcelableArrayListExtra("plans", (ArrayList<? extends Parcelable>) plans);
                 Fragment_PlanList.this.startActivity(myIntent);
             }
         });
@@ -136,21 +138,26 @@ public class Fragment_PlanList extends Fragment {
 
 //        return (int)plan_id;
 //        getLastId();
-    }
-
-    public void getLastId() {
-        SQLiteDatabase db = databaseHelper.getReadableDatabase();
-        long lastId = -1;
-        String query = "SELECT " + PlanEntry._ID + " FROM " + PlanEntry.TABLE_NAME + " ORDER BY " +
-                PlanEntry._ID + " DESC limit 1";
-
-        Cursor c = db.rawQuery(query, null);
-        if (c != null && c.moveToFirst()) {
-            lastId = c.getLong(0); //The 0 is the column index, we only have 1 column, so the index is 0
+        if (plans != null) {
+            myIntent.putExtra("init_name", plans.size()+1);
+        } else {
+            myIntent.putExtra("init_name", 1);
         }
-        c.close();
-        myIntent.putExtra("plan_id", lastId+1);
     }
+
+//    public void getLastId() {
+//        SQLiteDatabase db = databaseHelper.getReadableDatabase();
+//        long lastId = -1;
+//        String query = "SELECT " + PlanEntry._ID + " FROM " + PlanEntry.TABLE_NAME + " ORDER BY " +
+//                PlanEntry._ID + " DESC limit 1";
+//
+//        Cursor c = db.rawQuery(query, null);
+//        if (c != null && c.moveToFirst()) {
+//            lastId = c.getLong(0); //The 0 is the column index, we only have 1 column, so the index is 0
+//        }
+//        c.close();
+//        myIntent.putExtra("plan_id", lastId+1);
+//    }
 
     @Override
     public void onResume() {  // After a pause OR at startup
