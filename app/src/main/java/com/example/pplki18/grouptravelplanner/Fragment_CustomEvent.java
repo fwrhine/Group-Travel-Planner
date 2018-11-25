@@ -68,10 +68,16 @@ public class Fragment_CustomEvent extends Fragment {
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
 
-        eventRef = firebaseDatabase.getReference().child("events");
-        storageReference = FirebaseStorage.getInstance().getReference();
-
         init();
+
+        if (prevActivity.equals("Fragment_SuggestionList")) {
+            eventRef = firebaseDatabase.getReference().child("suggestions");
+        }
+        else {
+            eventRef = firebaseDatabase.getReference().child("events");
+        }
+
+        storageReference = FirebaseStorage.getInstance().getReference();
 
         add_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -84,7 +90,7 @@ public class Fragment_CustomEvent extends Fragment {
                 Event anEvent = new Event(title, event_date, start_time, end_time, "custom");
                 anEvent.setDescription(description);
 
-                Suggestion aSuggestion = new Suggestion(title, "custom");
+                Suggestion aSuggestion = new Suggestion(title, start_time, end_time,"custom");
 
                 if (prevActivity.equals("CreateNewPlanActivity")) {
                     saveEventLocally(anEvent);

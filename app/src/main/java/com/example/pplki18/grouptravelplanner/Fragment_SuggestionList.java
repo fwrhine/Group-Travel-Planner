@@ -216,6 +216,7 @@ public class Fragment_SuggestionList extends Fragment {
     }
 
     private void CreateAlertDialogWithRadioButtonGroup(){
+        planNames.add("TempPlan");  // Temporary, only until there is a group plan
 
         final CharSequence[] values = planNames.toArray(new CharSequence[planNames.size()]);
 

@@ -2,8 +2,16 @@ package com.example.pplki18.grouptravelplanner.utils;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
-public class Suggestion implements Parcelable {
+import com.example.pplki18.grouptravelplanner.data.Event;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
+public class Suggestion implements Parcelable, Comparable<Suggestion> {
     private String suggestion_id;
     private String group_id;
 
@@ -18,6 +26,9 @@ public class Suggestion implements Parcelable {
     private String website;
     private String price;
 
+    private String time_start;
+    private String time_end;
+
     private String origin;
     private String destination;
     private String transport_number;
@@ -31,6 +42,13 @@ public class Suggestion implements Parcelable {
         this.type = type;
     }
 
+    public Suggestion(String title, String time_start, String time_end, String type) {
+        this.title = title;
+        this.type = type;
+        this.time_start = time_start;
+        this.time_end = time_end;
+    }
+
     protected Suggestion(Parcel in) {
         creator_id = in.readString();
         suggestion_id = in.readString();
@@ -38,6 +56,10 @@ public class Suggestion implements Parcelable {
         title = in.readString();
         location = in.readString();
         description = in.readString();
+
+        time_start = in.readString();
+        time_end = in.readString();
+
         phone = in.readString();
         type = in.readString();
         rating = in.readString();
@@ -185,6 +207,38 @@ public class Suggestion implements Parcelable {
 
     public void setPrice(String price) { this.price = price; }
 
+    public String getTime_start() {
+        return time_start;
+    }
+
+    public void setTime_start(String time_start) {
+        this.time_start = time_start;
+    }
+
+    public String getTime_end() {
+        return time_end;
+    }
+
+    public void setTime_end(String time_end) {
+        this.time_end = time_end;
+    }
+
+    public String getTotal_time() {
+        SimpleDateFormat format = new SimpleDateFormat("HH:mm", Locale.US);
+        long diff = 0;
+
+        try {
+            diff = format.parse(time_end).getTime() - format.parse(time_start).getTime();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        long diffMinutes = diff / (60 * 1000) % 60;
+        long diffHours = diff / (60 * 60 * 1000) % 24;
+
+        return diffHours + " hours, " + diffMinutes + " minutes";
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -198,6 +252,10 @@ public class Suggestion implements Parcelable {
         parcel.writeString(title);
         parcel.writeString(location);
         parcel.writeString(description);
+
+        parcel.writeString(time_start);
+        parcel.writeString(time_end);
+
         parcel.writeString(phone);
         parcel.writeString(type);
         parcel.writeString(rating);
@@ -207,5 +265,27 @@ public class Suggestion implements Parcelable {
         parcel.writeString(destination);
         parcel.writeString(transport_number);
         parcel.writeString(plan_name);
+    }
+
+    @Override
+    public int compareTo(@NonNull Suggestion suggest) {
+        SimpleDateFormat format = new SimpleDateFormat("HH:mm", Locale.US);
+        try {
+            Date this_start = format.parse(this.getTime_start());
+            Date this_end = format.parse(this.getTime_end());
+            Date event_start = format.parse(suggest.getTime_start());
+            Date event_end = format.parse(suggest.getTime_end());
+
+            if (this_start.getTime() > event_start.getTime()) {
+                return 1;
+            } else if (this_start.getTime() < event_start.getTime()) {
+                return -1;
+            } else {
+                return (int) (this_end.getTime() - event_end.getTime());
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 }
