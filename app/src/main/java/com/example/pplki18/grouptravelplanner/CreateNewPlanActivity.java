@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,6 +46,7 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
 
     Toolbar plan_toolbar;
 
+    RelativeLayout trip_start, trip_end;
     TextView trip_start_date, trip_end_date, trip_days;
     TextView date_month_year, day;
     ImageButton button_left, button_right, add_event, save_plan;
@@ -120,23 +122,26 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
     }
 
     public void findViewById() {
-        plan_toolbar = (Toolbar) findViewById(R.id.plan_toolbar);
+        plan_toolbar = findViewById(R.id.plan_toolbar);
 
-        trip_start_date = (TextView) findViewById(R.id.trip_start_date);
-        trip_end_date = (TextView) findViewById(R.id.trip_end_date);
-        trip_days = (TextView) findViewById(R.id.trip_days);
+        trip_start = findViewById(R.id.trip_start);
+        trip_end = findViewById(R.id.trip_end);
 
-        date_month_year = (TextView) findViewById(R.id.date_month_year);
-        day = (TextView) findViewById(R.id.day);
+        trip_start_date = findViewById(R.id.trip_start_date);
+        trip_end_date = findViewById(R.id.trip_end_date);
+        trip_days = findViewById(R.id.trip_days);
 
-        button_left = (ImageButton) findViewById(R.id.button_left);
-        button_right = (ImageButton) findViewById(R.id.button_right);
+        date_month_year = findViewById(R.id.date_month_year);
+        day = findViewById(R.id.day);
+
+        button_left = findViewById(R.id.button_left);
+        button_right = findViewById(R.id.button_right);
 //        add_event = (ImageButton) findViewById(R.id.add_event);
-        save_plan = (ImageButton) findViewById(R.id.save_plan);
+        save_plan = findViewById(R.id.save_plan);
 
-        fab_add_event = (FloatingActionButton) findViewById(R.id.fab_add_event);
+        fab_add_event = findViewById(R.id.fab_add_event);
 
-        parent = (ViewGroup) findViewById(R.id.container);
+        parent = findViewById(R.id.container);
     }
 
     @Override
@@ -284,13 +289,13 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
         LayoutInflater factory = LayoutInflater.from(this);
         final View linearLayout = factory.inflate(R.layout.save_plan_dialog, parent, false);
 
-        final EditText edtTextName = (EditText) linearLayout.findViewById(R.id.editText_planName);
+        final EditText edtTextName = linearLayout.findViewById(R.id.editText_planName);
 
         int init_name = intent.getIntExtra("init_name", -1);
         String name = "New Plan (" + init_name + ")";
         edtTextName.setText(name);
 
-        final EditText edtTextDesc = (EditText) linearLayout.findViewById(R.id.editText_planDesc);
+        final EditText edtTextDesc = linearLayout.findViewById(R.id.editText_planDesc);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder
@@ -479,10 +484,9 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
         );
     }
 
-    //TODO MAKE SURE USER CANNOT ADD NEW PLAN IF THE DATE IS ALREADY USED FOR OTHER PLAN
     private void setDateTimeField() {
-        trip_start_date.setOnClickListener(this);
-        trip_end_date.setOnClickListener(this);
+        trip_start.setOnClickListener(this);
+        trip_end.setOnClickListener(this);
 
         Calendar newCalendar = Calendar.getInstance();
         fromDatePickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
@@ -543,9 +547,9 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
 
     @Override
     public void onClick(View view) {
-        if(view == trip_start_date) {
+        if(view == trip_start) {
             fromDatePickerDialog.show();
-        } else if(view == trip_end_date) {
+        } else if(view == trip_end) {
             toDatePickerDialog.show();
         }
     }

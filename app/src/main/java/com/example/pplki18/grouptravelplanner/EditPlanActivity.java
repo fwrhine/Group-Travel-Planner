@@ -12,6 +12,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,6 +30,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.Objects;
 
 public class EditPlanActivity extends AppCompatActivity implements View.OnClickListener{
 
@@ -39,17 +41,14 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
 
     private static final String TAG = "EditPlanActivity";
 
-    DatabaseHelper databaseHelper;
     Intent intent;
 
     Toolbar plan_toolbar;
+    RelativeLayout trip_start, trip_end;
     TextView trip_start_date, trip_end_date, trip_days;
     TextView date_month_year, day;
     ImageButton button_left, button_right, save_plan;
     FloatingActionButton fab_add_event;
-
-    private SessionManager session;
-    private HashMap<String, String> user;
 
     private DatePickerDialog fromDatePickerDialog;
     private DatePickerDialog toDatePickerDialog;
@@ -61,10 +60,6 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
     private Date date_end_temp;
 
     private String plan_id;
-    private String from_intent_plan_name;
-    private String from_intent_end_date;
-    private String from_intent_start_date;
-    private int from_intent_total_day;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,28 +73,31 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
         findViewById();
 
         setSupportActionBar(plan_toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         init();
     }
 
     public void findViewById() {
-        plan_toolbar = (Toolbar) findViewById(R.id.plan_toolbar);
+        plan_toolbar = findViewById(R.id.plan_toolbar);
 
-        trip_start_date = (TextView) findViewById(R.id.trip_start_date);
-        trip_end_date = (TextView) findViewById(R.id.trip_end_date);
-        trip_days = (TextView) findViewById(R.id.trip_days);
+        trip_start = findViewById(R.id.trip_start);
+        trip_end = findViewById(R.id.trip_end);
 
-        date_month_year = (TextView) findViewById(R.id.date_month_year);
-        day = (TextView) findViewById(R.id.day);
+        trip_start_date = findViewById(R.id.trip_start_date);
+        trip_end_date = findViewById(R.id.trip_end_date);
+        trip_days = findViewById(R.id.trip_days);
 
-        button_left = (ImageButton) findViewById(R.id.button_left);
-        button_right = (ImageButton) findViewById(R.id.button_right);
-//        add_event = (ImageButton) findViewById(R.id.add_event);
-        save_plan = (ImageButton) findViewById(R.id.save_plan);
+        date_month_year = findViewById(R.id.date_month_year);
+        day = findViewById(R.id.day);
 
-        fab_add_event = (FloatingActionButton) findViewById(R.id.fab_add_event);
+        button_left = findViewById(R.id.button_left);
+        button_right = findViewById(R.id.button_right);
+
+        save_plan = findViewById(R.id.save_plan);
+
+        fab_add_event = findViewById(R.id.fab_add_event);
     }
 
     public void init() {
@@ -108,14 +106,11 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
 
         intent = getIntent();
         plan_id = intent.getStringExtra("plan_id");
-        databaseHelper = new DatabaseHelper(EditPlanActivity.this);
-        session = new SessionManager(getApplicationContext());
-        user = session.getUserDetails();
 
-        from_intent_plan_name = intent.getStringExtra("plan_name");
-        from_intent_end_date = intent.getStringExtra("plan_date_end");
-        from_intent_start_date = intent.getStringExtra("plan_date_start");
-        from_intent_total_day = intent.getIntExtra("plan_total_days", -1);
+        String from_intent_plan_name = intent.getStringExtra("plan_name");
+        String from_intent_end_date = intent.getStringExtra("plan_date_end");
+        String from_intent_start_date = intent.getStringExtra("plan_date_start");
+        int from_intent_total_day = intent.getIntExtra("plan_total_days", -1);
         setTitle(from_intent_plan_name);
 
         save_plan.setImageDrawable(getResources().getDrawable(R.drawable.ic_more_vert_white_24dp));
@@ -133,7 +128,9 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
         trip_start_date.setTextColor(getResources().getColor(R.color.colorBlack));
         trip_end_date.setText(dateFormatter1.format(date_end));
         trip_end_date.setTextColor(getResources().getColor(R.color.colorBlack));
-        trip_days.setText(from_intent_total_day + "");
+
+        String days = from_intent_total_day + "";
+        trip_days.setText(days);
         setDateTimeField();
 
         try {
@@ -142,13 +139,13 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
             e.printStackTrace();
         }
 
-        planRef = firebaseDatabase.getReference().child("plans").child(plan_id);;
+        planRef = firebaseDatabase.getReference().child("plans").child(plan_id);
 
         Bundle bundle = intent.getBundleExtra("bundle");
 
         if (bundle != null) {
             Group group = bundle.getParcelable("group");
-            if (!group.getCreator_id().equals(firebaseUser.getUid())) {
+            if (group != null && !group.getCreator_id().equals(firebaseUser.getUid())) {
                 fab_add_event.setVisibility(View.GONE);
             }
         }
@@ -255,16 +252,16 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
 
     @Override
     public void onClick(View view) {
-        if(view == trip_start_date) {
+        if(view == trip_start) {
             fromDatePickerDialog.show();
-        } else if(view == trip_end_date) {
+        } else if(view == trip_end) {
             toDatePickerDialog.show();
         }
     }
 
     public void setDateTimeField() {
-        trip_start_date.setOnClickListener(this);
-        trip_end_date.setOnClickListener(this);
+        trip_start.setOnClickListener(this);
+        trip_end.setOnClickListener(this);
 
         Calendar newCalendar = Calendar.getInstance();
         fromDatePickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {

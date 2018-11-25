@@ -231,6 +231,7 @@
                     android:text="Start Time"/>
                 <EditText
                     android:id="@+id/start_time"
+                    android:inputType="none"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textStyle="bold"
@@ -256,7 +257,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textStyle="bold"
-                    android:focusable="false"/>
+                    android:focusable="false"
+                    android:inputType="none" />
 
             </LinearLayout>
 
