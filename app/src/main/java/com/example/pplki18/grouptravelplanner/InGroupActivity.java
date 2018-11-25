@@ -50,6 +50,7 @@ public class InGroupActivity extends AppCompatActivity implements NavigationView
 
         setHeaderInfo();
 
+//        Bundle bundle = getIntent().getExtras();
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                     new Fragment_GroupChat()).commit();

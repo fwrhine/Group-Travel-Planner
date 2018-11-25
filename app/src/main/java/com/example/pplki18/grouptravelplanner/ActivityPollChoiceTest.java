@@ -29,20 +29,20 @@ public class ActivityPollChoiceTest extends AppCompatActivity {
     DatabaseReference pollRef;
     DatabaseReference pollMapRef;
 
-    TextView choice1;
-    TextView choice1num;
-    TextView choice2;
-    TextView choice2num;
-    Button btn_increment1;
-    Button btn_increment2;
-    List<String> choiceList;
-    List<Long> voteList;
+    private TextView choice1;
+    private TextView choice1num;
+    private TextView choice2;
+    private TextView choice2num;
+    private Button btn_increment1;
+    private Button btn_increment2;
+    private List<String> choiceList;
+    private List<Long> voteList;
 
     String choice1fb;
-    String choice2fb;
+    private String choice2fb;
 
     Long votes1;
-    Long votes2;
+    private Long votes2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +81,13 @@ public class ActivityPollChoiceTest extends AppCompatActivity {
                         });
                     }
                 });
+            }
+        });
+
+        btn_increment2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                btn_increment2.setEnabled(false);
             }
         });
 
@@ -132,11 +139,11 @@ public class ActivityPollChoiceTest extends AppCompatActivity {
         pollMapRef = firebaseDatabase.getReference().child("polls").child("-LRbMoWjE-TjcB1lOfI4").child("choiceMap");
     }
 
-    public void getPollChoices(final PollCallback pollCallback) {
+    private void getPollChoices(final PollCallback pollCallback) {
         pollRef.addValueEventListener(new ValueEventListener() {
 
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 List<String> choiceList = new ArrayList<>();
                 for (DataSnapshot choice: dataSnapshot.getChildren()){
                     String c = choice.getValue(String.class);
@@ -156,11 +163,11 @@ public class ActivityPollChoiceTest extends AppCompatActivity {
         });
     }
 
-    public void getPollMapSets(final PollMapCallback pollMapCallback) {
+    private void getPollMapSets(final PollMapCallback pollMapCallback) {
         pollMapRef.addValueEventListener(new ValueEventListener() {
 
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 //                Log.d("OUTER_REFERENCE_MAP", dataSnapshot.getRef().toString());
                 List<Long> voteList = new ArrayList<>();
                 for (DataSnapshot set: dataSnapshot.getChildren()){
@@ -182,14 +189,15 @@ public class ActivityPollChoiceTest extends AppCompatActivity {
         });
     }
 
-    public void votePlus(final String choice) {
+    private void votePlus(final String choice) {
         pollMapRef.addListenerForSingleValueEvent(new ValueEventListener() {
 
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot val : dataSnapshot.getChildren()) {
                     if (choice.equals(val.getKey())) {
-                        pollMapRef.child(choice).setValue(12);
+                        Long plus = Long.parseLong(val.getValue().toString()) + 1;
+                        pollMapRef.child(choice).setValue(plus);
                     }
                 }
             }

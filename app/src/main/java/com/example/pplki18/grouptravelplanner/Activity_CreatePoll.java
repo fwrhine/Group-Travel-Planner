@@ -56,7 +56,12 @@ public class Activity_CreatePoll extends AppCompatActivity {
                 String newChoice = choiceInput.getText().toString();
                 if (!choiceList.contains(newChoice)) {
                     choiceList.add(newChoice);
-                    choices += ", " + newChoice;
+                    if (choiceText.equals("")){
+                        choices += newChoice;
+                    }
+                    else {
+                        choices += ", " + newChoice;
+                    }
                     choiceText.setText(choices);
 //                    Intent intent = getIntent();
 //                    intent.putExtra("topic", topicInput.getText());
@@ -107,14 +112,17 @@ public class Activity_CreatePoll extends AppCompatActivity {
                     //TODO add poll message to the group chat
                     Toast.makeText(getApplicationContext(), "Created Poll", Toast.LENGTH_SHORT).show();
 
-//                Intent myIntent = new Intent(Activity_CreatePoll.this , InGroupActivity.class);
-//                myIntent.putExtra("fragment", "group");
-//                startActivity(myIntent);
+                Intent myIntent = new Intent(Activity_CreatePoll.this , InGroupActivity.class);
+                myIntent.putExtra("fragment", "group");
+                startActivity(myIntent);
                 }
 
                 else {
-                    Toast.makeText(getApplicationContext(), "Write a topic and at least 2 " +
-                            "choices must be made", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(getApplicationContext(), "Write a topic and at least 2 " +
+//                            "choices must be made", Toast.LENGTH_SHORT).show();
+                    Intent myIntent = new Intent(Activity_CreatePoll.this , InHomeActivity.class);
+//                    myIntent.putExtra("fragment", "group");
+                    startActivity(myIntent);
                 }
             }
         });
