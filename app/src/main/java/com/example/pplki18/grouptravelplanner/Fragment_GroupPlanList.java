@@ -440,13 +440,13 @@ public class Fragment_GroupPlanList extends Fragment {
                 Bundle bundle = new Bundle();
                 bundle.putParcelable("group", group);
                 bundle.putString("ACTIVITY", "Fragment_GroupPlanList");
+
                 adapter = new RVAdapter_Plan(list, getActivity(), bundle);
-//                for (Plan p : list) {
-//                    Log.d("DATE", p.getPlan_start_date());
-//                }
                 recyclerViewGroupPlan.setAdapter(adapter);
                 adapter.notifyDataSetChanged();
+
                 setCurrentPlan();
+
                 if (!list.isEmpty() && type.equals("past")) setPastPlan();
             }
         });

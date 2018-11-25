@@ -114,7 +114,6 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
         dateFormatter1 = new SimpleDateFormat("EEE, MMM d", Locale.US);
         dateFormatter2 = new SimpleDateFormat("d MMMM yyyy", Locale.US);
 
-//        add_event.setVisibility(View.GONE);
         setAddEventButton();
         setSavePlanButton();
         setDateTimeField();
@@ -239,8 +238,6 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
         try {
             start_date = dateFormatter2.parse(dateFormatter2.format(date_start));
             end_date = dateFormatter2.parse(dateFormatter2.format(date_end));
-//            Log.d("COBASTART", dateFormatter2.format(date_start));
-//            Log.d("COBAEND", dateFormatter2.format(date_end));
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -249,14 +246,6 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
             try {
                 Date p_start = dateFormatter2.parse(p.getPlan_start_date());
                 Date p_end = dateFormatter2.parse(p.getPlan_end_date());
-
-//                Log.d("COBASTART2", p.getPlan_start_date());
-//                Log.d("COBAEND2", p.getPlan_end_date());
-//
-//                Log.d("TANGGAL_A", start_date.getTime() + "");
-//                Log.d("TANGGAL_A_P", p_start.getTime() + "");
-//                Log.d("TANGGAL_B", end_date.getTime() + "");
-//                Log.d("TANGGAL_B_P", p_end.getTime() + "");
 
                 if ((start_date.getTime() <= p_start.getTime() & end_date.getTime() >= p_end.getTime()) ||
                         (start_date.getTime() >= p_start.getTime() & end_date.getTime() <= p_end.getTime())) {
@@ -370,9 +359,7 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
         final DatabaseReference reference;
         if (prev != null && prev.equals("Fragment_GroupPlanList")) {
             reference = firebaseDatabase.getReference().child("groups").child(group_id);
-//            Log.d("BUATPLANGROUP", "masuk");
         } else {
-//            Log.d("BUATPLANGROUP", "salahmasuk");
             reference = firebaseDatabase.getReference().child("users").child(firebaseUser.getUid());
         }
 

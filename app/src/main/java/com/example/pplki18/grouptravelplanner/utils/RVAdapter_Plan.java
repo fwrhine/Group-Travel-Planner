@@ -109,12 +109,6 @@ public class RVAdapter_Plan extends RecyclerView.Adapter<RVAdapter_Plan.PlanView
 
         String start_date = plan.getPlan_start_date();
         String end_date = plan.getPlan_end_date();
-//        try {
-//            start_date = dateFormatter1.format(dateFormatter1.parse(start_date));
-//            end_date = dateFormatter1.format(dateFormatter1.parse(end_date));
-//        } catch (ParseException e) {
-//            e.printStackTrace();
-//        }
 
         String dateString = start_date + " - " + end_date
                 + total_day_str;
@@ -219,15 +213,6 @@ public class RVAdapter_Plan extends RecyclerView.Adapter<RVAdapter_Plan.PlanView
     }
 
     private void deletePlan(Plan plan) {
-//        DatabaseHelper myDb = new DatabaseHelper(context);
-//        SQLiteDatabase db = myDb.getWritableDatabase();
-//
-//        String deleteQuery = "DELETE FROM " + PlanContract.PlanEntry.TABLE_NAME + " WHERE " +
-//                PlanContract.PlanEntry._ID + " = " + plan.getPlan_id();
-//
-//        db.execSQL(deleteQuery);
-//        db.close();
-//        notifyDataSetChanged();
 
         if (plan.getPlan_id() != null) {
             deleteHelper(plan, new DeleteEventCallback() {
@@ -355,15 +340,6 @@ public class RVAdapter_Plan extends RecyclerView.Adapter<RVAdapter_Plan.PlanView
     }
 
     private void renamePlan(Plan plan, String new_name) {
-//        DatabaseHelper myDb = new DatabaseHelper(context);
-//        SQLiteDatabase db = myDb.getWritableDatabase();
-//
-//        String updateQuery = "UPDATE " + PlanContract.PlanEntry.TABLE_NAME + " SET " +
-//                PlanContract.PlanEntry.COL_PLAN_NAME + " = " + "\"" + new_name + "\"" +
-//                " WHERE " + PlanContract.PlanEntry._ID + " = " + plan.getPlan_id();
-//
-//        db.execSQL(updateQuery);
-//        db.close();
         planRef = firebaseDatabase.getReference().child("plans").child(plan.getPlan_id());
         planRef.child("plan_name").setValue(new_name);
         notifyDataSetChanged();

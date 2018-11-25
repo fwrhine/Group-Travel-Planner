@@ -45,7 +45,7 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
     Toolbar plan_toolbar;
     TextView trip_start_date, trip_end_date, trip_days;
     TextView date_month_year, day;
-    ImageButton button_left, button_right, add_event, save_plan;
+    ImageButton button_left, button_right, save_plan;
     FloatingActionButton fab_add_event;
 
     private SessionManager session;
@@ -164,8 +164,6 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
 
     @Override
     public void onBackPressed() {
-//        Log.d("dateeeeee", dateFormatter1.format(date_start));
-//        Log.d("dateeeeee", dateFormatter1.format(date_end));
         if (!trip_start_date.getText().toString().equals(dateFormatter1.format(date_start)) ||
                 !trip_end_date.getText().toString().equals(dateFormatter1.format(date_end))) {
             AlertDialog box;
@@ -185,7 +183,6 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
 
                     public void onClick(DialogInterface dialog, int whichButton) {
                         //your deleting code
-//                        deletePlan(plan_id);
                         EditPlanActivity.this.finish();
                     }
 
@@ -225,19 +222,10 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void updatePlanDate() {
-//        SQLiteDatabase db = databaseHelper.getWritableDatabase();
-//
         String start_day = dateFormatter2.format(date_start_temp);
         String end_day = dateFormatter2.format(date_end_temp);
         int total_days = Integer.parseInt(trip_days.getText().toString());
-//        String updateQuery = "UPDATE " + PlanContract.PlanEntry.TABLE_NAME + " SET " +
-//                PlanContract.PlanEntry.COL_START_DAY + " = " + "\"" + start_day + "\", " +
-//                PlanContract.PlanEntry.COL_END_DAY + " = " + "\"" + end_day + "\", " +
-//                PlanContract.PlanEntry.COL_TOTAL_DAY + " = " + total_days + " WHERE " +
-//                PlanContract.PlanEntry._ID + " = " + plan_id;
-//        Log.d("updateQuery", updateQuery);
-//        db.execSQL(updateQuery);
-//        db.close();
+
         planRef.child("plan_start_date").setValue(start_day);
         planRef.child("plan_end_date").setValue(end_day);
         planRef.child("total_days").setValue(total_days);
@@ -367,9 +355,6 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-//                        boolean test = c_cur_date.getTime().getTime() == c_start_pin.getTime().getTime();
-//                        Log.d("CUR", c_cur_date.getTime().getTime() + "");
-//                        Log.d("PIN", c_start_pin.getTime().getTime() + "");
 
                         c_cur_date.add(Calendar.DATE, -1);
                         date_month_year.setText(dateFormatter2.format(c_cur_date.getTime()));
