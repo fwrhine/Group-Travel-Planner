@@ -220,6 +220,10 @@ public class Fragment_GroupPlanList extends Fragment {
                     popup.show();
                 }
             });
+
+            if (!group.getCreator_id().equals(firebaseUser.getUid())) {
+                planMenuButton.setVisibility(View.GONE);
+            }
         }
 
         if (!plans.isEmpty()) {
