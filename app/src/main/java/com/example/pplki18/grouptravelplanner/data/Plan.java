@@ -1,9 +1,12 @@
 package com.example.pplki18.grouptravelplanner.data;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class Plan {
+public class Plan implements Parcelable {
 
     private String plan_id;
     private String creatorId;
@@ -107,5 +110,35 @@ public class Plan {
 
     public void setEvents(List<String> events) {
         this.events = events;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(this.plan_id);
+        parcel.writeString(this.plan_name);
+        parcel.writeString(this.creatorId);
+    }
+
+    // this is used to regenerate your object. All Parcelables must have a CREATOR that implements these two methods
+    public static final Parcelable.Creator<Plan> CREATOR = new Parcelable.Creator<Plan>() {
+        public Plan createFromParcel(Parcel in) {
+            return new Plan(in);
+        }
+
+        public Plan[] newArray(int size) {
+            return new Plan[size];
+        }
+    };
+
+    // example constructor that takes a Parcel and gives you an object populated with it's values
+    private Plan(Parcel in) {
+        this.plan_id = in.readString();
+        this.plan_name = in.readString();
+        this.creatorId = in.readString();
     }
 }

@@ -1,10 +1,12 @@
 package com.example.pplki18.grouptravelplanner;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -12,8 +14,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.example.pplki18.grouptravelplanner.data.Group;
+import com.example.pplki18.grouptravelplanner.data.Plan;
 import com.example.pplki18.grouptravelplanner.utils.RVAdapter_Suggest;
 import com.example.pplki18.grouptravelplanner.utils.Suggestion;
 import com.google.firebase.auth.FirebaseAuth;
@@ -34,16 +38,25 @@ public class Fragment_SuggestionList extends Fragment {
 
     private DatabaseReference groupRef;
     private DatabaseReference suggestRef;
-    private LinearLayoutManager linearLayoutManager;
+    private DatabaseReference planRef;
+
     private RecyclerView recyclerViewSuggestion;
 
     private FloatingActionButton new_suggestion_button;
     private ProgressBar progressBar;
+
     private List<String> suggestionIDs = new ArrayList<>();
     private List<Suggestion> suggestions = new ArrayList<>();
+    private List<Plan> plans = new ArrayList<>();
+
     private RVAdapter_Suggest adapter;
     private Intent myIntent;
     private Group group;
+
+    private AlertDialog alertDialog1;
+
+    private List<String> planIds = new ArrayList<>();
+    private List<String> planNames = new ArrayList<>();
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -66,6 +79,15 @@ public class Fragment_SuggestionList extends Fragment {
         groupRef = firebaseDatabase.getReference().child("groups").child(group.getGroup_id()).child("suggestion");
         suggestRef = firebaseDatabase.getReference().child("suggestions");
 
+        planRef = firebaseDatabase.getReference().child("groups").child(group.getGroup_id()).child("plans");
+
+        getAllGroupPlan(new PlanCallback() {
+            @Override
+            public void onCallback(List<Plan> list) {
+                plans = list;
+            }
+        });
+
         progressBar.setVisibility(View.VISIBLE);
         getSuggestionIDs(new SuggestionIDCallback() {
             @Override
@@ -82,8 +104,7 @@ public class Fragment_SuggestionList extends Fragment {
         new_suggestion_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                Fragment_SuggestionList.this.startActivity(myIntent);
+                CreateAlertDialogWithRadioButtonGroup();
             }
         });
     }
@@ -92,6 +113,14 @@ public class Fragment_SuggestionList extends Fragment {
     public void onResume() {  // After a pause OR at startup
         super.onResume();
             progressBar.setVisibility(View.VISIBLE);
+
+            getAllGroupPlan(new PlanCallback() {
+                @Override
+                public void onCallback(List<Plan> list) {
+                    plans = list;
+                }
+            });
+
             getAllSuggestion(new SuggestionCallback() {
                 @Override
                 public void onCallback(List<Suggestion> list) {
@@ -127,16 +156,9 @@ public class Fragment_SuggestionList extends Fragment {
                 Log.d("REFERENCE", dataSnapshot.getRef().toString());
                 for (DataSnapshot postSnapshot: dataSnapshot.getChildren()){
                     Suggestion suggestion = postSnapshot.getValue(Suggestion.class);
+                    assert suggestion != null;
                     if(suggestionIDs.contains(suggestion.getSuggestion_id())){
                         suggestions.add(suggestion);
-                    } else {
-                        String removeEventId = suggestion.getSuggestion_id();
-
-                        Log.d("EVENT-EXIST", (removeEventId != null) + "");
-
-                        DatabaseReference suggestionRemoveRef = FirebaseDatabase.getInstance().getReference()
-                                .child("groups").child(group.getGroup_id()).child("suggestion").child(removeEventId);
-                        suggestionRemoveRef.removeValue();
                     }
                 }
                 callback.onCallback(suggestions);
@@ -169,19 +191,77 @@ public class Fragment_SuggestionList extends Fragment {
         });
     }
 
+    private void getAllGroupPlan(final PlanCallback callback) {
+        planRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                suggestions.clear();
+                Log.d("REFERENCE", dataSnapshot.getRef().toString());
+                for (DataSnapshot postSnapshot: dataSnapshot.getChildren()){
+                    Plan plan = postSnapshot.getValue(Plan.class);
+                    assert plan != null;
+                    planIds.add(plan.getPlan_id());
+                    planNames.add(plan.getPlan_name());
+                    plans.add(plan);
+
+                }
+                callback.onCallback(plans);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void CreateAlertDialogWithRadioButtonGroup(){
+
+        final CharSequence[] values = planNames.toArray(new CharSequence[planNames.size()]);
+
+        if (values.length == 0) {
+            Toast.makeText(Fragment_SuggestionList.this.getActivity(), "There are currently no plans to give a suggestion to",
+                    Toast.LENGTH_LONG).show();
+        }
+
+        else {
+            AlertDialog.Builder builder = new AlertDialog.Builder(Objects.requireNonNull(getActivity()));
+
+            builder.setTitle("Select Your Choice");
+
+            builder.setSingleChoiceItems(values, -1, new DialogInterface.OnClickListener() {
+
+                public void onClick(DialogInterface dialog, int item) {
+
+                    switch(item)
+                    {
+                        default:
+                            Log.d("SELECTED-ITEM", values[item]+"");
+                            Fragment_SuggestionList.this.startActivity(myIntent);
+                            break;
+                    }
+                    alertDialog1.dismiss();
+                }
+            });
+            alertDialog1 = builder.create();
+            alertDialog1.show();
+        }
+    }
+
     private void init() {
-        linearLayoutManager = new LinearLayoutManager(getActivity());
-        recyclerViewSuggestion = getView().findViewById(R.id.rv_suggestion_list);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+        recyclerViewSuggestion = Objects.requireNonNull(getView()).findViewById(R.id.rv_suggestion_list);
         recyclerViewSuggestion.setLayoutManager(linearLayoutManager);
         progressBar = Objects.requireNonNull(getView()).findViewById(R.id.progress_loader);
         new_suggestion_button = getView().findViewById(R.id.fab_add_suggestion);
         myIntent = new Intent(getActivity(), ChooseEventActivity.class);
         myIntent.putExtra("prev_fragment", "Fragment_SuggestionList");
 
-        Intent i = getActivity().getIntent();
+        Intent i = Objects.requireNonNull(getActivity()).getIntent();
         group = i.getParcelableExtra("group");
 
         myIntent.putExtra("group_id", group.getGroup_id());
+        //myIntent.putParcelableArrayListExtra("plan_list", plans); // TODO move the list into intent
 
         Log.d(TAG, "Init Suggestion List");
     }
@@ -192,5 +272,9 @@ public class Fragment_SuggestionList extends Fragment {
 
     private interface SuggestionCallback {
         void onCallback(List<Suggestion> list);
+    }
+
+    private interface PlanCallback {
+        void onCallback(List<Plan> list);
     }
 }

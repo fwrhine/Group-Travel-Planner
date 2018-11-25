@@ -11,6 +11,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -71,6 +72,7 @@ public class InGroupActivity extends AppCompatActivity implements NavigationView
             case R.id.nav_suggestion:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                         new Fragment_SuggestionList()).commit();
+                break;
             case R.id.nav_plan:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                         new Fragment_GroupPlan()).commit();
