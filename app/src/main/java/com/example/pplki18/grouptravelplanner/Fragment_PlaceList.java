@@ -64,7 +64,8 @@ public class Fragment_PlaceList extends Fragment {
     FirebaseAuth firebaseAuth;
     FirebaseUser firebaseUser;
     DatabaseReference planRef;
-    DatabaseReference suggestRef;
+    DatabaseReference eventRef;
+    DatabaseReference suggestionRef;
     StorageReference storageReference;
 
     private RecyclerView recyclerViewPlace;
@@ -135,7 +136,8 @@ public class Fragment_PlaceList extends Fragment {
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
 
-        suggestRef = firebaseDatabase.getReference().child("suggestions");
+        eventRef = firebaseDatabase.getReference().child("events");
+        suggestionRef = firebaseDatabase.getReference().child("suggestions");
         storageReference = FirebaseStorage.getInstance().getReference();
 
         init();
@@ -328,17 +330,8 @@ public class Fragment_PlaceList extends Fragment {
             }
 
             @Override public void addImageOnClick(View v, int position) {
-                String prevFrag = getActivity().getIntent().getStringExtra("prev_fragment");
+                setTime(adapter.getAll().get(position));
 
-                if(prevFrag == null) {
-                    setTime(adapter.getAll().get(position));
-                }
-                else {
-                    if (prevFrag.equals("Fragment_SuggestionList")) {
-                        saveEventToSuggestion(adapter.getAll().get(position));
-                        getActivity().finish();
-                    }
-                }
             }
         };
 
@@ -377,6 +370,9 @@ public class Fragment_PlaceList extends Fragment {
                             intent.putExtra("ACTIVITY", "Fragment_PlaceList");
                             Log.d("prev activity", "createnewplan");
                             getActivity().setResult(RESULT_OK, intent);
+                            getActivity().finish();
+                        } else if (prevActivity.equals("Fragment_SuggestionList")) {
+                            saveEventToSuggestion(place, start_time, end_time);
                             getActivity().finish();
                         } else {
                             saveEventToPlan(place, start_time, end_time);
@@ -435,11 +431,11 @@ public class Fragment_PlaceList extends Fragment {
         anEvent.setPhone(place.getPhone_number());
         anEvent.setRating(place.getRating());
 
-        final String eventId = suggestRef.push().getKey();
+        final String eventId = eventRef.push().getKey();
         anEvent.setEvent_id(eventId);
         anEvent.setPlan_id(plan_id);
         anEvent.setCreator_id(firebaseUser.getUid());
-        suggestRef.child(eventId).setValue(anEvent);
+        eventRef.child(eventId).setValue(anEvent);
 
         planRef = firebaseDatabase.getReference().child("plans").child(plan_id).child("events");
 
@@ -464,8 +460,8 @@ public class Fragment_PlaceList extends Fragment {
         });
     }
 
-    private void saveEventToSuggestion(Place place) {
-        Suggestion aSuggestion = new Suggestion(place.getName(), type);
+    private void saveEventToSuggestion(Place place, String start_time, String end_time) {
+        Suggestion aSuggestion = new Suggestion(place.getName(), start_time, end_time, type);
 
         aSuggestion.setQuery_id(place.getPlace_id());
         aSuggestion.setLocation(place.getAddress());
@@ -475,11 +471,11 @@ public class Fragment_PlaceList extends Fragment {
 
         String groupId = getActivity().getIntent().getStringExtra("group_id");
 
-        final String eventId = suggestRef.push().getKey();
+        final String eventId = suggestionRef.push().getKey();
         aSuggestion.setSuggestion_id(eventId);
         aSuggestion.setGroup_id(groupId);   // TODO Fix problem for group_id
         aSuggestion.setCreator_id(firebaseUser.getUid());
-        suggestRef.child(eventId).setValue(aSuggestion);
+        suggestionRef.child(eventId).setValue(aSuggestion);
 
         planRef = firebaseDatabase.getReference().child("groups").child(groupId).child("suggestion");
 

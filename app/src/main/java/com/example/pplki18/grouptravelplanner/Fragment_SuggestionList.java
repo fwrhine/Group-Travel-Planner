@@ -228,7 +228,7 @@ public class Fragment_SuggestionList extends Fragment {
         else {
             AlertDialog.Builder builder = new AlertDialog.Builder(Objects.requireNonNull(getActivity()));
 
-            builder.setTitle("Select Your Choice");
+            builder.setTitle("Select Your Choice Plan");
 
             builder.setSingleChoiceItems(values, -1, new DialogInterface.OnClickListener() {
 
