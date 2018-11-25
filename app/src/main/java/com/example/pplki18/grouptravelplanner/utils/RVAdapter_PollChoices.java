@@ -37,7 +37,7 @@ public class RVAdapter_PollChoices extends RecyclerView.Adapter<RVAdapter_PollCh
         FirebaseUser firebaseUser;
         DatabaseReference pollRef;
 
-    public RVAdapter_PollChoices(List<Poll> pollChoiceList, Context context){
+    public RVAdapter_PollChoices(List<Poll> pollChoiceList, HashMap<String, Integer> pollMap, Context context){
             this.pollChoiceList = pollChoiceList;
             this.context = context;
         }
@@ -88,7 +88,7 @@ public class RVAdapter_PollChoices extends RecyclerView.Adapter<RVAdapter_PollCh
             String choice = viewHolder.choiceText.getText().toString();
             Integer newVal = Integer.parseInt(viewHolder.choiceVal.getText().toString());
             String id = viewHolder.id.getText().toString();
-            viewHolder.choiceVal.setText(newVal++);
+            viewHolder.choiceVal.setText(++newVal);
             //TODO save votes to firebase??
             saveTofirebase(choice, newVal, id);
         }

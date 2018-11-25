@@ -40,6 +40,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Fragment_GroupChat extends Fragment {
@@ -187,6 +188,14 @@ public class Fragment_GroupChat extends Fragment {
             @Override
             public void onClick(View view) {
                 Intent myIntent = new Intent(getActivity(), Activity_CreatePoll.class);
+                String[] voters = new String[group.getMembers().size()];
+                Log.v("Group members", group.getMembers().toString());
+                for (int ii = 0; ii < group.getMembers().size(); ii++) {
+                    voters[ii] = group.getMembers().get(ii);
+                }
+                ArrayList<String> votersList = new ArrayList<String>(Arrays.asList(voters));
+                myIntent.putStringArrayListExtra("voters", votersList);
+                // Need to put group id or chat??
                 Fragment_GroupChat.this.startActivity(myIntent);
             }
         });

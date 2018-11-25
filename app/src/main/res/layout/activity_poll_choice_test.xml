@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ActivityPollChoiceTest">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbarTest"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+    </android.support.design.widget.AppBarLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingTop="60dp"
+        android:layout_below="@id/toolbarTest"
+        android:id="@+id/poll_choice1_test">
+
+        <TextView
+            android:id="@+id/poll_choice_test"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TEST CHOICE 1"
+            android:textSize="25sp"
+            android:paddingRight="20dp"
+            android:paddingTop="20dp"
+            android:layout_alignParentLeft="true"/>
+
+
+        <TextView
+            android:id="@+id/poll_choice_num_test"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="00"
+            android:textSize="25dp"
+            android:paddingTop="20dp"
+            android:layout_toRightOf="@id/poll_choice_test"
+            />
+        <TextView
+            android:id="@+id/poll_id"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="invisible"
+            />
+
+
+        <Button
+            android:id="@+id/poll_choice_increment_test"
+            android:text="+"
+            android:background="@color/red"
+            android:textColor="@android:color/white"
+            android:layout_margin="8dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/remove_notification"
+            android:layout_alignParentRight="true"/>
+
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingTop="120dp"
+        android:layout_below="@id/poll_choice1_test">
+
+        <TextView
+            android:id="@+id/poll_choice_test2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TEST CHOICE 2"
+            android:textSize="25sp"
+            android:paddingRight="20dp"
+            android:paddingTop="20dp"
+            android:layout_alignParentLeft="true"/>
+
+
+        <TextView
+            android:id="@+id/poll_choice_num_test2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="00"
+            android:textSize="25dp"
+            android:paddingTop="20dp"
+            android:layout_toRightOf="@id/poll_choice_test2"
+            />
+        <TextView
+            android:id="@+id/poll_id2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="invisible"
+            />
+
+
+        <Button
+            android:id="@+id/poll_choice_increment_test2"
+            android:text="+"
+            android:background="@color/red"
+            android:textColor="@android:color/white"
+            android:layout_margin="8dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/remove_notification"
+            android:layout_alignParentRight="true"/>
+
+
+    </RelativeLayout>
+
+
+</android.support.design.widget.CoordinatorLayout>

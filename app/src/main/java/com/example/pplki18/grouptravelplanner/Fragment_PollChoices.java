@@ -30,6 +30,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static android.content.ContentValues.TAG;
@@ -40,15 +41,18 @@ public class Fragment_PollChoices extends Fragment implements NavigationView.OnN
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
     DatabaseReference userRef;
-    DatabaseReference pollRef;
+    DatabaseReference pollChoiceRef;
+    DatabaseReference pollChoiceMapRef;
     StorageReference storageReference;
     private RecyclerView recyclerViewGroup;
     private LinearLayoutManager linearLayoutManager;
     private List<Poll> pollList;
+    private HashMap<String, Integer> pollMap;
     private Context context;
     long i;
+    private String pollID;
 
-    private List<Group> polls = new ArrayList<>();
+    private HashMap<String, Integer> pollChoices = new HashMap<>();
 
     @Nullable
     @Override
@@ -64,14 +68,16 @@ public class Fragment_PollChoices extends Fragment implements NavigationView.OnN
         firebaseDatabase = FirebaseDatabase.getInstance();
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
-
+        // TODO pollID = intent.getIntent().getStringExtra("id");
+        pollID = "something";
         if (firebaseUser == null) {
             Intent errorIntent = new Intent(getActivity(), LoginActivity.class);
             Fragment_PollChoices.this.startActivity(errorIntent);
             getActivity().finish();
         }
         else {
-            pollRef = firebaseDatabase.getReference().child("polls");
+            pollChoiceRef = firebaseDatabase.getReference().child("polls").child(pollID).child("choiceList");
+            pollChoiceMapRef = firebaseDatabase.getReference().child("polls").child(pollID).child("choiceMap");
             storageReference = FirebaseStorage.getInstance().getReference();
 
             context = getActivity().getApplicationContext();
@@ -85,36 +91,68 @@ public class Fragment_PollChoices extends Fragment implements NavigationView.OnN
 
     private void populateReminderRecyclerView() {
         pollList = getAllPollChoices();
-        RVAdapter_PollChoices adapter = new RVAdapter_PollChoices(pollList, getActivity());
+        pollMap = getAllPollMapSets();
+        RVAdapter_PollChoices adapter = new RVAdapter_PollChoices(pollList, pollMap, getActivity());
         recyclerViewGroup.setAdapter(adapter);
     }
 
-    private List<Poll> getAllPollChoices() {
+    public List<Poll> getAllPollChoices() {
         //TODO get poll choices list
         return  null;
     }
 
-//    public void getAllPollChoices(final PollCallback pollCallback, String id){
-//        pollRef.addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                polls.clear();
-//                for (DataSnapshot postSnapshot: dataSnapshot.getChildren()){
-//                    Poll poll = postSnapshot.getValue(Poll.class); // Group Objects
-//                    if(poll.contains(group.getGroup_id())){
-//                        polls.add(group);
-//                    }
-//                }
-//                pollCallback.onCallback(groups);
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//            }
-//        });
-//    }
+    public HashMap<String, Integer> getAllPollMapSets() {
+        return pollChoices;
+    }
 
+    public void getPollChoices(final PollChoiceCallback pollCallback) {
+        pollChoiceRef.addValueEventListener(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.d("OUTER_REFERENCE", dataSnapshot.getRef().toString());
+                List<String> choiceList = new ArrayList<>();
+                for (DataSnapshot choice: dataSnapshot.getChildren()){
+                    String c = choice.getValue(String.class);
+                    Log.d("REFERENCE", choice.getRef().toString());
+                    Log.v("CHOICE MAPAAAA", c);
+                    choiceList.add(c);
+                }
+                pollCallback.onCallback(choiceList);
+                Log.v("CHOICE MAPAAAA", choiceList.size() + "");
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public void getPollMapSets(final PollMapCallback pollCallback) {
+        pollChoiceMapRef.addValueEventListener(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.d("OUTER_REFERENCE", dataSnapshot.getRef().toString());
+                List<HashMap<String, Integer>> mapList = new ArrayList<>();
+                for (DataSnapshot set: dataSnapshot.getChildren()){
+                    HashMap<String, Integer> map = set.getValue(HashMap.class);
+                    Log.d("REFERENCE", set.getRef().toString());
+                    mapList.add(map);
+                }
+                pollCallback.onCallback(mapList);
+                Log.v("CHOICE MAPAAAA", mapList.size() + "");
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
     private void init() {
         recyclerViewGroup = (RecyclerView) getView().findViewById(R.id.rv2);
         linearLayoutManager = new LinearLayoutManager(getActivity());
@@ -125,12 +163,12 @@ public class Fragment_PollChoices extends Fragment implements NavigationView.OnN
         return false;
     }
 
-    private void getPollList(){
-
+    private interface PollChoiceCallback{
+        void onCallback(List<String> list);
     }
 
-    private interface PollCallback{
-        void onCallback(List<String> list);
+    private interface PollMapCallback{
+        void onCallback(List<HashMap<String, Integer>> list);
     }
 
 }

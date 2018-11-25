@@ -36,6 +36,7 @@ public class Activity_CreatePoll extends AppCompatActivity {
     private ImageButton btndone;
     private ArrayList<String> choiceList;
     private String choices;
+    private ArrayList<String> voters;
 
     FirebaseDatabase firebaseDatabase;
     FirebaseAuth firebaseAuth;
@@ -77,6 +78,7 @@ public class Activity_CreatePoll extends AppCompatActivity {
                     Poll newPoll = new Poll();
                     newPoll.setPollQuestion(topic);
                     newPoll.setChoiceList(choiceList);
+                    newPoll.setVoters(voters);
                     HashMap<String, Integer> choiceMap = new HashMap<>();
 
                     for (String x : choiceList) {
@@ -127,6 +129,9 @@ public class Activity_CreatePoll extends AppCompatActivity {
         btndone = (ImageButton) findViewById(R.id.btn_done_poll);
         choiceList = new ArrayList<>();
         choices = "";
+
+        Intent myIntent = getIntent();
+        voters = myIntent.getStringArrayListExtra("voters");
 
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
