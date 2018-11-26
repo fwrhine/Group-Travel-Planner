@@ -60,7 +60,7 @@ public class Activity_CreatePoll extends AppCompatActivity {
                         choices += newChoice;
                     }
                     else {
-                        choices += ", " + newChoice;
+                        choices += "     " + newChoice;
                     }
                     choiceText.setText(choices);
 //                    Intent intent = getIntent();

@@ -108,11 +108,7 @@ public class Activity_CreateReminder extends AppCompatActivity implements DatePi
             @Override
             public void onClick(View view) {
                 // Starts the function below
-                Calendar c = Calendar.getInstance();
-                year = c.get(Calendar.YEAR);
-                month = c.get(Calendar.MONTH);
-                day = c.get(Calendar.DAY_OF_MONTH);
-
+                getCalendar();
                 DatePickerDialog datePickerDialog = new DatePickerDialog(Activity_CreateReminder.this, Activity_CreateReminder.this,
                         year, month, day);
                 datePickerDialog.show();
@@ -306,6 +302,12 @@ public class Activity_CreateReminder extends AppCompatActivity implements DatePi
         Toast.makeText(getApplicationContext(), "Removed Event", Toast.LENGTH_SHORT).show();
     }
 
+    private void getCalendar() {
+        Calendar c = Calendar.getInstance();
+        year = c.get(Calendar.YEAR);
+        month = c.get(Calendar.MONTH);
+        day = c.get(Calendar.DAY_OF_MONTH);
+    }
 
 
 }

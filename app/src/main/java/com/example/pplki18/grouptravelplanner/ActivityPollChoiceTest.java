@@ -28,6 +28,7 @@ public class ActivityPollChoiceTest extends AppCompatActivity {
     FirebaseUser firebaseUser;
     DatabaseReference pollRef;
     DatabaseReference pollMapRef;
+    //DatabaseReference pollVoterRef
 
     private TextView choice1;
     private TextView choice1num;
@@ -37,12 +38,15 @@ public class ActivityPollChoiceTest extends AppCompatActivity {
     private Button btn_increment2;
     private List<String> choiceList;
     private List<Long> voteList;
+    private List<String> voterList;
 
-    String choice1fb;
+    private String choice1fb;
     private String choice2fb;
 
-    Long votes1;
+    private Long votes1;
     private Long votes2;
+
+    // private String pollID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +92,7 @@ public class ActivityPollChoiceTest extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 btn_increment2.setEnabled(false);
+                btn_increment2.setClickable(false);
             }
         });
 
@@ -135,8 +140,12 @@ public class ActivityPollChoiceTest extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
         firebaseDatabase = FirebaseDatabase.getInstance();
+
+        //pollID = getIntent().getStringExtra("pollID");
+
         pollRef = firebaseDatabase.getReference().child("polls").child("-LRbMoWjE-TjcB1lOfI4").child("choiceList");
         pollMapRef = firebaseDatabase.getReference().child("polls").child("-LRbMoWjE-TjcB1lOfI4").child("choiceMap");
+        poll
     }
 
     private void getPollChoices(final PollCallback pollCallback) {
@@ -235,6 +244,10 @@ public class ActivityPollChoiceTest extends AppCompatActivity {
 //        });
 //        Toast.makeText(this, "PRESSED BUTTON", Toast.LENGTH_SHORT).show();
 //    }
+
+    private List<String> getVotersList() {
+
+    }
 
     private interface PollCallback {
         void onCallback(List<String> list);
