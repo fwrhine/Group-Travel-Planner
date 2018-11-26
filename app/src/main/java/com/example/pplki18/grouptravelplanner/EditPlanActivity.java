@@ -17,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.pplki18.grouptravelplanner.data.Group;
+import com.example.pplki18.grouptravelplanner.data.Plan;
 import com.example.pplki18.grouptravelplanner.old_stuff.DatabaseHelper;
 import com.example.pplki18.grouptravelplanner.utils.SessionManager;
 import com.google.firebase.auth.FirebaseAuth;
@@ -29,6 +30,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -59,6 +61,7 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
     private Date date_start_temp;
     private Date date_end_temp;
 
+    private List<Plan> plans;
     private String plan_id;
 
     @Override
@@ -105,6 +108,7 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
         dateFormatter2 = new SimpleDateFormat("d MMMM yyyy", Locale.US);
 
         intent = getIntent();
+        plans = intent.getParcelableArrayListExtra("plans");
         plan_id = intent.getStringExtra("plan_id");
 
         String from_intent_plan_name = intent.getStringExtra("plan_name");
@@ -189,8 +193,12 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
 
                     public void onClick(DialogInterface dialog, int whichButton) {
                         //your saving code
-                        updatePlanDate();
-                        EditPlanActivity.this.finish();
+                        if (!checkDateAvailability()) {
+                            dateNotAvailableDialog();
+                        } else {
+                            updatePlanDate();
+                            EditPlanActivity.this.finish();
+                        }
                     }
 
                 })
@@ -216,6 +224,54 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
                     }
                 }
         );
+    }
+
+    private boolean checkDateAvailability() {
+        Date start_date = null;
+        Date end_date = null;
+        try {
+            start_date = dateFormatter2.parse(dateFormatter2.format(date_start));
+            end_date = dateFormatter2.parse(dateFormatter2.format(date_end));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        for (Plan p : plans) {
+            try {
+                Date p_start = dateFormatter2.parse(p.getPlan_start_date());
+                Date p_end = dateFormatter2.parse(p.getPlan_end_date());
+
+                if ((start_date.getTime() <= p_start.getTime() & end_date.getTime() >= p_end.getTime()) ||
+                        (start_date.getTime() >= p_start.getTime() & end_date.getTime() <= p_end.getTime())) {
+                    return false;
+                }
+                if ((start_date.getTime() >= p_start.getTime() & start_date.getTime() <= p_end.getTime()) ||
+                        (end_date.getTime() >= p_start.getTime() & end_date.getTime() <= p_end.getTime())) {
+                    return false;
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+        return true;
+    }
+
+    private void dateNotAvailableDialog() {
+        String message = "You already have a plan from " + trip_start_date.getText().toString() +
+                " until " + trip_end_date.getText().toString() + "\nPlease select another date!";
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder
+                .setTitle("Date Not Available")
+                .setMessage(message)
+                .setCancelable(true)
+                .setIcon(R.drawable.ic_error_black_24dp)
+                .setNeutralButton("Ok", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.show();
     }
 
     private void updatePlanDate() {

@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.PopupMenu;
@@ -134,6 +135,7 @@ public class RVAdapter_Plan extends RecyclerView.Adapter<RVAdapter_Plan.PlanView
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(context, EditPlanActivity.class);
+                intent.putParcelableArrayListExtra("plans", (ArrayList<? extends Parcelable>) plans);
                 intent.putExtra("plan_id", plan.getPlan_id());
                 intent.putExtra("plan_name", planViewHolder.planName.getText().toString());
                 intent.putExtra("plan_date_start", plan.getPlan_start_date());

@@ -175,6 +175,7 @@ public class Fragment_GroupPlanList extends Fragment {
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(getActivity(), EditPlanActivity.class);
+                    intent.putParcelableArrayListExtra("plans", (ArrayList<? extends Parcelable>) plans);
                     intent.putExtra("plan_id", currentPlan.getPlan_id());
                     intent.putExtra("plan_name", currentPlan.getPlan_name());
                     intent.putExtra("plan_date_start", currentPlan.getPlan_start_date());
