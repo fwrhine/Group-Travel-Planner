@@ -55,7 +55,7 @@ public class RVAdapter_Group extends RecyclerView.Adapter<RVAdapter_Group.GroupV
         groupViewHolder.groupName.setText(group.getGroup_name());
 
         if(!group.getGroup_image_url().equals("none")) {
-            Uri uri = Uri.parse(group.group_image_url);
+            Uri uri = Uri.parse(group.getGroup_image_url());
 
             GlideApp.with(groupViewHolder.groupImage.getContext())
                     .load(uri)

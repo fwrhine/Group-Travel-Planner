@@ -142,7 +142,7 @@ public class InGroupActivity extends AppCompatActivity implements NavigationView
     }
 
     private boolean isGroupCreator() {
-        return firebaseUser.getUid().equals(group.creator_id);
+        return firebaseUser.getUid().equals(group.getCreator_id());
     }
 
     private void init() {

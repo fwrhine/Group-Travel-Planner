@@ -53,15 +53,6 @@ public class Event implements Parcelable, Comparable<Event> {
         this.title = title;
         this.date = date;
         this.type = type;
-//        if (type.equals("restaurants") || type.equals("attractions") || type.equals("custom")) {
-//            this.time_start = time_start;
-//            this.time_end = time_end;
-//        } else if (type.equals("flights") || type.equals("trains")) {
-//            this.departure_time = time_start;
-//            this.arrival_time = time_end;
-//        } else if (type.equals("hotels")) {
-//
-//        }
         this.time_start = time_start;
         this.time_end = time_end;
     }
@@ -186,11 +177,7 @@ public class Event implements Parcelable, Comparable<Event> {
         long diff = 0;
 
         try {
-//            if (type.equals("restaurants") || type.equals("attractions") || type.equals("custom")) {
-                diff = format.parse(time_end).getTime() - format.parse(time_start).getTime();
-//            } else if (type.equals("flights") || type.equals("trains")) {
-//                diff = format.parse(arrival_time).getTime() - format.parse(departure_time).getTime();
-//            }
+            diff = format.parse(time_end).getTime() - format.parse(time_start).getTime();
 
         } catch (ParseException e) {
             e.printStackTrace();

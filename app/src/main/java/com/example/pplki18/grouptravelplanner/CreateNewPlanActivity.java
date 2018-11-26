@@ -5,7 +5,6 @@ import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Parcelable;
-import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentTransaction;
 import android.support.design.widget.FloatingActionButton;
@@ -19,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,6 +46,7 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
 
     Toolbar plan_toolbar;
 
+    RelativeLayout trip_start, trip_end;
     TextView trip_start_date, trip_end_date, trip_days;
     TextView date_month_year, day;
     ImageButton button_left, button_right, add_event, save_plan;
@@ -67,6 +68,7 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
     private Date date_end;
     private String plan_name;
 
+    private List<Plan> plans;
     private List<Event> events;
     private List<String> planIDs = new ArrayList<>();
 
@@ -103,6 +105,8 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
 
         intent = getIntent();
 
+        plans = intent.getParcelableArrayListExtra("plans");
+
         group_id = intent.getStringExtra("group_id");
 
         mAuth = FirebaseAuth.getInstance();
@@ -112,30 +116,32 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
         dateFormatter1 = new SimpleDateFormat("EEE, MMM d", Locale.US);
         dateFormatter2 = new SimpleDateFormat("d MMMM yyyy", Locale.US);
 
-//        add_event.setVisibility(View.GONE);
         setAddEventButton();
         setSavePlanButton();
         setDateTimeField();
     }
 
     public void findViewById() {
-        plan_toolbar = (Toolbar) findViewById(R.id.plan_toolbar);
+        plan_toolbar = findViewById(R.id.plan_toolbar);
 
-        trip_start_date = (TextView) findViewById(R.id.trip_start_date);
-        trip_end_date = (TextView) findViewById(R.id.trip_end_date);
-        trip_days = (TextView) findViewById(R.id.trip_days);
+        trip_start = findViewById(R.id.trip_start);
+        trip_end = findViewById(R.id.trip_end);
 
-        date_month_year = (TextView) findViewById(R.id.date_month_year);
-        day = (TextView) findViewById(R.id.day);
+        trip_start_date = findViewById(R.id.trip_start_date);
+        trip_end_date = findViewById(R.id.trip_end_date);
+        trip_days = findViewById(R.id.trip_days);
 
-        button_left = (ImageButton) findViewById(R.id.button_left);
-        button_right = (ImageButton) findViewById(R.id.button_right);
+        date_month_year = findViewById(R.id.date_month_year);
+        day = findViewById(R.id.day);
+
+        button_left = findViewById(R.id.button_left);
+        button_right = findViewById(R.id.button_right);
 //        add_event = (ImageButton) findViewById(R.id.add_event);
-        save_plan = (ImageButton) findViewById(R.id.save_plan);
+        save_plan = findViewById(R.id.save_plan);
 
-        fab_add_event = (FloatingActionButton) findViewById(R.id.fab_add_event);
+        fab_add_event = findViewById(R.id.fab_add_event);
 
-        parent = (ViewGroup) findViewById(R.id.container);
+        parent = findViewById(R.id.container);
     }
 
     @Override
@@ -207,7 +213,11 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
                 trip_end_date.getText().toString().equals("Date")) {
             saveAlertDialog();
         } else {
-            askPlanNameDialog();
+            if (!checkDateAvailability()) {
+                dateNotAvailableDialog();
+            } else {
+                askPlanNameDialog();
+            }
         }
     }
 
@@ -227,15 +237,65 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
         alert.show();
     }
 
+    private boolean checkDateAvailability() {
+        Date start_date = null;
+        Date end_date = null;
+        try {
+            start_date = dateFormatter2.parse(dateFormatter2.format(date_start));
+            end_date = dateFormatter2.parse(dateFormatter2.format(date_end));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        for (Plan p : plans) {
+            try {
+                Date p_start = dateFormatter2.parse(p.getPlan_start_date());
+                Date p_end = dateFormatter2.parse(p.getPlan_end_date());
+
+                if ((start_date.getTime() <= p_start.getTime() & end_date.getTime() >= p_end.getTime()) ||
+                        (start_date.getTime() >= p_start.getTime() & end_date.getTime() <= p_end.getTime())) {
+                    return false;
+                }
+                if ((start_date.getTime() >= p_start.getTime() & start_date.getTime() <= p_end.getTime()) ||
+                        (end_date.getTime() >= p_start.getTime() & end_date.getTime() <= p_end.getTime())) {
+                    return false;
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+        return true;
+    }
+
+    private void dateNotAvailableDialog() {
+        String message = "You already have a plan from " + trip_start_date.getText().toString() +
+                " until " + trip_end_date.getText().toString() + "\nPlease select another date!";
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder
+                .setTitle("Date Not Available")
+                .setMessage(message)
+                .setCancelable(true)
+                .setIcon(R.drawable.ic_error_black_24dp)
+                .setNeutralButton("Ok", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
     private void askPlanNameDialog() {
         LayoutInflater factory = LayoutInflater.from(this);
         final View linearLayout = factory.inflate(R.layout.save_plan_dialog, parent, false);
 
-        final EditText edtTextName = (EditText) linearLayout.findViewById(R.id.editText_planName);
-        plan_name = intent.getStringExtra("plan_name");
-        edtTextName.setText(plan_name);
+        final EditText edtTextName = linearLayout.findViewById(R.id.editText_planName);
 
-        final EditText edtTextDesc = (EditText) linearLayout.findViewById(R.id.editText_planDesc);
+        int init_name = intent.getIntExtra("init_name", -1);
+        String name = "New Plan (" + init_name + ")";
+        edtTextName.setText(name);
+
+        final EditText edtTextDesc = linearLayout.findViewById(R.id.editText_planDesc);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder
@@ -304,9 +364,7 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
         final DatabaseReference reference;
         if (prev != null && prev.equals("Fragment_GroupPlanList")) {
             reference = firebaseDatabase.getReference().child("groups").child(group_id);
-            Log.d("BUATPLANGROUP", "masuk");
         } else {
-            Log.d("BUATPLANGROUP", "salahmasuk");
             reference = firebaseDatabase.getReference().child("users").child(firebaseUser.getUid());
         }
 
@@ -426,10 +484,9 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
         );
     }
 
-    //TODO MAKE SURE USER CANNOT ADD NEW PLAN IF THE DATE IS ALREADY USED FOR OTHER PLAN
     private void setDateTimeField() {
-        trip_start_date.setOnClickListener(this);
-        trip_end_date.setOnClickListener(this);
+        trip_start.setOnClickListener(this);
+        trip_end.setOnClickListener(this);
 
         Calendar newCalendar = Calendar.getInstance();
         fromDatePickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
@@ -490,9 +547,9 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
 
     @Override
     public void onClick(View view) {
-        if(view == trip_start_date) {
+        if(view == trip_start) {
             fromDatePickerDialog.show();
-        } else if(view == trip_end_date) {
+        } else if(view == trip_end) {
             toDatePickerDialog.show();
         }
     }
