@@ -15,7 +15,8 @@
     <EditText
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        android:id="@+id/editText_planName"/>
+        android:id="@+id/editText_planName"
+        android:inputType="text" />
     <TextView
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
@@ -26,5 +27,6 @@
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
         android:id="@+id/editText_planDesc"
-        android:hint="Your trip description"/>
+        android:hint="Your trip description"
+        android:inputType="text" />
 </LinearLayout>

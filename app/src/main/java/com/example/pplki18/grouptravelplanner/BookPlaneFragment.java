@@ -2,9 +2,7 @@ package com.example.pplki18.grouptravelplanner;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
-import android.content.ContentValues;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -29,11 +27,18 @@ import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
-import com.example.pplki18.grouptravelplanner.data.EventContract;
-import com.example.pplki18.grouptravelplanner.utils.Event;
-import com.example.pplki18.grouptravelplanner.utils.Flight;
+import com.example.pplki18.grouptravelplanner.data.Event;
+import com.example.pplki18.grouptravelplanner.data.Flight;
 import com.example.pplki18.grouptravelplanner.utils.FlightAdapter;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -51,10 +56,17 @@ import static android.app.Activity.RESULT_OK;
 
 public class BookPlaneFragment extends Fragment {
 
+    FirebaseDatabase firebaseDatabase;
+    FirebaseAuth firebaseAuth;
+    FirebaseUser firebaseUser;
+    DatabaseReference planRef;
+    DatabaseReference eventRef;
+    StorageReference storageReference;
+
     private AutoCompleteTextView origin, destination;
     private Button searchButton;
 
-    private int plan_id;
+    private String plan_id;
 
     private String date;
     private String startDate;
@@ -67,7 +79,8 @@ public class BookPlaneFragment extends Fragment {
     private ListView listTravel;
 
     private String prevActivity;
-    private List<Event> events;
+    private List<String> eventIDs = new ArrayList<>();
+    private List<Event> events = new ArrayList<>();
 
     @Nullable
     @Override
@@ -80,6 +93,13 @@ public class BookPlaneFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
+
+        eventRef = firebaseDatabase.getReference().child("events");
+        storageReference = FirebaseStorage.getInstance().getReference();
+
         origin = Objects.requireNonNull(getView()).findViewById(R.id.origin);
         destination = getView().findViewById(R.id.destination);
 
@@ -87,7 +107,7 @@ public class BookPlaneFragment extends Fragment {
         listTravel = getView().findViewById(R.id.listTravel);
 
         assert getArguments() != null;
-        plan_id = getArguments().getInt("plan_id");
+        plan_id = getArguments().getString("plan_id");
 
         date = getArguments().getString("date");
 
@@ -524,38 +544,54 @@ public class BookPlaneFragment extends Fragment {
                                     getActivity().finish();
 
                                 } else {
-                                    DatabaseHelper myDb = new DatabaseHelper(BookPlaneFragment.this.getActivity());
-                                    SQLiteDatabase db = myDb.getReadableDatabase();
+                                    // DatabaseHelper myDb = new DatabaseHelper(BookPlaneFragment.this.getActivity());
+                                    // SQLiteDatabase db = myDb.getReadableDatabase();
 
-                                    final String date = startDate;
+//                                    DatabaseHelper myDb = new DatabaseHelper(BookPlaneFragment.this.getActivity());
+//                                    SQLiteDatabase db = myDb.getReadableDatabase();
+//
+//                                    final String date = startDate;
+//
+//                                    ContentValues values = new ContentValues();
+//
+//                                    values.put(EventContract.EventEntry.COL_PLAN_ID, plan_id);
+//                                    values.put(EventContract.EventEntry.COL_TITLE, "Flight");
+//                                    values.put(EventContract.EventEntry.COL_DESCRIPTION, "Flight for Transport");
+//                                    values.put(EventContract.EventEntry.COL_DATE, date);
+//                                    values.put(EventContract.EventEntry.COL_TYPE, "flights");
+//                                    values.put(EventContract.EventEntry.COL_PRICE, price);
+//
+//                                    values.put(EventContract.EventEntry.COL_ORIGIN, startLoc);
+//                                    values.put(EventContract.EventEntry.COL_DESTINATION, endLoc);
+//                                    values.put(EventContract.EventEntry.COL_DEPARTURE_TIME, departTime);
+//                                    values.put(EventContract.EventEntry.COL_ARRIVAL_TIME, arriveTime);
+//                                    values.put(EventContract.EventEntry.COL_TRANS_NUMBER, tvFlight);
+//
+//                                    long newRowId = db.insert(EventContract.EventEntry.TABLE_NAME, null, values);
 
-                                    ContentValues values = new ContentValues();
+//                                    if (newRowId != -1) {
+//                                        Toast.makeText(BookPlaneFragment.this.getActivity(), "Selected Flight : "
+//                                                + tvFlightNum.getText() , Toast.LENGTH_LONG).show();
+//                                        dialog.dismiss();
+//                                        getActivity().finish();
+//                                    }
+//
+//                                    else {
+//                                        Toast.makeText(BookPlaneFragment.this.getActivity(),
+//                                                "Selection Failed!", Toast.LENGTH_LONG).show();
+//                                        dialog.dismiss();
+//                                    }
 
-                                    values.put(EventContract.EventEntry.COL_PLAN_ID, plan_id);
-                                    values.put(EventContract.EventEntry.COL_TITLE, "Flight");
-                                    values.put(EventContract.EventEntry.COL_DESCRIPTION, "Flight for Transport");
-                                    values.put(EventContract.EventEntry.COL_DATE, date);
-                                    values.put(EventContract.EventEntry.COL_TYPE, "flights");
-                                    values.put(EventContract.EventEntry.COL_PRICE, price);
+                                    Event anEvent = new Event("Flight", date, departTime, arriveTime, "flights");
+                                    anEvent.setPlan_id(plan_id);
+                                    anEvent.setDescription("Flight for Transport");
+                                    anEvent.setPrice(price);
+                                    anEvent.setOrigin(startLoc);
+                                    anEvent.setDestination(endLoc);
+                                    anEvent.setTransport_number(airlineInfo);
 
-                                    values.put(EventContract.EventEntry.COL_ORIGIN, startLoc);
-                                    values.put(EventContract.EventEntry.COL_DESTINATION, endLoc);
-                                    values.put(EventContract.EventEntry.COL_DEPARTURE_TIME, departTime);
-                                    values.put(EventContract.EventEntry.COL_ARRIVAL_TIME, arriveTime);
-                                    values.put(EventContract.EventEntry.COL_TRANS_NUMBER, airlineInfo);
-
-                                    long newRowId = db.insert(EventContract.EventEntry.TABLE_NAME, null, values);
-
-                                    if (newRowId != -1) {
-                                        Toast.makeText(BookPlaneFragment.this.getActivity(), "Selected Flight : "
-                                                + tvFlightNum.getText() , Toast.LENGTH_LONG).show();
-                                        dialog.dismiss();
-                                        Objects.requireNonNull(getActivity()).finish();
-                                    } else {
-                                        Toast.makeText(BookPlaneFragment.this.getActivity(),
-                                                "Selection Failed!", Toast.LENGTH_LONG).show();
-                                        dialog.dismiss();
-                                    }
+                                    saveEventToPlan(anEvent);
+                                    getActivity().finish();
                                 }
                             }
                         }
@@ -563,6 +599,81 @@ public class BookPlaneFragment extends Fragment {
             }
         });
         Log.d("DONE", "ListView populated");
+    }
+
+    private void saveEventToPlan(Event anEvent) {
+
+         // values.put(EventContract.EventEntry.COL_ORIGIN, startLoc);
+        // values.put(EventContract.EventEntry.COL_DESTINATION, endLoc);
+        // values.put(EventContract.EventEntry.COL_DEPARTURE_TIME, departTime);
+        // values.put(EventContract.EventEntry.COL_ARRIVAL_TIME, arriveTime);
+        // values.put(EventContract.EventEntry.COL_TRANS_NUMBER, airlineInfo);
+
+        //                     if (newRowId != -1) {
+        //                         Toast.makeText(BookPlaneFragment.this.getActivity(), "Selected Flight : "
+        //                                 + tvFlightNum.getText() , Toast.LENGTH_LONG).show();
+        //                         dialog.dismiss();
+        //                         Objects.requireNonNull(getActivity()).finish();
+        //                     } else {
+        //                         Toast.makeText(BookPlaneFragment.this.getActivity(),
+        //                                 "Selection Failed!", Toast.LENGTH_LONG).show();
+        //                         dialog.dismiss();
+        //                     }
+        //                 }
+        //             }
+        //         }
+        // );
+        final String eventId = eventRef.push().getKey();
+        anEvent.setEvent_id(eventId);
+        anEvent.setPlan_id(plan_id);
+        anEvent.setCreator_id(firebaseUser.getUid());
+        eventRef.child(eventId).setValue(anEvent);
+
+        planRef = firebaseDatabase.getReference().child("plans").child(plan_id).child("events");
+        getAllEventIDs(new EventIdCallback() {
+            @Override
+            public void onCallback(List<String> list) {
+                eventIDs = list;
+                eventIDs.add(eventId);
+
+                                   
+                planRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        planRef.setValue(eventIDs);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                
+                    }
+                });
+            }
+        });
+    }
+
+    private void getAllEventIDs(final EventIdCallback userIdCallback){
+        planRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                eventIDs.clear();
+                for (DataSnapshot postSnapshot: dataSnapshot.getChildren()){
+                    String eventId = postSnapshot.getValue(String.class); // String of groupID
+                    eventIDs.add(eventId);
+                }
+                userIdCallback.onCallback(eventIDs);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private interface EventIdCallback{
+        void onCallback(List<String> list);
     }
 
     private void checkUpdate (final String token, final String start, final String end,

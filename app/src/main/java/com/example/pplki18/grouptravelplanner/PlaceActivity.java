@@ -1,17 +1,13 @@
 package com.example.pplki18.grouptravelplanner;
 
 import android.app.Activity;
-import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.Typeface;
-import android.media.Image;
-import android.media.Rating;
 import android.net.Uri;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -39,24 +35,37 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
-import com.example.pplki18.grouptravelplanner.data.EventContract;
-import com.example.pplki18.grouptravelplanner.utils.Event;
-import com.example.pplki18.grouptravelplanner.utils.Place;
+import com.example.pplki18.grouptravelplanner.data.Group;
+import com.example.pplki18.grouptravelplanner.old_stuff.DatabaseHelper;
+import com.example.pplki18.grouptravelplanner.data.Event;
+import com.example.pplki18.grouptravelplanner.data.Place;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 public class PlaceActivity extends AppCompatActivity {
     private static final String TAG = "RestaurantList";
     private static final int REQUEST_CODE_EDIT_EVENT = 1;
+
+    FirebaseDatabase firebaseDatabase;
+    FirebaseAuth firebaseAuth;
+    FirebaseUser firebaseUser;
+    DatabaseReference planRef;
+    DatabaseReference eventRef;
+    StorageReference storageReference;
 
     private DatabaseHelper databaseHelper;
 
@@ -82,12 +91,23 @@ public class PlaceActivity extends AppCompatActivity {
     TextView eventDescription;
     RelativeLayout detailLayout;
     ImageButton editEvent;
-    private ArrayList<Event> events;
+
+    private String plan_id;
+    private List<String> eventIDs = new ArrayList<>();
+    private List<Event> events = new ArrayList<>();
+    private Bundle bundle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_place);
+
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
+
+        eventRef = firebaseDatabase.getReference().child("events");
+        storageReference = FirebaseStorage.getInstance().getReference();
 
         init();
 
@@ -152,11 +172,11 @@ public class PlaceActivity extends AppCompatActivity {
                     getIntent().putExtra("ACTIVITY", prevActivity);
                     getIntent().putExtra("TEST", "ini test");
 
-                    Log.d("TRALALA2", prevActivity);
-                    ArrayList<Event> events = data.getParcelableArrayListExtra("events");
-                    for (Event e : events) {
-                        Log.d("DESC", e.getDescription());
-                    }
+//                    Log.d("TRALALA2", prevActivity);
+//                    ArrayList<Event> events = data.getParcelableArrayListExtra("events");
+//                    for (Event e : events) {
+//                        Log.d("DESC", e.getDescription());
+//                    }
                     setResult(RESULT_OK, getIntent());
                 }
             }
@@ -372,23 +392,81 @@ public class PlaceActivity extends AppCompatActivity {
     }
 
     private void saveEventToPlan(String start_time, String end_time) {
-        Log.d("SAVEVENT", "MASUK");
-        SQLiteDatabase db = databaseHelper.getWritableDatabase();
+//        Log.d("SAVEVENT", "MASUK");
+//        SQLiteDatabase db = databaseHelper.getWritableDatabase();
+//
+//        ContentValues contentValues = new ContentValues();
+//        contentValues.put(EventContract.EventEntry.COL_QUERY_ID, place_id);
+//        contentValues.put(EventContract.EventEntry.COL_PLAN_ID, getIntent().getIntExtra("plan_id", -1));
+//        contentValues.put(EventContract.EventEntry.COL_TITLE, title.getText().toString());
+//        contentValues.put(EventContract.EventEntry.COL_LOCATION, address.getText().toString());
+//        contentValues.put(EventContract.EventEntry.COL_WEBSITE, website.getText().toString());
+//        contentValues.put(EventContract.EventEntry.COL_DATE, getIntent().getStringExtra("date"));
+//        contentValues.put(EventContract.EventEntry.COL_TIME_START, start_time);
+//        contentValues.put(EventContract.EventEntry.COL_TIME_END, end_time);
+//        contentValues.put(EventContract.EventEntry.COL_PHONE, phone.getText().toString());
+//        contentValues.put(EventContract.EventEntry.COL_TYPE, getIntent().getStringExtra("type"));
+//        contentValues.put(EventContract.EventEntry.COL_RATING, rating_num.getText().toString());
+//        long event_id = db.insert(EventContract.EventEntry.TABLE_NAME, null, contentValues);
+        String date = getIntent().getStringExtra("date");
+        String type = getIntent().getStringExtra("type");
 
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(EventContract.EventEntry.COL_QUERY_ID, place_id);
-        contentValues.put(EventContract.EventEntry.COL_PLAN_ID, getIntent().getIntExtra("plan_id", -1));
-        contentValues.put(EventContract.EventEntry.COL_TITLE, title.getText().toString());
-        contentValues.put(EventContract.EventEntry.COL_LOCATION, address.getText().toString());
-        contentValues.put(EventContract.EventEntry.COL_WEBSITE, website.getText().toString());
-        contentValues.put(EventContract.EventEntry.COL_DATE, getIntent().getStringExtra("date"));
-        contentValues.put(EventContract.EventEntry.COL_TIME_START, start_time);
-        contentValues.put(EventContract.EventEntry.COL_TIME_END, end_time);
-        contentValues.put(EventContract.EventEntry.COL_PHONE, phone.getText().toString());
-        contentValues.put(EventContract.EventEntry.COL_TYPE, getIntent().getStringExtra("type"));
-        contentValues.put(EventContract.EventEntry.COL_RATING, rating_num.getText().toString());
-        long event_id = db.insert(EventContract.EventEntry.TABLE_NAME, null, contentValues);
+        Event anEvent = new Event(title.getText().toString(), date, start_time, end_time, type);
+        anEvent.setQuery_id(place_id);
+        anEvent.setLocation(address.getText().toString());
+        anEvent.setWebsite(website.getText().toString());
+        anEvent.setPhone(phone.getText().toString());
+        anEvent.setRating(rating_num.getText().toString());
 
+        final String eventId = eventRef.push().getKey();
+        anEvent.setEvent_id(eventId);
+        anEvent.setPlan_id(plan_id);
+        anEvent.setCreator_id(firebaseUser.getUid());
+        eventRef.child(eventId).setValue(anEvent);
+
+        planRef = firebaseDatabase.getReference().child("plans").child(plan_id).child("events");
+        getAllEventIDs(new EventIdCallback() {
+            @Override
+            public void onCallback(List<String> list) {
+                eventIDs = list;
+                eventIDs.add(eventId);
+
+                planRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        planRef.setValue(eventIDs);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+            }
+        });
+    }
+
+    private void getAllEventIDs(final EventIdCallback userIdCallback){
+        planRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                eventIDs.clear();
+                for (DataSnapshot postSnapshot: dataSnapshot.getChildren()){
+                    String eventId = postSnapshot.getValue(String.class); // String of eventID
+                    eventIDs.add(eventId);
+                }
+                userIdCallback.onCallback(eventIDs);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private interface EventIdCallback{
+        void onCallback(List<String> list);
     }
 
     private void toastMessage(String message) {
@@ -423,9 +501,18 @@ public class PlaceActivity extends AppCompatActivity {
         } else if (type.equals("attractions")) {
             ic_add.setImageResource(R.drawable.ic_sunny_black);
         } else {
-            ic_add.setImageResource(R.drawable.ic_event_note_black_24dp);
+            ic_add.setImageResource(R.drawable.ic_event_note_black);
         }
-        setEditEventButton();
+        if (bundle != null) {
+            Group group = bundle.getParcelable("group");
+            if (group != null && !group.getCreator_id().equals(firebaseUser.getUid())) {
+                editEvent.setVisibility(View.GONE);
+            } else {
+                setEditEventButton();
+            }
+        } else {
+            setEditEventButton();
+        }
     }
 
     public void setEditEventButton() {
@@ -441,7 +528,7 @@ public class PlaceActivity extends AppCompatActivity {
                 bundle.putString("address", address.getText().toString());
                 bundle.putString("name", title.getText().toString());
                 bundle.putString("description", eventDescription.getText().toString());
-                bundle.putParcelableArrayList("events", events);
+                bundle.putParcelableArrayList("events", (ArrayList<? extends Parcelable>) events);
                 String prevActivity = getIntent().getStringExtra("ACTIVITY");
                 if (prevActivity != null && prevActivity.equals("CreateNewPlanActivity")) {
                     bundle.putString("PREV_ACTIVITY", "CreateNewPlanActivity");
@@ -474,8 +561,10 @@ public class PlaceActivity extends AppCompatActivity {
         progressBar = (ProgressBar) findViewById(R.id.main_progress);
         queue = Volley.newRequestQueue(this);
         databaseHelper = new DatabaseHelper(this);
+
         String prevActivity = getIntent().getStringExtra("ACTIVITY");
         String prevActivity2 = getIntent().getStringExtra("PREV_ACTIVITY");
+        plan_id = getIntent().getStringExtra("plan_id");
 
         eventDate = (TextView) findViewById(R.id.event_detail_date);
         eventTime = (TextView) findViewById(R.id.event_detail_time);
@@ -484,6 +573,8 @@ public class PlaceActivity extends AppCompatActivity {
         detailLayout = (RelativeLayout) findViewById(R.id.detail_layout);
         editEvent = (ImageButton) findViewById(R.id.edit_event);
 
+        bundle = getIntent().getBundleExtra("bundle");
+
         if (prevActivity != null && (prevActivity.equals("PlanActivity"))) {
             if (prevActivity2 != null && (prevActivity2.equals("CreateNewPlanActivity"))) {
                 events = getIntent().getParcelableArrayListExtra("events");
@@ -491,6 +582,7 @@ public class PlaceActivity extends AppCompatActivity {
                 place_id = events.get(index).getQuery_id();
             }
             setEventDetail();
+
         } else {
             detailLayout.setVisibility(View.GONE);
         }

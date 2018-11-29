@@ -22,7 +22,7 @@
         android:layout_marginLeft="10dp"
         app:markerInCenter="true"
         app:markerSize="25dp"
-        app:marker="@drawable/ic_event_note_black_24dp"
+        app:marker="@drawable/ic_event_note_black"
         app:lineSize="3dp"
         app:line="@color/colorPrimary"/>
 

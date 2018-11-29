@@ -1,6 +1,5 @@
 package com.example.pplki18.grouptravelplanner;
 
-import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -11,7 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.SearchView;
 
-import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
+import com.example.pplki18.grouptravelplanner.old_stuff.DatabaseHelper;
 import com.example.pplki18.grouptravelplanner.data.User;
 import com.example.pplki18.grouptravelplanner.utils.RVAdapter_SearchFriend;
 import com.example.pplki18.grouptravelplanner.utils.SessionManager;

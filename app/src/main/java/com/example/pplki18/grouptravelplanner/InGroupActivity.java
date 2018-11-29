@@ -69,6 +69,10 @@ public class InGroupActivity extends AppCompatActivity implements NavigationView
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                         new Fragment_Reminder()).commit();
                 break;
+            case R.id.nav_plan:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                        new Fragment_GroupPlan()).commit();
+                break;
             case R.id.nav_close_group:
                 Intent intent = new Intent(InGroupActivity.this, InHomeActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -139,7 +143,7 @@ public class InGroupActivity extends AppCompatActivity implements NavigationView
     }
 
     private boolean isGroupCreator() {
-        return firebaseUser.getUid().equals(group.creator_id);
+        return firebaseUser.getUid().equals(group.getCreator_id());
     }
 
     private void init() {

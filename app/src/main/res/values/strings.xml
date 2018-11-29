@@ -39,6 +39,6 @@
     <string name="closed">Closed</string>
     <string name="search_hotel">Search hotel</string>
     <string name="arrow">Arrow</string>
-    <string name="title_activity_poll_choice_test">ActivityPollChoiceTest</string>
+    <string name="current_group_plan">You don\'t have any plan in progress...\nAsk the group leader to create a plan!</string>
 
 </resources>
