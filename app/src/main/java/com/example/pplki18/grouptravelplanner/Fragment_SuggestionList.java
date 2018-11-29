@@ -28,8 +28,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 public class Fragment_SuggestionList extends Fragment {
@@ -38,6 +43,7 @@ public class Fragment_SuggestionList extends Fragment {
 
     private DatabaseReference groupRef;
     private DatabaseReference suggestRef;
+    private DatabaseReference groupPlanRef;
     private DatabaseReference planRef;
 
     private RecyclerView recyclerViewSuggestion;
@@ -47,16 +53,18 @@ public class Fragment_SuggestionList extends Fragment {
 
     private List<String> suggestionIDs = new ArrayList<>();
     private List<Suggestion> suggestions = new ArrayList<>();
-    private List<Plan> plans = new ArrayList<>();
 
     private RVAdapter_Suggest adapter;
     private Intent myIntent;
     private Group group;
 
     private AlertDialog alertDialog1;
+    private AlertDialog alertDialog2;
 
+    private List<Plan> plans = new ArrayList<>();
     private List<String> planIds = new ArrayList<>();
     private List<String> planNames = new ArrayList<>();
+    private List<String> dateList = new ArrayList<>();
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -79,12 +87,13 @@ public class Fragment_SuggestionList extends Fragment {
         groupRef = firebaseDatabase.getReference().child("groups").child(group.getGroup_id()).child("suggestion");
         suggestRef = firebaseDatabase.getReference().child("suggestions");
 
-        planRef = firebaseDatabase.getReference().child("groups").child(group.getGroup_id()).child("plans");
+        groupPlanRef = firebaseDatabase.getReference().child("groups").child(group.getGroup_id()).child("plans");
+        planRef = firebaseDatabase.getReference().child("plans");
 
-        getAllGroupPlan(new PlanCallback() {
+        getAllGroupPlanId(new PlanIDCallback() {
             @Override
-            public void onCallback(List<Plan> list) {
-                plans = list;
+            public void onCallback(List<String> list) {
+                planIds = list;
             }
         });
 
@@ -104,7 +113,8 @@ public class Fragment_SuggestionList extends Fragment {
         new_suggestion_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                CreateAlertDialogWithRadioButtonGroup();
+                selectDate(plans.get(0));
+                //CreateAlertDialogWithRadioButtonGroup();
             }
         });
     }
@@ -114,7 +124,7 @@ public class Fragment_SuggestionList extends Fragment {
         super.onResume();
             progressBar.setVisibility(View.VISIBLE);
 
-            getAllGroupPlan(new PlanCallback() {
+            getAllPlan(new PlanCallback() {
                 @Override
                 public void onCallback(List<Plan> list) {
                     plans = list;
@@ -135,6 +145,14 @@ public class Fragment_SuggestionList extends Fragment {
 
     private void populatePlanRecyclerView() {
         Log.d(TAG, "populatePlanRecyclerView: Displaying list of plans in the ListView.");
+
+        getAllPlan(new PlanCallback() {
+            @Override
+            public void onCallback(List<Plan> list) {
+                plans = list;
+            }
+        });
+
         getAllSuggestion(new SuggestionCallback() {
             @Override
             public void onCallback(List<Suggestion> list) {
@@ -191,19 +209,19 @@ public class Fragment_SuggestionList extends Fragment {
         });
     }
 
-    private void getAllGroupPlan(final PlanCallback callback) {
+    private void getAllPlan(final PlanCallback callback) {
         planRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                suggestions.clear();
+                plans.clear();
                 Log.d("REFERENCE", dataSnapshot.getRef().toString());
                 for (DataSnapshot postSnapshot: dataSnapshot.getChildren()){
                     Plan plan = postSnapshot.getValue(Plan.class);
                     assert plan != null;
-                    planIds.add(plan.getPlan_id());
-                    planNames.add(plan.getPlan_name());
-                    plans.add(plan);
+                    if(planIds.contains(plan.getPlan_id())){
+                        plans.add(plan);
 
+                    }
                 }
                 callback.onCallback(plans);
             }
@@ -215,19 +233,40 @@ public class Fragment_SuggestionList extends Fragment {
         });
     }
 
+    private void getAllGroupPlanId(final PlanIDCallback callback) {
+        groupPlanRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                suggestions.clear();
+                Log.d("REFERENCE", dataSnapshot.getRef().toString());
+                for (DataSnapshot postSnapshot: dataSnapshot.getChildren()){
+                    String planId = postSnapshot.getValue(String.class);
+                    assert planId != null;
+                    planIds.add(planId);
+                }
+                callback.onCallback(planIds);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
     private void CreateAlertDialogWithRadioButtonGroup(){
-        planNames.add("TempPlan");  // Temporary, only until there is a group plan
+        planNames.clear();
+        for (int i = 0; i < plans.size(); i++) {
+            planNames.add(plans.get(i).getPlan_name());
+        }
 
         final CharSequence[] values = planNames.toArray(new CharSequence[planNames.size()]);
 
         if (values.length == 0) {
             Toast.makeText(Fragment_SuggestionList.this.getActivity(), "There are currently no plans to give a suggestion to",
                     Toast.LENGTH_LONG).show();
-        }
-
-        else {
+        } else {
             AlertDialog.Builder builder = new AlertDialog.Builder(Objects.requireNonNull(getActivity()));
-
             builder.setTitle("Select Your Choice Plan");
 
             builder.setSingleChoiceItems(values, -1, new DialogInterface.OnClickListener() {
@@ -237,15 +276,77 @@ public class Fragment_SuggestionList extends Fragment {
                     switch(item)
                     {
                         default:
-                            Log.d("SELECTED-ITEM", values[item]+"");
-                            Fragment_SuggestionList.this.startActivity(myIntent);
+                            Log.d("SELECTED-ID", planIds.get(item));
+                            Log.d("SELECTED-NAME", values[item]+"");
+                            myIntent.putExtra("suggest_to_plan_id", planIds.get(item));
+                            myIntent.putExtra("suggest_to_plan_name", values[item]);
+                            selectDate(plans.get(item));
                             break;
                     }
-                    alertDialog1.dismiss();
                 }
             });
             alertDialog1 = builder.create();
             alertDialog1.show();
+        }
+    }
+
+    private void selectDate(Plan plan) {
+        //alertDialog1.dismiss();
+        String strFirstDate = plan.getPlan_start_date();
+        String strSecondDate = plan.getPlan_end_date();
+
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("d MMMM yyyy", Locale.US);
+
+        try {
+            Date startDate = dateFormatter.parse(strFirstDate);
+            Date endDate = dateFormatter.parse(strSecondDate);
+
+            final Calendar startCal = Calendar.getInstance();
+            final Calendar endCal = Calendar.getInstance();
+
+            startCal.setTime(startDate);
+            endCal.setTime(endDate);
+
+            Long dateDiff = endCal.getTime().getTime() - startCal.getTime().getTime();
+
+            dateList.add(dateFormatter.format(startCal.getTime()));
+
+            int diffDays =  (int) (dateDiff / (24* 1000 * 60 * 60));
+            Log.d("FIRST-DATE", diffDays+"");
+
+            if (diffDays != 0) {
+                for (int i = 0; i < diffDays; i++) {
+                    startCal.add(Calendar.DATE, 1);
+                    dateList.add(dateFormatter.format(startCal.getTime()));
+                }
+            }
+
+            Log.d("ALL-DATE", dateList.size()+"");
+
+            final CharSequence[] values = dateList.toArray(new CharSequence[dateList.size()]);
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(Objects.requireNonNull(getActivity()));
+            builder.setTitle("Select Your Date");
+
+            builder.setSingleChoiceItems(values, -1, new DialogInterface.OnClickListener() {
+
+                public void onClick(DialogInterface dialog, int item) {
+                    switch(item)
+                    {
+                        default:
+                            Log.d("SELECTED-DATE", values[item]+"");
+                            myIntent.putExtra("suggest_to_plan_id", values[item]);
+
+                            Fragment_SuggestionList.this.startActivity(myIntent);
+                            break;
+                    }
+                    alertDialog2.dismiss();
+                }
+            });
+            alertDialog2 = builder.create();
+            alertDialog2.show();
+        } catch (ParseException e) {
+            e.printStackTrace();
         }
     }
 
@@ -262,7 +363,6 @@ public class Fragment_SuggestionList extends Fragment {
         group = i.getParcelableExtra("group");
 
         myIntent.putExtra("group_id", group.getGroup_id());
-        //myIntent.putParcelableArrayListExtra("plan_list", plans); // TODO move the list into intent
 
         Log.d(TAG, "Init Suggestion List");
     }
@@ -273,6 +373,10 @@ public class Fragment_SuggestionList extends Fragment {
 
     private interface SuggestionCallback {
         void onCallback(List<Suggestion> list);
+    }
+
+    private interface PlanIDCallback {
+        void onCallback(List<String> list);
     }
 
     private interface PlanCallback {

@@ -27,6 +27,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.List;
+import java.util.Objects;
+
 import com.example.pplki18.grouptravelplanner.data.Group;
 
 public class RVAdapter_Suggest extends RecyclerView.Adapter<RVAdapter_Suggest.SuggestionViewHolder> {
@@ -205,11 +207,17 @@ public class RVAdapter_Suggest extends RecyclerView.Adapter<RVAdapter_Suggest.Su
     private void deleteHelper(Suggestion suggestion, final DeleteSuggestionCallback callback){
         String groupId = suggestion.getGroup_id();
         final String event_id = suggestion.getSuggestion_id();
-        final DatabaseReference suggestionRef = firebaseDatabase.getReference().child("groups").child(groupId).child("suggestion").child(event_id);
+        final DatabaseReference suggestionRef = firebaseDatabase.getReference().child("groups").child(groupId).child("suggestion");
         suggestionRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                suggestionRef.removeValue();
+                //suggestionRef.removeValue();
+                for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
+                    if (Objects.equals(postSnapshot.getValue(String.class), event_id)) {
+                        suggestionRef.child(Objects.requireNonNull(postSnapshot.getKey())).removeValue();
+                        break;
+                    }
+                }
                 final DatabaseReference eventRef = firebaseDatabase.getReference().child("events").child(event_id);
                 eventRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
