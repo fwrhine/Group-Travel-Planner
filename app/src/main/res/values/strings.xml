@@ -42,5 +42,7 @@
     <string name="closed">Closed</string>
     <string name="search_hotel">Search hotel</string>
     <string name="arrow">Arrow</string>
+    <string name="more">More</string>
+    <string name="less">Less</string>
 
 </resources>

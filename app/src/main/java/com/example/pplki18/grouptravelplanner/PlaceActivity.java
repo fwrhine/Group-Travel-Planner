@@ -21,7 +21,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.OvershootInterpolator;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -34,21 +33,15 @@ import android.widget.Toast;
 
 import com.android.volley.NetworkError;
 import com.android.volley.NoConnectionError;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageRequest;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.example.pplki18.grouptravelplanner.data.EventContract;
 import com.example.pplki18.grouptravelplanner.utils.Event;
 import com.example.pplki18.grouptravelplanner.utils.Hotel;
 import com.example.pplki18.grouptravelplanner.utils.Place;
 import com.example.pplki18.grouptravelplanner.utils.RVAdapter_Amenities;
-import com.example.pplki18.grouptravelplanner.utils.RVAdapter_User;
-import com.example.pplki18.grouptravelplanner.utils.Utility;
 import com.example.pplki18.grouptravelplanner.utils.VolleyResponseListener;
 import com.example.pplki18.grouptravelplanner.utils.VolleySingleton;
 import com.example.pplki18.grouptravelplanner.utils.VolleyUtils;
@@ -351,7 +344,7 @@ public class PlaceActivity extends AppCompatActivity {
         hotel_desc.setInterpolator(new OvershootInterpolator());
 
         if (hotel.getDescription() != null) {
-            button_toggle.setText("More");
+            button_toggle.setText(R.string.more);
             button_toggle.setCompoundDrawablesWithIntrinsicBounds(0, 0,
                     R.drawable.ic_arrow_down_grey, 0);
         }
@@ -365,14 +358,14 @@ public class PlaceActivity extends AppCompatActivity {
                 if (hotel_desc.isExpanded())
                 {
                     hotel_desc.collapse();
-                    button_toggle.setText("More");
+                    button_toggle.setText(R.string.more);
                     button_toggle.setCompoundDrawablesWithIntrinsicBounds(0, 0,
                             R.drawable.ic_arrow_down_grey, 0);
                 }
                 else
                 {
                     hotel_desc.expand();
-                    button_toggle.setText("Less");
+                    button_toggle.setText(R.string.less);
                     button_toggle.setCompoundDrawablesWithIntrinsicBounds(0, 0,
                             R.drawable.ic_arrow_up, 0);
                 }
@@ -545,12 +538,16 @@ public class PlaceActivity extends AppCompatActivity {
 
         String type = getIntent().getStringExtra("type");
         ic_add.setEnabled(false);
-        if (type.equals("restaurants")) {
-            ic_add.setImageResource(R.drawable.ic_restaurant_black);
-        } else if (type.equals("attractions")) {
-            ic_add.setImageResource(R.drawable.ic_sunny_black);
-        } else {
-            ic_add.setImageResource(R.drawable.ic_event_note_black_24dp);
+        switch (type) {
+            case "restaurants":
+                ic_add.setImageResource(R.drawable.ic_restaurant_black);
+                break;
+            case "attractions":
+                ic_add.setImageResource(R.drawable.ic_sunny_black);
+                break;
+            default:
+                ic_add.setImageResource(R.drawable.ic_event_note_black_24dp);
+                break;
         }
         setEditEventButton();
     }

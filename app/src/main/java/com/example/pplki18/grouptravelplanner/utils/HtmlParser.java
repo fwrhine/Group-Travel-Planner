@@ -38,14 +38,22 @@ public class HtmlParser {
             }
 
             // price
-            @SuppressWarnings("SpellCheckingInspection") Element hotel_price = hotel_list.get(i).selectFirst("div[data-sizegroup*='mini-meta-price']");
+            @SuppressWarnings("SpellCheckingInspection") Element hotel_price = hotel_list.get(i).selectFirst("div" +
+                    "[data-sizegroup*='mini-meta-price']");
             String price = hotel_price.text();
 
             // photo
-            Element hotel_photo = hotel_list.get(i).selectFirst("a[class*='respListingPhoto']").selectFirst("div[class*='inner']");
-            String[] photo_long = hotel_photo.attr("style").split("\\(");
-            String photo = photo_long[1];
-            photo = photo.substring(0, photo.length() - 2);
+            String photo = "";
+            Element hotel_photo = hotel_list.get(i).selectFirst("a[class*='respListingPhoto']")
+                    .selectFirst("div[class*='inner']");
+            System.out.println(hotel_photo.toString());
+            if (hotel_photo != null) {
+                String[] photo_long = hotel_photo.attr("style").split("\\(");
+                System.out.println(photo_long[1]);
+                photo = photo_long[1];
+                photo = photo.substring(0, photo.length() - 2);
+            }
+
 
             hotel.setHotel_id("https://www.tripadvisor.com" + url);
             hotel.setName(name);
@@ -118,11 +126,8 @@ public class HtmlParser {
         }
 
         // amenities
-        // TODO
-        Elements hotel_amenities = doc.select("div[class*='HighlightedAmenities__amenities']");
-        if (hotel_amenities != null) {
-            hotel_amenities = hotel_amenities.select("div[class*='ui_column is-6']");
-        }
+        Elements hotel_amenities = doc.select("div[class*='HighlightedAmenities__" +
+                "amenities']").select("div[class*='ui_column is-6']");
 
         ArrayList<ArrayList<String>> amenities = new ArrayList<>();
         for (Element amenity_elem: hotel_amenities) {

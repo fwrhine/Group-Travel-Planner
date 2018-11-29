@@ -65,6 +65,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
+import static com.example.pplki18.grouptravelplanner.utils.HtmlParser.parseHotel;
 import static com.example.pplki18.grouptravelplanner.utils.HtmlParser.parseHotelList;
 
 public class BookHotelFragment extends Fragment {
@@ -123,6 +124,7 @@ public class BookHotelFragment extends Fragment {
 
     private String tripadvisorUrl;
     private String nextPageUrl;
+    private ArrayList<Hotel> hotels = new ArrayList<>();
 
 
     private boolean isLoading = false;
@@ -187,9 +189,11 @@ public class BookHotelFragment extends Fragment {
             public void onClick(View view) {
                 closeSearchView.setVisibility(View.GONE);
                 infoView.setVisibility(View.VISIBLE);
-                getTripadvisorUrl();
                 adapter.clear();
                 progressBar.setVisibility(View.VISIBLE);
+                isLastPage = false;
+                hotels.clear();
+                getTripadvisorUrl();
             }
         });
 
@@ -472,6 +476,9 @@ public class BookHotelFragment extends Fragment {
                     tripadvisorUrl = "https://www.tripadvisor.com" +
                             firstResult.optString("url");
 
+                    String[] url = tripadvisorUrl.split("-");
+                    regionCode = url[1].substring(1);
+
                     sendRequest(false);
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -563,8 +570,8 @@ public class BookHotelFragment extends Fragment {
             @Override
             public void onResponse(String response) {
                 Log.d("HOTEL SEARCH", response);
+                isLastPage = true;
                 populatePlaceRecyclerView(getHotelsSearch(response));
-                adapter.removeLoadingFooter();
             }
             @Override
             public void onError(VolleyError error) {
@@ -575,7 +582,7 @@ public class BookHotelFragment extends Fragment {
     }
 
     private List<Hotel> getHotelsSearch(String response) {
-        ArrayList<Hotel> hotels = new ArrayList<>();
+//        ArrayList<Hotel> hotels = new ArrayList<>();
         try {
             JSONArray results = new JSONArray(response);
 
@@ -584,13 +591,27 @@ public class BookHotelFragment extends Fragment {
                 JSONObject hotelObj = new JSONObject(results.get(i).toString());
                 JSONObject hotelDetails = hotelObj.optJSONObject("details");
 
-                Hotel hotel = new Hotel();
-                hotel.setName(hotelDetails.optString("name"));
-                hotel.setRating(hotelDetails.optString("star_rating", "-"));
-                hotel.setAddress(hotelDetails.optString("address"));
-                hotel.setWebsite(hotelObj.optString("url"));
+//                Hotel hotel = new Hotel();
+//                hotel.setName(hotelDetails.optString("name"));
+//                hotel.setRating(hotelDetails.optString("star_rating", "-"));
+//                hotel.setAddress(hotelDetails.optString("address"));
+                String url = hotelObj.optString("url");
 
-                hotels.add(hotel);
+                volleyUtils.getRequest(url, new VolleyResponseListener() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d("WHAT", "REQUEST HOTEL DETAIL");
+                        hotels.add(parseHotel(response));
+//                        progressBar.setVisibility(View.GONE);
+                    }
+                    @Override
+                    public void onError(VolleyError error) {
+//                        Log.d(TAG, "HOTEL DETAIL ERROR");
+//                        noConnection(error);
+                    }
+                });
+
+//                hotels.add(hotel);
             }
 
         } catch (JSONException e) {
@@ -718,7 +739,7 @@ public class BookHotelFragment extends Fragment {
         }
 
         region = sessionManager.getCurrentRegion();
-        regionCode = "294226";
+        regionCode = "294229";
         plan_id = getArguments().getInt("plan_id");
         event_date = getArguments().getString("date");
     }
