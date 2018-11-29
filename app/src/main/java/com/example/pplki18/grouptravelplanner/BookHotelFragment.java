@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
@@ -42,6 +43,8 @@ import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.pplki18.grouptravelplanner.data.Event;
+import com.example.pplki18.grouptravelplanner.data.Place;
 import com.example.pplki18.grouptravelplanner.utils.HtmlParser;
 import com.example.pplki18.grouptravelplanner.data.Hotel;
 import com.example.pplki18.grouptravelplanner.utils.PaginationScrollListener;
@@ -49,6 +52,15 @@ import com.example.pplki18.grouptravelplanner.utils.RVAdapter_Hotel;
 import com.example.pplki18.grouptravelplanner.utils.SessionManager;
 import com.example.pplki18.grouptravelplanner.utils.VolleyResponseListener;
 import com.example.pplki18.grouptravelplanner.utils.VolleyUtils;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -65,10 +77,18 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
+import static android.app.Activity.RESULT_OK;
 import static com.example.pplki18.grouptravelplanner.utils.HtmlParser.parseHotel;
 import static com.example.pplki18.grouptravelplanner.utils.HtmlParser.parseHotelList;
 
 public class BookHotelFragment extends Fragment {
+    FirebaseDatabase firebaseDatabase;
+    FirebaseAuth firebaseAuth;
+    FirebaseUser firebaseUser;
+    DatabaseReference planRef;
+    DatabaseReference eventRef;
+    StorageReference storageReference;
+
     private RecyclerView recyclerViewPlace;
     private LinearLayoutManager linearLayoutManager;
     private RVAdapter_Hotel adapter;
@@ -105,7 +125,7 @@ public class BookHotelFragment extends Fragment {
 
     private String region;
     private String regionCode;
-    private int plan_id;
+    private String plan_id;
     private String event_date;
 
     private String sortBy = "popularity";
@@ -126,6 +146,9 @@ public class BookHotelFragment extends Fragment {
     private String nextPageUrl;
     private ArrayList<Hotel> hotels = new ArrayList<>();
 
+    private String prevActivity;
+    private List<String> eventIDs = new ArrayList<>();
+    private List<Event> events = new ArrayList<>();
 
     private boolean isLoading = false;
     private boolean isLastPage = false;
@@ -139,6 +162,13 @@ public class BookHotelFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
+
+        eventRef = firebaseDatabase.getReference().child("events");
+        storageReference = FirebaseStorage.getInstance().getReference();
+
         init();
 
         connectionText.setVisibility(View.GONE);
@@ -650,6 +680,12 @@ public class BookHotelFragment extends Fragment {
         //TODO HELP
         ViewGroup parent = Objects.requireNonNull(getView()).findViewById(R.id.container);
         View dialogLayout = inflater.inflate(R.layout.set_time_dialog, parent, false);
+        final TextView start = dialogLayout.findViewById(R.id.start_text);
+        TextView end = dialogLayout.findViewById(R.id.end_text);
+
+        start.setText("Check-in Time");
+        end.setText("Check-out Time");
+
         final TimePicker startTime = dialogLayout.findViewById(R.id.start_time);
         final TimePicker endTime = dialogLayout.findViewById(R.id.end_time);
 
@@ -659,25 +695,24 @@ public class BookHotelFragment extends Fragment {
         builder.setPositiveButton("OK",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-//                        String start_time = startTime.getCurrentHour() + ":" + startTime.getCurrentMinute();
-//                        String end_time = endTime.getCurrentHour() + ":" + endTime.getCurrentMinute();
-//                        Log.d("prev_activity", prevActivity);
-//                        if (prevActivity.equals("CreateNewPlanActivity")) {
-//                            Event anEvent = saveEventLocally(place, start_time, end_time);
-//                            events.add(anEvent);
-//
-//                            Intent intent = new Intent(getActivity(), CreateNewPlanActivity.class);
-//                            intent.putParcelableArrayListExtra("events", (ArrayList<? extends Parcelable>) events);
-//                            //TODO last changed
-//                            intent.putExtra("ACTIVITY", "Fragment_PlaceList");
-//                            //noinspection SpellCheckingInspection
-//                            Log.d("prev activity", "createnewplan");
-//                            getActivity().setResult(RESULT_OK, intent);
-//                            getActivity().finish();
-//                        } else {
-//                            saveEventToPlan(place, start_time, end_time);
-//                            getActivity().finish();
-//                        }
+                        String start_time = startTime.getCurrentHour() + ":" + startTime.getCurrentMinute();
+                        String end_time = endTime.getCurrentHour() + ":" + endTime.getCurrentMinute();
+                        Log.d("prev_activity", prevActivity);
+                        if (prevActivity.equals("CreateNewPlanActivity")) {
+                            Event anEvent = saveEventLocally(hotel, dateFormatter2.format(checkInDate), start_time);
+                            events.add(anEvent);
+                            anEvent = saveEventLocally(hotel, dateFormatter2.format(checkOutDate), end_time);
+                            events.add(anEvent);
+
+                            Intent intent = new Intent(getActivity(), CreateNewPlanActivity.class);
+                            intent.putParcelableArrayListExtra("events", (ArrayList<? extends Parcelable>) events);
+                            getActivity().setResult(RESULT_OK, intent);
+                            getActivity().finish();
+                        } else {
+                            saveEventToPlan(hotel, dateFormatter2.format(checkInDate), start_time);
+                            saveEventToPlan(hotel, dateFormatter2.format(checkOutDate), end_time);
+                            getActivity().finish();
+                        }
                     }
                 });
         builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
@@ -686,6 +721,100 @@ public class BookHotelFragment extends Fragment {
             }
         });
         builder.show();
+    }
+
+    private Event saveEventLocally(Hotel hotel, String date, String time) {
+        Event anEvent = new Event();
+        anEvent.setQuery_id(hotel.getHotel_id());
+        anEvent.setTitle(hotel.getName());
+        anEvent.setLocation(hotel.getAddress());
+        anEvent.setWebsite(hotel.getWebsite());
+        anEvent.setDate(date);
+        anEvent.setTime_start(time);
+        anEvent.setPhone(hotel.getPhone_number());
+        anEvent.setType("hotel");
+        anEvent.setRating(hotel.getRating());
+
+        return anEvent;
+    }
+
+    private void saveEventToPlan(Hotel hotel, String date, String time) {
+//        Log.d("SAVEVENT", "MASUK");
+//        SQLiteDatabase db = databaseHelper.getWritableDatabase();
+//
+//        ContentValues contentValues = new ContentValues();
+//        contentValues.put(EventContract.EventEntry.COL_QUERY_ID, place.getPlace_id());
+//        contentValues.put(EventContract.EventEntry.COL_PLAN_ID, plan_id);
+//        contentValues.put(EventContract.EventEntry.COL_TITLE, place.getName());
+//        contentValues.put(EventContract.EventEntry.COL_LOCATION, place.getAddress());
+//        contentValues.put(EventContract.EventEntry.COL_WEBSITE, place.getWebsite());
+//        contentValues.put(EventContract.EventEntry.COL_DATE, event_date);
+//        //TODO ERROR PLACES GADA ADDRESS DLL ??!!
+//        contentValues.put(EventContract.EventEntry.COL_TIME_START, start_time);
+//        contentValues.put(EventContract.EventEntry.COL_TIME_END, end_time);
+//        contentValues.put(EventContract.EventEntry.COL_PHONE, place.getPhone_number());
+//        contentValues.put(EventContract.EventEntry.COL_TYPE, type);
+//        contentValues.put(EventContract.EventEntry.COL_RATING, place.getRating());
+//        long event_id = db.insert(EventContract.EventEntry.TABLE_NAME, null, contentValues);
+        Event anEvent = new Event();
+        anEvent.setQuery_id(hotel.getHotel_id());
+        anEvent.setTitle(hotel.getName());
+        anEvent.setLocation(hotel.getAddress());
+        anEvent.setWebsite(hotel.getWebsite());
+        anEvent.setDate(date);
+        anEvent.setTime_start(time);
+        anEvent.setPhone(hotel.getPhone_number());
+        anEvent.setType("hotel");
+
+        final String eventId = eventRef.push().getKey();
+        anEvent.setEvent_id(eventId);
+        anEvent.setPlan_id(plan_id);
+        anEvent.setCreator_id(firebaseUser.getUid());
+        eventRef.child(eventId).setValue(anEvent);
+
+        planRef = firebaseDatabase.getReference().child("plans").child(plan_id).child("events");
+        getAllEventIDs(new EventIdCallback() {
+            @Override
+            public void onCallback(List<String> list) {
+                eventIDs = list;
+                eventIDs.add(eventId);
+
+                planRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        planRef.setValue(eventIDs);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+            }
+        });
+    }
+
+    private void getAllEventIDs(final EventIdCallback userIdCallback){
+        planRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                eventIDs.clear();
+                for (DataSnapshot postSnapshot: dataSnapshot.getChildren()){
+                    String eventId = postSnapshot.getValue(String.class); // String of groupID
+                    eventIDs.add(eventId);
+                }
+                userIdCallback.onCallback(eventIDs);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private interface EventIdCallback{
+        void onCallback(List<String> list);
     }
 
     private void toastMessage(String message) {
@@ -737,7 +866,12 @@ public class BookHotelFragment extends Fragment {
 
         region = sessionManager.getCurrentRegion();
         regionCode = "294229";
-        plan_id = getArguments().getInt("plan_id");
+        plan_id = getArguments().getString("plan_id");
         event_date = getArguments().getString("date");
+
+        prevActivity = getActivity().getIntent().getStringExtra("ACTIVITY");
+        if (prevActivity.equals("CreateNewPlanActivity")) {
+            events = getActivity().getIntent().getParcelableArrayListExtra("events");
+        }
     }
 }

@@ -173,20 +173,25 @@ public class Event implements Parcelable, Comparable<Event> {
     }
 
     public String getTotal_time() {
-        SimpleDateFormat format = new SimpleDateFormat("HH:mm", Locale.US);
-        long diff = 0;
+        if (type.equals("hotel")) {
+            return "";
+        } else {
+            SimpleDateFormat format = new SimpleDateFormat("HH:mm", Locale.US);
+            long diff = 0;
 
-        try {
-            diff = format.parse(time_end).getTime() - format.parse(time_start).getTime();
+            try {
+                diff = format.parse(time_end).getTime() - format.parse(time_start).getTime();
 
-        } catch (ParseException e) {
-            e.printStackTrace();
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            long diffMinutes = diff / (60 * 1000) % 60;
+            long diffHours = diff / (60 * 60 * 1000) % 24;
+
+            return diffHours + " hours, " + diffMinutes + " minutes";
+
         }
-
-        long diffMinutes = diff / (60 * 1000) % 60;
-        long diffHours = diff / (60 * 60 * 1000) % 24;
-
-        return diffHours + " hours, " + diffMinutes + " minutes";
 
     }
 
