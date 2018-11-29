@@ -29,7 +29,9 @@ import com.example.pplki18.grouptravelplanner.data.Group;
 import com.example.pplki18.grouptravelplanner.data.Message;
 import com.example.pplki18.grouptravelplanner.utils.Chat.ChatViewHolder;
 import com.example.pplki18.grouptravelplanner.utils.Chat.ReceivedMessageHolder;
+import com.example.pplki18.grouptravelplanner.utils.Chat.ReceivedPollMessageHolder;
 import com.example.pplki18.grouptravelplanner.utils.Chat.SentMessageHolder;
+import com.example.pplki18.grouptravelplanner.utils.Chat.SentPollMessageHolder;
 import com.example.pplki18.grouptravelplanner.utils.MessageAdapter;
 import com.example.pplki18.grouptravelplanner.utils.SessionManager;
 import com.example.pplki18.grouptravelplanner.data.User;
@@ -151,9 +153,9 @@ public class Fragment_GroupChat extends Fragment {
                               //TODO case for poll send and receive and do viewholder
                             case VIEW_TYPE_POLL_SENT:
                                 return new SentPollMessageHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_poll_sent, parent, false));
-
+//
                             case VIEW_TYPE_POLL_RECEIVED:
-                                return new ReceivedPollMessageHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_poll_received, parent, false));
+                                return new ReceivedPollMessageHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_poll_received, parent, false), group.getGroup_id());
                         }
                         return null;
                     }
@@ -163,11 +165,21 @@ public class Fragment_GroupChat extends Fragment {
                         Message message = getItem(position);
                         if (message.getSenderId().equals(sessionManager.getUserDetails().get("id"))) {
                             // If the current user is the sender of the message
-                            //TODO if pollID exist
-                            return VIEW_TYPE_MESSAGE_SENT;
+                            // if pollID exist
+                            if (!message.getPollID().isEmpty()) {
+                                return VIEW_TYPE_POLL_SENT;
+                            }
+                            else {
+                                return VIEW_TYPE_MESSAGE_SENT;
+                            }
                         } else {
-                            // If some other user sent the message
-                            return VIEW_TYPE_MESSAGE_RECEIVED;
+//                            if (!message.getPollID().isEmpty()) {
+//                                return VIEW_TYPE_POLL_RECEIVED;
+//                            }
+//                            else {
+                                // If some other user sent the message
+                                return VIEW_TYPE_MESSAGE_RECEIVED;
+//                            }
                         }
                     }
                 };

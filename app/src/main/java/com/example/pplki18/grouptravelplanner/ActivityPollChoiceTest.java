@@ -39,6 +39,7 @@ public class ActivityPollChoiceTest extends AppCompatActivity {
     private List<String> choiceList;
     private List<Long> voteList;
     private List<String> voterList;
+    private List<String> alreadyVotedList;
 
     private String choice1fb;
     private String choice2fb;
@@ -67,6 +68,8 @@ public class ActivityPollChoiceTest extends AppCompatActivity {
                 Log.v("CHOICE", list.toString() + "");
                 Log.v("CHOICE MAP1", choiceList.toString() + "");
                 choiceList = list;
+
+                // Recycler should handle this part in get(i)
                 choice2fb = choiceList.get(0);
                 choice2.setText(choice2fb);
                 getPollMapSets(new PollMapCallback() {
@@ -80,7 +83,9 @@ public class ActivityPollChoiceTest extends AppCompatActivity {
                         btn_increment2.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                votePlus(choiceList.get(0));
+                                if (voterList.contains(firebaseUser)) {
+                                    votePlus(choiceList.get(0));
+                                }
                             }
                         });
                     }
@@ -136,6 +141,9 @@ public class ActivityPollChoiceTest extends AppCompatActivity {
 
         choiceList = new ArrayList<>();
         voteList = new ArrayList<>();
+        // TODO voters list
+        voterList = getIntent().getStringArrayListExtra("voters");
+        alreadyVotedList = getAlreadyVotedList();
 
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
@@ -145,7 +153,7 @@ public class ActivityPollChoiceTest extends AppCompatActivity {
 
         pollRef = firebaseDatabase.getReference().child("polls").child("-LRbMoWjE-TjcB1lOfI4").child("choiceList");
         pollMapRef = firebaseDatabase.getReference().child("polls").child("-LRbMoWjE-TjcB1lOfI4").child("choiceMap");
-        poll
+//        TODO poll
     }
 
     private void getPollChoices(final PollCallback pollCallback) {
@@ -219,34 +227,11 @@ public class ActivityPollChoiceTest extends AppCompatActivity {
         Toast.makeText(this, "PRESSED BUTTON", Toast.LENGTH_SHORT).show();
     }
 
-//    public void votePlus(final String choice) {
-//        pollMapRef.addListenerForSingleValueEvent(new ValueEventListener() {
-//
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                voteList.clear();
-//                for (DataSnapshot val : dataSnapshot.getChildren()) {
-//                    if (choice.equals(val.getKey())) {
-//                        Long value = val.getValue(Long.class) + 1;
-//                        voteList.add(value);
-//                    }
-//                    else{
-//                        Long value = val.getValue(Long.class);
-//                        voteList.add(value);
-//                    }
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//            }
-//        });
-//        Toast.makeText(this, "PRESSED BUTTON", Toast.LENGTH_SHORT).show();
-//    }
+    private List<String> getAlreadyVotedList() {
+        List<String> votees = new ArrayList<>();
 
-    private List<String> getVotersList() {
 
+        return  votees;
     }
 
     private interface PollCallback {

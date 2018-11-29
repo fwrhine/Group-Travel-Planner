@@ -100,10 +100,7 @@
         <!-- <activity android:name=".Activity_ReminderList"/> -->
         <activity android:name=".EditEventActivity" />
         <activity android:name=".EventDetailActivity" />
-        <activity
-            android:name=".ActivityPollChoiceTest"
-            android:label="@string/title_activity_poll_choice_test"
-            android:theme="@style/AppTheme">
+        <activity android:name=".ActivityPollChoiceTest"/>
 
             <!--<intent-filter>-->
                 <!--<action android:name="android.intent.action.MAIN" />-->
@@ -111,9 +108,7 @@
                 <!--<category android:name="android.intent.category.LAUNCHER" />-->
             <!--</intent-filter>-->
 
-        </activity>
-        <activity android:name=".EventDetailActivity" />
-        <activity android:name=".CreateNewGroupPlanActivity"></activity>
+        <!--<activity android:name=".CreateNewGroupPlanActivity"></activity>-->
     </application>
 
 </manifest>

@@ -18,12 +18,11 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.TimeZone;
 
-public class ReceivedMessageHolder extends ChatViewHolder {
+public class ReceivedPollMessageHolder extends ChatViewHolder {
     String groupId;
     FirebaseAuth firebaseAuth;
     FirebaseUser firebaseUser;
@@ -32,7 +31,7 @@ public class ReceivedMessageHolder extends ChatViewHolder {
     TextView messageText, messageTimeText, photoTimeText, nameText, pollID;
     ImageView photoImageView, profileImage;
 
-    public ReceivedMessageHolder(View itemView, String groupId) {
+    public ReceivedPollMessageHolder(View itemView, String groupId) {
         super(itemView);
         this.groupId = groupId;
         firebaseDatabase = FirebaseDatabase.getInstance();
@@ -48,6 +47,7 @@ public class ReceivedMessageHolder extends ChatViewHolder {
         photoTimeText = itemView.findViewById(R.id.photo_message_time);
         nameText = (TextView) itemView.findViewById(R.id.text_message_name);
         profileImage = (ImageView) itemView.findViewById(R.id.image_message_profile);
+        pollID = (TextView) itemView.findViewById(R.id.text_message_pollID);
 
     }
 
