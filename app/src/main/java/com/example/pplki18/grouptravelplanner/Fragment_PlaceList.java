@@ -359,9 +359,7 @@ public class Fragment_PlaceList extends Fragment {
 
                             Intent intent = new Intent(getActivity(), CreateNewPlanActivity.class);
                             intent.putParcelableArrayListExtra("events", (ArrayList<? extends Parcelable>) events);
-                            //TODO last changed
-                            intent.putExtra("ACTIVITY", "Fragment_PlaceList");
-                            Log.d("prev activity", "createnewplan");
+
                             getActivity().setResult(RESULT_OK, intent);
                             getActivity().finish();
                         } else {

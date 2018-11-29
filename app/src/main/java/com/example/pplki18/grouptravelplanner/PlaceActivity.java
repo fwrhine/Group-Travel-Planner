@@ -85,12 +85,12 @@ public class PlaceActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private RequestQueue queue;
 
-    TextView eventDate;
-    TextView eventTime;
-    TextView eventDuration;
-    TextView eventDescription;
-    RelativeLayout detailLayout;
-    ImageButton editEvent;
+    private TextView eventDate;
+    private TextView eventTime;
+    private TextView eventDuration;
+    private TextView eventDescription;
+    private RelativeLayout detailLayout;
+    private ImageButton editEvent;
 
     private String plan_id;
     private List<String> eventIDs = new ArrayList<>();
@@ -545,20 +545,20 @@ public class PlaceActivity extends AppCompatActivity {
     }
 
     private void init() {
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         place_id = getIntent().getStringExtra("PLACE_ID");
-        title = (TextView) findViewById(R.id.title);
-        rating_num = (TextView) findViewById(R.id.rating_num);
-        rating = (RatingBar) findViewById(R.id.rating);
-        address = (TextView) findViewById(R.id.address);
-        phone = (TextView) findViewById(R.id.phone);
-        website = (TextView) findViewById(R.id.website);
-        image = (ImageView) findViewById(R.id.image);
-        open_now = (TextView) findViewById(R.id.open_now);
-        open_hours = (TextView) findViewById(R.id.open_hours);
-        ic_add = (FloatingActionButton) findViewById(R.id.ic_add);
+        title = findViewById(R.id.title);
+        rating_num = findViewById(R.id.rating_num);
+        rating = findViewById(R.id.rating);
+        address = findViewById(R.id.address);
+        phone = findViewById(R.id.phone);
+        website = findViewById(R.id.website);
+        image = findViewById(R.id.image);
+        open_now = findViewById(R.id.open_now);
+        open_hours = findViewById(R.id.open_hours);
+        ic_add = findViewById(R.id.ic_add);
 //        google_button = (Button) findViewById(R.id.google_button);
-        progressBar = (ProgressBar) findViewById(R.id.main_progress);
+        progressBar = findViewById(R.id.main_progress);
         queue = Volley.newRequestQueue(this);
         databaseHelper = new DatabaseHelper(this);
 
@@ -566,12 +566,12 @@ public class PlaceActivity extends AppCompatActivity {
         String prevActivity2 = getIntent().getStringExtra("PREV_ACTIVITY");
         plan_id = getIntent().getStringExtra("plan_id");
 
-        eventDate = (TextView) findViewById(R.id.event_detail_date);
-        eventTime = (TextView) findViewById(R.id.event_detail_time);
-        eventDuration = (TextView) findViewById(R.id.event_detail_duration);
-        eventDescription = (TextView) findViewById(R.id.event_detail_desc);
-        detailLayout = (RelativeLayout) findViewById(R.id.detail_layout);
-        editEvent = (ImageButton) findViewById(R.id.edit_event);
+        eventDate = findViewById(R.id.event_detail_date);
+        eventTime = findViewById(R.id.event_detail_time);
+        eventDuration = findViewById(R.id.event_detail_duration);
+        eventDescription = findViewById(R.id.event_detail_desc);
+        detailLayout = findViewById(R.id.detail_layout);
+        editEvent = findViewById(R.id.edit_event);
 
         bundle = getIntent().getBundleExtra("bundle");
 

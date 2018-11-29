@@ -102,7 +102,7 @@ public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.Ne
             time_start = event.getDeparture_time();
             timeString = time_start + " - " + event.getArrival_time() +
                     " (" + event.getTotal_time() + ")";
-        } else if (event.getType().equals("hotels")) {
+        } else if (event.getType().equals("hotel")) {
 
         } else if (event.getType().equals("custom")) {
             time_start = event.getTime_start();
@@ -119,7 +119,7 @@ public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.Ne
                 holder.eventIcon.setMarker(mContext.getDrawable(R.drawable.ic_flight_black));
             } else if (event.getType().equals("trains")) {
                 holder.eventIcon.setMarker(mContext.getDrawable(R.drawable.ic_train_black));
-            } else if (event.getType().equals("hotels")) {
+            } else if (event.getType().equals("hotel")) {
                 holder.eventIcon.setMarker(mContext.getDrawable(R.drawable.ic_hotel_black));
             } else if (event.getType().equals("custom")) {
                 holder.eventIcon.setMarker(mContext.getDrawable(R.drawable.ic_event_note_black));
