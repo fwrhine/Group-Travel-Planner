@@ -29,8 +29,8 @@ import java.util.List;
 
 public class RVAdapter_Group extends RecyclerView.Adapter<RVAdapter_Group.GroupViewHolder>{
 
-    private final List<Group> groups;
-    private final Context context;
+    List<Group> groups;
+    Context context;
 
     public RVAdapter_Group(List<Group> groups, Context context){
         this.groups = groups;
@@ -42,20 +42,20 @@ public class RVAdapter_Group extends RecyclerView.Adapter<RVAdapter_Group.GroupV
         return groups.size();
     }
 
-    @NonNull
     @Override
-    public GroupViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+    public GroupViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
         View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.row_group, viewGroup, false);
-        return new GroupViewHolder(v);
+        GroupViewHolder pvh = new GroupViewHolder(v);
+        return pvh;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final GroupViewHolder groupViewHolder, int i) {
+    public void onBindViewHolder(final GroupViewHolder groupViewHolder, final int i) {
         final Group group = groups.get(i);
         groupViewHolder.groupName.setText(group.getGroup_name());
 
         if(!group.getGroup_image_url().equals("none")) {
-            Uri uri = Uri.parse(group.group_image_url);
+            Uri uri = Uri.parse(group.getGroup_image_url());
 
             GlideApp.with(groupViewHolder.groupImage.getContext())
                     .load(uri)
@@ -111,7 +111,6 @@ public class RVAdapter_Group extends RecyclerView.Adapter<RVAdapter_Group.GroupV
         groupViewHolder.itemView.findViewById(R.id.cv).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(context, "CLICKED " + groupViewHolder.getAdapterPosition(), Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(context, InGroupActivity.class);
                 intent.putExtra("group", group);
                 context.startActivity(intent);
@@ -120,30 +119,33 @@ public class RVAdapter_Group extends RecyclerView.Adapter<RVAdapter_Group.GroupV
 
     }
 
-// --Commented out by Inspection START (11/12/18, 1:09 PM):
-//    public void insertGroup(Group group) {
-//        groups.add(group);
-//    }
-// --Commented out by Inspection STOP (11/12/18, 1:09 PM)
+    @Override
+    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+    }
+
+    public void insertGroup(Group group) {
+        groups.add(group);
+    }
 
     public static class GroupViewHolder extends RecyclerView.ViewHolder {
-        final CardView cardView;
-        final TextView groupName;
-        final ImageView groupImage;
-        final ImageView memberImg1;
-        final ImageView memberImg2;
-        final ImageView memberImg3;
-        final ImageView memberImg4;
+        CardView cardView;
+        TextView groupName;
+        ImageView groupImage;
+        ImageView memberImg1;
+        ImageView memberImg2;
+        ImageView memberImg3;
+        ImageView memberImg4;
 
         GroupViewHolder(View itemView) {
             super(itemView);
-            cardView = itemView.findViewById(R.id.cv);
-            groupName = itemView.findViewById(R.id.group_name);
-            groupImage = itemView.findViewById(R.id.group_image);
-            memberImg1 = itemView.findViewById(R.id.user_image1);
-            memberImg2 = itemView.findViewById(R.id.user_image2);
-            memberImg3 = itemView.findViewById(R.id.user_image3);
-            memberImg4 = itemView.findViewById(R.id.user_image4);
+            cardView = (CardView)itemView.findViewById(R.id.cv);
+            groupName = (TextView)itemView.findViewById(R.id.group_name);
+            groupImage = (ImageView)itemView.findViewById(R.id.group_image);
+            memberImg1 = (ImageView) itemView.findViewById(R.id.user_image1);
+            memberImg2 = (ImageView) itemView.findViewById(R.id.user_image2);
+            memberImg3 = (ImageView) itemView.findViewById(R.id.user_image3);
+            memberImg4 = (ImageView) itemView.findViewById(R.id.user_image4);
         }
 
     }

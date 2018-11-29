@@ -1,9 +1,12 @@
-package com.example.pplki18.grouptravelplanner.utils;
+package com.example.pplki18.grouptravelplanner.data;
+
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Plan {
+public class Plan implements Parcelable {
 
     private String plan_id;
     private String creatorId;
@@ -27,6 +30,39 @@ public class Plan {
         events = new ArrayList<>();
 //        this.user_image = user_image;
 
+    }
+
+    protected Plan(Parcel in) {
+        plan_id = in.readString();
+        creatorId = in.readString();
+        plan_name = in.readString();
+        plan_start_date = in.readString();
+        plan_end_date = in.readString();
+        plan_total_days = in.readInt();
+        plan_overview = in.readString();
+        plan_modified = in.readString();
+        plan_created = in.readString();
+        events = in.createStringArrayList();
+    }
+
+    public static final Creator<Plan> CREATOR = new Creator<Plan>() {
+        @Override
+        public Plan createFromParcel(Parcel in) {
+            return new Plan(in);
+        }
+
+        @Override
+        public Plan[] newArray(int size) {
+            return new Plan[size];
+        }
+    };
+
+    public String getCreatorId() {
+        return creatorId;
+    }
+
+    public void setCreatorId(String creatorId) {
+        this.creatorId = creatorId;
     }
 
     public String getPlan_id() {
@@ -99,5 +135,24 @@ public class Plan {
 
     public void setEvents(List<String> events) {
         this.events = events;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(plan_id);
+        parcel.writeString(creatorId);
+        parcel.writeString(plan_name);
+        parcel.writeString(plan_start_date);
+        parcel.writeString(plan_end_date);
+        parcel.writeInt(plan_total_days);
+        parcel.writeString(plan_overview);
+        parcel.writeString(plan_modified);
+        parcel.writeString(plan_created);
+        parcel.writeStringList(events);
     }
 }

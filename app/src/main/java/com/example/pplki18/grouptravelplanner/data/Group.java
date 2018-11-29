@@ -6,6 +6,7 @@ import android.os.Parcelable;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class Group implements Parcelable{
@@ -14,6 +15,7 @@ public class Group implements Parcelable{
     public String group_name;
     public String group_image_url;
     public String creator_id;
+    public HashMap<String, Long> read_stamps;
     public List<String> members;
 
     private static final int MEMBERS_SHOWN = 4;
@@ -26,6 +28,7 @@ public class Group implements Parcelable{
         this.group_image_url = group_image_url;
         this.creator_id = creator_id;
         this.members = new ArrayList<>();
+        this.read_stamps = new HashMap<>();
     }
 
     public String getGroup_id() {
@@ -72,6 +75,14 @@ public class Group implements Parcelable{
         return members.subList(0, Math.min(members.size(),MEMBERS_SHOWN));
     }
 
+    public HashMap<String, Long> getRead_stamps() {
+        return read_stamps;
+    }
+
+    public void setRead_stamps(HashMap<String, Long> read_stamps) {
+        this.read_stamps = read_stamps;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -84,6 +95,7 @@ public class Group implements Parcelable{
         parcel.writeString(this.group_image_url);
         parcel.writeString(this.creator_id);
         parcel.writeList(this.members);
+        parcel.writeMap(this.read_stamps);
     }
 
     // this is used to regenerate your object. All Parcelables must have a CREATOR that implements these two methods
@@ -104,5 +116,6 @@ public class Group implements Parcelable{
         this.group_image_url = in.readString();
         this.creator_id = in.readString();
         this.members = in.readArrayList(null);
+        this.read_stamps = in.readHashMap(null);
     }
 }

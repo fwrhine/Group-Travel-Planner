@@ -16,6 +16,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageRequest;
 import com.example.pplki18.grouptravelplanner.R;
+import com.example.pplki18.grouptravelplanner.data.Place;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;

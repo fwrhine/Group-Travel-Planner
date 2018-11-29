@@ -10,6 +10,9 @@
         <item android:id="@+id/nav_reminder"
             android:icon="@drawable/ic_reminder"
             android:title="Reminder" />
+        <item android:id="@+id/nav_plan"
+            android:icon="@drawable/ic_event_note_black"
+            android:title="Plan" />
     </group>
 
     <item android:title="">

@@ -1,12 +1,11 @@
 package com.example.pplki18.grouptravelplanner;
 
-import android.content.ContentValues;
-import android.database.sqlite.SQLiteDatabase;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,11 +13,31 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TimePicker;
 
-import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
-import com.example.pplki18.grouptravelplanner.data.EventContract;
-import com.example.pplki18.grouptravelplanner.utils.Place;
+import com.example.pplki18.grouptravelplanner.old_stuff.DatabaseHelper;
+import com.example.pplki18.grouptravelplanner.data.Event;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static android.app.Activity.RESULT_OK;
 
 public class Fragment_CustomEvent extends Fragment {
+
+    FirebaseDatabase firebaseDatabase;
+    FirebaseAuth firebaseAuth;
+    FirebaseUser firebaseUser;
+    DatabaseReference planRef;
+    DatabaseReference eventRef;
+    StorageReference storageReference;
 
     private Button add_button;
     private DatabaseHelper databaseHelper;
@@ -26,8 +45,12 @@ public class Fragment_CustomEvent extends Fragment {
     private EditText event_notes;
     private TimePicker start_timepicker;
     private TimePicker end_timepicker;
-    private int plan_id;
+    private String plan_id;
     private String event_date;
+
+    private String prevActivity;
+    private List<String> eventIDs = new ArrayList<>();
+    private List<Event> events = new ArrayList<>();
 
     @Nullable
     @Override
@@ -38,35 +61,110 @@ public class Fragment_CustomEvent extends Fragment {
     @Override
     public void onActivityCreated(final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
+
+        eventRef = firebaseDatabase.getReference().child("events");
+        storageReference = FirebaseStorage.getInstance().getReference();
+
         init();
 
         add_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                saveEventToPlan();
+                String start_time = start_timepicker.getCurrentHour() + ":" + start_timepicker.getCurrentMinute();
+                String end_time = end_timepicker.getCurrentHour() + ":" + end_timepicker.getCurrentMinute();
+                String title = event_title.getText().toString();
+                String description = event_notes.getText().toString();
+
+                Event anEvent = new Event(title, event_date, start_time, end_time, "custom");
+                anEvent.setDescription(description);
+
+                if (prevActivity.equals("CreateNewPlanActivity")) {
+                    saveEventLocally(anEvent);
+                } else {
+                    saveEventToPlan(anEvent);
+                }
                 getActivity().finish();
             }
         });
     }
 
-    private void saveEventToPlan() {
-        Log.d("SAVEVENT", "MASUK");
-        SQLiteDatabase db = databaseHelper.getWritableDatabase();
+    private void saveEventLocally(Event anEvent) {
+        events.add(anEvent);
+        Intent intent = new Intent(getActivity(), CreateNewPlanActivity.class);
+        intent.putParcelableArrayListExtra("events", (ArrayList<? extends Parcelable>) events);
 
-        String start_time = start_timepicker.getCurrentHour() + ":" + start_timepicker.getCurrentMinute();
-        String end_time = end_timepicker.getCurrentHour() + ":" + end_timepicker.getCurrentMinute();
+        getActivity().setResult(RESULT_OK, intent);
+        getActivity().finish();
+    }
 
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(EventContract.EventEntry.COL_PLAN_ID, plan_id);
-        contentValues.put(EventContract.EventEntry.COL_TITLE, event_title.getText().toString());
-        contentValues.put(EventContract.EventEntry.COL_DESCRIPTION, event_notes.getText().toString());
-        contentValues.put(EventContract.EventEntry.COL_DATE, event_date);
-        Log.d("event date", event_date);
-        Log.d("plan_id", plan_id+"");
-        contentValues.put(EventContract.EventEntry.COL_TIME_START, start_time);
-        contentValues.put(EventContract.EventEntry.COL_TIME_END, end_time);
-        contentValues.put(EventContract.EventEntry.COL_TYPE, "custom");
-        long event_id = db.insert(EventContract.EventEntry.TABLE_NAME, null, contentValues);
+    private void saveEventToPlan(Event anEvent) {
+//        Log.d("SAVEVENT", "MASUK");
+//        SQLiteDatabase db = databaseHelper.getWritableDatabase();
+//
+//        ContentValues contentValues = new ContentValues();
+//        contentValues.put(EventContract.EventEntry.COL_PLAN_ID, plan_id);
+//        contentValues.put(EventContract.EventEntry.COL_TITLE, event_title.getText().toString());
+//        contentValues.put(EventContract.EventEntry.COL_DESCRIPTION, event_notes.getText().toString());
+//        contentValues.put(EventContract.EventEntry.COL_DATE, event_date);
+//        Log.d("event date", event_date);
+//        Log.d("plan_id", plan_id+"");
+//        contentValues.put(EventContract.EventEntry.COL_TIME_START, start_time);
+//        contentValues.put(EventContract.EventEntry.COL_TIME_END, end_time);
+//        contentValues.put(EventContract.EventEntry.COL_TYPE, "custom");
+//        long event_id = db.insert(EventContract.EventEntry.TABLE_NAME, null, contentValues);
+        final String eventId = eventRef.push().getKey();
+        anEvent.setEvent_id(eventId);
+        anEvent.setPlan_id(plan_id);
+        anEvent.setCreator_id(firebaseUser.getUid());
+        eventRef.child(eventId).setValue(anEvent);
+
+        planRef = firebaseDatabase.getReference().child("plans").child(plan_id).child("events");
+        getAllEventIDs(new EventIdCallback() {
+            @Override
+            public void onCallback(List<String> list) {
+                eventIDs = list;
+                eventIDs.add(eventId);
+
+                planRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        planRef.setValue(eventIDs);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+            }
+        });
+    }
+
+    private void getAllEventIDs(final EventIdCallback userIdCallback){
+        planRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                eventIDs.clear();
+                for (DataSnapshot postSnapshot: dataSnapshot.getChildren()){
+                    String eventId = postSnapshot.getValue(String.class); // String of groupID
+                    eventIDs.add(eventId);
+                }
+                userIdCallback.onCallback(eventIDs);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private interface EventIdCallback{
+        void onCallback(List<String> list);
     }
 
     private void init() {
@@ -76,7 +174,12 @@ public class Fragment_CustomEvent extends Fragment {
         event_notes = (EditText) getView().findViewById(R.id.event_notes);
         start_timepicker = (TimePicker) getView().findViewById(R.id.start_time);
         end_timepicker = (TimePicker) getView().findViewById(R.id.end_time);
-        plan_id = getArguments().getInt("plan_id");
+        plan_id = getArguments().getString("plan_id");
         event_date = getArguments().getString("date");
+
+        prevActivity = getActivity().getIntent().getStringExtra("ACTIVITY");
+        if (prevActivity.equals("CreateNewPlanActivity")) {
+            events = getActivity().getIntent().getParcelableArrayListExtra("events");
+        }
     }
 }

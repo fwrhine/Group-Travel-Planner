@@ -3,10 +3,10 @@
     android:layout_height="match_parent"
     android:layout_width="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android">
-    <android.support.constraint.ConstraintLayout android:layout_height="wrap_content"
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:app1="http://schemas.android.com/apk/res-auto">
 
         <ImageView
@@ -110,7 +110,7 @@
                 <!--android:layout_width="wrap_content"-->
                 <!--android:layout_height="wrap_content"-->
                 <!--android:layout_alignEnd="@+id/event_detail_date"-->
-                <!--android:src="@drawable/ic_event_note_black_24dp"/>-->
+                <!--android:src="@drawable/ic_event_note_black"/>-->
 
             <TextView
                 android:id="@+id/event_detail_time"

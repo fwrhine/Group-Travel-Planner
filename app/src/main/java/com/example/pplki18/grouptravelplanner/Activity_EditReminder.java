@@ -2,9 +2,7 @@ package com.example.pplki18.grouptravelplanner;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.AlarmManager;
 import android.app.DatePickerDialog;
-import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.ContentResolver;
 import android.content.ContentUris;
@@ -31,15 +29,14 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
-import com.example.pplki18.grouptravelplanner.data.ReminderContract;
+import com.example.pplki18.grouptravelplanner.old_stuff.DatabaseHelper;
+import com.example.pplki18.grouptravelplanner.old_stuff.ReminderContract;
 import com.example.pplki18.grouptravelplanner.utils.SessionManager;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 
 public class Activity_EditReminder  extends AppCompatActivity implements DatePickerDialog.OnDateSetListener,
         TimePickerDialog.OnTimeSetListener {
@@ -141,19 +138,23 @@ public class Activity_EditReminder  extends AppCompatActivity implements DatePic
             public void onClick(View view) {
                 // Starts the function below
                 deleteEventFromCalendar(event_id);
+                goBackToList();
             }
         });
 
         btn_done.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent myIntent = new Intent(Activity_EditReminder.this , InHomeActivity.class);
-                myIntent.putExtra("fragment", "reminder");
-                startActivity(myIntent);
+                goBackToList();
             }
         });
     }
 
+    public void goBackToList(){
+        Intent myIntent = new Intent(Activity_EditReminder.this , InHomeActivity.class);
+        myIntent.putExtra("fragment", "reminder");
+        startActivity(myIntent);
+    }
 
     public void changeNotifier(String title, String destination, Integer year, Integer month,
                                       Integer day, Integer hour, Integer minute, long event_id) {

@@ -23,12 +23,9 @@
     <string name="bookOrigin">Origin</string>
     <string name="bookTo">To:</string>
     <string name="bookDestination">Destination</string>
-    <string name="bookDate">Date:</string>
-    <string name="bookDay">Day</string>
-    <string name="bookMonth">Month</string>
-    <string name="bookYear">Year</string>
     <string name="buttonFindFlight">FIND FLIGHT</string>
-    <string name="bookTrainName">Airline Name</string>
+    <string name="bookTrainName">Train Name</string>
+    <string name="bookFlightName">Airline Name</string>
     <string name="bookDivider">-</string>
     <string name="bookFlightNumber">Flight Number</string>
     <string name="bookDepartCity">Depart City</string>
@@ -44,5 +41,6 @@
     <string name="arrow">Arrow</string>
     <string name="more">More</string>
     <string name="less">Less</string>
+    <string name="current_group_plan">You don\'t have any plan in progress...\nAsk the group leader to create a plan!</string>
 
 </resources>

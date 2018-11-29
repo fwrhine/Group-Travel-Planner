@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
@@ -17,12 +18,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.example.pplki18.grouptravelplanner.CreateNewPlanActivity;
 import com.example.pplki18.grouptravelplanner.EventDetailActivity;
 import com.example.pplki18.grouptravelplanner.PlaceActivity;
 import com.example.pplki18.grouptravelplanner.R;
-import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
-import com.example.pplki18.grouptravelplanner.data.EventContract;
+import com.example.pplki18.grouptravelplanner.data.Event;
+import com.example.pplki18.grouptravelplanner.data.Group;
 import com.github.vipulasri.timelineview.TimelineView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -36,6 +36,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 
 /**
  * Created by HP-HP on 05-12-2015.
@@ -44,6 +46,7 @@ public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.Ne
 
     private List<Event> events;
     private Context mContext;
+    private Bundle bundle;
     private LayoutInflater mLayoutInflater;
 
     private FirebaseAuth mAuth;
@@ -55,6 +58,16 @@ public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.Ne
         this.mContext = context;
         mAuth = FirebaseAuth.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance();
+    }
+
+    public RVAdapter_NewPlan(List<Event> events, Context context, Bundle bundle) {
+        this.events = events;
+        this.mContext = context;
+        this.bundle = bundle;
+        mAuth = FirebaseAuth.getInstance();
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        mAuth = FirebaseAuth.getInstance();
+        firebaseUser = mAuth.getCurrentUser();
     }
 
     @Override
@@ -77,7 +90,7 @@ public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.Ne
     public void onBindViewHolder(NewPlanViewHolder holder, int position) {
 
         Event event = events.get(position);
-        SimpleDateFormat format = new SimpleDateFormat("HH:mm");
+        SimpleDateFormat format = new SimpleDateFormat("HH:mm", Locale.US);
 
         String time_start = "";
         String timeString = "";
@@ -88,6 +101,12 @@ public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.Ne
         } else if (event.getType().equals("flights") || event.getType().equals("trains")) {
             time_start = event.getDeparture_time();
             timeString = time_start + " - " + event.getArrival_time() +
+                    " (" + event.getTotal_time() + ")";
+        } else if (event.getType().equals("hotels")) {
+
+        } else if (event.getType().equals("custom")) {
+            time_start = event.getTime_start();
+            timeString = time_start + " - " + event.getTime_end() +
                     " (" + event.getTotal_time() + ")";
         }
 
@@ -102,6 +121,8 @@ public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.Ne
                 holder.eventIcon.setMarker(mContext.getDrawable(R.drawable.ic_train_black));
             } else if (event.getType().equals("hotels")) {
                 holder.eventIcon.setMarker(mContext.getDrawable(R.drawable.ic_hotel_black));
+            } else if (event.getType().equals("custom")) {
+                holder.eventIcon.setMarker(mContext.getDrawable(R.drawable.ic_event_note_black));
             }
         }
 
@@ -117,7 +138,6 @@ public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.Ne
             holder.eventDescription.setText(desc);
         }
 
-
         setEventDetailOnClick(holder, position);
         setCardViewLongClick(holder, position, event.getTitle());
     }
@@ -129,7 +149,6 @@ public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.Ne
 
                 Event anEvent = events.get(position);
                 String type = anEvent.getType();
-
                 if (type.equals("restaurants") || type.equals("attractions")) {
                     setEventDetailOne(events, position);
                 } else {
@@ -146,13 +165,11 @@ public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.Ne
         String prevActivity = intent.getStringExtra("ACTIVITY");
 
         if (prevActivity != null && prevActivity.equals("CreateNewPlanActivity")) {
-            Log.d("MASUK GA", "MASUK");
             myIntent.putExtra("PREV_ACTIVITY", prevActivity);
             myIntent.putParcelableArrayListExtra("events", (ArrayList<? extends Parcelable>) events);
             myIntent.putExtra("index", pos);
         }
 
-        Log.d("MASUK GA", "GA");
         myIntent.putExtra("ACTIVITY", "PlanActivity");
         myIntent.putExtra("PLACE_ID", anEvent.getQuery_id());
         myIntent.putExtra("date", anEvent.getDate());
@@ -161,6 +178,9 @@ public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.Ne
         myIntent.putExtra("duration", anEvent.getTotal_time());
         myIntent.putExtra("event_id", anEvent.getEvent_id());
         myIntent.putExtra("type", anEvent.getType());
+        if (bundle != null) {
+            myIntent.putExtra("bundle", bundle);
+        }
 
         if (anEvent.getDescription() != null) {
             myIntent.putExtra("description", anEvent.getDescription());
@@ -183,7 +203,6 @@ public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.Ne
         String prevActivity = intent.getStringExtra("ACTIVITY");
 
         if (prevActivity != null && prevActivity.equals("CreateNewPlanActivity")) {
-            Log.d("MASUK GA", "MASUK");
             myIntent.putExtra("PREV_ACTIVITY", prevActivity);
             myIntent.putParcelableArrayListExtra("events", (ArrayList<? extends Parcelable>) events);
             myIntent.putExtra("index", pos);
@@ -195,6 +214,9 @@ public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.Ne
         myIntent.putExtra("start_date", date_start);
         myIntent.putExtra("end_date", date_end);
         myIntent.putExtra("date", anEvent.getDate());
+        if (bundle != null) {
+            myIntent.putExtra("bundle", bundle);
+        }
 
         ((Activity) mContext).startActivityForResult(myIntent, 5);
     }
@@ -227,6 +249,13 @@ public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.Ne
                 return true;
             }
         });
+
+        if (bundle != null) {
+            Group group = bundle.getParcelable("group");
+            if (group != null && !group.getCreator_id().equals(firebaseUser.getUid())) {
+                holder.cardView.setLongClickable(false);
+            }
+        }
     }
 
     private AlertDialog deleteConfirmation(final int position, String title) {
@@ -271,14 +300,19 @@ public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.Ne
     }
 
     public void deleteHelper(Event event, final DeleteEventCallback callback){
-        //TODO: CHECK
         String plan_id = event.getPlan_id();
+//        Log.d("PLANKEY", plan_id);
         final String event_id = event.getEvent_id();
-        final DatabaseReference planRef = firebaseDatabase.getReference().child("plans").child(plan_id).child("events").child(event_id);
+        final DatabaseReference planRef = firebaseDatabase.getReference().child("plans").child(plan_id).child("events");
         planRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                planRef.removeValue();
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                    if (Objects.equals(postSnapshot.getValue(String.class), event_id)) {
+                        planRef.child(Objects.requireNonNull(postSnapshot.getKey())).removeValue();
+                        break;
+                    }
+                }
                 final DatabaseReference eventRef = firebaseDatabase.getReference().child("events").child(event_id);
                 eventRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override

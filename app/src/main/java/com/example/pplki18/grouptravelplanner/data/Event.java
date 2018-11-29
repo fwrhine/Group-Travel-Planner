@@ -1,4 +1,4 @@
-package com.example.pplki18.grouptravelplanner.utils;
+package com.example.pplki18.grouptravelplanner.data;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -7,11 +7,13 @@ import android.support.annotation.NonNull;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 public class Event implements Parcelable, Comparable<Event> {
     private String event_id;
     private String plan_id;
 
+    private String creator_id;
     private String query_id;
     private String title;
     private String location;
@@ -51,20 +53,12 @@ public class Event implements Parcelable, Comparable<Event> {
         this.title = title;
         this.date = date;
         this.type = type;
-//        if (type.equals("restaurants") || type.equals("attractions") || type.equals("custom")) {
-//            this.time_start = time_start;
-//            this.time_end = time_end;
-//        } else if (type.equals("flights") || type.equals("trains")) {
-//            this.departure_time = time_start;
-//            this.arrival_time = time_end;
-//        } else if (type.equals("hotels")) {
-//
-//        }
         this.time_start = time_start;
         this.time_end = time_end;
     }
 
     protected Event(Parcel in) {
+        creator_id = in.readString();
         event_id = in.readString();
         query_id = in.readString();
         title = in.readString();
@@ -101,6 +95,14 @@ public class Event implements Parcelable, Comparable<Event> {
             return new Event[size];
         }
     };
+
+    public String getCreator_id() {
+        return creator_id;
+    }
+
+    public void setCreator_id(String creator_id) {
+        this.creator_id = creator_id;
+    }
 
     public String getEvent_id() {
         return event_id;
@@ -171,15 +173,11 @@ public class Event implements Parcelable, Comparable<Event> {
     }
 
     public String getTotal_time() {
-        SimpleDateFormat format = new SimpleDateFormat("HH:mm");
+        SimpleDateFormat format = new SimpleDateFormat("HH:mm", Locale.US);
         long diff = 0;
 
         try {
-//            if (type.equals("restaurants") || type.equals("attractions") || type.equals("custom")) {
-                diff = format.parse(time_end).getTime() - format.parse(time_start).getTime();
-//            } else if (type.equals("flights") || type.equals("trains")) {
-//                diff = format.parseHotelList(arrival_time).getTime() - format.parseHotelList(departure_time).getTime();
-//            }
+            diff = format.parse(time_end).getTime() - format.parse(time_start).getTime();
 
         } catch (ParseException e) {
             e.printStackTrace();
@@ -319,6 +317,7 @@ public class Event implements Parcelable, Comparable<Event> {
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(creator_id);
         parcel.writeString(event_id);
         parcel.writeString(query_id);
         parcel.writeString(title);
@@ -346,7 +345,7 @@ public class Event implements Parcelable, Comparable<Event> {
 
     @Override
     public int compareTo(@NonNull Event event) {
-        SimpleDateFormat format = new SimpleDateFormat("HH:mm");
+        SimpleDateFormat format = new SimpleDateFormat("HH:mm", Locale.US);
         try {
             Date this_start = null;
             Date this_end = null;
@@ -358,10 +357,10 @@ public class Event implements Parcelable, Comparable<Event> {
                 event_start = format.parse(event.getTime_start());
                 event_end = format.parse(event.getTime_end());
 //            } else if (type.equals("flights") || type.equals("trains")) {
-//                this_start = format.parseHotelList(this.getDeparture_time());
-//                this_end = format.parseHotelList(this.getArrival_time());
-//                event_start = format.parseHotelList(event.getDeparture_time());
-//                event_end = format.parseHotelList(event.getArrival_time());
+//                this_start = format.parse(this.getDeparture_time());
+//                this_end = format.parse(this.getArrival_time());
+//                event_start = format.parse(event.getDeparture_time());
+//                event_end = format.parse(event.getArrival_time());
 //            } else if (type.equals("hotels")) {
 //
 //            }

@@ -9,6 +9,7 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.example.pplki18.grouptravelplanner.R;
+import com.example.pplki18.grouptravelplanner.data.Flight;
 
 import java.util.ArrayList;
 
@@ -37,8 +38,8 @@ public class FlightAdapter extends ArrayAdapter<Flight> {
 
         // Populate the data into the template view using the data object
         assert flight != null;
-        tvAirlineName.setText(flight.getAirlineName());
-        tvFlightNum.setText(flight.getFlightNumber());
+        tvAirlineName.setText(flight.getAirlineName() + " ");
+        tvFlightNum.setText(" " + flight.getFlightNumber());
         tvDepartCity.setText(flight.getDepartureCity());
         tvArriveCity.setText(flight.getArrivalCity());
         tvDepartTime.setText(flight.getDepartureTime());

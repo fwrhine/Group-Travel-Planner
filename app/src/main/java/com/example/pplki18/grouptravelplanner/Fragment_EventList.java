@@ -1,9 +1,6 @@
 package com.example.pplki18.grouptravelplanner;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -16,13 +13,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
-import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
-import com.example.pplki18.grouptravelplanner.data.EventContract;
-import com.example.pplki18.grouptravelplanner.data.Group;
-import com.example.pplki18.grouptravelplanner.utils.Event;
-//import com.example.pplki18.grouptravelplanner.utils.Plan;
-import com.example.pplki18.grouptravelplanner.utils.Plan;
+import com.example.pplki18.grouptravelplanner.old_stuff.DatabaseHelper;
+import com.example.pplki18.grouptravelplanner.data.Event;
+//import com.example.pplki18.grouptravelplanner.data.Plan;
+import com.example.pplki18.grouptravelplanner.data.Plan;
 import com.example.pplki18.grouptravelplanner.utils.RVAdapter_NewPlan;
+import com.example.pplki18.grouptravelplanner.utils.RVAdapter_Plan;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -37,8 +33,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-
-import static android.app.Activity.RESULT_OK;
 
 
 public class Fragment_EventList extends Fragment {
@@ -55,8 +49,9 @@ public class Fragment_EventList extends Fragment {
     private SimpleDateFormat dateFormatter2;
     private List<Event> events = new ArrayList<>();
     private List<String> eventIDs = new ArrayList<>();
-    RVAdapter_NewPlan adapter;
-    DatabaseHelper myDb;
+    private RVAdapter_NewPlan adapter;
+    private DatabaseHelper myDb;
+    private Bundle myBundle;
 
     private FirebaseDatabase firebaseDatabase;
     private FirebaseAuth firebaseAuth;
@@ -92,41 +87,45 @@ public class Fragment_EventList extends Fragment {
 
     }
 
-//    @Override
-//    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//
-//        Log.d("RESULT0", "masuk");
-////        if (requestCode == EDIT_EVENT_REQUEST_CODE) {
-//            if (resultCode == RESULT_OK) {
-//                String prevActivity = data.getStringExtra("ACTIVITY");
-//                Log.d("RESULT", "masuk");
-//                if (prevActivity != null && prevActivity.equals("CreateNewPlanActivity")) {
-//                    String test = getActivity().getIntent().getStringExtra("TEST");
-//                    if (test != null) {
-//
-//                        Log.d("COBA", test);
-//                    }
-//                    Log.d("RESUMEGA", "resumekok");
-////                events = getAllEventsTemp(date);
-////            getActivity().getIntent().putExtra("ACTIVITY", "CreateNewPlanActivity");
-//                } else {
-////                events = getAllEvents(date);
-//                }
-//                adapter = new RVAdapter_NewPlan(events, getActivity());
-//                rvNewPlan.setAdapter(adapter);
-//                adapter.notifyDataSetChanged();
-//            }
-////        }
-//    }
-
     @Override
     public void onResume() {  // After a pause OR at startup
-//        Log.d("RESUME", "masuk resume");
         super.onResume();
         Date date = (Date) intent.getExtras().get("date");
         String prevActivity = getActivity().getIntent().getStringExtra("ACTIVITY");
-//        Log.d("HALALA", prevActivity);
+
+
+        final Bundle bundle = new Bundle();
+        if (myBundle != null) {
+            bundle.putParcelable("group", myBundle.getParcelable("group"));
+            bundle.putString("ACTIVITY", "Fragment_GroupPlanList");
+        }
+
+        if (prevActivity != null && prevActivity.equals("CreateNewPlanActivity")) {
+            events = getAllEventsTemp(date);
+
+            adapter = new RVAdapter_NewPlan(events, getActivity(), bundle);
+            rvNewPlan.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
+        } else {
+            progressBar.setVisibility(View.VISIBLE);
+            getAllEvents(date, new EventCallback() {
+                @Override
+                public void onCallback(List<Event> list) {
+                    events = list;
+                    progressBar.setVisibility(View.INVISIBLE);
+                    adapter = new RVAdapter_NewPlan(events, getActivity(), bundle);
+                    rvNewPlan.setAdapter(adapter);
+                    adapter.notifyDataSetChanged();
+                }
+            });
+        }
+    }
+
+    private void populateEventRecyclerView(Date date) {
+        Log.d(TAG, "populateEventRecyclerView: Displaying list of events in the ListView.");
+
+        //get data and append to list
+        String prevActivity = getActivity().getIntent().getStringExtra("ACTIVITY");
         if (prevActivity != null && prevActivity.equals("CreateNewPlanActivity")) {
             events = getAllEventsTemp(date);
             adapter = new RVAdapter_NewPlan(events, getActivity());
@@ -147,41 +146,18 @@ public class Fragment_EventList extends Fragment {
         }
     }
 
-    private void populateEventRecyclerView(Date date) {
-        Log.d(TAG, "populateEventRecyclerView: Displaying list of events in the ListView.");
-
-        //get data and append to list
-        String prevActivity = getActivity().getIntent().getStringExtra("ACTIVITY");
-        if (prevActivity != null && prevActivity.equals("CreateNewPlanActivity")) {
-            events = getAllEventsTemp(date);
-            RVAdapter_NewPlan adapter = new RVAdapter_NewPlan(events, getActivity());
-            rvNewPlan.setAdapter(adapter);
-        } else {
-            progressBar.setVisibility(View.VISIBLE);
-            getAllEvents(date, new EventCallback() {
-                @Override
-                public void onCallback(List<Event> list) {
-                    events = list;
-                    progressBar.setVisibility(View.INVISIBLE);
-                    RVAdapter_NewPlan adapter = new RVAdapter_NewPlan(events, getActivity());
-                    rvNewPlan.setAdapter(adapter);
-                }
-            });
-        }
-    }
-
     public void getEventIDs(final EventIdCallback callback) {
         final String plan_id = getActivity().getIntent().getStringExtra("plan_id");
         if(plan_id != null) {
             planRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    eventIDs.clear();
+//                    eventIDs.clear();
                     for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                         Plan plan = postSnapshot.getValue(Plan.class);
                         if (plan_id.equals(plan.getPlan_id())) {
                             eventIDs = plan.getEvents();
-                            Log.d("EVENT_IDS", eventIDs.get(0));
+//                            Log.d("EVENT_IDS", eventIDs.get(0));
                             break;
                         }
                     }
@@ -206,7 +182,7 @@ public class Fragment_EventList extends Fragment {
         getEventIDs(new EventIdCallback() {
             @Override
             public void onCallback(List<String> list) {
-                if (list.size() != 0) {
+                if (list != null) {
                     eventIDs = list;
                     final String str_cur_date = dateFormatter1.format(cur_date);
                     // this one is to check the transport date (saved in different format)
@@ -334,6 +310,8 @@ public class Fragment_EventList extends Fragment {
         progressBar = getView().findViewById(R.id.progress_loader);
         dateFormatter1 = new SimpleDateFormat("d MMMM yyyy", Locale.US);
         dateFormatter2 = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+
+        myBundle = intent.getBundleExtra("bundle");
     }
 
     private interface EventIdCallback {

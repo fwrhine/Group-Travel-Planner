@@ -2,10 +2,8 @@ package com.example.pplki18.grouptravelplanner;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
-import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentTransaction;
@@ -20,15 +18,12 @@ import android.view.ViewGroup;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
-import com.example.pplki18.grouptravelplanner.data.EventContract;
-import com.example.pplki18.grouptravelplanner.data.PlanContract;
-import com.example.pplki18.grouptravelplanner.utils.Event;
-import com.example.pplki18.grouptravelplanner.utils.Plan;
-import com.example.pplki18.grouptravelplanner.utils.SessionManager;
+import com.example.pplki18.grouptravelplanner.data.Event;
+import com.example.pplki18.grouptravelplanner.data.Plan;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -42,7 +37,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -50,21 +44,21 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
 
     private static final String TAG = "CreateNewPlanActivity";
 
-    DatabaseHelper databaseHelper;
     Toolbar plan_toolbar;
 
+    RelativeLayout trip_start, trip_end;
     TextView trip_start_date, trip_end_date, trip_days;
     TextView date_month_year, day;
     ImageButton button_left, button_right, add_event, save_plan;
     FloatingActionButton fab_add_event;
     ViewGroup parent;
     Intent intent;
-    private SessionManager session;
-    private HashMap<String, String> user;
 
     private FirebaseAuth mAuth;
     private FirebaseUser firebaseUser;
     private FirebaseDatabase firebaseDatabase;
+
+    private String group_id;
 
     private DatePickerDialog fromDatePickerDialog;
     private DatePickerDialog toDatePickerDialog;
@@ -74,20 +68,17 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
     private Date date_end;
     private String plan_name;
 
+    private List<Plan> plans;
     private List<Event> events;
     private List<String> planIDs = new ArrayList<>();
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Log.d("KOKSINI", "sini");
         if (requestCode == 1 || requestCode == 5) {
             if(resultCode == RESULT_OK) {
                 events = data.getParcelableArrayListExtra("events");
-//                for(Event e : events) {
-//                    Log.d("testtt", e.getTitle());
-//                }
-//                Log.d("RESULT_OK", "masuk sini");
+
                 getIntent().putParcelableArrayListExtra("events", (ArrayList<? extends Parcelable>) events);
                 getIntent().putExtra("ACTIVITY", "CreateNewPlanActivity");
                 beginFragmentEventList();
@@ -114,18 +105,9 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
 
         intent = getIntent();
 
-//        String prevActivity = intent.getStringExtra("ACTIVITY");
-////        if (prevActivity != null && prevActivity.equals("PlaceActivity")) {
-////            events = intent.getParcelableArrayListExtra("events");
-//////            for(Event e : events) {
-//////                Log.d("testtt2", e.getTitle());
-//////            }
-////            beginFragmentEventList();
-////        }
+        plans = intent.getParcelableArrayListExtra("plans");
 
-        databaseHelper = new DatabaseHelper(CreateNewPlanActivity.this);
-        session = new SessionManager(getApplicationContext());
-        user = session.getUserDetails();
+        group_id = intent.getStringExtra("group_id");
 
         mAuth = FirebaseAuth.getInstance();
         firebaseUser = mAuth.getCurrentUser();
@@ -134,30 +116,32 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
         dateFormatter1 = new SimpleDateFormat("EEE, MMM d", Locale.US);
         dateFormatter2 = new SimpleDateFormat("d MMMM yyyy", Locale.US);
 
-//        add_event.setVisibility(View.GONE);
         setAddEventButton();
         setSavePlanButton();
         setDateTimeField();
     }
 
     public void findViewById() {
-        plan_toolbar = (Toolbar) findViewById(R.id.plan_toolbar);
+        plan_toolbar = findViewById(R.id.plan_toolbar);
 
-        trip_start_date = (TextView) findViewById(R.id.trip_start_date);
-        trip_end_date = (TextView) findViewById(R.id.trip_end_date);
-        trip_days = (TextView) findViewById(R.id.trip_days);
+        trip_start = findViewById(R.id.trip_start);
+        trip_end = findViewById(R.id.trip_end);
 
-        date_month_year = (TextView) findViewById(R.id.date_month_year);
-        day = (TextView) findViewById(R.id.day);
+        trip_start_date = findViewById(R.id.trip_start_date);
+        trip_end_date = findViewById(R.id.trip_end_date);
+        trip_days = findViewById(R.id.trip_days);
 
-        button_left = (ImageButton) findViewById(R.id.button_left);
-        button_right = (ImageButton) findViewById(R.id.button_right);
+        date_month_year = findViewById(R.id.date_month_year);
+        day = findViewById(R.id.day);
+
+        button_left = findViewById(R.id.button_left);
+        button_right = findViewById(R.id.button_right);
 //        add_event = (ImageButton) findViewById(R.id.add_event);
-        save_plan = (ImageButton) findViewById(R.id.save_plan);
+        save_plan = findViewById(R.id.save_plan);
 
-        fab_add_event = (FloatingActionButton) findViewById(R.id.fab_add_event);
+        fab_add_event = findViewById(R.id.fab_add_event);
 
-        parent = (ViewGroup) findViewById(R.id.container);
+        parent = findViewById(R.id.container);
     }
 
     @Override
@@ -229,7 +213,11 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
                 trip_end_date.getText().toString().equals("Date")) {
             saveAlertDialog();
         } else {
-            askPlanNameDialog();
+            if (!checkDateAvailability()) {
+                dateNotAvailableDialog();
+            } else {
+                askPlanNameDialog();
+            }
         }
     }
 
@@ -249,15 +237,65 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
         alert.show();
     }
 
+    private boolean checkDateAvailability() {
+        Date start_date = null;
+        Date end_date = null;
+        try {
+            start_date = dateFormatter2.parse(dateFormatter2.format(date_start));
+            end_date = dateFormatter2.parse(dateFormatter2.format(date_end));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        for (Plan p : plans) {
+            try {
+                Date p_start = dateFormatter2.parse(p.getPlan_start_date());
+                Date p_end = dateFormatter2.parse(p.getPlan_end_date());
+
+                if ((start_date.getTime() <= p_start.getTime() & end_date.getTime() >= p_end.getTime()) ||
+                        (start_date.getTime() >= p_start.getTime() & end_date.getTime() <= p_end.getTime())) {
+                    return false;
+                }
+                if ((start_date.getTime() >= p_start.getTime() & start_date.getTime() <= p_end.getTime()) ||
+                        (end_date.getTime() >= p_start.getTime() & end_date.getTime() <= p_end.getTime())) {
+                    return false;
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+        return true;
+    }
+
+    private void dateNotAvailableDialog() {
+        String message = "You already have a plan from " + trip_start_date.getText().toString() +
+                " until " + trip_end_date.getText().toString() + "\nPlease select another date!";
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder
+                .setTitle("Date Not Available")
+                .setMessage(message)
+                .setCancelable(true)
+                .setIcon(R.drawable.ic_error_black_24dp)
+                .setNeutralButton("Ok", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
     private void askPlanNameDialog() {
         LayoutInflater factory = LayoutInflater.from(this);
         final View linearLayout = factory.inflate(R.layout.save_plan_dialog, parent, false);
 
-        final EditText edtTextName = (EditText) linearLayout.findViewById(R.id.editText_planName);
-        plan_name = intent.getStringExtra("plan_name");
-        edtTextName.setText(plan_name);
+        final EditText edtTextName = linearLayout.findViewById(R.id.editText_planName);
 
-        final EditText edtTextDesc = (EditText) linearLayout.findViewById(R.id.editText_planDesc);
+        int init_name = intent.getIntExtra("init_name", -1);
+        String name = "New Plan (" + init_name + ")";
+        edtTextName.setText(name);
+
+        final EditText edtTextDesc = linearLayout.findViewById(R.id.editText_planDesc);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder
@@ -287,8 +325,8 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
         savePlanHelper(plan_name_fix, plan_desc, new InsertPlanCallback() {
             @Override
             public void onCallback(String planId) {
-                savePlanToUser(planId);
-                saveEventToDB(planId);
+                savePlanToFirebase(planId);
+                saveEventToFirebase(planId);
                 Log.d("PLAN_ID", planId);
             }
         });
@@ -321,17 +359,23 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
         });
     }
 
-    private void savePlanToUser(final String newPlanID){
-        final DatabaseReference userRef = firebaseDatabase.getReference().child("users").child(firebaseUser.getUid());
+    private void savePlanToFirebase(final String newPlanID){
+        String prev = intent.getStringExtra("ACTIVITY_GROUP");
+        final DatabaseReference reference;
+        if (prev != null && prev.equals("Fragment_GroupPlanList")) {
+            reference = firebaseDatabase.getReference().child("groups").child(group_id);
+        } else {
+            reference = firebaseDatabase.getReference().child("users").child(firebaseUser.getUid());
+        }
 
         getAllPlanIDs(new PlanIdCallback() {
             @Override
             public void onCallback(final List<String> planID) {
-                userRef.child("plans").addListenerForSingleValueEvent(new ValueEventListener() {
+                reference.child("plans").addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         planID.add(newPlanID);
-                        userRef.child("plans").setValue(planID);
+                        reference.child("plans").setValue(planID);
                     }
 
                     @Override
@@ -344,9 +388,15 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
     }
 
     private void getAllPlanIDs(final PlanIdCallback callback){
-        final DatabaseReference userRef = firebaseDatabase.getReference().child("users").child(firebaseUser.getUid());
+        String prev = intent.getStringExtra("ACTIVITY_GROUP");
+        final DatabaseReference reference;
+        if (prev != null && prev.equals("Fragment_GroupPlanList")) {
+            reference = firebaseDatabase.getReference().child("groups").child(group_id);
+        } else {
+            reference = firebaseDatabase.getReference().child("users").child(firebaseUser.getUid());
+        }
 
-        userRef.child("plans").addListenerForSingleValueEvent(new ValueEventListener() {
+        reference.child("plans").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 planIDs.clear();
@@ -364,7 +414,7 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
         });
     }
 
-    private void saveEventToDB(String plan_id) {
+    private void saveEventToFirebase(String plan_id) {
         final DatabaseReference planRef = firebaseDatabase.getReference().child("plans").child(plan_id).child("events");
         final List<String> eventIDs = getEventIDs(planRef, plan_id);
         planRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -400,6 +450,7 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
 
         List<String> eventIDs = new ArrayList<>();
         for (Event e : events){
+            e.setCreator_id(firebaseUser.getUid());
             e.setEvent_id(eventRef.push().getKey());
             e.setPlan_id(planID);
             eventIDs.add(e.getEvent_id());
@@ -434,8 +485,8 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
     }
 
     private void setDateTimeField() {
-        trip_start_date.setOnClickListener(this);
-        trip_end_date.setOnClickListener(this);
+        trip_start.setOnClickListener(this);
+        trip_end.setOnClickListener(this);
 
         Calendar newCalendar = Calendar.getInstance();
         fromDatePickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
@@ -496,14 +547,15 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
 
     @Override
     public void onClick(View view) {
-        if(view == trip_start_date) {
+        if(view == trip_start) {
             fromDatePickerDialog.show();
-        } else if(view == trip_end_date) {
+        } else if(view == trip_end) {
             toDatePickerDialog.show();
         }
     }
 
     public void setDateChanger() throws ParseException {
+        button_left.setEnabled(false);
         date_month_year.setText(dateFormatter2.format(date_start));
         date_month_year.setTextColor(getResources().getColor(R.color.colorBlack));
         day.setText(new SimpleDateFormat("EEEE", Locale.US).format(date_start));

@@ -2,6 +2,8 @@ package com.example.pplki18.grouptravelplanner.utils;
 
 import android.util.Log;
 
+import com.example.pplki18.grouptravelplanner.data.Hotel;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;

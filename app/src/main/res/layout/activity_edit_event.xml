@@ -51,18 +51,21 @@
                 android:id="@+id/name_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:paddingEnd="25dp"
                 android:orientation="vertical">
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="15sp"
                     android:text="Event name"/>
-                <TextView
+
+                <EditText
                     android:id="@+id/event_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textStyle="bold"
-                    android:text="event name"/>
+                    android:inputType="text"
+                    android:text="event name"
+                    android:textStyle="bold" />
             </LinearLayout>
 
             <ImageView
@@ -70,7 +73,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignEnd="@id/name_layout"
-                android:src="@drawable/ic_event_note_black_24dp"
+                android:src="@drawable/ic_event_note_black"
                 android:layout_centerVertical="true"/>
         </RelativeLayout>
 
@@ -97,9 +100,9 @@
                 android:id="@+id/midLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/ic_transport"
                 android:orientation="horizontal"
-                android:weightSum="2">
+                android:weightSum="2"
+                android:baselineAligned="false">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -153,7 +156,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="20dp"
-                    android:paddingLeft="5dp"
+                    android:paddingStart="5dp"
                     android:text="price"/>
             </LinearLayout>
         </LinearLayout>
@@ -184,6 +187,7 @@
             android:text="Event Description"/>
         <EditText
             android:id="@+id/event_description"
+            android:inputType="text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
@@ -198,10 +202,10 @@
             android:text="Event Date"/>
         <EditText
             android:id="@+id/event_date"
+            android:inputType="date"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
-            android:inputType="none"
             android:focusable="false"
             android:textStyle="bold"/>
 
@@ -209,13 +213,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:weightSum="2">
+            android:weightSum="2"
+            android:baselineAligned="false">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="20dp"
-                android:layout_marginRight="10dp"
+                android:layout_marginEnd="10dp"
                 android:orientation="vertical"
                 android:layout_weight="1">
 
@@ -226,6 +231,7 @@
                     android:text="Start Time"/>
                 <EditText
                     android:id="@+id/start_time"
+                    android:inputType="none"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textStyle="bold"
@@ -237,7 +243,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="20dp"
-                android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"
                 android:orientation="vertical"
                 android:layout_weight="1">
 
@@ -251,14 +257,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textStyle="bold"
-                    android:focusable="false"/>
+                    android:focusable="false"
+                    android:inputType="none" />
 
             </LinearLayout>
 
         </LinearLayout>
-
-
-
-
     </LinearLayout>
 </RelativeLayout>

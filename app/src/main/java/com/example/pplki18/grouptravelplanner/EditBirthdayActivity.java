@@ -5,7 +5,6 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.support.v4.app.FragmentActivity;
@@ -19,8 +18,6 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
-import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
-import com.example.pplki18.grouptravelplanner.data.UserContract;
 import com.example.pplki18.grouptravelplanner.utils.SessionManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;

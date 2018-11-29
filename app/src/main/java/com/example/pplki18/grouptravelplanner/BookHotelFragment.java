@@ -42,8 +42,8 @@ import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.example.pplki18.grouptravelplanner.utils.Hotel;
 import com.example.pplki18.grouptravelplanner.utils.HtmlParser;
+import com.example.pplki18.grouptravelplanner.data.Hotel;
 import com.example.pplki18.grouptravelplanner.utils.PaginationScrollListener;
 import com.example.pplki18.grouptravelplanner.utils.RVAdapter_Hotel;
 import com.example.pplki18.grouptravelplanner.utils.SessionManager;
@@ -182,7 +182,6 @@ public class BookHotelFragment extends Fragment {
                 showSortPopup();
             }
         });
-
 
         close.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -423,8 +422,6 @@ public class BookHotelFragment extends Fragment {
                 builder.show();
             }
         });
-
-
 
         dialogSearch.setOnClickListener(new View.OnClickListener() {
             @Override

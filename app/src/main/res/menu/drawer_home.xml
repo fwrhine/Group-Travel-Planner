@@ -11,7 +11,7 @@
             android:icon="@drawable/ic_person_black_24dp"
             android:title="Friends" />
         <item android:id="@+id/nav_plan_list"
-            android:icon="@drawable/ic_event_note_black_24dp"
+            android:icon="@drawable/ic_event_note_black"
             android:title="Plans" />
         <item android:id="@+id/nav_reminder_list"
             android:icon="@drawable/ic_timer"

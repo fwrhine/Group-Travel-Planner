@@ -26,7 +26,7 @@ import android.widget.ImageView;
 import android.widget.SearchView;
 import android.widget.Toast;
 
-import com.example.pplki18.grouptravelplanner.data.DatabaseHelper;
+import com.example.pplki18.grouptravelplanner.old_stuff.DatabaseHelper;
 import com.example.pplki18.grouptravelplanner.data.User;
 import com.example.pplki18.grouptravelplanner.data.Group;
 import com.example.pplki18.grouptravelplanner.utils.RVAdapter_User;

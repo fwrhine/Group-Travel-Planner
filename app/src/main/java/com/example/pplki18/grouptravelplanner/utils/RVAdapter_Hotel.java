@@ -12,12 +12,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageRequest;
-import com.android.volley.toolbox.Volley;
 import com.example.pplki18.grouptravelplanner.R;
+import com.example.pplki18.grouptravelplanner.data.Hotel;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;

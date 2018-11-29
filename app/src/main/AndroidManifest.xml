@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.example.pplki18.grouptravelplanner">
 
     <supports-screens
@@ -19,13 +20,14 @@
 
     <application
         android:name=".TravelApplication"
-        android:fullBackupContent="true"
         android:allowBackup="true"
+        android:fullBackupContent="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        tools:ignore="GoogleAppIndexingWarning">
         <activity android:name=".SplashScreenActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -61,6 +63,7 @@
         <activity android:name=".EditPhoneNoActivity" />
         <activity android:name=".EditBirthdayActivity" />
         <activity android:name=".ChooseEventActivity">
+
             <!-- <intent-filter> -->
             <!-- <action android:name="android.intent.action.MAIN" /> -->
 
@@ -74,24 +77,21 @@
             android:value="@string/api_key" />
 
         <activity android:name=".PlaceActivity" />
-
         <activity android:name=".InHomeActivity" />
         <activity android:name=".CreateNewPlanActivity" />
-        <activity android:name=".EditPlanActivity"/>
+        <activity android:name=".EditPlanActivity" />
 
-        <!--<activity android:name=".Activity_InHome"></activity>-->
-        <activity android:name=".Activity_CreateReminder">
-
-        </activity>
-
+        <!-- <activity android:name=".Activity_InHome"></activity> -->
+        <activity android:name=".Activity_CreateReminder"></activity>
         <activity android:name=".Activity_EditReminder" />
 
-        <receiver android:name=".AlertReciever"/>
-        <!--<activity android:name=".Activity_ReminderList"/>-->
+        <receiver android:name=".AlertReciever" />
+        <!-- <activity android:name=".Activity_ReminderList"/> -->
         <receiver android:name=".AlertReciever" />
         <!-- <activity android:name=".Activity_ReminderList"/> -->
         <activity android:name=".EditEventActivity" />
-        <activity android:name=".EventDetailActivity"></activity>
+        <activity android:name=".EventDetailActivity" />
+        <activity android:name=".CreateNewGroupPlanActivity"></activity>
     </application>
 
 </manifest>
