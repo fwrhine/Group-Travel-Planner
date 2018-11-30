@@ -163,6 +163,35 @@ public class BookHotelFragment extends Fragment {
     }
 
     @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.d("onActivityResult", "!");
+        if (requestCode == 3) {
+            Log.d("requestCode", "3!");
+            if (resultCode == RESULT_OK) {
+                Log.d("resultCode", "RESULT_OK!");
+                String prevActivity = data.getStringExtra("ACTIVITY");
+                if (prevActivity != null && prevActivity.equals("EditPlanActivity")) {
+                    getActivity().finish();
+                } else {
+                    events = data.getParcelableArrayListExtra("events");
+
+                    for (Event e : events) {
+                        Log.d("testtt", e.getTitle());
+                    }
+
+                    Intent intent = new Intent(getActivity(), CreateNewPlanActivity.class);
+                    intent.putParcelableArrayListExtra("events", (ArrayList<? extends Parcelable>) events);
+
+                    getActivity().setResult(RESULT_OK, intent);
+                    getActivity().finish();
+                }
+
+            }
+        }
+    }
+
+    @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         firebaseDatabase = FirebaseDatabase.getInstance();

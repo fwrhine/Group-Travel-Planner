@@ -120,6 +120,7 @@ public class PlaceActivity extends AppCompatActivity {
     private RelativeLayout detailLayout;
     private ImageButton editEvent;
     private String plan_id;
+    private String type;
     private List<String> eventIDs = new ArrayList<>();
     private List<Event> events = new ArrayList<>();
     private Bundle bundle;
@@ -547,7 +548,7 @@ public class PlaceActivity extends AppCompatActivity {
         return anEvent;
     }
 
-    private void saveEventToPlan(String start_time, String end_time) {
+    private void saveEventToPlan(String start_time, final String end_time) {
 //        Log.d("SAVEVENT", "MASUK");
 //        SQLiteDatabase db = databaseHelper.getWritableDatabase();
 //
@@ -565,14 +566,68 @@ public class PlaceActivity extends AppCompatActivity {
 //        contentValues.put(EventContract.EventEntry.COL_RATING, rating_num.getText().toString());
 //        long event_id = db.insert(EventContract.EventEntry.TABLE_NAME, null, contentValues);
         String date = getIntent().getStringExtra("date");
-        String type = getIntent().getStringExtra("type");
 
-        Event anEvent = new Event(title.getText().toString(), date, start_time, end_time, type);
+        Event anEvent = new Event();
         anEvent.setQuery_id(place_id);
+        anEvent.setTitle(title.getText().toString());
         anEvent.setLocation(address.getText().toString());
         anEvent.setWebsite(website.getText().toString());
         anEvent.setPhone(phone.getText().toString());
         anEvent.setRating(rating_num.getText().toString());
+        anEvent.setType(type);
+
+        if (type.equals("hotel")) {
+            anEvent.setDate(checkInDate);
+            anEvent.setTime_start(start_time);
+        } else {
+            anEvent.setDate(date);
+            anEvent.setTime_start(start_time);
+            anEvent.setTime_end(end_time);
+        }
+
+        final String eventId = eventRef.push().getKey();
+        anEvent.setEvent_id(eventId);
+        anEvent.setPlan_id(plan_id);
+        anEvent.setCreator_id(firebaseUser.getUid());
+        eventRef.child(eventId).setValue(anEvent);
+
+        planRef = firebaseDatabase.getReference().child("plans").child(plan_id).child("events");
+        getAllEventIDs(new EventIdCallback() {
+            @Override
+            public void onCallback(List<String> list) {
+                eventIDs = list;
+                eventIDs.add(eventId);
+
+                planRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        planRef.setValue(eventIDs);
+                        if (type.equals("hotel")) {
+                            saveEventToPlan2(end_time);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+            }
+        });
+    }
+
+    private void saveEventToPlan2(String time) {
+        Event anEvent = new Event();
+        anEvent.setQuery_id(place_id);
+        anEvent.setTitle(title.getText().toString());
+        anEvent.setLocation(address.getText().toString());
+        anEvent.setWebsite(website.getText().toString());
+        anEvent.setPhone(phone.getText().toString());
+        anEvent.setRating(rating_num.getText().toString());
+        anEvent.setType(type);
+
+        anEvent.setDate(checkOutDate);
+        anEvent.setTime_start(time);
 
         final String eventId = eventRef.push().getKey();
         anEvent.setEvent_id(eventId);
@@ -746,6 +801,7 @@ public class PlaceActivity extends AppCompatActivity {
         detailLayout = findViewById(R.id.detail_layout);
         editEvent = findViewById(R.id.edit_event);
         plan_id = getIntent().getStringExtra("plan_id");
+        type = getIntent().getStringExtra("type");
 
         eventDate = (TextView) findViewById(R.id.event_detail_date);
         eventTime = (TextView) findViewById(R.id.event_detail_time);
