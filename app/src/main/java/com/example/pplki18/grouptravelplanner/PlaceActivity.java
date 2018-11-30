@@ -109,6 +109,8 @@ public class PlaceActivity extends AppCompatActivity {
     private LinearLayoutManager linearLayoutManager1;
     private LinearLayoutManager linearLayoutManager2;
     private ConstraintLayout hotel_detail;
+    private String checkInDate;
+    private String checkOutDate;
 
     private ProgressBar progressBar;
     private TextView eventDate;
@@ -125,6 +127,7 @@ public class PlaceActivity extends AppCompatActivity {
 
     private String prevActivity;
     private String prevActivity2;
+    private String prevFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -151,7 +154,7 @@ public class PlaceActivity extends AppCompatActivity {
             }
         });
 
-        if (prevActivity != null && (prevActivity.equals("HotelFragment"))) {
+        if (prevFragment != null && (prevFragment.equals("HotelFragment"))) {
             sendRequestHotel();
             hotel_amenities1.setHasFixedSize(true);
             hotel_amenities1.setLayoutManager(linearLayoutManager1);
@@ -457,6 +460,12 @@ public class PlaceActivity extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = getLayoutInflater();
         View dialogLayout = inflater.inflate(R.layout.set_time_dialog, null);
+        final TextView start = dialogLayout.findViewById(R.id.start_text);
+        TextView end = dialogLayout.findViewById(R.id.end_text);
+
+        start.setText("Check-in Time");
+        end.setText("Check-out Time");
+
         final TimePicker startTime = dialogLayout.findViewById(R.id.start_time);
         final TimePicker endTime = dialogLayout.findViewById(R.id.end_time);
 
@@ -472,20 +481,32 @@ public class PlaceActivity extends AppCompatActivity {
                         String start_time = startTime.getCurrentHour() + ":" + startTime.getCurrentMinute();
                         String end_time = endTime.getCurrentHour() + ":" + endTime.getCurrentMinute();
                         String prevActivity = getIntent().getStringExtra("ACTIVITY");
-                        Log.d("PREVVV", prevActivity);
                         if (prevActivity != null) {
                             if (prevActivity.equals("CreateNewPlanActivity")) {
                                 List<Event> events = getIntent().getParcelableArrayListExtra("events");
-                                Event anEvent = saveEventLocally(start_time, end_time);
-                                events.add(anEvent);
-                                Log.d("HEHHE", "test");
+                                // TODO SALAH KAPRAH
+                                if (prevFragment != null && prevFragment.equals("HotelFragment")) {
+                                    Log.d("HotelFragment", checkInDate + checkOutDate);
+                                    Event anEvent = saveEventLocally(checkInDate, start_time, "");
+                                    events.add(anEvent);
+                                    anEvent = saveEventLocally(checkOutDate, end_time, "");
+                                    events.add(anEvent);
+                                } else {
+                                    Log.d("ElseFragment", checkInDate + checkOutDate);
+                                    Event anEvent = saveEventLocally("", start_time, end_time);
+                                    events.add(anEvent);
+                                }
+
                                 Intent intent = new Intent(PlaceActivity.this, Fragment_PlaceList.class);
                                 intent.putParcelableArrayListExtra("events", (ArrayList<? extends Parcelable>) events);
 
                                 setResult(RESULT_OK, intent);
                                 finish();
+
+
                             } else {
                                 saveEventToPlan(start_time, end_time);
+
                                 Intent intent = new Intent(PlaceActivity.this, Fragment_PlaceList.class);
                                 intent.putExtra("ACTIVITY", "EditPlanActivity");
                                 setResult(RESULT_OK, intent);
@@ -502,18 +523,26 @@ public class PlaceActivity extends AppCompatActivity {
         builder.show();
     }
 
-    private Event saveEventLocally(String start_time, String end_time) {
+    private Event saveEventLocally(String date, String start_time, String end_time) {
         Event anEvent = new Event();
+
+        if (prevFragment != null && prevFragment.equals("HotelFragment")) {
+            Log.d("saveEventLocally", "HotelFragment");
+            anEvent.setDate(date);
+            anEvent.setTime_start(start_time);
+        } else {
+            Log.d("saveEventLocally", "ElseFragment");
+            anEvent.setDate(getIntent().getStringExtra("date"));
+            anEvent.setTime_start(start_time);
+            anEvent.setTime_end(end_time);
+        }
         anEvent.setQuery_id(place_id);
         anEvent.setTitle(title.getText().toString());
         anEvent.setLocation(address.getText().toString());
         anEvent.setWebsite(website.getText().toString());
-        anEvent.setDate(getIntent().getStringExtra("date"));
-        anEvent.setTime_start(start_time);
-        anEvent.setTime_end(end_time);
         anEvent.setPhone(phone.getText().toString());
-        anEvent.setType(getIntent().getStringExtra("type"));
         anEvent.setRating(rating_num.getText().toString());
+        anEvent.setType(getIntent().getStringExtra("type"));
 
         return anEvent;
     }
@@ -699,12 +728,15 @@ public class PlaceActivity extends AppCompatActivity {
         linearLayoutManager1 = new LinearLayoutManager(this);
         linearLayoutManager2 = new LinearLayoutManager(this);
         hotel_detail = findViewById(R.id.hotel_detail);
+        checkInDate = getIntent().getStringExtra("checkInDate");
+        checkOutDate = getIntent().getStringExtra("checkOutDate");
 
 
         progressBar = findViewById(R.id.main_progress);
         volleyUtils = new VolleyUtils(this);
         prevActivity = getIntent().getStringExtra("ACTIVITY");
         prevActivity2 = getIntent().getStringExtra("PREV_ACTIVITY");
+        prevFragment = getIntent().getStringExtra("FRAGMENT");
 
 
         eventDate = findViewById(R.id.event_detail_date);

@@ -153,6 +153,9 @@ public class BookHotelFragment extends Fragment {
     private boolean isLoading = false;
     private boolean isLastPage = false;
 
+    private String start_time;
+    private String end_time;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -654,11 +657,14 @@ public class BookHotelFragment extends Fragment {
             @Override public void cardViewOnClick(View v, int position) {
                 Intent intent = new Intent(getActivity(), PlaceActivity.class);
                 intent.putExtra("PLACE_ID", String.valueOf(adapter.getAll().get(position).getHotel_id()));
-                intent.putExtra("ACTIVITY", "HotelFragment");
+                intent.putExtra("FRAGMENT", "HotelFragment");
+                intent.putExtra("ACTIVITY", prevActivity);
+                intent.putParcelableArrayListExtra("events", (ArrayList<? extends Parcelable>) events);
                 intent.putExtra("plan_id", plan_id);
-                intent.putExtra("date", event_date);
-                intent.putExtra("type", "Hotel");
-                startActivity(intent);
+                intent.putExtra("checkInDate", dateFormatter2.format(checkInDate));
+                intent.putExtra("checkOutDate", dateFormatter2.format(checkOutDate));
+                intent.putExtra("type", "hotel");
+                startActivityForResult(intent, 3);
             }
 
             @Override public void addImageOnClick(View v, int position) {
@@ -680,7 +686,7 @@ public class BookHotelFragment extends Fragment {
         //TODO HELP
         ViewGroup parent = Objects.requireNonNull(getView()).findViewById(R.id.container);
         View dialogLayout = inflater.inflate(R.layout.set_time_dialog, parent, false);
-        final TextView start = dialogLayout.findViewById(R.id.start_text);
+        TextView start = dialogLayout.findViewById(R.id.start_text);
         TextView end = dialogLayout.findViewById(R.id.end_text);
 
         start.setText("Check-in Time");
@@ -695,8 +701,9 @@ public class BookHotelFragment extends Fragment {
         builder.setPositiveButton("OK",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        String start_time = startTime.getCurrentHour() + ":" + startTime.getCurrentMinute();
-                        String end_time = endTime.getCurrentHour() + ":" + endTime.getCurrentMinute();
+                        //CHANGED
+                        start_time = startTime.getCurrentHour() + ":" + startTime.getCurrentMinute();
+                        end_time = endTime.getCurrentHour() + ":" + endTime.getCurrentMinute();
                         Log.d("prev_activity", prevActivity);
                         if (prevActivity.equals("CreateNewPlanActivity")) {
                             Event anEvent = saveEventLocally(hotel, dateFormatter2.format(checkInDate), start_time);
@@ -709,8 +716,8 @@ public class BookHotelFragment extends Fragment {
                             getActivity().setResult(RESULT_OK, intent);
                             getActivity().finish();
                         } else {
+                            //CHANGED
                             saveEventToPlan(hotel, dateFormatter2.format(checkInDate), start_time);
-                            saveEventToPlan(hotel, dateFormatter2.format(checkOutDate), end_time);
                             getActivity().finish();
                         }
                     }
@@ -738,24 +745,48 @@ public class BookHotelFragment extends Fragment {
         return anEvent;
     }
 
-    private void saveEventToPlan(Hotel hotel, String date, String time) {
-//        Log.d("SAVEVENT", "MASUK");
-//        SQLiteDatabase db = databaseHelper.getWritableDatabase();
-//
-//        ContentValues contentValues = new ContentValues();
-//        contentValues.put(EventContract.EventEntry.COL_QUERY_ID, place.getPlace_id());
-//        contentValues.put(EventContract.EventEntry.COL_PLAN_ID, plan_id);
-//        contentValues.put(EventContract.EventEntry.COL_TITLE, place.getName());
-//        contentValues.put(EventContract.EventEntry.COL_LOCATION, place.getAddress());
-//        contentValues.put(EventContract.EventEntry.COL_WEBSITE, place.getWebsite());
-//        contentValues.put(EventContract.EventEntry.COL_DATE, event_date);
-//        //TODO ERROR PLACES GADA ADDRESS DLL ??!!
-//        contentValues.put(EventContract.EventEntry.COL_TIME_START, start_time);
-//        contentValues.put(EventContract.EventEntry.COL_TIME_END, end_time);
-//        contentValues.put(EventContract.EventEntry.COL_PHONE, place.getPhone_number());
-//        contentValues.put(EventContract.EventEntry.COL_TYPE, type);
-//        contentValues.put(EventContract.EventEntry.COL_RATING, place.getRating());
-//        long event_id = db.insert(EventContract.EventEntry.TABLE_NAME, null, contentValues);
+    private void saveEventToPlan(final Hotel hotel, String date, String time) {
+        Event anEvent = new Event();
+        anEvent.setQuery_id(hotel.getHotel_id());
+        anEvent.setTitle(hotel.getName());
+        anEvent.setLocation(hotel.getAddress());
+        anEvent.setWebsite(hotel.getWebsite());
+        anEvent.setDate(date);
+        anEvent.setTime_start(time);
+        anEvent.setPhone(hotel.getPhone_number());
+        anEvent.setType("hotel");
+
+        final String eventId = eventRef.push().getKey();
+        anEvent.setEvent_id(eventId);
+        anEvent.setPlan_id(plan_id);
+        anEvent.setCreator_id(firebaseUser.getUid());
+        eventRef.child(eventId).setValue(anEvent);
+
+        planRef = firebaseDatabase.getReference().child("plans").child(plan_id).child("events");
+        getAllEventIDs(new EventIdCallback() {
+            @Override
+            public void onCallback(List<String> list) {
+                eventIDs = list;
+                eventIDs.add(eventId);
+
+                planRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        planRef.setValue(eventIDs);
+                        //CHANGED
+                        saveEventToPlan2(hotel, dateFormatter2.format(checkOutDate), end_time);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+            }
+        });
+    }
+
+    private void saveEventToPlan2(Hotel hotel, String date, String time) {
         Event anEvent = new Event();
         anEvent.setQuery_id(hotel.getHotel_id());
         anEvent.setTitle(hotel.getName());
@@ -827,7 +858,6 @@ public class BookHotelFragment extends Fragment {
         volleyUtils = new VolleyUtils(getContext());
         sessionManager = new SessionManager(getActivity().getApplicationContext());
         adapter = new RVAdapter_Hotel(getContext());
-
 
         progressBar = getView().findViewById(R.id.main_progress);
         connectionText = getView().findViewById(R.id.connection);
