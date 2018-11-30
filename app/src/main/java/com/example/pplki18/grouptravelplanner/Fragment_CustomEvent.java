@@ -161,10 +161,25 @@ public class Fragment_CustomEvent extends Fragment {
     private void saveEventToSuggestion(Suggestion aSuggestion) {
         String groupId = getActivity().getIntent().getStringExtra("group_id");
 
+        String planSuggestId = getArguments().getString("suggest_to_plan_id");
+        String planSuggestName = getArguments().getString("suggest_to_plan_name");
+        String planSuggestDate = getArguments().getString("suggest_to_plan_date");
+
+        Log.d("PLAN-ID", planSuggestId);
+        Log.d("PLAN-NAME", planSuggestName);
+        Log.d("PLAN-DATE", planSuggestDate);
+
+        String suggestDesc = "For Plan '"+ planSuggestName +"' on "+ planSuggestDate;
+
         final String eventId = eventRef.push().getKey();
         aSuggestion.setSuggestion_id(eventId);
+        aSuggestion.setDescription(suggestDesc);
         aSuggestion.setGroup_id(groupId);
         aSuggestion.setCreator_id(firebaseUser.getUid());
+        aSuggestion.setPlan_id(planSuggestId);
+        aSuggestion.setPlan_name(planSuggestName);
+        aSuggestion.setPlan_date(planSuggestDate);
+
         eventRef.child(eventId).setValue(aSuggestion);
 
         planRef = firebaseDatabase.getReference().child("groups").child(groupId).child("suggestion");

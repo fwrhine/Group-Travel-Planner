@@ -119,6 +119,7 @@ public class RVAdapter_Suggest extends RecyclerView.Adapter<RVAdapter_Suggest.Su
         Intent myIntent = new Intent(context, EventDetailActivity.class);
         Suggestion aSuggest = suggestions.get(pos);
 
+        myIntent.putExtra("prev_fragment", "Fragment_SuggestionList");
         myIntent.putExtra("event", aSuggest);
 
         ((Activity) context).startActivityForResult(myIntent, 5);

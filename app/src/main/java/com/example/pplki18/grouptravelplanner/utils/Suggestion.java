@@ -33,7 +33,10 @@ public class Suggestion implements Parcelable, Comparable<Suggestion> {
     private String destination;
     private String transport_number;
 
+    private String plan_id;
     private String plan_name;
+    private String plan_date;
+
 
     public Suggestion() {}
 
@@ -68,7 +71,9 @@ public class Suggestion implements Parcelable, Comparable<Suggestion> {
         origin = in.readString();
         destination = in.readString();
         transport_number = in.readString();
+        plan_id = in.readString();
         plan_name = in.readString();
+        plan_date = in.readString();
     }
 
     public static final Creator<Suggestion> CREATOR = new Creator<Suggestion>() {
@@ -183,12 +188,28 @@ public class Suggestion implements Parcelable, Comparable<Suggestion> {
         this.transport_number = transport_number;
     }
 
+    public String getPlan_id() {
+        return plan_id;
+    }
+
+    public void setPlan_id(String plan_id) {
+        this.plan_id = plan_id;
+    }
+
     public String getPlan_name() {
         return plan_name;
     }
 
     public void setPlan_name(String plan_name) {
         this.plan_name = plan_name;
+    }
+
+    public String getPlan_date() {
+        return plan_date;
+    }
+
+    public void setPlan_date(String plan_date) {
+        this.plan_date = plan_date;
     }
 
     public String getRating() {
@@ -264,7 +285,9 @@ public class Suggestion implements Parcelable, Comparable<Suggestion> {
         parcel.writeString(origin);
         parcel.writeString(destination);
         parcel.writeString(transport_number);
+        parcel.writeString(plan_id);
         parcel.writeString(plan_name);
+        parcel.writeString(plan_date);
     }
 
     @Override

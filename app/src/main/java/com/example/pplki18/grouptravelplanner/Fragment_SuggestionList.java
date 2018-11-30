@@ -113,8 +113,7 @@ public class Fragment_SuggestionList extends Fragment {
         new_suggestion_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                selectDate(plans.get(0));
-                //CreateAlertDialogWithRadioButtonGroup();
+                CreateAlertDialogWithRadioButtonGroup();
             }
         });
     }
@@ -276,8 +275,6 @@ public class Fragment_SuggestionList extends Fragment {
                     switch(item)
                     {
                         default:
-                            Log.d("SELECTED-ID", planIds.get(item));
-                            Log.d("SELECTED-NAME", values[item]+"");
                             myIntent.putExtra("suggest_to_plan_id", planIds.get(item));
                             myIntent.putExtra("suggest_to_plan_name", values[item]);
                             selectDate(plans.get(item));
@@ -291,7 +288,7 @@ public class Fragment_SuggestionList extends Fragment {
     }
 
     private void selectDate(Plan plan) {
-        //alertDialog1.dismiss();
+        alertDialog1.dismiss();
         String strFirstDate = plan.getPlan_start_date();
         String strSecondDate = plan.getPlan_end_date();
 
@@ -312,7 +309,6 @@ public class Fragment_SuggestionList extends Fragment {
             dateList.add(dateFormatter.format(startCal.getTime()));
 
             int diffDays =  (int) (dateDiff / (24* 1000 * 60 * 60));
-            Log.d("FIRST-DATE", diffDays+"");
 
             if (diffDays != 0) {
                 for (int i = 0; i < diffDays; i++) {
@@ -320,8 +316,6 @@ public class Fragment_SuggestionList extends Fragment {
                     dateList.add(dateFormatter.format(startCal.getTime()));
                 }
             }
-
-            Log.d("ALL-DATE", dateList.size()+"");
 
             final CharSequence[] values = dateList.toArray(new CharSequence[dateList.size()]);
 
@@ -334,8 +328,7 @@ public class Fragment_SuggestionList extends Fragment {
                     switch(item)
                     {
                         default:
-                            Log.d("SELECTED-DATE", values[item]+"");
-                            myIntent.putExtra("suggest_to_plan_id", values[item]);
+                            myIntent.putExtra("suggest_to_plan_date", values[item]);
 
                             Fragment_SuggestionList.this.startActivity(myIntent);
                             break;
