@@ -68,8 +68,7 @@ public class Fragment_PollChoices extends Fragment implements NavigationView.OnN
         firebaseDatabase = FirebaseDatabase.getInstance();
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
-        // TODO pollID = intent.getIntent().getStringExtra("id");
-        pollID = "something";
+        pollID = getActivity().getIntent().getStringExtra("pollID");
         if (firebaseUser == null) {
             Intent errorIntent = new Intent(getActivity(), LoginActivity.class);
             Fragment_PollChoices.this.startActivity(errorIntent);

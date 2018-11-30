@@ -12,6 +12,7 @@ public class Poll {
     private ArrayList<String> choiceList;
     private HashMap<String, Integer> choiceMap;
     private String pollQuestion;
+    private String groupID;
 
     public Poll(ArrayList<String> list){
         this.choiceList = list;
@@ -49,6 +50,10 @@ public class Poll {
     public String getPollQuestion(){
         return pollQuestion;
     }
+
+    public String getGroupID() {
+        return groupID;
+    }
     //Setter
     public void setId(String newID) {
         this.id = newID;
@@ -72,5 +77,9 @@ public class Poll {
 
     public void setChoiceMap(HashMap<String, Integer> map) {
         this.choiceMap = map;
+    }
+
+    public void setGroupID(String groupID) {
+        this.groupID = groupID;
     }
 }

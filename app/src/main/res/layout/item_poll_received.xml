@@ -7,13 +7,13 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingTop="8dp"
-    android:clickable="true">
+    android:id="@+id/text_poll_redirect"
+    >
 
     <ImageView
         android:id="@+id/image_message_profile"
         android:layout_width="32dp"
         android:layout_height="32dp"
-        android:background="@mipmap/ic_launcher"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginLeft="8dp"
         app:layout_constraintLeft_toLeftOf="parent" />
@@ -54,7 +54,7 @@
         app:layout_constraintBottom_toBottomOf="@id/photoImageView" />
 
     <TextView
-        android:id="@+id/text_message_body"
+        android:id="@+id/text_poll_body"
         android:text="TOPIC TEXT"
         android:background="@drawable/rounded_rectangle_gray"
         android:layout_width="300dp"
@@ -65,7 +65,9 @@
         android:layout_marginTop="4dp"
         app:layout_constraintTop_toBottomOf="@+id/text_message_name"
         app:layout_constraintLeft_toRightOf="@+id/image_message_profile"
-        android:layout_marginLeft="8dp" />
+        android:layout_marginLeft="8dp"
+        android:clickable="true"
+        />
 
     <TextView
         android:id="@+id/text_message_time"
@@ -73,14 +75,17 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="10sp"
-        app:layout_constraintLeft_toRightOf="@+id/text_message_body"
+        app:layout_constraintLeft_toRightOf="@id/text_poll_body"
         android:layout_marginLeft="4dp"
-        app:layout_constraintBottom_toBottomOf="@+id/text_message_body" />
+        app:layout_constraintBottom_toBottomOf="@id/text_poll_body" />
 
     <TextView
         android:id="@+id/text_message_pollID"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="invisible"/>
+        android:text="poll id"
+        app:layout_constraintTop_toBottomOf="@id/text_message_time"
+
+        />
 
 </android.support.constraint.ConstraintLayout>

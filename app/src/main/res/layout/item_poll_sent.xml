@@ -7,7 +7,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingTop="8dp"
-    android:clickable="true">
+    android:id="@+id/text_poll_redirect"
+    >
 
     <ImageView
         android:id="@+id/photoImageView"
@@ -23,6 +24,17 @@
         app:layout_constraintTop_toTopOf="parent"/>
 
     <TextView
+        android:id="@+id/photo_message_read"
+        android:text="Read "
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="10sp"
+        android:layout_marginRight="4dp"
+        app:layout_constraintBottom_toTopOf="@+id/photo_message_time"
+        app:layout_constraintRight_toLeftOf="@+id/photoImageView" />
+
+
+    <TextView
         android:id="@+id/photo_message_time"
         android:text="11:40"
         android:layout_width="wrap_content"
@@ -36,14 +48,26 @@
         android:id="@+id/text_poll_body"
         android:text="POLL TEXT"
         android:background="@drawable/rounded_rectangle_green"
-        android:layout_width="300dp"
+        android:layout_width="250dp"
         android:layout_height="100dp"
         android:maxWidth="240dp"
         android:padding="8dp"
         android:textColor="#ffffff"
         android:layout_marginRight="8dp"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:clickable="true"
+        />
+
+    <TextView
+        android:id="@+id/text_poll_read"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="4dp"
+        android:text="Read "
+        android:textSize="10sp"
+        app:layout_constraintBottom_toTopOf="@id/text_message_time"
+        app:layout_constraintRight_toLeftOf="@id/text_poll_body" />
 
     <TextView
         android:id="@+id/text_message_time"
@@ -52,13 +76,24 @@
         android:layout_height="wrap_content"
         android:textSize="10sp"
         android:layout_marginRight="4dp"
-        app:layout_constraintBottom_toBottomOf="@+id/text_poll_body"
-        app:layout_constraintRight_toLeftOf="@+id/text_poll_body" />
+        app:layout_constraintBottom_toBottomOf="@id/text_poll_body"
+        app:layout_constraintRight_toLeftOf="@id/text_poll_body" />
 
     <TextView
         android:id="@+id/text_message_pollID"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="invisible"/>
+        android:text="poll id"
+        app:layout_constraintBottom_toTopOf="@id/text_poll_read"
+        app:layout_constraintRight_toLeftOf="@id/text_poll_body" />
+    />
 
+    <Button
+        android:id="@+id/text_poll_redirect_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="poll"
+        app:layout_constraintBottom_toTopOf="@id/text_message_pollID"
+        app:layout_constraintRight_toLeftOf="@id/text_poll_body" />
+    />
 </android.support.constraint.ConstraintLayout>

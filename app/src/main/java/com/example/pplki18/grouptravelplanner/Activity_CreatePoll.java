@@ -14,6 +14,8 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.pplki18.grouptravelplanner.data.Group;
+import com.example.pplki18.grouptravelplanner.data.Message;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -37,11 +39,15 @@ public class Activity_CreatePoll extends AppCompatActivity {
     private ArrayList<String> choiceList;
     private String choices;
     private ArrayList<String> voters;
+    //    private Group group;
+    private String groupID;
 
-    FirebaseDatabase firebaseDatabase;
-    FirebaseAuth firebaseAuth;
-    FirebaseUser firebaseUser;
-    DatabaseReference pollRef;
+    private FirebaseDatabase firebaseDatabase;
+    private FirebaseAuth firebaseAuth;
+    private FirebaseUser firebaseUser;
+    private DatabaseReference pollRef;
+    private DatabaseReference messageDatabaseReference;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +69,7 @@ public class Activity_CreatePoll extends AppCompatActivity {
                         choices += "     " + newChoice;
                     }
                     choiceText.setText(choices);
+                    choiceInput.setText("");
 //                    Intent intent = getIntent();
 //                    intent.putExtra("topic", topicInput.getText());
 //                    finish();
@@ -73,6 +80,15 @@ public class Activity_CreatePoll extends AppCompatActivity {
                 }
             }
         });
+
+//        choiceText.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent myIntent = new Intent(Activity_CreatePoll.this , InHomeActivity.class);
+//                myIntent.putExtra("fragment", "group");
+//                startActivity(myIntent);
+//            }
+//        });
 
         btndone.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -109,19 +125,28 @@ public class Activity_CreatePoll extends AppCompatActivity {
                     String pollKey = pollRef.push().getKey();
                     addPoll(newPoll, pollKey);
                     newPoll.setId(pollKey);
+                    newPoll.setGroupID(groupID);
+
+//========================
+                    String msgKey = messageDatabaseReference.push().getKey();
+                    Message message = new Message(msgKey, firebaseUser.getUid(), topic, null, System.currentTimeMillis(), pollKey);
+                    messageDatabaseReference.child(msgKey).setValue(message);
+
+                    //================================
+
                     //TODO add poll message to the group chat
                     Toast.makeText(getApplicationContext(), "Created Poll", Toast.LENGTH_SHORT).show();
 
-                Intent myIntent = new Intent(Activity_CreatePoll.this , InGroupActivity.class);
-                myIntent.putExtra("fragment", "group");
-                startActivity(myIntent);
+                    Intent myIntent = new Intent(Activity_CreatePoll.this , InHomeActivity.class);
+                    myIntent.putExtra("fragment", "group");
+                    startActivity(myIntent);
                 }
 
                 else {
 //                    Toast.makeText(getApplicationContext(), "Write a topic and at least 2 " +
 //                            "choices must be made", Toast.LENGTH_SHORT).show();
                     Intent myIntent = new Intent(Activity_CreatePoll.this , InHomeActivity.class);
-//                    myIntent.putExtra("fragment", "group");
+                    myIntent.putExtra("fragment", "group");
                     startActivity(myIntent);
                 }
             }
@@ -144,7 +169,13 @@ public class Activity_CreatePoll extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
         firebaseDatabase = FirebaseDatabase.getInstance();
-        pollRef = firebaseDatabase.getReference().child("polls");    }
+        pollRef = firebaseDatabase.getReference().child("polls");
+
+        groupID = getIntent().getStringExtra("groupID");
+        messageDatabaseReference = firebaseDatabase.getReference().child("messages").child(groupID);
+
+
+    }
 
     private void addPoll(final Poll newPoll, final String pollKey){
         final List<Poll> pollList = new ArrayList<>();

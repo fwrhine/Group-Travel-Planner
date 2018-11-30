@@ -126,7 +126,7 @@ public class Fragment_GroupChat extends Fragment {
 
 
                     @Override
-                    protected void onBindViewHolder(@NonNull ChatViewHolder holder, int position, @NonNull Message model) {
+                    protected void onBindViewHolder(@NonNull final ChatViewHolder holder, int position, @NonNull Message model) {
                         switch (holder.getItemViewType()) {
                             case VIEW_TYPE_MESSAGE_SENT:
                                 holder.bind(model);
@@ -135,9 +135,25 @@ public class Fragment_GroupChat extends Fragment {
                                 holder.bind(model);
                             case VIEW_TYPE_POLL_SENT:
                                 holder.bind(model);
+//                                holder.itemView.findViewById(R.id.text_poll_redirect).setOnClickListener(new View.OnClickListener() {
+//                                    @Override
+//                                    public void onClick(View v) {
+//                                        TextView pollIDextra = holder.itemView.findViewById(R.id.text_message_pollID);
+//                                        String pollID = pollIDextra.getText().toString();
+//                                        Intent pollChoiceIntent = new Intent(getActivity() , ActivityPollChoiceTest.class);
+//                                        pollChoiceIntent.putExtra("pollID", pollID);
+//                                        startActivity(pollChoiceIntent);
+//                                    }
+//                                });
                                 break;
                             case VIEW_TYPE_POLL_RECEIVED:
                                 holder.bind(model);
+                                holder.itemView.findViewById(R.id.text_poll_redirect).setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+
+                                    }
+                                });
                         }
                     }
 
@@ -152,10 +168,10 @@ public class Fragment_GroupChat extends Fragment {
                                 return new ReceivedMessageHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_message_received, parent, false), group.getGroup_id());
                               //TODO case for poll send and receive and do viewholder
                             case VIEW_TYPE_POLL_SENT:
-                                return new SentPollMessageHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_poll_sent, parent, false));
+                                return new SentPollMessageHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_poll_sent, parent, false), getContext());
 //
                             case VIEW_TYPE_POLL_RECEIVED:
-                                return new ReceivedPollMessageHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_poll_received, parent, false), group.getGroup_id());
+                                return new ReceivedPollMessageHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_poll_received, parent, false), group.getGroup_id(), getContext());
                         }
                         return null;
                     }
@@ -225,6 +241,8 @@ public class Fragment_GroupChat extends Fragment {
                 }
                 ArrayList<String> votersList = new ArrayList<String>(Arrays.asList(voters));
                 myIntent.putStringArrayListExtra("voters", votersList);
+                String groupID = group.getGroup_id();
+                myIntent.putExtra("groupID", groupID);
                 // Need to put group id or chat??
                 Fragment_GroupChat.this.startActivity(myIntent);
             }

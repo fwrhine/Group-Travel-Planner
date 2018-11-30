@@ -29,7 +29,7 @@ public class ReceivedMessageHolder extends ChatViewHolder {
     FirebaseUser firebaseUser;
     FirebaseDatabase firebaseDatabase;
     DatabaseReference userRef, readStampsRef;
-    TextView messageText, messageTimeText, photoTimeText, nameText, pollID;
+    TextView messageText, messageTimeText, photoTimeText, nameText;
     ImageView photoImageView, profileImage;
 
     public ReceivedMessageHolder(View itemView, String groupId) {
