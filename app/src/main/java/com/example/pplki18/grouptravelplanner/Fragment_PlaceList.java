@@ -471,10 +471,21 @@ public class Fragment_PlaceList extends Fragment {
 
         String groupId = getActivity().getIntent().getStringExtra("group_id");
 
+        String planSuggestId = getArguments().getString("suggest_to_plan_id");
+        String planSuggestName = getArguments().getString("suggest_to_plan_name");
+        String planSuggestDate = getArguments().getString("suggest_to_plan_date");
+
+        String suggestDesc = "For Plan '"+ planSuggestName +"' on "+ planSuggestDate;
+
         final String eventId = suggestionRef.push().getKey();
         aSuggestion.setSuggestion_id(eventId);
-        aSuggestion.setGroup_id(groupId);   // TODO Fix problem for group_id
+        aSuggestion.setDescription(suggestDesc);
+        aSuggestion.setGroup_id(groupId);
         aSuggestion.setCreator_id(firebaseUser.getUid());
+        aSuggestion.setPlan_id(planSuggestId);
+        aSuggestion.setPlan_name(planSuggestName);
+        aSuggestion.setPlan_date(planSuggestDate);
+
         suggestionRef.child(eventId).setValue(aSuggestion);
 
         planRef = firebaseDatabase.getReference().child("groups").child(groupId).child("suggestion");

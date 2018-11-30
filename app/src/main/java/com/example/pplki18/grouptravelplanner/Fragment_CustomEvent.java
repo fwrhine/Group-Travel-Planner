@@ -165,10 +165,6 @@ public class Fragment_CustomEvent extends Fragment {
         String planSuggestName = getArguments().getString("suggest_to_plan_name");
         String planSuggestDate = getArguments().getString("suggest_to_plan_date");
 
-        Log.d("PLAN-ID", planSuggestId);
-        Log.d("PLAN-NAME", planSuggestName);
-        Log.d("PLAN-DATE", planSuggestDate);
-
         String suggestDesc = "For Plan '"+ planSuggestName +"' on "+ planSuggestDate;
 
         final String eventId = eventRef.push().getKey();

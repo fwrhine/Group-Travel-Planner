@@ -117,7 +117,6 @@ public class EventDetailActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-
         String start;
         String end;
         String duration;

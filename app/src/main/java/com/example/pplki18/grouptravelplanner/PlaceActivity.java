@@ -471,10 +471,21 @@ public class PlaceActivity extends AppCompatActivity {
 
         String groupId = getIntent().getStringExtra("group_id");
 
+        String planSuggestId = getIntent().getStringExtra("suggest_to_plan_id");
+        String planSuggestName = getIntent().getStringExtra("suggest_to_plan_name");
+        String planSuggestDate = getIntent().getStringExtra("suggest_to_plan_date");
+
+        String suggestDesc = "For Plan '"+ planSuggestName +"' on "+ planSuggestDate;
+
         final String eventId = eventRef.push().getKey();
         aSuggestion.setSuggestion_id(eventId);
+        aSuggestion.setDescription(suggestDesc);
         aSuggestion.setGroup_id(groupId);
         aSuggestion.setCreator_id(firebaseUser.getUid());
+        aSuggestion.setPlan_id(planSuggestId);
+        aSuggestion.setPlan_name(planSuggestName);
+        aSuggestion.setPlan_date(planSuggestDate);
+
         eventRef.child(eventId).setValue(aSuggestion);
 
         planRef = firebaseDatabase.getReference().child("groups").child(groupId).child("suggestion");
