@@ -121,6 +121,7 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
         setTitle(from_intent_plan_name);
 
         save_plan.setImageDrawable(getResources().getDrawable(R.drawable.ic_more_vert_white_24dp));
+        setMoreButton();
 
         try {
             date_start = dateFormatter2.parse(from_intent_start_date);
@@ -220,14 +221,13 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
 
     // TODO set the triple dot more button
     private void setMoreButton() {
-        save_plan.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        updatePlanDate();
-                    }
-                }
-        );
+        save_plan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(EditPlanActivity.this, "Sorry, this function is not " +
+                        "implemented yet...", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private boolean checkDateAvailability() {

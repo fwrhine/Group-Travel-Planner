@@ -167,6 +167,10 @@ public class RVAdapter_Plan extends RecyclerView.Adapter<RVAdapter_Plan.PlanView
                                 box = renameDialog(position, name);
                                 box.show();
                                 break;
+                            case R.id.edit_desc:
+                                box = descDialog(position, name);
+                                box.show();
+                                break;
                             case R.id.delete_plan:
                                 box = deleteConfirmation(position, name);
                                 box.show();
@@ -344,6 +348,45 @@ public class RVAdapter_Plan extends RecyclerView.Adapter<RVAdapter_Plan.PlanView
     private void renamePlan(Plan plan, String new_name) {
         planRef = firebaseDatabase.getReference().child("plans").child(plan.getPlan_id());
         planRef.child("plan_name").setValue(new_name);
+        notifyDataSetChanged();
+    }
+
+    private AlertDialog descDialog(final int position, String name) {
+        final EditText edtText = new EditText(context);
+        String desc = plans.get(position).getPlan_overview();
+        if (desc != null) {
+            edtText.setText(desc);
+        }
+        return new AlertDialog.Builder(context)
+                //set message, title, and icon
+                .setTitle("Edit description for \"" + name + "\"?")
+                .setMessage("Insert new description below!")
+                .setView(edtText)
+                .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        //your renaming code
+                        String new_desc = edtText.getText().toString();
+                        editDescription(plans.get(position), new_desc);
+                        plans.get(position).setPlan_overview(new_desc);
+                        notifyDataSetChanged();
+                        dialog.dismiss();
+                    }
+                })
+
+                .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        dialog.dismiss();
+
+                    }
+                })
+                .create();
+    }
+
+    private void editDescription(Plan plan, String new_desc) {
+        planRef = firebaseDatabase.getReference().child("plans").child(plan.getPlan_id());
+        planRef.child("plan_overview").setValue(new_desc);
         notifyDataSetChanged();
     }
 

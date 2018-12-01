@@ -2,11 +2,16 @@ package com.example.pplki18.grouptravelplanner.data;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
-public class Plan implements Parcelable {
+public class Plan implements Parcelable, Comparable<Plan> {
 
     private String plan_id;
     private String creatorId;
@@ -154,5 +159,32 @@ public class Plan implements Parcelable {
         parcel.writeString(plan_modified);
         parcel.writeString(plan_created);
         parcel.writeStringList(events);
+    }
+
+    @Override
+    public int compareTo(@NonNull Plan plan) {
+        SimpleDateFormat format = new SimpleDateFormat("d MMMM yyyy", Locale.US);
+        try {
+            Date this_start = null;
+            Date this_end = null;
+            Date event_start = null;
+            Date event_end = null;
+
+            this_start = format.parse(this.getPlan_start_date());
+            this_end = format.parse(this.getPlan_end_date());
+            event_start = format.parse(plan.getPlan_start_date());
+            event_end = format.parse(plan.getPlan_end_date());
+
+            if (this_start.getTime() > event_start.getTime()) {
+                return 1;
+            } else if (this_start.getTime() < event_start.getTime()) {
+                return -1;
+            } else {
+                return (int) (this_end.getTime() - event_end.getTime());
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 }

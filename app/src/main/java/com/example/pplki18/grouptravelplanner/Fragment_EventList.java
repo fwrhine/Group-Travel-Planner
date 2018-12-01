@@ -197,10 +197,11 @@ public class Fragment_EventList extends Fragment {
                             for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                                 Event event = postSnapshot.getValue(Event.class); // Group Objects
                                 if (eventIDs.contains(event.getEvent_id()) && str_cur_date.equals(event.getDate())) {
-                                    Log.d("TRUE", event.getEvent_id() + "");
+//                                    Log.d("TRUE", event.getEvent_id() + "");
                                     events.add(event);
                                 }
                             }
+                            Collections.sort(events);
                             callback.onCallback(events);
                         }
 
