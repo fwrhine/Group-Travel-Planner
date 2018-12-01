@@ -113,8 +113,8 @@ public class RVAdapter_Plan extends RecyclerView.Adapter<RVAdapter_Plan.PlanView
 
         String dateString = start_date + " - " + end_date
                 + total_day_str;
-        String createdString = "Modified: " + plan.getPlan_modified() + " / "
-                + "Created: " + plan.getPlan_created();
+        String createdString = "Created: " + plan.getPlan_created() + " / "
+                + "Modified: " + plan.getPlan_modified();
 
         planViewHolder.planName.setText(plan.getPlan_name());
         planViewHolder.planDate.setText(dateString);
