@@ -1,14 +1,20 @@
 package com.example.pplki18.grouptravelplanner.utils.Chat;
 
+import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.example.pplki18.grouptravelplanner.ActivityPollChoiceTest;
+import com.example.pplki18.grouptravelplanner.InGroupActivity;
 import com.example.pplki18.grouptravelplanner.R;
 import com.example.pplki18.grouptravelplanner.data.Message;
 import com.example.pplki18.grouptravelplanner.data.User;
@@ -18,37 +24,53 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.TimeZone;
 
-public class ReceivedMessageHolder extends ChatViewHolder {
+public class ReceivedPollMessageHolder extends ChatViewHolder {
     String groupId;
+    TextView pollText, pollTimeText, fullName, pollID;
+    ImageView profileImage;
+
     FirebaseAuth firebaseAuth;
     FirebaseUser firebaseUser;
     FirebaseDatabase firebaseDatabase;
     DatabaseReference userRef, readStampsRef;
-    TextView messageText, messageTimeText, photoTimeText, nameText;
-    ImageView photoImageView, profileImage;
+    ConstraintLayout cL;
+    Context context;
 
-    public ReceivedMessageHolder(View itemView, String groupId) {
+
+
+    public ReceivedPollMessageHolder(final View itemView, String groupId, final Context context) {
         super(itemView);
         this.groupId = groupId;
+        this.context = context;
         firebaseDatabase = FirebaseDatabase.getInstance();
         userRef = firebaseDatabase.getReference().child("users");
         readStampsRef = firebaseDatabase.getReference().child("groups").child(groupId).child("read_stamps");
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
 
-        messageText = (TextView) itemView.findViewById(R.id.text_message_body);
-        messageTimeText = (TextView) itemView.findViewById(R.id.text_message_time);
-        photoImageView = itemView.findViewById(R.id.photoImageView);
-        messageTimeText = itemView.findViewById(R.id.text_message_time);
-        photoTimeText = itemView.findViewById(R.id.photo_message_time);
-        nameText = (TextView) itemView.findViewById(R.id.text_message_name);
+        pollID = (TextView) itemView.findViewById(R.id.poll_id);
+        pollText = (TextView) itemView.findViewById(R.id.question);
+        pollTimeText = (TextView) itemView.findViewById(R.id.poll_message_time);
+        fullName = (TextView) itemView.findViewById(R.id.text_message_name);
         profileImage = (ImageView) itemView.findViewById(R.id.image_message_profile);
+        cL = (ConstraintLayout) itemView.findViewById(R.id.poll_body);
 
+        cL.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String pollIDstring = pollID.getText().toString();
+                String pollQuestion = pollText.getText().toString();
+                Intent pollChoiceIntent = new Intent(context, ActivityPollChoiceTest.class);
+                pollChoiceIntent.putExtra("pollID", pollIDstring);
+                pollChoiceIntent.putExtra("pollQuestion", pollQuestion);
+                context.startActivity(pollChoiceIntent);
+                Log.v("REDIRECT", "PRESSED ButtoN");
+            }
+        });
     }
 
     @Override
@@ -71,29 +93,19 @@ public class ReceivedMessageHolder extends ChatViewHolder {
                             profileImage.setImageResource(R.drawable.user_pic);
                         }
 
-                        nameText.setText(user.getFullName());
+                        fullName.setText(user.getFullName());
                         boolean isPhoto = message.getPhotoUrl() != null;
-                        if (isPhoto) {
-                            messageText.setVisibility(View.GONE);
-                            messageTimeText.setVisibility(View.GONE);
-                            photoImageView.setVisibility(View.VISIBLE);
-                            photoTimeText.setVisibility(View.VISIBLE);
-                            Glide.with(photoImageView.getContext())
-                                    .load(message.getPhotoUrl())
-                                    .into(photoImageView);
 
-                            String time = String.format("%tT", message.getTime() - TimeZone.getDefault().getRawOffset());
-                            photoTimeText.setText(time.substring(0,5));
-                        } else {
-                            messageText.setVisibility(View.VISIBLE);
-                            messageTimeText.setVisibility(View.VISIBLE);
-                            photoImageView.setVisibility(View.GONE);
-                            photoTimeText.setVisibility(View.GONE);
-                            messageText.setText(message.getText());
+                        pollText.setVisibility(View.VISIBLE);
+                        pollTimeText.setVisibility(View.VISIBLE);
+                        pollText.setText(message.getText());
 
-                            String time = String.format("%tT", message.getTime() - TimeZone.getDefault().getRawOffset());
-                            messageTimeText.setText(time.substring(0,5));
-                        }
+                        pollID.setText(message.getPollID());
+                        pollID.setVisibility(View.INVISIBLE);
+
+                        String time = String.format("%tT", message.getTime() - TimeZone.getDefault().getRawOffset());
+                        pollTimeText.setText(time.substring(0, 5));
+
                         updateLastRead(message.getTime());
                         addRead(message.getMessageId());
                     }
@@ -103,6 +115,7 @@ public class ReceivedMessageHolder extends ChatViewHolder {
 
                     }
                 });
+
     }
 
     private void updateLastRead(final Long timestamp) {

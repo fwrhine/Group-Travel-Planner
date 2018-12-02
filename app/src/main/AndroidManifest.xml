@@ -84,6 +84,15 @@
         <!-- <activity android:name=".Activity_InHome"></activity> -->
         <activity android:name=".Activity_CreateReminder"></activity>
         <activity android:name=".Activity_EditReminder" />
+        <activity android:name=".Activity_CreatePoll">
+
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.MAIN" /> -->
+
+
+            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+            <!-- </intent-filter> -->
+        </activity>
 
         <receiver android:name=".AlertReciever" />
         <!-- <activity android:name=".Activity_ReminderList"/> -->
@@ -91,7 +100,15 @@
         <!-- <activity android:name=".Activity_ReminderList"/> -->
         <activity android:name=".EditEventActivity" />
         <activity android:name=".EventDetailActivity" />
-        <activity android:name=".CreateNewGroupPlanActivity"></activity>
+        <activity android:name=".ActivityPollChoiceTest"/>
+
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN" />-->
+
+                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
+
+        <!--<activity android:name=".CreateNewGroupPlanActivity"></activity>-->
     </application>
 
 </manifest>

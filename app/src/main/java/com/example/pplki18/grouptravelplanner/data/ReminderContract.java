@@ -1,4 +1,4 @@
-package com.example.pplki18.grouptravelplanner.old_stuff;
+package com.example.pplki18.grouptravelplanner.data;
 
 import android.provider.BaseColumns;
 

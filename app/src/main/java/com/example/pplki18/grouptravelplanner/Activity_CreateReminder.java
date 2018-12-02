@@ -30,6 +30,7 @@ import android.widget.TimePicker;
 import android.text.format.DateFormat;
 import android.widget.Toast;
 
+import com.example.pplki18.grouptravelplanner.data.Reminder;
 import com.example.pplki18.grouptravelplanner.old_stuff.DatabaseHelper;
 import com.example.pplki18.grouptravelplanner.utils.SessionManager;
 
@@ -39,16 +40,16 @@ import java.util.List;
 
 public class Activity_CreateReminder extends AppCompatActivity implements DatePickerDialog.OnDateSetListener,
         TimePickerDialog.OnTimeSetListener {
-    Button btn_pick;
-    Button btn_create;
-    Button btn_goto_cal;
-    Button btn_cancel_event;
-    ImageButton btn_done;
-    public TextView resultYear;
-    public TextView resultMonth;
-    public TextView resultDay;
-    public TextView resultTime;
-    EditText destination;
+    private Button btn_pick;
+    private Button btn_create;
+    private Button btn_goto_cal;
+    private Button btn_cancel_event;
+    private ImageButton btn_done;
+    private TextView resultYear;
+    private TextView resultMonth;
+    private TextView resultDay;
+    private TextView resultTime;
+    private EditText destination;
     public static String destText;
     String notificationTxt;
     Calendar alarmCal;
@@ -102,11 +103,7 @@ public class Activity_CreateReminder extends AppCompatActivity implements DatePi
             @Override
             public void onClick(View view) {
                 // Starts the function below
-                Calendar c = Calendar.getInstance();
-                year = c.get(Calendar.YEAR);
-                month = c.get(Calendar.MONTH);
-                day = c.get(Calendar.DAY_OF_MONTH);
-
+                getCalendar();
                 DatePickerDialog datePickerDialog = new DatePickerDialog(Activity_CreateReminder.this, Activity_CreateReminder.this,
                         year, month, day);
                 datePickerDialog.show();
@@ -254,7 +251,13 @@ public class Activity_CreateReminder extends AppCompatActivity implements DatePi
         resultYear.setText(yearFinal + "");
         resultMonth.setText((monthFinal + 1) + "");
         resultDay.setText(dayFinal + "");
-        resultTime.setText(hourFinal  + ":" + minuteFinal);
+        if (minuteFinal < 10) {
+            resultTime.setText(hourFinal  + ":0" + minuteFinal);
+
+        }
+        else {
+            resultTime.setText(hourFinal + ":" + minuteFinal);
+        }
 
     }
 
@@ -300,6 +303,12 @@ public class Activity_CreateReminder extends AppCompatActivity implements DatePi
         Toast.makeText(getApplicationContext(), "Removed Event", Toast.LENGTH_SHORT).show();
     }
 
+    private void getCalendar() {
+        Calendar c = Calendar.getInstance();
+        year = c.get(Calendar.YEAR);
+        month = c.get(Calendar.MONTH);
+        day = c.get(Calendar.DAY_OF_MONTH);
+    }
 
 
 }
