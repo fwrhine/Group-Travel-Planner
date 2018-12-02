@@ -30,12 +30,13 @@ import java.util.TimeZone;
 
 public class ReceivedPollMessageHolder extends ChatViewHolder {
     String groupId;
+    TextView pollText, pollTimeText, fullName, pollID;
+    ImageView profileImage;
+
     FirebaseAuth firebaseAuth;
     FirebaseUser firebaseUser;
     FirebaseDatabase firebaseDatabase;
     DatabaseReference userRef, readStampsRef;
-    TextView messageText, messageTimeText, photoTimeText, nameText, pollID;
-    ImageView photoImageView, profileImage;
     ConstraintLayout cL;
     Context context;
 
@@ -51,23 +52,19 @@ public class ReceivedPollMessageHolder extends ChatViewHolder {
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
 
-        messageText = (TextView) itemView.findViewById(R.id.text_poll_body);
-        messageTimeText = (TextView) itemView.findViewById(R.id.text_message_time);
-        photoImageView = itemView.findViewById(R.id.photoImageView);
-        messageTimeText = itemView.findViewById(R.id.text_message_time);
-        photoTimeText = itemView.findViewById(R.id.photo_message_time);
-        nameText = (TextView) itemView.findViewById(R.id.text_message_name);
+        pollID = (TextView) itemView.findViewById(R.id.poll_id);
+        pollText = (TextView) itemView.findViewById(R.id.question);
+        pollTimeText = (TextView) itemView.findViewById(R.id.poll_message_time);
+        fullName = (TextView) itemView.findViewById(R.id.text_message_name);
         profileImage = (ImageView) itemView.findViewById(R.id.image_message_profile);
-        pollID = (TextView) itemView.findViewById(R.id.text_message_pollID);
-        cL = (ConstraintLayout) itemView.findViewById(R.id.text_poll_redirect_button);
+        cL = (ConstraintLayout) itemView.findViewById(R.id.poll_body);
 
-        itemView.setOnClickListener(new View.OnClickListener() {
+        cL.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                pollID = (TextView) itemView.findViewById(R.id.text_message_pollID);
                 String pollIDstring = pollID.getText().toString();
                 Intent pollChoiceIntent = new Intent(context, ActivityPollChoiceTest.class);
-                        pollChoiceIntent.putExtra("pollID", pollIDstring);
+                pollChoiceIntent.putExtra("pollID", pollIDstring);
                 context.startActivity(pollChoiceIntent);
                 Log.v("REDIRECT", "PRESSED ButtoN");
             }
@@ -94,32 +91,19 @@ public class ReceivedPollMessageHolder extends ChatViewHolder {
                             profileImage.setImageResource(R.drawable.user_pic);
                         }
 
-                        nameText.setText(user.getFullName());
+                        fullName.setText(user.getFullName());
                         boolean isPhoto = message.getPhotoUrl() != null;
-                        if (isPhoto) {
-                            messageText.setVisibility(View.GONE);
-                            messageTimeText.setVisibility(View.GONE);
-                            photoImageView.setVisibility(View.VISIBLE);
-                            photoTimeText.setVisibility(View.VISIBLE);
-                            Glide.with(photoImageView.getContext())
-                                    .load(message.getPhotoUrl())
-                                    .into(photoImageView);
 
-                            String time = String.format("%tT", message.getTime() - TimeZone.getDefault().getRawOffset());
-                            photoTimeText.setText(time.substring(0,5));
-                        } else {
-                            messageText.setVisibility(View.VISIBLE);
-                            messageTimeText.setVisibility(View.VISIBLE);
-                            photoImageView.setVisibility(View.GONE);
-                            photoTimeText.setVisibility(View.GONE);
-                            messageText.setText(message.getText());
+                        pollText.setVisibility(View.VISIBLE);
+                        pollTimeText.setVisibility(View.VISIBLE);
+                        pollText.setText(message.getText());
 
-                            pollID.setText(message.getPollID());
-                            pollID.setVisibility(View.INVISIBLE);
+                        pollID.setText(message.getPollID());
+                        pollID.setVisibility(View.INVISIBLE);
 
-                            String time = String.format("%tT", message.getTime() - TimeZone.getDefault().getRawOffset());
-                            messageTimeText.setText(time.substring(0,5));
-                        }
+                        String time = String.format("%tT", message.getTime() - TimeZone.getDefault().getRawOffset());
+                        pollTimeText.setText(time.substring(0, 5));
+
                         updateLastRead(message.getTime());
                         addRead(message.getMessageId());
                     }

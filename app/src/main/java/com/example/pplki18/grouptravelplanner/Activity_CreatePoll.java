@@ -14,6 +14,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.pplki18.grouptravelplanner.data.Choice;
 import com.example.pplki18.grouptravelplanner.data.Group;
 import com.example.pplki18.grouptravelplanner.data.Message;
 import com.google.firebase.auth.FirebaseAuth;
@@ -36,7 +37,8 @@ public class Activity_CreatePoll extends AppCompatActivity {
     private TextView choiceText;
     private Button btnAddChoice;
     private ImageButton btndone;
-    private ArrayList<String> choiceList;
+    private ArrayList<String> choiceNames;
+    private ArrayList<Choice> choiceList;
     private String choices;
     private ArrayList<String> voters;
     //    private Group group;
@@ -60,8 +62,10 @@ public class Activity_CreatePoll extends AppCompatActivity {
             public void onClick(View view) {
                 // Starts the function below
                 String newChoice = choiceInput.getText().toString();
-                if (!choiceList.contains(newChoice)) {
-                    choiceList.add(newChoice);
+                if (!choiceNames.contains(newChoice)) {
+                    choiceNames.add(newChoice);
+                    Choice choice = new Choice(choiceInput.getText().toString());
+                    choiceList.add(choice);
                     if (choiceText.equals("")){
                         choices += newChoice;
                     }
@@ -70,10 +74,7 @@ public class Activity_CreatePoll extends AppCompatActivity {
                     }
                     choiceText.setText(choices);
                     choiceInput.setText("");
-//                    Intent intent = getIntent();
-//                    intent.putExtra("topic", topicInput.getText());
-//                    finish();
-//                    startActivity(intent);
+
                     Toast.makeText(getApplicationContext(), "Added choice", Toast.LENGTH_SHORT).show();
                     Log.v("CHOICE LIST", choiceList.toString());
 
@@ -98,36 +99,16 @@ public class Activity_CreatePoll extends AppCompatActivity {
                 if (choiceList.size() > 1 && topic.length() != 0) {
                     Poll newPoll = new Poll();
                     newPoll.setPollQuestion(topic);
-                    newPoll.setChoiceList(choiceList);
-                    newPoll.setVoters(voters);
-                    HashMap<String, Integer> choiceMap = new HashMap<>();
-
-                    for (String x : choiceList) {
-                        choiceMap.put(x, 0);
-                    }
-                    newPoll.setChoiceMap(choiceMap);
-//                ArrayList<String> voters = new ArrayList<>() ;
-//                voters.add("DUMMY1");
-//                voters.add("DUMMY2");
-//                List<String> alreadyVoted = new ArrayList<>();
-//                ArrayList<String> choiceList = new ArrayList<>();
-//                choiceList.add("CHOICE1");
-//                choiceList.add("CHOICE2");
-//                HashMap<String, Integer> choiceMap = new HashMap<>();
-//                String key0 = choiceList.get(0);
-//                String key1 = choiceList.get(1);
-//                choiceMap.put(key0, 0);
-//                choiceMap.put(key1, 0);
-//                newPoll.setVoters(voters);
-//                newPoll.setChoiceList(choiceList);
-//                newPoll.setPollQuestion("TESTING");
-
-                    String pollKey = pollRef.push().getKey();
-                    addPoll(newPoll, pollKey);
-                    newPoll.setId(pollKey);
                     newPoll.setGroupID(groupID);
 
+                    String pollKey = pollRef.push().getKey();
+                    newPoll.setPollID(pollKey);
+
+                    addPoll(newPoll, pollKey);
+
+
 //========================
+
                     String msgKey = messageDatabaseReference.push().getKey();
                     Message message = new Message(msgKey, firebaseUser.getUid(), topic, null, System.currentTimeMillis(), pollKey);
                     messageDatabaseReference.child(msgKey).setValue(message);
@@ -153,6 +134,25 @@ public class Activity_CreatePoll extends AppCompatActivity {
         });
     }
 
+    private void pushChoices(String pollID) {
+        final DatabaseReference choiceRef = pollRef.child(pollID).child("choiceList");
+        choiceRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (int i=0; i<choiceList.size(); i++) {
+                    String choiceKey = choiceRef.push().getKey();
+                    Choice choice = choiceList.get(i);
+                    choice.setChoiceID(choiceKey);
+                    choiceRef.child(choiceKey).setValue(choice);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
 
     private void init() {
         topicInput = (EditText) findViewById(R.id.poll_topicText);
@@ -161,6 +161,7 @@ public class Activity_CreatePoll extends AppCompatActivity {
         btnAddChoice = (Button) findViewById(R.id.btn_poll_add_choice);
         btndone = (ImageButton) findViewById(R.id.btn_done_poll);
         choiceList = new ArrayList<>();
+        choiceNames = new ArrayList<>();
         choices = "";
 
         Intent myIntent = getIntent();
@@ -184,6 +185,7 @@ public class Activity_CreatePoll extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 pollRef.child(pollKey).setValue(newPoll);
+                pushChoices(pollKey);
             }
 
             @Override

@@ -3,13 +3,23 @@ package com.example.pplki18.grouptravelplanner;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.pplki18.grouptravelplanner.data.Choice;
+import com.example.pplki18.grouptravelplanner.data.Message;
+import com.example.pplki18.grouptravelplanner.utils.Chat.ChatViewHolder;
+import com.example.pplki18.grouptravelplanner.utils.ChoiceViewHolder;
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -23,31 +33,22 @@ import java.util.List;
 
 public class ActivityPollChoiceTest extends AppCompatActivity {
 
-    FirebaseDatabase firebaseDatabase;
-    FirebaseAuth firebaseAuth;
-    FirebaseUser firebaseUser;
-    DatabaseReference pollRef;
-    DatabaseReference pollMapRef;
-    //DatabaseReference pollVoterRef
+    private FirebaseDatabase firebaseDatabase;
+    private FirebaseAuth firebaseAuth;
+    private FirebaseUser firebaseUser;
+    private DatabaseReference pollRef;
+    private DatabaseReference choiceRef;
+    DatabaseReference pollVoterRef;
+    private DatabaseReference getPollChoiceVoterRef;
 
-    private TextView choice1;
-    private TextView choice1num;
-    private TextView choice2;
-    private TextView choice2num;
-    private Button btn_increment1;
-    private Button btn_increment2;
-    private List<String> choiceList;
-    private List<Long> voteList;
-    private List<String> voterList;
-    private List<String> alreadyVotedList;
+    private RecyclerView choicesRecyclerView;
 
-    private String choice1fb;
-    private String choice2fb;
+    private List<Choice> choiceList;
 
-    private Long votes1;
-    private Long votes2;
+    private String pollID;
 
-    // private String pollID;
+    FirebaseRecyclerAdapter<Choice, ChoiceViewHolder> adapter;
+    FirebaseRecyclerOptions<Choice> options;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,102 +59,49 @@ public class ActivityPollChoiceTest extends AppCompatActivity {
 
         init();
 
-// ref = new Firebase(FIREBASE_URL);
-// Root URL
+        options = new FirebaseRecyclerOptions.Builder<Choice>()
+                .setQuery(choiceRef, Choice.class)
+                .build();
 
-        getPollChoices(new PollCallback() {
+        adapter = new FirebaseRecyclerAdapter<Choice, ChoiceViewHolder>(options) {
             @Override
-            public void onCallback(List<String> list) {
-                Log.v("CHOICE", list.size() + "");
-                Log.v("CHOICE", list.toString() + "");
-                Log.v("CHOICE MAP1", choiceList.toString() + "");
-                choiceList = list;
-
-                // Recycler should handle this part in get(i)
-                choice2fb = choiceList.get(0);
-                choice2.setText(choice2fb);
-                getPollMapSets(new PollMapCallback() {
-                    @Override
-                    public void onCallback(List<Long> list) {
-                        Log.v("MAP", list.size() + "");
-                        Log.v("MAP", list.toString() + "");
-                        voteList = list;
-                        votes2 = voteList.get(0);
-                        choice2num.setText(votes2.toString());
-                        btn_increment2.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                if (voterList.contains(firebaseUser)) {
-                                    votePlus(choiceList.get(0));
-                                }
-                            }
-                        });
-                    }
-                });
+            protected void onBindViewHolder(@NonNull ChoiceViewHolder holder, int position, @NonNull Choice model) {
+                Log.d("BINDING_CHOICE", model.getChoiceID());
+                holder.bind(model);
             }
-        });
 
-        btn_increment2.setOnClickListener(new View.OnClickListener() {
+            @NonNull
             @Override
-            public void onClick(View v) {
-                btn_increment2.setEnabled(false);
-                btn_increment2.setClickable(false);
+            public ChoiceViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                return new ChoiceViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.row_poll_choice, parent, false), pollID);
             }
-        });
-
-
-
+        };
     }
 
-//    private void collectPollChoices(Map<String,Object> poll) {
-//
-//        List<String> pollChoices = new ArrayList<>();
-//
-//        //iterate through each user, ignoring their UID
-//        for (Map.Entry<String, Object> entry : poll.entrySet()){
-//
-//            //Get user voteValue
-//            Map singlePoll = (Map) entry.getValue();
-//            pollChoices.add(singlePoll.get())
-//            Log.v("CHOICE MAP3", singlePoll.toString());
-//
-//
-//            //Get poll field and append to list
-//            for (Map.Entry<String, Object> entry2 : poll.entrySet()){
-//                //Get user voteValue
-//                Map pollChoice = (Map) entry.getValue();
-//                //Get phone field and append to list
-//                pollMap.add((HashMap<String, Integer>) pollChoice);
-//                Log.v("CHOICE MAP4", pollMap.toString());
-//
-//            }
-//        }
-//
-//    }
+    @Override
+    protected void onStart() {
+        super.onStart();
+        adapter.startListening();
+        choicesRecyclerView.setAdapter(adapter);
+    }
 
     private void init() {
-        choice1 = (TextView) findViewById(R.id.poll_choice_test);
-        choice2 = (TextView) findViewById(R.id.poll_choice_test2);
-        choice1num = (TextView) findViewById(R.id.poll_choice_num_test);
-        choice2num = (TextView) findViewById(R.id.poll_choice_num_test2);
-        btn_increment1 = (Button) findViewById(R.id.poll_choice_increment_test);
-        btn_increment2 = (Button) findViewById(R.id.poll_choice_increment_test2);
-
-        choiceList = new ArrayList<>();
-        voteList = new ArrayList<>();
         // TODO voters list
-        voterList = getIntent().getStringArrayListExtra("voters");
-        alreadyVotedList = getAlreadyVotedList();
-
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
         firebaseDatabase = FirebaseDatabase.getInstance();
+        choicesRecyclerView = findViewById(R.id.rv);
 
-        //pollID = getIntent().getStringExtra("pollID");
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        linearLayoutManager.setStackFromEnd(true);
 
-        pollRef = firebaseDatabase.getReference().child("polls").child("-LRbMoWjE-TjcB1lOfI4").child("choiceList");
-        pollMapRef = firebaseDatabase.getReference().child("polls").child("-LRbMoWjE-TjcB1lOfI4").child("choiceMap");
+        choicesRecyclerView.setLayoutManager(linearLayoutManager);
+
+        pollID = getIntent().getStringExtra("pollID");
+
+        choiceRef = firebaseDatabase.getReference().child("polls").child(pollID).child("choiceList");
 //        TODO poll
+
     }
 
     private void getPollChoices(final PollCallback pollCallback) {
@@ -181,7 +129,7 @@ public class ActivityPollChoiceTest extends AppCompatActivity {
     }
 
     private void getPollMapSets(final PollMapCallback pollMapCallback) {
-        pollMapRef.addValueEventListener(new ValueEventListener() {
+        choiceRef.addValueEventListener(new ValueEventListener() {
 
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -207,14 +155,14 @@ public class ActivityPollChoiceTest extends AppCompatActivity {
     }
 
     private void votePlus(final String choice) {
-        pollMapRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        choiceRef.addListenerForSingleValueEvent(new ValueEventListener() {
 
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot val : dataSnapshot.getChildren()) {
                     if (choice.equals(val.getKey())) {
                         Long plus = Long.parseLong(val.getValue().toString()) + 1;
-                        pollMapRef.child(choice).setValue(plus);
+                        choiceRef.child(choice).setValue(plus);
                     }
                 }
             }

@@ -123,8 +123,6 @@ public class Fragment_GroupChat extends Fragment {
                         .build();
 
         adapter = new FirebaseRecyclerAdapter<Message, ChatViewHolder>(options) {
-
-
                     @Override
                     protected void onBindViewHolder(@NonNull final ChatViewHolder holder, int position, @NonNull Message model) {
                         switch (holder.getItemViewType()) {
@@ -168,7 +166,7 @@ public class Fragment_GroupChat extends Fragment {
                                 return new ReceivedMessageHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_message_received, parent, false), group.getGroup_id());
                               //TODO case for poll send and receive and do viewholder
                             case VIEW_TYPE_POLL_SENT:
-                                return new SentPollMessageHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_poll_sent, parent, false), getContext());
+                                return new SentPollMessageHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_poll_sent, parent, false), group.getGroup_id(), getContext());
 //
                             case VIEW_TYPE_POLL_RECEIVED:
                                 return new ReceivedPollMessageHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_poll_received, parent, false), group.getGroup_id(), getContext());
@@ -182,20 +180,19 @@ public class Fragment_GroupChat extends Fragment {
                         if (message.getSenderId().equals(sessionManager.getUserDetails().get("id"))) {
                             // If the current user is the sender of the message
                             // if pollID exist
-                            if (!message.getPollID().isEmpty()) {
+                            if (message.getPollID() != null) {
                                 return VIEW_TYPE_POLL_SENT;
                             }
                             else {
                                 return VIEW_TYPE_MESSAGE_SENT;
                             }
                         } else {
-//                            if (!message.getPollID().isEmpty()) {
-//                                return VIEW_TYPE_POLL_RECEIVED;
-//                            }
-//                            else {
-                                // If some other user sent the message
+                            if (message.getPollID() != null) {
+                                return VIEW_TYPE_POLL_RECEIVED;
+                            }
+                            else {
                                 return VIEW_TYPE_MESSAGE_RECEIVED;
-//                            }
+                            }
                         }
                     }
                 };

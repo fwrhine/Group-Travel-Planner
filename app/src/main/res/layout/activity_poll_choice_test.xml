@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -20,102 +20,30 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+    <TextView
+        android:id="@+id/poll_question"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:paddingTop="60dp"
-        android:layout_below="@id/toolbarTest"
-        android:id="@+id/poll_choice1_test">
+        android:text="POLL QUESTION"
+        android:paddingBottom="5dp"
+        />
 
-        <TextView
-            android:id="@+id/poll_choice_test"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="TEST CHOICE 1"
-            android:textSize="25sp"
-            android:paddingRight="20dp"
-            android:paddingTop="20dp"
-            android:layout_alignParentLeft="true"/>
-
-
-        <TextView
-            android:id="@+id/poll_choice_num_test"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="00"
-            android:textSize="25dp"
-            android:paddingTop="20dp"
-            android:layout_toRightOf="@id/poll_choice_test"
-            />
-        <TextView
-            android:id="@+id/poll_id"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="invisible"
-            />
-
-
-        <Button
-            android:id="@+id/poll_choice_increment_test"
-            android:text="+"
-            android:background="@color/red"
-            android:textColor="@android:color/white"
-            android:layout_margin="8dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/remove_notification"
-            android:layout_alignParentRight="true"/>
-
-
-    </RelativeLayout>
-
-    <RelativeLayout
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingTop="120dp"
-        android:layout_below="@id/poll_choice1_test">
+        android:layout_height="wrap_content"
+        android:paddingTop="90dp">
 
-        <TextView
-            android:id="@+id/poll_choice_test2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="TEST CHOICE 2"
-            android:textSize="25sp"
-            android:paddingRight="20dp"
-            android:paddingTop="20dp"
-            android:layout_alignParentLeft="true"/>
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
 
+    </android.support.constraint.ConstraintLayout>
 
-        <TextView
-            android:id="@+id/poll_choice_num_test2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="00"
-            android:textSize="25dp"
-            android:paddingTop="20dp"
-            android:layout_toRightOf="@id/poll_choice_test2"
-            />
-        <TextView
-            android:id="@+id/poll_id2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="invisible"
-            />
-
-
-        <Button
-            android:id="@+id/poll_choice_increment_test2"
-            android:text="+"
-            android:background="@color/red"
-            android:textColor="@android:color/white"
-            android:layout_margin="8dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/remove_notification"
-            android:layout_alignParentRight="true"/>
-
-
-    </RelativeLayout>
-
-
-</android.support.design.widget.CoordinatorLayout>
+</android.support.constraint.ConstraintLayout>

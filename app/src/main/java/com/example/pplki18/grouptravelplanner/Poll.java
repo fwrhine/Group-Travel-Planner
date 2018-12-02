@@ -1,85 +1,64 @@
 package com.example.pplki18.grouptravelplanner;
 
+import com.example.pplki18.grouptravelplanner.data.Choice;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 public class Poll {
 
-    private String id;
-    private ArrayList<String> voters;
-    private ArrayList<String> alreadyVoted;
-    private ArrayList<String> choiceList;
-    private HashMap<String, Integer> choiceMap;
+    private String pollID;
+    private List<Choice> choiceList;
     private String pollQuestion;
     private String groupID;
+    private HashMap<String, Boolean> voters;
 
-    public Poll(ArrayList<String> list){
-        this.choiceList = list;
-        this.alreadyVoted = new ArrayList<String>();
-        for (int ii = 0; ii < this.choiceList.size(); ii++){
-            choiceMap.put(choiceList.get(ii), 0);
-        }
+    public Poll(String pollID, String topic, String groupID){
+        this.pollID = pollID;
+        this.choiceList = new ArrayList<>();
+        this.pollQuestion = topic;
+        this.groupID = groupID;
+        this.voters = new HashMap<>();
     }
 
-    public Poll(){
-
-    }
+    public Poll(){}
 
     //Getter
-    public String getId() {
-        return id;
+    public String getPollID() {
+        return pollID;
     }
 
-    public ArrayList<String> getVoters() {
-        return voters;
-    }
-
-    public ArrayList<String> getAlreadyVoted() {
-        return alreadyVoted;
-    }
-
-    public ArrayList<String> getChoiceList() {
+    public List<Choice> getChoiceList() {
         return choiceList;
-    }
-
-    public HashMap<String, Integer> getChoiceMap() {
-        return choiceMap;
     }
 
     public String getPollQuestion(){
         return pollQuestion;
     }
 
-    public String getGroupID() {
-        return groupID;
-    }
+    public String getGroupID() { return groupID; }
+
     //Setter
-    public void setId(String newID) {
-        this.id = newID;
+    public void setPollID(String newID) {
+        this.pollID = newID;
     }
 
-    public void setVoters(ArrayList<String> voters) {
-        this.voters = voters;
-    }
-
-    public void setAlreadyVoted(ArrayList<String> alreadyVoted) {
-        this.alreadyVoted = alreadyVoted;
+    public void setChoiceList(List<Choice> list) {
+        this.choiceList = list;
     }
 
     public void setPollQuestion(String question){
         this.pollQuestion = question;
     }
 
-    public void setChoiceList(ArrayList<String> list) {
-        this.choiceList = list;
+    public void setGroupID(String groupID) { this.groupID = groupID; }
+
+    public HashMap<String, Boolean> getVoters() {
+        return voters;
     }
 
-    public void setChoiceMap(HashMap<String, Integer> map) {
-        this.choiceMap = map;
-    }
-
-    public void setGroupID(String groupID) {
-        this.groupID = groupID;
+    public void setVoters(HashMap<String, Boolean> voters) {
+        this.voters = voters;
     }
 }
