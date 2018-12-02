@@ -39,6 +39,7 @@ public class EditEventActivity extends AppCompatActivity implements View.OnClick
     FirebaseDatabase firebaseDatabase;
     FirebaseAuth firebaseAuth;
     DatabaseReference eventRef;
+    DatabaseReference suggestRef;
 
     private Toolbar toolbar;
 
@@ -188,6 +189,7 @@ public class EditEventActivity extends AppCompatActivity implements View.OnClick
         event_end_time.setText(end_time);
 
         eventRef = firebaseDatabase.getReference().child("events").child(event_id);
+        suggestRef = firebaseDatabase.getReference().child("suggestions").child(event_id);
 
         setDateField();
         setTimeField();
