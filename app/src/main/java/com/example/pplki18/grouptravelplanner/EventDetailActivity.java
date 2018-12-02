@@ -158,7 +158,11 @@ public class EventDetailActivity extends AppCompatActivity {
             initCustom();
         }
 
-        setEditEventButton();
+        if (prevFrag != null && (prevFrag.equals("Fragment_SuggestionList"))) {
+            setEditSuggestButton();
+        } else {
+            setEditEventButton();
+        }
     }
 
     public void initFlight() {
@@ -199,6 +203,26 @@ public class EventDetailActivity extends AppCompatActivity {
                 }
 
                 Toast.makeText(EventDetailActivity.this, "edit event", Toast.LENGTH_SHORT).show();
+                startActivityForResult(intent, REQUEST_CODE_EDIT_EVENT);
+            }
+        });
+    }
+
+    public void setEditSuggestButton() {
+        editEvent.setColorFilter(R.color.colorRipple);
+        editEvent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(EventDetailActivity.this, EditEventActivity.class);
+                intent.putExtra("event", suggest);
+                intent.putExtra("type", suggest.getType());
+
+                Date date_start = (Date) getIntent().getExtras().get("start_date");
+                Date date_end = (Date) getIntent().getExtras().get("end_date");
+                intent.putExtra("start_date", date_start);
+                intent.putExtra("end_date", date_end);
+
+                Toast.makeText(EventDetailActivity.this, "edit suggest", Toast.LENGTH_SHORT).show();
                 startActivityForResult(intent, REQUEST_CODE_EDIT_EVENT);
             }
         });

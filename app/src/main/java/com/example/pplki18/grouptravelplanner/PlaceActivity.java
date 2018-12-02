@@ -339,8 +339,6 @@ public class PlaceActivity extends AppCompatActivity {
         builder.setTitle("Set time");
         builder.setView(dialogLayout);
 
-        final String prevFrag = getIntent().getStringExtra("prev_fragment");
-
         builder.setPositiveButton("OK",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
@@ -350,9 +348,13 @@ public class PlaceActivity extends AppCompatActivity {
                         String start_time = startTime.getCurrentHour() + ":" + startTime.getCurrentMinute();
                         String end_time = endTime.getCurrentHour() + ":" + endTime.getCurrentMinute();
                         String prevActivity = getIntent().getStringExtra("ACTIVITY");
-                        Log.d("PREVVV", prevActivity);
+                        String prevFrag = getIntent().getStringExtra("prev_fragment");
+
+                        //Log.d("PREVVV", prevActivity);
                         if (prevActivity != null) {
+                            Log.d("NOT-EDIT", "ONE");
                             if (prevActivity.equals("CreateNewPlanActivity")) {
+                                Log.d("NOT-EDIT", "TWO");
                                 List<Event> events = getIntent().getParcelableArrayListExtra("events");
                                 Event anEvent = saveEventLocally(start_time, end_time);
                                 events.add(anEvent);
@@ -365,7 +367,7 @@ public class PlaceActivity extends AppCompatActivity {
                             }
 
                             else {
-
+                                Log.d("NOT-EDIT", "THREE");
                                 saveEventToPlan(start_time, end_time);
                                 Intent intent = new Intent(PlaceActivity.this, Fragment_PlaceList.class);
                                 intent.putExtra("ACTIVITY", "EditPlanActivity");
@@ -373,8 +375,13 @@ public class PlaceActivity extends AppCompatActivity {
                                 finish();
                             }
                         } else if (prevFrag != null) {
+                            Log.d("NOT-EDIT", "FOUR");
                             if (prevFrag.equals("Fragment_SuggestionList")) {
+                                Log.d("CHECK-EDIT", (prevFrag != null)+"");
                                 saveEventToSuggestion(start_time, end_time);
+                                Intent intent = new Intent(PlaceActivity.this, Fragment_PlaceList.class);
+                                intent.putExtra("ACTIVITY", "EditPlanActivity");
+                                setResult(RESULT_OK, intent);
                                 finish();
                             }
                         }
