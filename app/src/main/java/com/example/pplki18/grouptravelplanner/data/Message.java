@@ -10,6 +10,7 @@ public class Message {
     private String photoUrl;
     private Long time;
     private HashMap<String, Boolean> read_by;
+    private String pollID;
 
     public Message() {
     }
@@ -21,6 +22,16 @@ public class Message {
         this.photoUrl = photoUrl;
         this.time = time;
         this.read_by = new HashMap<>();
+    }
+
+    public Message(String messageId, String senderId, String text, String photoUrl, Long time, String pollID) {
+        this.messageId = messageId;
+        this.senderId = senderId;
+        this.text = text;
+        this.photoUrl = photoUrl;
+        this.time = time;
+        this.read_by = new HashMap<>();
+        this.pollID = pollID;
     }
 
     public String getMessageId() {
@@ -69,5 +80,13 @@ public class Message {
 
     public void setRead_by(HashMap<String, Boolean> read_by) {
         this.read_by = read_by;
+    }
+
+    public String getPollID() {
+        return pollID;
+    }
+
+    public void setPollID(String pollID) {
+        this.pollID = pollID;
     }
 }

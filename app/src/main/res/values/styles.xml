@@ -51,16 +51,16 @@
     </style>
 
     <!--<style name="AppTheme.TransparentActionBar" parent="Theme.AppCompat.Light.DarkActionBar">-->
-        <!--<item name="android:windowContentOverlay">@null</item>-->
-        <!--<item name="windowActionBarOverlay">true</item>-->
-        <!--<item name="android:windowActionBarOverlay">true</item>-->
+    <!--<item name="android:windowContentOverlay">@null</item>-->
+    <!--<item name="windowActionBarOverlay">true</item>-->
+    <!--<item name="android:windowActionBarOverlay">true</item>-->
     <!--</style>-->
 
 
     <!--<style name="Theme.Custom" parent="Theme.AppCompat.Light.DarkActionBar">-->
-        <!--<item name="windowActionBar">false</item>-->
-        <!--<item name="windowActionBarOverlay">true</item>-->
-        <!--<item name="android:windowActionBarOverlay">true</item>-->
+    <!--<item name="windowActionBar">false</item>-->
+    <!--<item name="windowActionBarOverlay">true</item>-->
+    <!--<item name="android:windowActionBarOverlay">true</item>-->
     <!--</style>-->
 
     <style name="CustomActionBar" parent="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
@@ -86,6 +86,12 @@
     <style name="DialogAnimation">
         <item name="android:windowEnterAnimation">@anim/slide_down</item>
         <item name="android:windowExitAnimation">@anim/slide_up</item>
+    </style>
+
+    <style name="pollMessageDivider">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:background">#000000</item>
     </style>
 
 </resources>

@@ -14,7 +14,7 @@ import android.widget.Toast;
 import com.example.pplki18.grouptravelplanner.Activity_EditReminder;
 import com.example.pplki18.grouptravelplanner.InHomeActivity;
 import com.example.pplki18.grouptravelplanner.R;
-import com.example.pplki18.grouptravelplanner.Reminder;
+import com.example.pplki18.grouptravelplanner.data.Reminder;
 import com.example.pplki18.grouptravelplanner.old_stuff.DatabaseHelper;
 
 import java.util.List;
@@ -37,14 +37,14 @@ public class RVAdapter_Reminder extends RecyclerView.Adapter<RVAdapter_Reminder.
     }
 
     @Override
-    public RVAdapter_Reminder.ReminderViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+    public ReminderViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
         View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.row_reminder, viewGroup, false);
         ReminderViewHolder rvh = new ReminderViewHolder(v);
         return rvh;
     }
 
     @Override
-    public void onBindViewHolder(final RVAdapter_Reminder.ReminderViewHolder reminderViewHolder, int i) {
+    public void onBindViewHolder(final ReminderViewHolder reminderViewHolder, int i) {
         //TRYING TO USE CALENDAR EVENT TABLE
         String destinationText = reminderList.get(i).getDestination() + " at ";
         String dateText = reminderList.get(i).getDate().toString().substring(0, 16);

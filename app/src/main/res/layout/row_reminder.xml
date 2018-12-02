@@ -57,7 +57,7 @@
             <Button
                 android:id="@+id/edit_notification"
                 android:text="EDIT"
-                android:background="#D50000"
+                android:background="@color/colorPrimary"
                 android:textColor="@android:color/white"
                 android:layout_margin="8dp"
                 android:layout_width="wrap_content"
@@ -68,7 +68,7 @@
             <Button
                 android:id="@+id/remove_notification"
                 android:text="DEL"
-                android:background="#D50000"
+                android:background="@color/colorPrimary"
                 android:textColor="@android:color/white"
                 android:layout_margin="8dp"
                 android:layout_width="wrap_content"
