@@ -80,7 +80,7 @@
         <activity android:name=".EditPlanActivity" />
 
         <!-- <activity android:name=".Activity_InHome"></activity> -->
-        <activity android:name=".Activity_CreateReminder"></activity>
+        <activity android:name=".Activity_CreateReminder" />
         <activity android:name=".Activity_EditReminder" />
 
         <receiver android:name=".AlertReciever" />
@@ -89,7 +89,8 @@
         <!-- <activity android:name=".Activity_ReminderList"/> -->
         <activity android:name=".EditEventActivity" />
         <activity android:name=".EventDetailActivity" />
-        <activity android:name=".CreateNewGroupPlanActivity"></activity>
+        <activity android:name=".CreateNewGroupPlanActivity" />
+        <activity android:name=".GroupMemberActivity"></activity>
     </application>
 
 </manifest>

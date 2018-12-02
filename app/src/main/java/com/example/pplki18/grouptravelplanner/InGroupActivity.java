@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.request.RequestOptions;
 import com.example.pplki18.grouptravelplanner.data.Group;
@@ -55,6 +56,15 @@ public class InGroupActivity extends AppCompatActivity implements NavigationView
                     new Fragment_GroupChat()).commit();
             navigationView.setCheckedItem(R.id.nav_groupchat);
         }
+
+        toolbar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(InGroupActivity.this, GroupMemberActivity.class);
+                intent.putExtra("group", group);
+                startActivity(intent);
+            }
+        });
     }
 
     @Override

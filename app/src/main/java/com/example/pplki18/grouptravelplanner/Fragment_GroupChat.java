@@ -75,7 +75,6 @@ public class Fragment_GroupChat extends Fragment {
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference messageDatabaseReference;
     private DatabaseReference userRef;
-    private DatabaseReference readStampsRef;
     private ChildEventListener childEventListener;
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
