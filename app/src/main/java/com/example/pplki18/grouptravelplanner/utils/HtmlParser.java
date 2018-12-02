@@ -87,7 +87,11 @@ public class HtmlParser {
 
         // name
         Element hotel_name = doc.selectFirst("h1[class*='ui_header h1']");
-        String name = hotel_name.text();
+        String name = (hotel_name != null) ? hotel_name.text() : "";
+
+        //url
+//        Element hotel_url = doc.selectFirst("link[rel*='next']");
+//        String url = (hotel_url != null) ? hotel_url.attr("href") : "";
 
         // rating
         Element hotel_rating = doc.selectFirst("span[class*='ui_bubble_rating']");
@@ -147,6 +151,7 @@ public class HtmlParser {
         Element hotel_photo = doc.selectFirst("meta[property*='og:image']");
         String photo = hotel_photo.attr("content");
 
+//        hotel.setHotel_id("https://www.tripadvisor.com" + url);
         hotel.setName(name);
         hotel.setRating(rating);
         hotel.setPrice(price);
@@ -157,6 +162,8 @@ public class HtmlParser {
         }
         hotel.setAmenities(amenities);
         hotel.setPhoto(photo);
+
+        System.out.println(hotel.toString());
 
         return hotel;
     }

@@ -36,15 +36,9 @@ import android.widget.Toast;
 
 import com.android.volley.NetworkError;
 import com.android.volley.NoConnectionError;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
 import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.example.pplki18.grouptravelplanner.data.Event;
-import com.example.pplki18.grouptravelplanner.data.Place;
 import com.example.pplki18.grouptravelplanner.utils.HtmlParser;
 import com.example.pplki18.grouptravelplanner.data.Hotel;
 import com.example.pplki18.grouptravelplanner.utils.PaginationScrollListener;
@@ -630,7 +624,12 @@ public class BookHotelFragment extends Fragment {
             public void onResponse(String response) {
                 Log.d("HOTEL SEARCH", response);
                 isLastPage = true;
-                populatePlaceRecyclerView(getHotelsSearch(response));
+                getHotelsSearch(response, new HotelSearchCallback() {
+                    @Override
+                    public void onCallback() {
+                        populatePlaceRecyclerView(hotels);
+                    }
+                });
             }
             @Override
             public void onError(VolleyError error) {
@@ -640,7 +639,7 @@ public class BookHotelFragment extends Fragment {
         });
     }
 
-    private List<Hotel> getHotelsSearch(String response) {
+    private void getHotelsSearch(String response, final HotelSearchCallback callback) {
 //        ArrayList<Hotel> hotels = new ArrayList<>();
         try {
             JSONArray results = new JSONArray(response);
@@ -654,21 +653,34 @@ public class BookHotelFragment extends Fragment {
 //                hotel.setName(hotelDetails.optString("name"));
 //                hotel.setRating(hotelDetails.optString("star_rating", "-"));
 //                hotel.setAddress(hotelDetails.optString("address"));
-                String url = hotelObj.optString("url");
+                final String url = "https://www.tripadvisor.com/" + hotelObj.optString("url");
 
-                volleyUtils.getRequest(url, new VolleyResponseListener() {
+                requestHotelDetail(url, new HotelDetailCallback() {
                     @Override
-                    public void onResponse(String response) {
-                        Log.d("WHAT", "REQUEST HOTEL DETAIL");
-                        hotels.add(parseHotel(response));
-//                        progressBar.setVisibility(View.GONE);
-                    }
-                    @Override
-                    public void onError(VolleyError error) {
-//                        Log.d(TAG, "HOTEL DETAIL ERROR");
-//                        noConnection(error);
+                    public void onCallback(Hotel hotel) {
+                        hotel.setHotel_id(url);
+                        hotels.add(hotel);
+                        progressBar.setVisibility(View.GONE);
+
+                        if (hotels.size() == 2) {
+                            callback.onCallback();
+                        }
                     }
                 });
+
+//                volleyUtils.getRequest(url, new VolleyResponseListener() {
+//                    @Override
+//                    public void onResponse(String response) {
+//                        Log.d("WHAT", "REQUEST HOTEL DETAIL");
+//                        hotels.add(parseHotel(response));
+////                        progressBar.setVisibility(View.GONE);
+//                    }
+//                    @Override
+//                    public void onError(VolleyError error) {
+////                        Log.d(TAG, "HOTEL DETAIL ERROR");
+////                        noConnection(error);
+//                    }
+//                });
 
 //                hotels.add(hotel);
             }
@@ -676,9 +688,22 @@ public class BookHotelFragment extends Fragment {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
 
-
-        return hotels;
+    private void requestHotelDetail(String url, final HotelDetailCallback callback) {
+        volleyUtils.getRequest(url, new VolleyResponseListener() {
+            @Override
+            public void onResponse(String response) {
+                Log.d("WHAT", "REQUEST HOTEL DETAIL");
+                Hotel hotel = parseHotel(response);
+                callback.onCallback(hotel);
+            }
+            @Override
+            public void onError(VolleyError error) {
+                        Log.d("requestHotelDetail", "HOTEL DETAIL ERROR");
+                        noConnection(error);
+            }
+        });
     }
 
     private void populatePlaceRecyclerView(final List<Hotel> hotels) {
@@ -687,6 +712,7 @@ public class BookHotelFragment extends Fragment {
                 Intent intent = new Intent(getActivity(), PlaceActivity.class);
                 intent.putExtra("PLACE_ID", String.valueOf(adapter.getAll().get(position).getHotel_id()));
                 intent.putExtra("FRAGMENT", "HotelFragment");
+                Log.d("FRAGMENT", "HotelFragment");
                 intent.putExtra("ACTIVITY", prevActivity);
                 intent.putParcelableArrayListExtra("events", (ArrayList<? extends Parcelable>) events);
                 intent.putExtra("plan_id", plan_id);
@@ -932,5 +958,13 @@ public class BookHotelFragment extends Fragment {
         if (prevActivity.equals("CreateNewPlanActivity")) {
             events = getActivity().getIntent().getParcelableArrayListExtra("events");
         }
+    }
+
+    private interface HotelDetailCallback {
+        void onCallback (Hotel hotel);
+    }
+
+    private interface HotelSearchCallback {
+        void onCallback ();
     }
 }

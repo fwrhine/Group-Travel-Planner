@@ -824,7 +824,7 @@ public class PlaceActivity extends AppCompatActivity {
             detailLayout.setVisibility(View.GONE);
         }
 
-        if (prevActivity != null && (prevActivity.equals("HotelFragment"))) {
+        if (prevFragment != null && (prevFragment.equals("HotelFragment"))) {
             open_hours.setVisibility(View.GONE);
             open_now.setVisibility(View.GONE);
             website.setVisibility(View.GONE);
