@@ -6,6 +6,10 @@
         android:title="Rename" />
 
     <item
+        android:id="@+id/edit_desc"
+        android:title="Edit Description" />
+
+    <item
         android:id="@+id/delete_plan"
         android:title="Delete" />
 

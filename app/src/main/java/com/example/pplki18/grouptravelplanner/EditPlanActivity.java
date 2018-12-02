@@ -56,10 +56,12 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
     private DatePickerDialog toDatePickerDialog;
     private SimpleDateFormat dateFormatter1;
     private SimpleDateFormat dateFormatter2;
+    private SimpleDateFormat dateFormatter3;
     private Date date_start;
     private Date date_end;
     private Date date_start_temp;
     private Date date_end_temp;
+    private Date today;
 
     private List<Plan> plans;
     private String plan_id;
@@ -106,6 +108,7 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
     public void init() {
         dateFormatter1 = new SimpleDateFormat("EEE, MMM d", Locale.US);
         dateFormatter2 = new SimpleDateFormat("d MMMM yyyy", Locale.US);
+        dateFormatter3 = new SimpleDateFormat("EEE, MMM d - HH:mm");
 
         intent = getIntent();
         plans = intent.getParcelableArrayListExtra("plans");
@@ -118,6 +121,7 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
         setTitle(from_intent_plan_name);
 
         save_plan.setImageDrawable(getResources().getDrawable(R.drawable.ic_more_vert_white_24dp));
+        setMoreButton();
 
         try {
             date_start = dateFormatter2.parse(from_intent_start_date);
@@ -127,6 +131,7 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
         } catch (ParseException e) {
             e.printStackTrace();
         }
+        today = Calendar.getInstance().getTime();
 
         trip_start_date.setText(dateFormatter1.format(date_start));
         trip_start_date.setTextColor(getResources().getColor(R.color.colorBlack));
@@ -216,14 +221,13 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
 
     // TODO set the triple dot more button
     private void setMoreButton() {
-        save_plan.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        updatePlanDate();
-                    }
-                }
-        );
+        save_plan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(EditPlanActivity.this, "Sorry, this function is not " +
+                        "implemented yet...", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private boolean checkDateAvailability() {
@@ -237,20 +241,22 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
         }
 
         for (Plan p : plans) {
-            try {
-                Date p_start = dateFormatter2.parse(p.getPlan_start_date());
-                Date p_end = dateFormatter2.parse(p.getPlan_end_date());
+            if (!p.getPlan_id().equals(plan_id)) {
+                try {
+                    Date p_start = dateFormatter2.parse(p.getPlan_start_date());
+                    Date p_end = dateFormatter2.parse(p.getPlan_end_date());
 
-                if ((start_date.getTime() <= p_start.getTime() & end_date.getTime() >= p_end.getTime()) ||
-                        (start_date.getTime() >= p_start.getTime() & end_date.getTime() <= p_end.getTime())) {
-                    return false;
+                    if ((start_date.getTime() <= p_start.getTime() & end_date.getTime() >= p_end.getTime()) ||
+                            (start_date.getTime() >= p_start.getTime() & end_date.getTime() <= p_end.getTime())) {
+                        return false;
+                    }
+                    if ((start_date.getTime() >= p_start.getTime() & start_date.getTime() <= p_end.getTime()) ||
+                            (end_date.getTime() >= p_start.getTime() & end_date.getTime() <= p_end.getTime())) {
+                        return false;
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();
                 }
-                if ((start_date.getTime() >= p_start.getTime() & start_date.getTime() <= p_end.getTime()) ||
-                        (end_date.getTime() >= p_start.getTime() & end_date.getTime() <= p_end.getTime())) {
-                    return false;
-                }
-            } catch (ParseException e) {
-                e.printStackTrace();
             }
         }
         return true;
@@ -282,6 +288,7 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
         planRef.child("plan_start_date").setValue(start_day);
         planRef.child("plan_end_date").setValue(end_day);
         planRef.child("total_days").setValue(total_days);
+        planRef.child("plan_modified").setValue(dateFormatter3.format(today));
 
     }
 

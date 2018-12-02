@@ -64,8 +64,10 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
     private DatePickerDialog toDatePickerDialog;
     private SimpleDateFormat dateFormatter1;
     private SimpleDateFormat dateFormatter2;
+    private SimpleDateFormat dateFormatter3;
     private Date date_start;
     private Date date_end;
+    private Date today;
     private String plan_name;
 
     private List<Plan> plans;
@@ -115,6 +117,9 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
 
         dateFormatter1 = new SimpleDateFormat("EEE, MMM d", Locale.US);
         dateFormatter2 = new SimpleDateFormat("d MMMM yyyy", Locale.US);
+        dateFormatter3 = new SimpleDateFormat("EEE, MMM d - HH:mm");
+
+        today = Calendar.getInstance().getTime();
 
         setAddEventButton();
         setSavePlanButton();
@@ -348,6 +353,8 @@ public class CreateNewPlanActivity extends AppCompatActivity implements View.OnC
                 plan.setPlan_end_date(end_day);
                 plan.setPlan_total_days(total_days);
                 plan.setPlan_overview(plan_desc);
+                plan.setPlan_created(dateFormatter3.format(today));
+                plan.setPlan_modified(dateFormatter3.format(today));
                 planRef.child(planId).setValue(plan);
                 callback.onCallback(planId);
             }
