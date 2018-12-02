@@ -487,9 +487,7 @@ public class PlaceActivity extends AppCompatActivity {
 
                         //Log.d("PREVVV", prevActivity);
                         if (prevActivity != null) {
-                            Log.d("NOT-EDIT", "ONE");
                             if (prevActivity.equals("CreateNewPlanActivity")) {
-                                Log.d("NOT-EDIT", "TWO");
                                 List<Event> events = getIntent().getParcelableArrayListExtra("events");
                                 // TODO SALAH KAPRAH
                                 if (prevFragment != null && prevFragment.equals("HotelFragment")) {
@@ -518,9 +516,7 @@ public class PlaceActivity extends AppCompatActivity {
                                 finish();
                             }
                         } else if (prevFrag != null) {
-                            Log.d("NOT-EDIT", "FOUR");
                             if (prevFrag.equals("Fragment_SuggestionList")) {
-                                Log.d("CHECK-EDIT", (prevFrag != null)+"");
                                 saveEventToSuggestion(start_time, end_time);
                                 Intent intent = new Intent(PlaceActivity.this, Fragment_PlaceList.class);
                                 intent.putExtra("ACTIVITY", "EditPlanActivity");
