@@ -105,8 +105,11 @@ public class Fragment_PlaceList extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        Log.d("onActivityResult", "!");
         if (requestCode == 3) {
+            Log.d("requestCode", "3!");
             if (resultCode == RESULT_OK) {
+                Log.d("resultCode", "RESULT_OK!");
                 String prevActivity = data.getStringExtra("ACTIVITY");
                 if (prevActivity != null && prevActivity.equals("EditPlanActivity")) {
                     getActivity().finish();

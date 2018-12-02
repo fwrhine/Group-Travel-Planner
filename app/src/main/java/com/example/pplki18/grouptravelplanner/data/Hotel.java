@@ -1,15 +1,18 @@
 package com.example.pplki18.grouptravelplanner.data;
 
-import java.util.List;
+import java.util.ArrayList;
 
 public class Hotel {
     private String hotel_id;
     private String name;
     private String rating;
     private String address;
+    private String phone_number;
     private String photo;
     private String website;
     private String price;
+    private String description;
+    private ArrayList<ArrayList<String>> amenities;
 
 
     public Hotel() {
@@ -32,6 +35,8 @@ public class Hotel {
         this.address = address;
     }
 
+    public void setPhone_number(String phone_number) { this.phone_number = phone_number; }
+
     public void setPhoto(String photo) {
         this.photo = photo;
     }
@@ -44,6 +49,13 @@ public class Hotel {
         this.price = price;
     }
 
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setAmenities(ArrayList<ArrayList<String>> amenities) {
+        this.amenities = amenities;
+    }
 
     public String getHotel_id() {
         return hotel_id;
@@ -61,6 +73,8 @@ public class Hotel {
         return address;
     }
 
+    public String getPhone_number() { return phone_number; }
+
     public String getPhoto() {
         return photo;
     }
@@ -71,6 +85,19 @@ public class Hotel {
 
     public String getPrice() {
         return price;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public ArrayList<ArrayList<String>> getAmenities() {
+        return amenities;
+    }
+
+    @Override
+    public String toString() {
+        return name;
     }
 }
 

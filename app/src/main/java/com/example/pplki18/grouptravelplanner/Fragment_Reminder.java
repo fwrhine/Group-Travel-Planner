@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.pplki18.grouptravelplanner.data.Reminder;
 import com.example.pplki18.grouptravelplanner.old_stuff.DatabaseHelper;
 import com.example.pplki18.grouptravelplanner.utils.RVAdapter_Reminder;
 
@@ -45,24 +46,16 @@ public class Fragment_Reminder extends Fragment implements NavigationView.OnNavi
         super.onActivityCreated(savedInstanceState);
         init();
 
-//        r = new Reminder("T2", "2018/10/25", i);
-//        r.setDate("2001/9/11");
-//        r.setDestination("New York");
-//        r.setChannel(0);
         context = getActivity().getApplicationContext();
 
 
-        //FAB: when clicked, open create new group interface
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Log.v("fab", "FAB Clicked");
                 Intent myIntent = new Intent(getActivity(), Activity_CreateReminder.class);
                 Fragment_Reminder.this.startActivity(myIntent);
-                // TO TEST generalInsert
-//                ((InHomeActivity) getActivity()).generalInsertNotifier("T1", "T2",
-//                        2018, 10, 30, 8, 20);
-//                Toast.makeText(getActivity().getApplicationContext(), "PRESSED FAB", Toast.LENGTH_SHORT).show();
+
 
             }
         });
@@ -78,7 +71,6 @@ public class Fragment_Reminder extends Fragment implements NavigationView.OnNavi
     private void populateReminderRecyclerView() {
         Log.d(TAG, "populateGroupRecyclerView: Displaying list of groups in the ListView.");
 
-        //get data and append to list
         List<Reminder> reminderList = getAllReminders();
         RVAdapter_Reminder adapter = new RVAdapter_Reminder(reminderList, getActivity());
         recyclerViewGroup.setAdapter(adapter);
@@ -88,19 +80,6 @@ public class Fragment_Reminder extends Fragment implements NavigationView.OnNavi
         return InHomeActivity.reminderList;
     }
 
-    public static List<Reminder> bubbleSort(List<Reminder> arr) {
-        for (int i = 0; i < arr.size(); i++) {
-            for (int j = 0; j < arr.size()-1-i; j++) {
-                if(arr.get(j).getDate().after(arr.get(j+1).getDate()))
-                {
-                    Reminder temp = arr.get(j);
-                    arr.set(j, arr.get(j+1));
-                    arr.set(j+1, temp);
-                }
-            }
-        }
-        return arr;
-    }
 
 
 

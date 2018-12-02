@@ -9,7 +9,6 @@ public class Place {
     private String address;
     private String rating;
     private String phone_number;
-//    String opening_hours;
     private String website;
     private String photo;
     private String url;

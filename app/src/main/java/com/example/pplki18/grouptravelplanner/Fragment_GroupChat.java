@@ -29,7 +29,9 @@ import com.example.pplki18.grouptravelplanner.data.Group;
 import com.example.pplki18.grouptravelplanner.data.Message;
 import com.example.pplki18.grouptravelplanner.utils.Chat.ChatViewHolder;
 import com.example.pplki18.grouptravelplanner.utils.Chat.ReceivedMessageHolder;
+import com.example.pplki18.grouptravelplanner.utils.Chat.ReceivedPollMessageHolder;
 import com.example.pplki18.grouptravelplanner.utils.Chat.SentMessageHolder;
+import com.example.pplki18.grouptravelplanner.utils.Chat.SentPollMessageHolder;
 import com.example.pplki18.grouptravelplanner.utils.MessageAdapter;
 import com.example.pplki18.grouptravelplanner.utils.SessionManager;
 import com.example.pplki18.grouptravelplanner.data.User;
@@ -52,6 +54,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
@@ -62,6 +65,8 @@ public class Fragment_GroupChat extends Fragment {
 
     private final int VIEW_TYPE_MESSAGE_SENT = 1;
     private final int VIEW_TYPE_MESSAGE_RECEIVED = 2;
+    private final int VIEW_TYPE_POLL_SENT = 3;
+    private final int VIEW_TYPE_POLL_RECEIVED = 4;
     private static final int RC_PHOTO_PICKER = 2;
     private Group group;
     private SessionManager sessionManager;
@@ -71,10 +76,12 @@ public class Fragment_GroupChat extends Fragment {
     private ImageButton photoPickerButton;
     private EditText messageEditText;
     private Button sendButton;
+    private Button pollButton;
 
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference messageDatabaseReference;
     private DatabaseReference userRef;
+    private DatabaseReference readStampsRef;
     private ChildEventListener childEventListener;
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
@@ -105,7 +112,8 @@ public class Fragment_GroupChat extends Fragment {
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
         userRef = firebaseDatabase.getReference().child("users");
-        messageDatabaseReference = firebaseDatabase.getReference().child("message").child(group.getGroup_id());
+
+        messageDatabaseReference = firebaseDatabase.getReference().child("messages").child(group.getGroup_id());
         chatPhotoStorageReference = firebaseStorage.getReference().child("chat_photos").child(group.getGroup_id());
 
         addSendButtonClickListener();
@@ -115,16 +123,35 @@ public class Fragment_GroupChat extends Fragment {
                         .build();
 
         adapter = new FirebaseRecyclerAdapter<Message, ChatViewHolder>(options) {
-
-
                     @Override
-                    protected void onBindViewHolder(@NonNull ChatViewHolder holder, int position, @NonNull Message model) {
+                    protected void onBindViewHolder(@NonNull final ChatViewHolder holder, int position, @NonNull Message model) {
                         switch (holder.getItemViewType()) {
                             case VIEW_TYPE_MESSAGE_SENT:
                                 holder.bind(model);
                                 break;
                             case VIEW_TYPE_MESSAGE_RECEIVED:
                                 holder.bind(model);
+                            case VIEW_TYPE_POLL_SENT:
+                                holder.bind(model);
+//                                holder.itemView.findViewById(R.id.text_poll_redirect).setOnClickListener(new View.OnClickListener() {
+//                                    @Override
+//                                    public void onClick(View v) {
+//                                        TextView pollIDextra = holder.itemView.findViewById(R.id.text_message_pollID);
+//                                        String pollID = pollIDextra.getText().toString();
+//                                        Intent pollChoiceIntent = new Intent(getActivity() , ActivityPollChoiceTest.class);
+//                                        pollChoiceIntent.putExtra("pollID", pollID);
+//                                        startActivity(pollChoiceIntent);
+//                                    }
+//                                });
+                                break;
+                            case VIEW_TYPE_POLL_RECEIVED:
+                                holder.bind(model);
+                                holder.itemView.findViewById(R.id.text_poll_redirect).setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+
+                                    }
+                                });
                         }
                     }
 
@@ -136,7 +163,13 @@ public class Fragment_GroupChat extends Fragment {
                                 return new SentMessageHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_message_sent, parent, false));
 
                             case VIEW_TYPE_MESSAGE_RECEIVED:
-                                return new ReceivedMessageHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_message_received, parent, false));
+                                return new ReceivedMessageHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_message_received, parent, false), group.getGroup_id());
+                              //TODO case for poll send and receive and do viewholder
+                            case VIEW_TYPE_POLL_SENT:
+                                return new SentPollMessageHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_poll_sent, parent, false), group.getGroup_id(), getContext());
+//
+                            case VIEW_TYPE_POLL_RECEIVED:
+                                return new ReceivedPollMessageHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_poll_received, parent, false), group.getGroup_id(), getContext());
                         }
                         return null;
                     }
@@ -146,10 +179,20 @@ public class Fragment_GroupChat extends Fragment {
                         Message message = getItem(position);
                         if (message.getSenderId().equals(sessionManager.getUserDetails().get("id"))) {
                             // If the current user is the sender of the message
-                            return VIEW_TYPE_MESSAGE_SENT;
+                            // if pollID exist
+                            if (message.getPollID() != null) {
+                                return VIEW_TYPE_POLL_SENT;
+                            }
+                            else {
+                                return VIEW_TYPE_MESSAGE_SENT;
+                            }
                         } else {
-                            // If some other user sent the message
-                            return VIEW_TYPE_MESSAGE_RECEIVED;
+                            if (message.getPollID() != null) {
+                                return VIEW_TYPE_POLL_RECEIVED;
+                            }
+                            else {
+                                return VIEW_TYPE_MESSAGE_RECEIVED;
+                            }
                         }
                     }
                 };
@@ -168,6 +211,8 @@ public class Fragment_GroupChat extends Fragment {
         linearLayoutManager.setStackFromEnd(true);
 
         messageRecyclerView.setLayoutManager(linearLayoutManager);
+        pollButton = getView().findViewById(R.id.pollButton);
+        messageRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         List<Message> messages = new ArrayList<>();
 
@@ -179,6 +224,24 @@ public class Fragment_GroupChat extends Fragment {
             public void onClick(View view) {
                 Intent intent =  new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                 startActivityForResult(Intent.createChooser(intent, "Complete action using"), RC_PHOTO_PICKER);
+            }
+        });
+
+        pollButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent myIntent = new Intent(getActivity(), Activity_CreatePoll.class);
+                String[] voters = new String[group.getMembers().size()];
+                Log.v("Group members", group.getMembers().toString());
+                for (int ii = 0; ii < group.getMembers().size(); ii++) {
+                    voters[ii] = group.getMembers().get(ii);
+                }
+                ArrayList<String> votersList = new ArrayList<String>(Arrays.asList(voters));
+                myIntent.putStringArrayListExtra("voters", votersList);
+                String groupID = group.getGroup_id();
+                myIntent.putExtra("groupID", groupID);
+                // Need to put group id or chat??
+                Fragment_GroupChat.this.startActivity(myIntent);
             }
         });
 
@@ -207,8 +270,9 @@ public class Fragment_GroupChat extends Fragment {
             @Override
             public void onClick(View view) {
                 // TODO: Send messages on click
-                Message message = new Message(firebaseUser.getUid(), messageEditText.getText().toString(), null, System.currentTimeMillis());
-                messageDatabaseReference.push().setValue(message);
+                String msgKey = messageDatabaseReference.push().getKey();
+                Message message = new Message(msgKey, firebaseUser.getUid(), messageEditText.getText().toString(), null, System.currentTimeMillis());
+                messageDatabaseReference.child(msgKey).setValue(message);
                 messageRecyclerView.smoothScrollToPosition(messageRecyclerView.getAdapter().getItemCount());
 
                 // Clear input box
@@ -246,8 +310,9 @@ public class Fragment_GroupChat extends Fragment {
                 public void onComplete(@NonNull Task<Uri> task) {
                     if (task.isSuccessful()) {
                         Uri downloadUri = task.getResult();
-                        Message message = new Message(firebaseUser.getUid(), null, downloadUri.toString(), System.currentTimeMillis());
-                        messageDatabaseReference.push().setValue(message);
+                        String msgKey = messageDatabaseReference.push().getKey();
+                        Message message = new Message(msgKey, firebaseUser.getUid(), null, downloadUri.toString(), System.currentTimeMillis());
+                        messageDatabaseReference.child(msgKey).setValue(message);
                         messageRecyclerView.smoothScrollToPosition(messageRecyclerView.getAdapter().getItemCount());
                     } else {
                         Toast.makeText(getContext(), "upload failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();

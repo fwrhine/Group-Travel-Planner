@@ -8,14 +8,20 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.constraint.ConstraintLayout;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.animation.OvershootInterpolator;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -27,17 +33,21 @@ import android.widget.Toast;
 
 import com.android.volley.NetworkError;
 import com.android.volley.NoConnectionError;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageRequest;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
+
 import com.example.pplki18.grouptravelplanner.data.Event;
-import com.example.pplki18.grouptravelplanner.data.Group;
+import com.example.pplki18.grouptravelplanner.data.Hotel;
 import com.example.pplki18.grouptravelplanner.data.Place;
+import com.example.pplki18.grouptravelplanner.utils.RVAdapter_Amenities;
+import com.example.pplki18.grouptravelplanner.utils.VolleyResponseListener;
+import com.example.pplki18.grouptravelplanner.utils.VolleySingleton;
+import com.example.pplki18.grouptravelplanner.utils.VolleyUtils;
+
+import com.android.volley.toolbox.Volley;
+import com.example.pplki18.grouptravelplanner.data.Group;
 import com.example.pplki18.grouptravelplanner.old_stuff.DatabaseHelper;
 import com.example.pplki18.grouptravelplanner.utils.Suggestion;
 import com.google.firebase.auth.FirebaseAuth;
@@ -56,7 +66,13 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
+import at.blogc.android.views.ExpandableTextView;
+
+import static com.example.pplki18.grouptravelplanner.utils.HtmlParser.parseHotel;
+
+@SuppressWarnings("SpellCheckingInspection")
 public class PlaceActivity extends AppCompatActivity {
     private static final String TAG = "RestaurantList";
     private static final int REQUEST_CODE_EDIT_EVENT = 1;
@@ -70,7 +86,6 @@ public class PlaceActivity extends AppCompatActivity {
     StorageReference storageReference;
 
     private DatabaseHelper databaseHelper;
-
     private String place_id;
     private Toolbar toolbar;
     private TextView title;
@@ -84,20 +99,36 @@ public class PlaceActivity extends AppCompatActivity {
     private TextView open_hours;
     private FloatingActionButton ic_add;
 //    Button google_button;
+
+    //hotel
+    private TextView hotel_price;
+    private ExpandableTextView hotel_desc;
+    private Button button_toggle;
+    private RecyclerView hotel_amenities1;
+    private RecyclerView hotel_amenities2;
+    private LinearLayoutManager linearLayoutManager1;
+    private LinearLayoutManager linearLayoutManager2;
+    private ConstraintLayout hotel_detail;
+    private String checkInDate;
+    private String checkOutDate;
+
     private ProgressBar progressBar;
-    private RequestQueue queue;
-
-    TextView eventDate;
-    TextView eventTime;
-    TextView eventDuration;
-    TextView eventDescription;
-    RelativeLayout detailLayout;
-    ImageButton editEvent;
-
+    private TextView eventDate;
+    private TextView eventTime;
+    private TextView eventDuration;
+    private TextView eventDescription;
+    private RelativeLayout detailLayout;
+    private ImageButton editEvent;
     private String plan_id;
+    private String type;
     private List<String> eventIDs = new ArrayList<>();
     private List<Event> events = new ArrayList<>();
     private Bundle bundle;
+    private VolleyUtils volleyUtils;
+
+    private String prevActivity;
+    private String prevActivity2;
+    private String prevFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,7 +146,7 @@ public class PlaceActivity extends AppCompatActivity {
         init();
 
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         setTitle("");
 
         ic_add.setOnClickListener(new View.OnClickListener() {
@@ -125,28 +156,24 @@ public class PlaceActivity extends AppCompatActivity {
             }
         });
 
-        sendRequest();
+        if (prevFragment != null && (prevFragment.equals("HotelFragment"))) {
+            sendRequestHotel();
+            hotel_amenities1.setHasFixedSize(true);
+            hotel_amenities1.setLayoutManager(linearLayoutManager1);
+            hotel_amenities1.setItemAnimator(new DefaultItemAnimator());
 
+            hotel_amenities2.setHasFixedSize(true);
+            hotel_amenities2.setLayoutManager(linearLayoutManager2);
+            hotel_amenities2.setItemAnimator(new DefaultItemAnimator());
+        } else {
+            sendRequestPlace();
+        }
     }
 
     @Override
     public boolean onSupportNavigateUp() {
         onBackPressed();
         return true;
-    }
-
-    private void noConnection(VolleyError volleyError) {
-        String message = null;
-        if (volleyError instanceof NetworkError) {
-            message = "No internet connection.";
-        } else if (volleyError instanceof NoConnectionError) {
-            message = "No internet connection.";
-        } else if (volleyError instanceof TimeoutError) {
-            message = "Connection timeout.";
-        }
-
-        progressBar.setVisibility(View.GONE);
-        toastMessage(message);
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -174,45 +201,61 @@ public class PlaceActivity extends AppCompatActivity {
                     getIntent().putParcelableArrayListExtra("events", data.getParcelableArrayListExtra("events"));
                     getIntent().putExtra("ACTIVITY", prevActivity);
                     getIntent().putExtra("TEST", "ini test");
-
-//                    Log.d("TRALALA2", prevActivity);
-//                    ArrayList<Event> events = data.getParcelableArrayListExtra("events");
-//                    for (Event e : events) {
-//                        Log.d("DESC", e.getDescription());
-//                    }
                     setResult(RESULT_OK, getIntent());
                 }
             }
         }
     }
 
-    private void sendRequest() {
-        // Instantiate the RequestQueue.
-        RequestQueue queue = Volley.newRequestQueue(this);
+    private void noConnection(VolleyError volleyError) {
+        String message = null;
+        if (volleyError instanceof NetworkError) {
+            message = "No internet connection.";
+        } else if (volleyError instanceof NoConnectionError) {
+            message = "No internet connection.";
+        } else if (volleyError instanceof TimeoutError) {
+            message = "Connection timeout.";
+        }
+
+        progressBar.setVisibility(View.GONE);
+        toastMessage(message);
+    }
+
+    private void sendRequestPlace() {
         String url = "https://maps.googleapis.com/maps/api/place/details/json?placeid="
                 + place_id + "&fields=name,formatted_address,rating,photo," +
                 "opening_hours,website,international_phone_number,url&key="
                 + getString(R.string.api_key);
 
-
-        // Request a string response from the provided URL.
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        populatePlaceView(getPlace(response));
-                        progressBar.setVisibility(View.GONE);
-                    }
-                }, new Response.ErrorListener() {
+        volleyUtils.getRequest(url, new VolleyResponseListener() {
             @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d(TAG, "REQUEST ERROR");
+            public void onResponse(String response) {
+                Log.d(TAG, "REQUEST PLACE DETAIL");
+                populatePlaceView(getPlace(response));
+                progressBar.setVisibility(View.GONE);
+            }
+            @Override
+            public void onError(VolleyError error) {
+                Log.d(TAG, "PLACE DETAIL ERROR");
                 noConnection(error);
             }
         });
+    }
 
-        // Add the request to the RequestQueue.
-        queue.add(stringRequest);
+    private void sendRequestHotel() {
+        volleyUtils.getRequest(place_id, new VolleyResponseListener() {
+            @Override
+            public void onResponse(String response) {
+                Log.d(TAG, "REQUEST HOTEL DETAIL");
+                populateHotelView(parseHotel(response));
+                progressBar.setVisibility(View.GONE);
+            }
+            @Override
+            public void onError(VolleyError error) {
+                Log.d(TAG, "HOTEL DETAIL ERROR");
+                noConnection(error);
+            }
+        });
     }
 
     private Place getPlace(String response) {
@@ -286,7 +329,7 @@ public class PlaceActivity extends AppCompatActivity {
 
             // Loop and append values.
             for (int i = 0; i < weekday_text.size(); i++) {
-                builder.append(weekday_text.get(i) + "\n");
+                builder.append(weekday_text.get(i)).append("\n");
             }
             // Convert to string.
             String result = builder.toString();
@@ -297,19 +340,86 @@ public class PlaceActivity extends AppCompatActivity {
 //        google_button.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {
-//                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(place.getUrl()));
+//                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parseHotelList(place.getUrl()));
 //                startActivity(browserIntent);
 //            }
 //        });
 
-        Log.d("populate", place.getPhoto());
-        getPhoto(place.getPhoto());
+        getPlacePhoto(place.getPhoto());
     }
 
-    private void getPhoto(String photo_reference) {
+    private void populateHotelView(final Hotel hotel) {
+        title.setText(hotel.getName());
+        rating_num.setText(hotel.getRating());
+        if (hotel.getRating().length() > 0) {
+            rating.setRating(Float.valueOf(hotel.getRating()));
+        }
+        address.setText(hotel.getAddress());
+
+        address.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Uri gmmIntentUri = Uri.parse("geo:0,0?q=" + hotel.getName() + ", "
+                        + hotel.getAddress());
+                Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+                mapIntent.setPackage("com.google.android.apps.maps");
+                startActivity(mapIntent);
+            }
+        });
+
+        phone.setText(hotel.getPhone_number());
+
+        hotel_price.setText(hotel.getPrice());
+        hotel_desc.setText(hotel.getDescription());
+
+        // set interpolators for both expanding and collapsing animations
+        hotel_desc.setInterpolator(new OvershootInterpolator());
+
+        if (hotel.getDescription() != null) {
+            button_toggle.setText(R.string.more);
+            button_toggle.setCompoundDrawablesWithIntrinsicBounds(0, 0,
+                    R.drawable.ic_arrow_down_grey, 0);
+        }
+
+        // toggle the ExpandableTextView
+        button_toggle.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(final View v)
+            {
+                if (hotel_desc.isExpanded())
+                {
+                    hotel_desc.collapse();
+                    button_toggle.setText(R.string.more);
+                    button_toggle.setCompoundDrawablesWithIntrinsicBounds(0, 0,
+                            R.drawable.ic_arrow_down_grey, 0);
+                }
+                else
+                {
+                    hotel_desc.expand();
+                    button_toggle.setText(R.string.less);
+                    button_toggle.setCompoundDrawablesWithIntrinsicBounds(0, 0,
+                            R.drawable.ic_arrow_up, 0);
+                }
+            }
+        });
+
+        if (!hotel.getAmenities().isEmpty()) {
+            RVAdapter_Amenities adapter = new RVAdapter_Amenities(hotel.getAmenities().get(0));
+            hotel_amenities1.setAdapter(adapter);
+
+            ArrayList<String> amenities2 = hotel.getAmenities().get(1);
+            amenities2.remove(amenities2.size()-1);
+            adapter = new RVAdapter_Amenities(amenities2);
+            hotel_amenities2.setAdapter(adapter);
+        }
+
+        getHotelPhoto(hotel.getPhoto().replace("photo-s", "photo-o"));
+    }
+
+    private void getPlacePhoto(String photo_reference) {
         String url = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=900&photoreference="
                 + photo_reference + "&key=" + getString(R.string.api_key);
-
 
         // Request an image response from the provided URL.
         ImageRequest imageRequest = new ImageRequest(url,
@@ -321,18 +431,43 @@ public class PlaceActivity extends AppCompatActivity {
                 },  0, 0,  ImageView.ScaleType.CENTER_CROP, Bitmap.Config.RGB_565,
                 new Response.ErrorListener() {
             public void onErrorResponse(VolleyError error) {
-                Log.e(TAG, "Image Load Error: ");
+                Log.e(TAG, "Image Load Error");
             }
         });
 
-        // Add the request to the RequestQueue.
-        queue.add(imageRequest);
+        // Access the RequestQueue through singleton class.
+        VolleySingleton.getInstance(this).addToRequestQueue(imageRequest);
+    }
+
+    private void getHotelPhoto(String photo_url) {
+        // Request an image response from the provided URL.
+        ImageRequest imageRequest = new ImageRequest(photo_url,
+                new Response.Listener<Bitmap>() {
+                    @Override
+                    public void onResponse(Bitmap response) {
+                        image.setImageBitmap(response);
+                    }
+                },  0, 0,  ImageView.ScaleType.CENTER_CROP, Bitmap.Config.RGB_565,
+                new Response.ErrorListener() {
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e(TAG, "Image Load Error");
+                    }
+                });
+
+        // Access the RequestQueue through singleton class.
+        VolleySingleton.getInstance(this).addToRequestQueue(imageRequest);
     }
 
     private void setTime() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = getLayoutInflater();
         View dialogLayout = inflater.inflate(R.layout.set_time_dialog, null);
+        final TextView start = dialogLayout.findViewById(R.id.start_text);
+        TextView end = dialogLayout.findViewById(R.id.end_text);
+
+        start.setText("Check-in Time");
+        end.setText("Check-out Time");
+
         final TimePicker startTime = dialogLayout.findViewById(R.id.start_time);
         final TimePicker endTime = dialogLayout.findViewById(R.id.end_time);
 
@@ -356,19 +491,27 @@ public class PlaceActivity extends AppCompatActivity {
                             if (prevActivity.equals("CreateNewPlanActivity")) {
                                 Log.d("NOT-EDIT", "TWO");
                                 List<Event> events = getIntent().getParcelableArrayListExtra("events");
-                                Event anEvent = saveEventLocally(start_time, end_time);
-                                events.add(anEvent);
-                                Log.d("HEHHE", "test");
+                                // TODO SALAH KAPRAH
+                                if (prevFragment != null && prevFragment.equals("HotelFragment")) {
+                                    Log.d("HotelFragment", checkInDate + checkOutDate);
+                                    Event anEvent = saveEventLocally(checkInDate, start_time, "");
+                                    events.add(anEvent);
+                                    anEvent = saveEventLocally(checkOutDate, end_time, "");
+                                    events.add(anEvent);
+                                } else {
+                                    Log.d("ElseFragment", checkInDate + checkOutDate);
+                                    Event anEvent = saveEventLocally("", start_time, end_time);
+                                    events.add(anEvent);
+                                }
+
                                 Intent intent = new Intent(PlaceActivity.this, Fragment_PlaceList.class);
                                 intent.putParcelableArrayListExtra("events", (ArrayList<? extends Parcelable>) events);
 
                                 setResult(RESULT_OK, intent);
                                 finish();
-                            }
-
-                            else {
-                                Log.d("NOT-EDIT", "THREE");
+                            } else {
                                 saveEventToPlan(start_time, end_time);
+
                                 Intent intent = new Intent(PlaceActivity.this, Fragment_PlaceList.class);
                                 intent.putExtra("ACTIVITY", "EditPlanActivity");
                                 setResult(RESULT_OK, intent);
@@ -395,23 +538,31 @@ public class PlaceActivity extends AppCompatActivity {
         builder.show();
     }
 
-    private Event saveEventLocally(String start_time, String end_time) {
+    private Event saveEventLocally(String date, String start_time, String end_time) {
         Event anEvent = new Event();
+
+        if (prevFragment != null && prevFragment.equals("HotelFragment")) {
+            Log.d("saveEventLocally", "HotelFragment");
+            anEvent.setDate(date);
+            anEvent.setTime_start(start_time);
+        } else {
+            Log.d("saveEventLocally", "ElseFragment");
+            anEvent.setDate(getIntent().getStringExtra("date"));
+            anEvent.setTime_start(start_time);
+            anEvent.setTime_end(end_time);
+        }
         anEvent.setQuery_id(place_id);
         anEvent.setTitle(title.getText().toString());
         anEvent.setLocation(address.getText().toString());
         anEvent.setWebsite(website.getText().toString());
-        anEvent.setDate(getIntent().getStringExtra("date"));
-        anEvent.setTime_start(start_time);
-        anEvent.setTime_end(end_time);
         anEvent.setPhone(phone.getText().toString());
-        anEvent.setType(getIntent().getStringExtra("type"));
         anEvent.setRating(rating_num.getText().toString());
+        anEvent.setType(getIntent().getStringExtra("type"));
 
         return anEvent;
     }
 
-    private void saveEventToPlan(String start_time, String end_time) {
+    private void saveEventToPlan(String start_time, final String end_time) {
 //        Log.d("SAVEVENT", "MASUK");
 //        SQLiteDatabase db = databaseHelper.getWritableDatabase();
 //
@@ -429,14 +580,68 @@ public class PlaceActivity extends AppCompatActivity {
 //        contentValues.put(EventContract.EventEntry.COL_RATING, rating_num.getText().toString());
 //        long event_id = db.insert(EventContract.EventEntry.TABLE_NAME, null, contentValues);
         String date = getIntent().getStringExtra("date");
-        String type = getIntent().getStringExtra("type");
 
-        Event anEvent = new Event(title.getText().toString(), date, start_time, end_time, type);
+        Event anEvent = new Event();
         anEvent.setQuery_id(place_id);
+        anEvent.setTitle(title.getText().toString());
         anEvent.setLocation(address.getText().toString());
         anEvent.setWebsite(website.getText().toString());
         anEvent.setPhone(phone.getText().toString());
         anEvent.setRating(rating_num.getText().toString());
+        anEvent.setType(type);
+
+        if (type.equals("hotel")) {
+            anEvent.setDate(checkInDate);
+            anEvent.setTime_start(start_time);
+        } else {
+            anEvent.setDate(date);
+            anEvent.setTime_start(start_time);
+            anEvent.setTime_end(end_time);
+        }
+
+        final String eventId = eventRef.push().getKey();
+        anEvent.setEvent_id(eventId);
+        anEvent.setPlan_id(plan_id);
+        anEvent.setCreator_id(firebaseUser.getUid());
+        eventRef.child(eventId).setValue(anEvent);
+
+        planRef = firebaseDatabase.getReference().child("plans").child(plan_id).child("events");
+        getAllEventIDs(new EventIdCallback() {
+            @Override
+            public void onCallback(List<String> list) {
+                eventIDs = list;
+                eventIDs.add(eventId);
+
+                planRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        planRef.setValue(eventIDs);
+                        if (type.equals("hotel")) {
+                            saveEventToPlan2(end_time);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+            }
+        });
+    }
+
+    private void saveEventToPlan2(String time) {
+        Event anEvent = new Event();
+        anEvent.setQuery_id(place_id);
+        anEvent.setTitle(title.getText().toString());
+        anEvent.setLocation(address.getText().toString());
+        anEvent.setWebsite(website.getText().toString());
+        anEvent.setPhone(phone.getText().toString());
+        anEvent.setRating(rating_num.getText().toString());
+        anEvent.setType(type);
+
+        anEvent.setDate(checkOutDate);
+        anEvent.setTime_start(time);
 
         final String eventId = eventRef.push().getKey();
         anEvent.setEvent_id(eventId);
@@ -569,12 +774,16 @@ public class PlaceActivity extends AppCompatActivity {
 
         String type = getIntent().getStringExtra("type");
         ic_add.setEnabled(false);
-        if (type.equals("restaurants")) {
-            ic_add.setImageResource(R.drawable.ic_restaurant_black);
-        } else if (type.equals("attractions")) {
-            ic_add.setImageResource(R.drawable.ic_sunny_black);
-        } else {
-            ic_add.setImageResource(R.drawable.ic_event_note_black);
+        switch (type) {
+            case "restaurants":
+                ic_add.setImageResource(R.drawable.ic_restaurant_black);
+                break;
+            case "attractions":
+                ic_add.setImageResource(R.drawable.ic_sunny_black);
+                break;
+            default:
+                ic_add.setImageResource(R.drawable.ic_event_note_black);
+                break;
         }
         if (bundle != null) {
             Group group = bundle.getParcelable("group");
@@ -588,7 +797,7 @@ public class PlaceActivity extends AppCompatActivity {
         }
     }
 
-    public void setEditEventButton() {
+    private void setEditEventButton() {
         editEvent.setColorFilter(R.color.colorRipple);
         editEvent.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -598,7 +807,7 @@ public class PlaceActivity extends AppCompatActivity {
 //                int event_id = getIntent().getIntExtra("event_id", -1);
 
                 Bundle bundle = getIntent().getExtras();
-                bundle.putString("address", address.getText().toString());
+                Objects.requireNonNull(bundle).putString("address", address.getText().toString());
                 bundle.putString("name", title.getText().toString());
                 bundle.putString("description", eventDescription.getText().toString());
                 bundle.putParcelableArrayList("events", (ArrayList<? extends Parcelable>) events);
@@ -632,12 +841,37 @@ public class PlaceActivity extends AppCompatActivity {
         ic_add = findViewById(R.id.ic_add);
 //        google_button = (Button) findViewById(R.id.google_button);
         progressBar = findViewById(R.id.main_progress);
-        queue = Volley.newRequestQueue(this);
+        //queue = Volley.newRequestQueue(this);
         databaseHelper = new DatabaseHelper(this);
 
-        String prevActivity = getIntent().getStringExtra("ACTIVITY");
-        String prevActivity2 = getIntent().getStringExtra("PREV_ACTIVITY");
+        //hotel
+        hotel_price = findViewById(R.id.hotel_price);
+        hotel_desc = findViewById(R.id.hotel_desc);
+        button_toggle = findViewById(R.id.button_toggle);
+        hotel_amenities1 = findViewById(R.id.list1);
+        hotel_amenities2 = findViewById(R.id.list2);
+        linearLayoutManager1 = new LinearLayoutManager(this);
+        linearLayoutManager2 = new LinearLayoutManager(this);
+        hotel_detail = findViewById(R.id.hotel_detail);
+        checkInDate = getIntent().getStringExtra("checkInDate");
+        checkOutDate = getIntent().getStringExtra("checkOutDate");
+
+
+        progressBar = findViewById(R.id.main_progress);
+        volleyUtils = new VolleyUtils(this);
+        prevActivity = getIntent().getStringExtra("ACTIVITY");
+        prevActivity2 = getIntent().getStringExtra("PREV_ACTIVITY");
+        prevFragment = getIntent().getStringExtra("FRAGMENT");
+
+
+        eventDate = findViewById(R.id.event_detail_date);
+        eventTime = findViewById(R.id.event_detail_time);
+        eventDuration = findViewById(R.id.event_detail_duration);
+        eventDescription = findViewById(R.id.event_detail_desc);
+        detailLayout = findViewById(R.id.detail_layout);
+        editEvent = findViewById(R.id.edit_event);
         plan_id = getIntent().getStringExtra("plan_id");
+        type = getIntent().getStringExtra("type");
 
         eventDate = findViewById(R.id.event_detail_date);
         eventTime = findViewById(R.id.event_detail_time);
@@ -658,6 +892,15 @@ public class PlaceActivity extends AppCompatActivity {
 
         } else {
             detailLayout.setVisibility(View.GONE);
+        }
+
+        if (prevFragment != null && (prevFragment.equals("HotelFragment"))) {
+            open_hours.setVisibility(View.GONE);
+            open_now.setVisibility(View.GONE);
+            website.setVisibility(View.GONE);
+        } else {
+            hotel_price.setVisibility(View.GONE);
+            hotel_detail.setVisibility(View.GONE);
         }
 
     }

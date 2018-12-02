@@ -29,8 +29,9 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.example.pplki18.grouptravelplanner.data.Reminder;
 import com.example.pplki18.grouptravelplanner.old_stuff.DatabaseHelper;
-import com.example.pplki18.grouptravelplanner.old_stuff.ReminderContract;
+import com.example.pplki18.grouptravelplanner.data.ReminderContract;
 import com.example.pplki18.grouptravelplanner.utils.SessionManager;
 
 import java.util.ArrayList;

@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -13,7 +14,6 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
-import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -43,6 +43,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 
 /**
@@ -174,6 +175,7 @@ public class Fragment_GroupPlanList extends Fragment {
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(getActivity(), EditPlanActivity.class);
+                    intent.putParcelableArrayListExtra("plans", (ArrayList<? extends Parcelable>) plans);
                     intent.putExtra("plan_id", currentPlan.getPlan_id());
                     intent.putExtra("plan_name", currentPlan.getPlan_name());
                     intent.putExtra("plan_date_start", currentPlan.getPlan_start_date());
@@ -219,11 +221,19 @@ public class Fragment_GroupPlanList extends Fragment {
                     popup.show();
                 }
             });
+
+            if (!group.getCreator_id().equals(firebaseUser.getUid())) {
+                planMenuButton.setVisibility(View.GONE);
+            }
         }
 
         if (!plans.isEmpty()) {
             warning1.setVisibility(View.GONE);
         }
+    }
+
+    public void setPastPlan() {
+        warning1.setVisibility(View.GONE);
     }
 
     private AlertDialog renameDialog(String name) {
@@ -282,22 +292,12 @@ public class Fragment_GroupPlanList extends Fragment {
                     public void onClick(DialogInterface dialog, int which) {
 
                         dialog.dismiss();
-
                     }
                 })
                 .create();
     }
 
     private void deletePlan(Plan plan) {
-//        DatabaseHelper myDb = new DatabaseHelper(context);
-//        SQLiteDatabase db = myDb.getWritableDatabase();
-//
-//        String deleteQuery = "DELETE FROM " + PlanContract.PlanEntry.TABLE_NAME + " WHERE " +
-//                PlanContract.PlanEntry._ID + " = " + plan.getPlan_id();
-//
-//        db.execSQL(deleteQuery);
-//        db.close();
-//        notifyDataSetChanged();
 
         if (plan.getPlan_id() != null) {
             deleteHelper(plan, new DeleteEventCallback() {
@@ -312,8 +312,26 @@ public class Fragment_GroupPlanList extends Fragment {
 
     private void deleteHelper(Plan plan, final DeleteEventCallback callback) {
 
-        String plan_id = plan.getPlan_id();
+        final String plan_id = plan.getPlan_id();
         planRef = firebaseDatabase.getReference().child("plans").child(plan_id);
+        final DatabaseReference ref = firebaseDatabase.getReference().child("groups").child(group.getGroup_id()).child("plans");
+
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                    if (Objects.equals(postSnapshot.getValue(String.class), plan_id)) {
+                        ref.child(Objects.requireNonNull(postSnapshot.getKey())).removeValue();
+                        break;
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
         getAllEventIDs(new EventIdCallback() {
             @Override
@@ -401,11 +419,21 @@ public class Fragment_GroupPlanList extends Fragment {
             @Override
             public void onClick(View view) {
                 Intent myIntent = new Intent(getActivity(), CreateNewPlanActivity.class);
+                myIntent.putExtra("init_name", setPlanName());
+                myIntent.putParcelableArrayListExtra("plans", (ArrayList<? extends Parcelable>) plans);
                 myIntent.putExtra("group_id", group.getGroup_id());
                 myIntent.putExtra("ACTIVITY_GROUP", "Fragment_GroupPlanList");
                 startActivity(myIntent);
             }
         });
+    }
+
+    private int setPlanName() {
+        if (plans != null) {
+            return plans.size()+1;
+        } else {
+            return 1;
+        }
     }
 
     //Todo: refactor? exactly the same code as the one in CreateNewGroup
@@ -417,13 +445,14 @@ public class Fragment_GroupPlanList extends Fragment {
                 Bundle bundle = new Bundle();
                 bundle.putParcelable("group", group);
                 bundle.putString("ACTIVITY", "Fragment_GroupPlanList");
+
                 adapter = new RVAdapter_Plan(list, getActivity(), bundle);
-//                for (Plan p : list) {
-//                    Log.d("DATE", p.getPlan_start_date());
-//                }
                 recyclerViewGroupPlan.setAdapter(adapter);
                 adapter.notifyDataSetChanged();
+
                 setCurrentPlan();
+
+                if (!list.isEmpty() && type.equals("past")) setPastPlan();
             }
         });
     }
@@ -448,7 +477,15 @@ public class Fragment_GroupPlanList extends Fragment {
                                 currentPlan = plan;
                                 setCurrentPlan();
                             } else {
-                                plans.add(plan);
+                                if (type.equals("past")) {
+                                    if (end_date.getTime() < today.getTime()) {
+                                        plans.add(plan);
+                                    }
+                                } else {
+                                    if (start_date.getTime() > today.getTime()) {
+                                        plans.add(plan);
+                                    }
+                                }
                             }
 
                         } catch (ParseException e) {

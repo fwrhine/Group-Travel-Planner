@@ -12,10 +12,12 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.pplki18.grouptravelplanner.data.Group;
+import com.example.pplki18.grouptravelplanner.data.Plan;
 import com.example.pplki18.grouptravelplanner.old_stuff.DatabaseHelper;
 import com.example.pplki18.grouptravelplanner.utils.SessionManager;
 import com.google.firebase.auth.FirebaseAuth;
@@ -28,7 +30,9 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 public class EditPlanActivity extends AppCompatActivity implements View.OnClickListener{
 
@@ -39,17 +43,14 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
 
     private static final String TAG = "EditPlanActivity";
 
-    DatabaseHelper databaseHelper;
     Intent intent;
 
     Toolbar plan_toolbar;
+    RelativeLayout trip_start, trip_end;
     TextView trip_start_date, trip_end_date, trip_days;
     TextView date_month_year, day;
-    ImageButton button_left, button_right, add_event, save_plan;
+    ImageButton button_left, button_right, save_plan;
     FloatingActionButton fab_add_event;
-
-    private SessionManager session;
-    private HashMap<String, String> user;
 
     private DatePickerDialog fromDatePickerDialog;
     private DatePickerDialog toDatePickerDialog;
@@ -60,11 +61,8 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
     private Date date_start_temp;
     private Date date_end_temp;
 
+    private List<Plan> plans;
     private String plan_id;
-    private String from_intent_plan_name;
-    private String from_intent_end_date;
-    private String from_intent_start_date;
-    private int from_intent_total_day;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,28 +76,31 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
         findViewById();
 
         setSupportActionBar(plan_toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         init();
     }
 
     public void findViewById() {
-        plan_toolbar = (Toolbar) findViewById(R.id.plan_toolbar);
+        plan_toolbar = findViewById(R.id.plan_toolbar);
 
-        trip_start_date = (TextView) findViewById(R.id.trip_start_date);
-        trip_end_date = (TextView) findViewById(R.id.trip_end_date);
-        trip_days = (TextView) findViewById(R.id.trip_days);
+        trip_start = findViewById(R.id.trip_start);
+        trip_end = findViewById(R.id.trip_end);
 
-        date_month_year = (TextView) findViewById(R.id.date_month_year);
-        day = (TextView) findViewById(R.id.day);
+        trip_start_date = findViewById(R.id.trip_start_date);
+        trip_end_date = findViewById(R.id.trip_end_date);
+        trip_days = findViewById(R.id.trip_days);
 
-        button_left = (ImageButton) findViewById(R.id.button_left);
-        button_right = (ImageButton) findViewById(R.id.button_right);
-//        add_event = (ImageButton) findViewById(R.id.add_event);
-        save_plan = (ImageButton) findViewById(R.id.save_plan);
+        date_month_year = findViewById(R.id.date_month_year);
+        day = findViewById(R.id.day);
 
-        fab_add_event = (FloatingActionButton) findViewById(R.id.fab_add_event);
+        button_left = findViewById(R.id.button_left);
+        button_right = findViewById(R.id.button_right);
+
+        save_plan = findViewById(R.id.save_plan);
+
+        fab_add_event = findViewById(R.id.fab_add_event);
     }
 
     public void init() {
@@ -107,15 +108,13 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
         dateFormatter2 = new SimpleDateFormat("d MMMM yyyy", Locale.US);
 
         intent = getIntent();
+        plans = intent.getParcelableArrayListExtra("plans");
         plan_id = intent.getStringExtra("plan_id");
-        databaseHelper = new DatabaseHelper(EditPlanActivity.this);
-        session = new SessionManager(getApplicationContext());
-        user = session.getUserDetails();
 
-        from_intent_plan_name = intent.getStringExtra("plan_name");
-        from_intent_end_date = intent.getStringExtra("plan_date_end");
-        from_intent_start_date = intent.getStringExtra("plan_date_start");
-        from_intent_total_day = intent.getIntExtra("plan_total_days", -1);
+        String from_intent_plan_name = intent.getStringExtra("plan_name");
+        String from_intent_end_date = intent.getStringExtra("plan_date_end");
+        String from_intent_start_date = intent.getStringExtra("plan_date_start");
+        int from_intent_total_day = intent.getIntExtra("plan_total_days", -1);
         setTitle(from_intent_plan_name);
 
         save_plan.setImageDrawable(getResources().getDrawable(R.drawable.ic_more_vert_white_24dp));
@@ -133,7 +132,9 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
         trip_start_date.setTextColor(getResources().getColor(R.color.colorBlack));
         trip_end_date.setText(dateFormatter1.format(date_end));
         trip_end_date.setTextColor(getResources().getColor(R.color.colorBlack));
-        trip_days.setText(from_intent_total_day + "");
+
+        String days = from_intent_total_day + "";
+        trip_days.setText(days);
         setDateTimeField();
 
         try {
@@ -142,13 +143,13 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
             e.printStackTrace();
         }
 
-        planRef = firebaseDatabase.getReference().child("plans").child(plan_id);;
+        planRef = firebaseDatabase.getReference().child("plans").child(plan_id);
 
         Bundle bundle = intent.getBundleExtra("bundle");
 
         if (bundle != null) {
             Group group = bundle.getParcelable("group");
-            if (!group.getCreator_id().equals(firebaseUser.getUid())) {
+            if (group != null && !group.getCreator_id().equals(firebaseUser.getUid())) {
                 fab_add_event.setVisibility(View.GONE);
             }
         }
@@ -164,8 +165,6 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
 
     @Override
     public void onBackPressed() {
-//        Log.d("dateeeeee", dateFormatter1.format(date_start));
-//        Log.d("dateeeeee", dateFormatter1.format(date_end));
         if (!trip_start_date.getText().toString().equals(dateFormatter1.format(date_start)) ||
                 !trip_end_date.getText().toString().equals(dateFormatter1.format(date_end))) {
             AlertDialog box;
@@ -185,7 +184,6 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
 
                     public void onClick(DialogInterface dialog, int whichButton) {
                         //your deleting code
-//                        deletePlan(plan_id);
                         EditPlanActivity.this.finish();
                     }
 
@@ -195,8 +193,12 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
 
                     public void onClick(DialogInterface dialog, int whichButton) {
                         //your saving code
-                        updatePlanDate();
-                        EditPlanActivity.this.finish();
+                        if (!checkDateAvailability()) {
+                            dateNotAvailableDialog();
+                        } else {
+                            updatePlanDate();
+                            EditPlanActivity.this.finish();
+                        }
                     }
 
                 })
@@ -224,20 +226,59 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
         );
     }
 
+    private boolean checkDateAvailability() {
+        Date start_date = null;
+        Date end_date = null;
+        try {
+            start_date = dateFormatter2.parse(dateFormatter2.format(date_start));
+            end_date = dateFormatter2.parse(dateFormatter2.format(date_end));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        for (Plan p : plans) {
+            try {
+                Date p_start = dateFormatter2.parse(p.getPlan_start_date());
+                Date p_end = dateFormatter2.parse(p.getPlan_end_date());
+
+                if ((start_date.getTime() <= p_start.getTime() & end_date.getTime() >= p_end.getTime()) ||
+                        (start_date.getTime() >= p_start.getTime() & end_date.getTime() <= p_end.getTime())) {
+                    return false;
+                }
+                if ((start_date.getTime() >= p_start.getTime() & start_date.getTime() <= p_end.getTime()) ||
+                        (end_date.getTime() >= p_start.getTime() & end_date.getTime() <= p_end.getTime())) {
+                    return false;
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+        return true;
+    }
+
+    private void dateNotAvailableDialog() {
+        String message = "You already have a plan from " + trip_start_date.getText().toString() +
+                " until " + trip_end_date.getText().toString() + "\nPlease select another date!";
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder
+                .setTitle("Date Not Available")
+                .setMessage(message)
+                .setCancelable(true)
+                .setIcon(R.drawable.ic_error_black_24dp)
+                .setNeutralButton("Ok", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
     private void updatePlanDate() {
-//        SQLiteDatabase db = databaseHelper.getWritableDatabase();
-//
         String start_day = dateFormatter2.format(date_start_temp);
         String end_day = dateFormatter2.format(date_end_temp);
         int total_days = Integer.parseInt(trip_days.getText().toString());
-//        String updateQuery = "UPDATE " + PlanContract.PlanEntry.TABLE_NAME + " SET " +
-//                PlanContract.PlanEntry.COL_START_DAY + " = " + "\"" + start_day + "\", " +
-//                PlanContract.PlanEntry.COL_END_DAY + " = " + "\"" + end_day + "\", " +
-//                PlanContract.PlanEntry.COL_TOTAL_DAY + " = " + total_days + " WHERE " +
-//                PlanContract.PlanEntry._ID + " = " + plan_id;
-//        Log.d("updateQuery", updateQuery);
-//        db.execSQL(updateQuery);
-//        db.close();
+
         planRef.child("plan_start_date").setValue(start_day);
         planRef.child("plan_end_date").setValue(end_day);
         planRef.child("total_days").setValue(total_days);
@@ -267,16 +308,16 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
 
     @Override
     public void onClick(View view) {
-        if(view == trip_start_date) {
+        if(view == trip_start) {
             fromDatePickerDialog.show();
-        } else if(view == trip_end_date) {
+        } else if(view == trip_end) {
             toDatePickerDialog.show();
         }
     }
 
     public void setDateTimeField() {
-        trip_start_date.setOnClickListener(this);
-        trip_end_date.setOnClickListener(this);
+        trip_start.setOnClickListener(this);
+        trip_end.setOnClickListener(this);
 
         Calendar newCalendar = Calendar.getInstance();
         fromDatePickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
@@ -367,9 +408,6 @@ public class EditPlanActivity extends AppCompatActivity implements View.OnClickL
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-//                        boolean test = c_cur_date.getTime().getTime() == c_start_pin.getTime().getTime();
-//                        Log.d("CUR", c_cur_date.getTime().getTime() + "");
-//                        Log.d("PIN", c_start_pin.getTime().getTime() + "");
 
                         c_cur_date.add(Calendar.DATE, -1);
                         date_month_year.setText(dateFormatter2.format(c_cur_date.getTime()));

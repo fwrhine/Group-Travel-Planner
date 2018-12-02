@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.PopupMenu;
@@ -38,6 +39,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 public class RVAdapter_Plan extends RecyclerView.Adapter<RVAdapter_Plan.PlanViewHolder>{
 
@@ -108,12 +110,6 @@ public class RVAdapter_Plan extends RecyclerView.Adapter<RVAdapter_Plan.PlanView
 
         String start_date = plan.getPlan_start_date();
         String end_date = plan.getPlan_end_date();
-//        try {
-//            start_date = dateFormatter1.format(dateFormatter1.parse(start_date));
-//            end_date = dateFormatter1.format(dateFormatter1.parse(end_date));
-//        } catch (ParseException e) {
-//            e.printStackTrace();
-//        }
 
         String dateString = start_date + " - " + end_date
                 + total_day_str;
@@ -139,6 +135,7 @@ public class RVAdapter_Plan extends RecyclerView.Adapter<RVAdapter_Plan.PlanView
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(context, EditPlanActivity.class);
+                intent.putParcelableArrayListExtra("plans", (ArrayList<? extends Parcelable>) plans);
                 intent.putExtra("plan_id", plan.getPlan_id());
                 intent.putExtra("plan_name", planViewHolder.planName.getText().toString());
                 intent.putExtra("plan_date_start", plan.getPlan_start_date());
@@ -218,15 +215,6 @@ public class RVAdapter_Plan extends RecyclerView.Adapter<RVAdapter_Plan.PlanView
     }
 
     private void deletePlan(Plan plan) {
-//        DatabaseHelper myDb = new DatabaseHelper(context);
-//        SQLiteDatabase db = myDb.getWritableDatabase();
-//
-//        String deleteQuery = "DELETE FROM " + PlanContract.PlanEntry.TABLE_NAME + " WHERE " +
-//                PlanContract.PlanEntry._ID + " = " + plan.getPlan_id();
-//
-//        db.execSQL(deleteQuery);
-//        db.close();
-//        notifyDataSetChanged();
 
         if (plan.getPlan_id() != null) {
             deleteHelper(plan, new DeleteEventCallback() {
@@ -240,8 +228,27 @@ public class RVAdapter_Plan extends RecyclerView.Adapter<RVAdapter_Plan.PlanView
 
     private void deleteHelper(Plan plan, final DeleteEventCallback callback) {
 
-        String plan_id = plan.getPlan_id();
+        final String plan_id = plan.getPlan_id();
         planRef = firebaseDatabase.getReference().child("plans").child(plan_id);
+
+        final DatabaseReference ref = firebaseDatabase.getReference().child("users").child(firebaseUser.getUid()).child("plans");
+
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                    if (Objects.equals(postSnapshot.getValue(String.class), plan_id)) {
+                        ref.child(Objects.requireNonNull(postSnapshot.getKey())).removeValue();
+                        break;
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
         getAllEventIDs(new EventIdCallback() {
             @Override
@@ -322,7 +329,6 @@ public class RVAdapter_Plan extends RecyclerView.Adapter<RVAdapter_Plan.PlanView
                         notifyDataSetChanged();
                         dialog.dismiss();
                     }
-
                 })
 
                 .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
@@ -336,15 +342,6 @@ public class RVAdapter_Plan extends RecyclerView.Adapter<RVAdapter_Plan.PlanView
     }
 
     private void renamePlan(Plan plan, String new_name) {
-//        DatabaseHelper myDb = new DatabaseHelper(context);
-//        SQLiteDatabase db = myDb.getWritableDatabase();
-//
-//        String updateQuery = "UPDATE " + PlanContract.PlanEntry.TABLE_NAME + " SET " +
-//                PlanContract.PlanEntry.COL_PLAN_NAME + " = " + "\"" + new_name + "\"" +
-//                " WHERE " + PlanContract.PlanEntry._ID + " = " + plan.getPlan_id();
-//
-//        db.execSQL(updateQuery);
-//        db.close();
         planRef = firebaseDatabase.getReference().child("plans").child(plan.getPlan_id());
         planRef.child("plan_name").setValue(new_name);
         notifyDataSetChanged();

@@ -53,15 +53,6 @@ public class Event implements Parcelable, Comparable<Event> {
         this.title = title;
         this.date = date;
         this.type = type;
-//        if (type.equals("restaurants") || type.equals("attractions") || type.equals("custom")) {
-//            this.time_start = time_start;
-//            this.time_end = time_end;
-//        } else if (type.equals("flights") || type.equals("trains")) {
-//            this.departure_time = time_start;
-//            this.arrival_time = time_end;
-//        } else if (type.equals("hotels")) {
-//
-//        }
         this.time_start = time_start;
         this.time_end = time_end;
     }
@@ -182,24 +173,25 @@ public class Event implements Parcelable, Comparable<Event> {
     }
 
     public String getTotal_time() {
-        SimpleDateFormat format = new SimpleDateFormat("HH:mm", Locale.US);
-        long diff = 0;
+        if (type.equals("hotel")) {
+            return "";
+        } else {
+            SimpleDateFormat format = new SimpleDateFormat("HH:mm", Locale.US);
+            long diff = 0;
 
-        try {
-//            if (type.equals("restaurants") || type.equals("attractions") || type.equals("custom")) {
+            try {
                 diff = format.parse(time_end).getTime() - format.parse(time_start).getTime();
-//            } else if (type.equals("flights") || type.equals("trains")) {
-//                diff = format.parse(arrival_time).getTime() - format.parse(departure_time).getTime();
-//            }
 
-        } catch (ParseException e) {
-            e.printStackTrace();
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            long diffMinutes = diff / (60 * 1000) % 60;
+            long diffHours = diff / (60 * 60 * 1000) % 24;
+
+            return diffHours + " hours, " + diffMinutes + " minutes";
+
         }
-
-        long diffMinutes = diff / (60 * 1000) % 60;
-        long diffHours = diff / (60 * 60 * 1000) % 24;
-
-        return diffHours + " hours, " + diffMinutes + " minutes";
 
     }
 

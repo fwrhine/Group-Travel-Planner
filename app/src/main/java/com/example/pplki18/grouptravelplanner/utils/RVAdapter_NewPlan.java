@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 /**
  * Created by HP-HP on 05-12-2015.
@@ -101,8 +102,8 @@ public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.Ne
             time_start = event.getDeparture_time();
             timeString = time_start + " - " + event.getArrival_time() +
                     " (" + event.getTotal_time() + ")";
-        } else if (event.getType().equals("hotels")) {
-
+        } else if (event.getType().equals("hotel")) {
+            timeString = event.getTime_start();
         } else if (event.getType().equals("custom")) {
             time_start = event.getTime_start();
             timeString = time_start + " - " + event.getTime_end() +
@@ -118,7 +119,7 @@ public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.Ne
                 holder.eventIcon.setMarker(mContext.getDrawable(R.drawable.ic_flight_black));
             } else if (event.getType().equals("trains")) {
                 holder.eventIcon.setMarker(mContext.getDrawable(R.drawable.ic_train_black));
-            } else if (event.getType().equals("hotels")) {
+            } else if (event.getType().equals("hotel")) {
                 holder.eventIcon.setMarker(mContext.getDrawable(R.drawable.ic_hotel_black));
             } else if (event.getType().equals("custom")) {
                 holder.eventIcon.setMarker(mContext.getDrawable(R.drawable.ic_event_note_black));
@@ -299,15 +300,19 @@ public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.Ne
     }
 
     public void deleteHelper(Event event, final DeleteEventCallback callback){
-        //TODO: REMOVE planRef by position --> put position when inserting new event
         String plan_id = event.getPlan_id();
-        Log.d("PLANKEY", plan_id);
+//        Log.d("PLANKEY", plan_id);
         final String event_id = event.getEvent_id();
-        final DatabaseReference planRef = firebaseDatabase.getReference().child("plans").child(plan_id).child("events").child(event_id);
+        final DatabaseReference planRef = firebaseDatabase.getReference().child("plans").child(plan_id).child("events");
         planRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                planRef.removeValue();
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                    if (Objects.equals(postSnapshot.getValue(String.class), event_id)) {
+                        planRef.child(Objects.requireNonNull(postSnapshot.getKey())).removeValue();
+                        break;
+                    }
+                }
                 final DatabaseReference eventRef = firebaseDatabase.getReference().child("events").child(event_id);
                 eventRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override

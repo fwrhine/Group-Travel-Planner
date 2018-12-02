@@ -30,6 +30,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.request.RequestOptions;
+import com.example.pplki18.grouptravelplanner.data.Reminder;
 import com.example.pplki18.grouptravelplanner.old_stuff.DatabaseHelper;
 import com.example.pplki18.grouptravelplanner.utils.GlideApp;
 import com.example.pplki18.grouptravelplanner.utils.SessionManager;
@@ -62,9 +63,9 @@ public class InHomeActivity extends AppCompatActivity implements NavigationView.
         init();
 
 
-//        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED) {
-//            readCalendar(getApplicationContext());
-//        }
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED) {
+            readCalendar(getApplicationContext());
+        }
         navigationView.setNavigationItemSelectedListener(this);
         drawer.addDrawerListener(toggle);
         toggle.syncState();

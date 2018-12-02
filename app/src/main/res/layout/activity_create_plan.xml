@@ -49,6 +49,7 @@
             android:baselineAligned="false">
 
             <RelativeLayout
+                android:id="@+id/trip_start"
                 android:layout_width="50dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1">
@@ -101,6 +102,7 @@
             </RelativeLayout>
 
             <RelativeLayout
+                android:id="@+id/trip_end"
                 android:layout_width="50dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1">

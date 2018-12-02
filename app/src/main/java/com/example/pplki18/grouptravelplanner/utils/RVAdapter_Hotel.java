@@ -1,6 +1,8 @@
 package com.example.pplki18.grouptravelplanner.utils;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -10,6 +12,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageRequest;
 import com.example.pplki18.grouptravelplanner.R;
 import com.example.pplki18.grouptravelplanner.data.Hotel;
 
@@ -19,9 +24,9 @@ import java.util.List;
 
 public class RVAdapter_Hotel extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
 
-    private List<Hotel> hotels;
+    private final List<Hotel> hotels;
     private ClickListener listener;
-    private Context context;
+    private final Context context;
     private boolean isLoadingAdded = false;
 
     private static final int ITEM = 0;
@@ -36,8 +41,9 @@ public class RVAdapter_Hotel extends RecyclerView.Adapter<RecyclerView.ViewHolde
         this.listener = listener;
     }
 
+    @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         RecyclerView.ViewHolder viewHolder = null;
         LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
 
@@ -57,14 +63,14 @@ public class RVAdapter_Hotel extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     @Override
-    public void onBindViewHolder(final RecyclerView.ViewHolder viewHolder, int i) {
+    public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder viewHolder, int i) {
 
         switch (getItemViewType(i)) {
             case ITEM:
                 PlaceViewHolder placeViewHolder = (PlaceViewHolder) viewHolder;
                 placeViewHolder.hotelName.setText(hotels.get(i).getName());
-                placeViewHolder.hotelAddress.setText(hotels.get(i).getAddress());
                 placeViewHolder.hotelRating.setText(String.valueOf(hotels.get(i).getRating()) + "/5");
+                placeViewHolder.hotelPrice.setText(String.valueOf(hotels.get(i).getPrice()));
                 placeViewHolder.addIcon.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -72,9 +78,9 @@ public class RVAdapter_Hotel extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     }
                 });
 
-//                if (hotels.get(i).getPhoto() != null) {
-//                    getPhoto(placeViewHolder, hotels.get(i).getPhoto());
-//                }
+                if (hotels.get(i).getPhoto() != null) {
+                    getPhoto(placeViewHolder, hotels.get(i).getPhoto());
+                }
 
                 break;
             case LOADING:
@@ -154,30 +160,24 @@ public class RVAdapter_Hotel extends RecyclerView.Adapter<RecyclerView.ViewHolde
         return hotels.get(position);
     }
 
-//    private void getPhoto(final PlaceViewHolder placeViewHolder, String photo_reference) {
-//        // Instantiate the RequestQueue.
-//        RequestQueue queue = Volley.newRequestQueue(context);
-//        String url = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=300&photoreference="
-//                + photo_reference + "&key=" + context.getString(R.string.api_key);
-//
-//
-//        // Request an image response from the provided URL.
-//        ImageRequest imageRequest = new ImageRequest(url,
-//                new Response.Listener<Bitmap>() {
-//                    @Override
-//                    public void onResponse(Bitmap response) {
-//                        placeViewHolder.placeImage.setImageBitmap(response);
-//                    }
-//                },  0, 0,  ImageView.ScaleType.CENTER_CROP, Bitmap.Config.RGB_565,
-//                new Response.ErrorListener() {
-//                    public void onErrorResponse(VolleyError error) {
-//                        Log.e("PHOTO REQUEST", error.toString());
-//                    }
-//                });
-//
-//        // Add the request to the RequestQueue.
-//        queue.add(imageRequest);
-//    }
+    private void getPhoto(final PlaceViewHolder placeViewHolder, String url) {
+        // Request an image response from the provided URL.
+        ImageRequest imageRequest = new ImageRequest(url,
+                new Response.Listener<Bitmap>() {
+                    @Override
+                    public void onResponse(Bitmap response) {
+                        placeViewHolder.hotelImage.setImageBitmap(response);
+                    }
+                },  0, 0,  ImageView.ScaleType.CENTER_CROP, Bitmap.Config.RGB_565,
+                new Response.ErrorListener() {
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e("PHOTO REQUEST", error.toString());
+                    }
+                });
+
+        // Access the RequestQueue through singleton class.
+        VolleySingleton.getInstance(context).addToRequestQueue(imageRequest);
+    }
 
 
     /*
@@ -185,24 +185,24 @@ public class RVAdapter_Hotel extends RecyclerView.Adapter<RecyclerView.ViewHolde
    _________________________________________________________________________________________________
     */
 
-    public static class PlaceViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        private CardView cardView;
-        private TextView hotelName;
-        private TextView hotelAddress;
-        private TextView hotelRating;
-        private ImageView hotelImage;
-        private ImageView addIcon;
-        private WeakReference<ClickListener> listenerRef;
+    static class PlaceViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        private final CardView cardView;
+        private final TextView hotelName;
+        private final TextView hotelRating;
+        private final TextView hotelPrice;
+        private final ImageView hotelImage;
+        private final ImageView addIcon;
+        private final WeakReference<ClickListener> listenerRef;
 
 
         PlaceViewHolder(View itemView,  ClickListener listener) {
             super(itemView);
-            cardView = (CardView)itemView.findViewById(R.id.cv);
-            hotelName = (TextView)itemView.findViewById(R.id.hotel_name);
-            hotelAddress = (TextView)itemView.findViewById(R.id.hotel_address);
-            hotelRating = (TextView)itemView.findViewById(R.id.hotel_rating);
-            hotelImage = (ImageView)itemView.findViewById(R.id.place_image);
-            addIcon = (ImageView)itemView.findViewById(R.id.ic_add);
+            cardView = itemView.findViewById(R.id.cv);
+            hotelName = itemView.findViewById(R.id.hotel_name);
+            hotelRating = itemView.findViewById(R.id.hotel_rating);
+            hotelPrice = itemView.findViewById(R.id.hotel_price);
+            hotelImage = itemView.findViewById(R.id.hotel_image);
+            addIcon = itemView.findViewById(R.id.ic_add);
 
             listenerRef = new WeakReference<>(listener);
 
@@ -217,7 +217,7 @@ public class RVAdapter_Hotel extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     }
 
-    public static class LoadingViewHolder extends RecyclerView.ViewHolder {
+    static class LoadingViewHolder extends RecyclerView.ViewHolder {
 
         LoadingViewHolder(View itemView) {
             super(itemView);

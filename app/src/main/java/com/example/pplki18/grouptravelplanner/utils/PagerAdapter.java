@@ -15,16 +15,16 @@ import com.example.pplki18.grouptravelplanner.Fragment_PlaceList;
 import com.google.android.gms.maps.model.LatLng;
 
 public class PagerAdapter extends FragmentStatePagerAdapter {
-    private int mNumOfTabs;
-    private String region;
-    private LatLng region_coor;
-    private Bundle bundle;
+    private final int mNumOfTabs;
+    private final String region;
+    private final LatLng region_coordinates;
+    private final Bundle bundle;
 
-    public PagerAdapter(FragmentManager fm, int NumOfTabs, String region, LatLng region_coor, Bundle bundle) {
+    public PagerAdapter(FragmentManager fm, int NumOfTabs, String region, LatLng region_coordinates, Bundle bundle) {
         super(fm);
         this.mNumOfTabs = NumOfTabs;
         this.region = region;
-        this.region_coor = region_coor;
+        this.region_coordinates = region_coordinates;
         this.bundle = bundle;
     }
 
@@ -40,11 +40,9 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
         switch (position) {
 
             case 0:
-                Fragment_PlaceList tab1 = newPlaceListInstance("restaurants");
-                return tab1;
+                return newPlaceListInstance("restaurants");
             case 1:
-                Fragment_PlaceList tab2 = newPlaceListInstance("attractions");
-                return tab2;
+                return newPlaceListInstance("attractions");
             case 2:
                 boolean fromSuggestion = false;
                 if (prevFrag != null) {
@@ -102,8 +100,8 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
         Bundle args = new Bundle();
         args.putString("QUERY", type);
         args.putString("REGION", region);
-        args.putString("LATITUDE", String.valueOf(region_coor.latitude));
-        args.putString("LONGITUDE", String.valueOf(region_coor.longitude));
+        args.putString("LATITUDE", String.valueOf(region_coordinates.latitude));
+        args.putString("LONGITUDE", String.valueOf(region_coordinates.longitude));
 
         String plan_id = bundle.getString("plan_id");
         String date = bundle.getString("date");
