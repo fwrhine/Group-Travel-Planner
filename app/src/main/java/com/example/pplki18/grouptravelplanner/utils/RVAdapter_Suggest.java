@@ -303,7 +303,7 @@ public class RVAdapter_Suggest extends RecyclerView.Adapter<RVAdapter_Suggest.Su
 
         final DatabaseReference eventRef = firebaseDatabase.getReference().child("events");
 
-        final String eventId = eventRef.push().getKey();    // TODO: Should it create new key?
+        final String eventId = eventRef.push().getKey();
         anEvent.setEvent_id(eventId);
         anEvent.setPlan_id(planId);
         anEvent.setCreator_id(firebaseUser.getUid());
@@ -321,7 +321,6 @@ public class RVAdapter_Suggest extends RecyclerView.Adapter<RVAdapter_Suggest.Su
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         planRef.setValue(eventIDs);
-                        deleteSuggest(suggestion);
 
                         callback.onCallback();
                     }
@@ -333,6 +332,8 @@ public class RVAdapter_Suggest extends RecyclerView.Adapter<RVAdapter_Suggest.Su
                 });
             }
         });
+        deleteSuggest(suggestion);
+
         Toast.makeText(context, "Suggestion has been saved into a group plan!",
                 Toast.LENGTH_LONG).show();
     }

@@ -289,6 +289,7 @@ public class Fragment_SuggestionList extends Fragment {
 
     private void selectDate(Plan plan) {
         alertDialog1.dismiss();
+        dateList.clear();
         String strFirstDate = plan.getPlan_start_date();
         String strSecondDate = plan.getPlan_end_date();
 
