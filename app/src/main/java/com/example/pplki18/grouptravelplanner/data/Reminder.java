@@ -1,4 +1,4 @@
-package com.example.pplki18.grouptravelplanner;
+package com.example.pplki18.grouptravelplanner.data;
 
 import java.util.Date;
 

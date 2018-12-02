@@ -63,8 +63,10 @@ public class ReceivedPollMessageHolder extends ChatViewHolder {
             @Override
             public void onClick(View v) {
                 String pollIDstring = pollID.getText().toString();
+                String pollQuestion = pollText.getText().toString();
                 Intent pollChoiceIntent = new Intent(context, ActivityPollChoiceTest.class);
                 pollChoiceIntent.putExtra("pollID", pollIDstring);
+                pollChoiceIntent.putExtra("pollQuestion", pollQuestion);
                 context.startActivity(pollChoiceIntent);
                 Log.v("REDIRECT", "PRESSED ButtoN");
             }

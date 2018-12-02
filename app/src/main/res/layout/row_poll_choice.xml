@@ -33,7 +33,9 @@
                 android:text="00"
                 android:textSize="25dp"
                 android:paddingTop="20dp"
-                android:layout_toRightOf="@id/poll_choice"
+                android:layout_toLeftOf="@id/poll_choice_increment"
+                android:paddingRight="15dp"
+                android:paddingLeft="20dp"
                 />
             <TextView
                 android:id="@+id/poll_id"
@@ -46,7 +48,7 @@
             <Button
                 android:id="@+id/poll_choice_increment"
                 android:text="+"
-                android:background="@color/red"
+                android:background="@color/colorPrimary"
                 android:textColor="@android:color/white"
                 android:layout_margin="8dp"
                 android:layout_width="wrap_content"

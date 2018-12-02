@@ -87,7 +87,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
-            android:text="test"
             android:layout_alignTop="@+id/poll_text_choices"
             android:layout_marginStart="119dp" />
 

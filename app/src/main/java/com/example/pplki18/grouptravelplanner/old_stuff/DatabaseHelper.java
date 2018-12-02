@@ -24,7 +24,7 @@ import com.example.pplki18.grouptravelplanner.old_stuff.EventContract.EventEntry
 //import com.example.pplki18.grouptravelplanner.data.FlightContract.FlightEntry;
 //import com.example.pplki18.grouptravelplanner.data.TrainContract.TrainEntry;
 //import com.example.pplki18.grouptravelplanner.data.OtherEventContract.OtherEventEntry;
-import com.example.pplki18.grouptravelplanner.old_stuff.ReminderContract.ReminderEntry;
+import com.example.pplki18.grouptravelplanner.data.ReminderContract.ReminderEntry;
 
 import java.io.ByteArrayOutputStream;
 

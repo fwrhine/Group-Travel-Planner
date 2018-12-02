@@ -30,6 +30,7 @@ import android.widget.TimePicker;
 import android.text.format.DateFormat;
 import android.widget.Toast;
 
+import com.example.pplki18.grouptravelplanner.data.Reminder;
 import com.example.pplki18.grouptravelplanner.old_stuff.DatabaseHelper;
 import com.example.pplki18.grouptravelplanner.utils.SessionManager;
 
@@ -250,7 +251,13 @@ public class Activity_CreateReminder extends AppCompatActivity implements DatePi
         resultYear.setText(yearFinal + "");
         resultMonth.setText((monthFinal + 1) + "");
         resultDay.setText(dayFinal + "");
-        resultTime.setText(hourFinal  + ":" + minuteFinal);
+        if (minuteFinal < 10) {
+            resultTime.setText(hourFinal  + ":0" + minuteFinal);
+
+        }
+        else {
+            resultTime.setText(hourFinal + ":" + minuteFinal);
+        }
 
     }
 

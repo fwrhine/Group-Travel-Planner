@@ -17,6 +17,7 @@ import android.widget.Toast;
 import com.example.pplki18.grouptravelplanner.data.Choice;
 import com.example.pplki18.grouptravelplanner.data.Group;
 import com.example.pplki18.grouptravelplanner.data.Message;
+import com.example.pplki18.grouptravelplanner.data.Poll;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -56,7 +57,6 @@ public class Activity_CreatePoll extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_poll);
         init();
-//        choiceText.setText("dummy");
         btnAddChoice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -82,14 +82,6 @@ public class Activity_CreatePoll extends AppCompatActivity {
             }
         });
 
-//        choiceText.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent myIntent = new Intent(Activity_CreatePoll.this , InHomeActivity.class);
-//                myIntent.putExtra("fragment", "group");
-//                startActivity(myIntent);
-//            }
-//        });
 
         btndone.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -115,7 +107,6 @@ public class Activity_CreatePoll extends AppCompatActivity {
 
                     //================================
 
-                    //TODO add poll message to the group chat
                     Toast.makeText(getApplicationContext(), "Created Poll", Toast.LENGTH_SHORT).show();
 
                     Intent myIntent = new Intent(Activity_CreatePoll.this , InHomeActivity.class);
@@ -124,8 +115,8 @@ public class Activity_CreatePoll extends AppCompatActivity {
                 }
 
                 else {
-//                    Toast.makeText(getApplicationContext(), "Write a topic and at least 2 " +
-//                            "choices must be made", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Write a topic and at least 2 " +
+                            "choices must be made", Toast.LENGTH_SHORT).show();
                     Intent myIntent = new Intent(Activity_CreatePoll.this , InHomeActivity.class);
                     myIntent.putExtra("fragment", "group");
                     startActivity(myIntent);

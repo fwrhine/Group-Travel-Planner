@@ -1,6 +1,4 @@
-package com.example.pplki18.grouptravelplanner;
-
-import com.example.pplki18.grouptravelplanner.data.Choice;
+package com.example.pplki18.grouptravelplanner.data;
 
 import java.util.ArrayList;
 import java.util.HashMap;

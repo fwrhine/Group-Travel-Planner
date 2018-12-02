@@ -1,24 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ActivityPollChoiceTest">
 
-    <android.support.design.widget.AppBarLayout
+    <RelativeLayout
+        android:id="@+id/toolbarLayoutRem"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay">
+        android:layout_height="50dp">
 
         <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbarTest"
+            android:id="@+id/plan_toolbarRem"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
+            android:layout_height="wrap_content"
             android:background="?attr/colorPrimary"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
-    </android.support.design.widget.AppBarLayout>
+        <ImageButton
+            android:id="@+id/btn_done_poll_choice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="20dp"
+            android:background="@null"
+            android:foregroundGravity="center"
+            android:src="@drawable/ic_check_white_24dp" />
+
+    </RelativeLayout>
 
     <TextView
         android:id="@+id/poll_question"
@@ -26,13 +39,16 @@
         android:layout_height="wrap_content"
         android:paddingTop="60dp"
         android:text="POLL QUESTION"
+        android:textSize="30dp"
         android:paddingBottom="5dp"
         />
+
+
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="90dp">
+        android:paddingTop="110dp">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv"
@@ -46,4 +62,6 @@
 
     </android.support.constraint.ConstraintLayout>
 
-</android.support.constraint.ConstraintLayout>
+
+
+</RelativeLayout>

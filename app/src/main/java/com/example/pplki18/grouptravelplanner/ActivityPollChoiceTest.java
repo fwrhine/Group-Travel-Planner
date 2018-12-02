@@ -1,5 +1,6 @@
 package com.example.pplki18.grouptravelplanner;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -10,7 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,10 +43,12 @@ public class ActivityPollChoiceTest extends AppCompatActivity {
     private DatabaseReference getPollChoiceVoterRef;
 
     private RecyclerView choicesRecyclerView;
-
+    private TextView pollQuestion;
+    private ImageButton btn_done;
     private List<Choice> choiceList;
 
     private String pollID;
+    private String pollTopic;
 
     FirebaseRecyclerAdapter<Choice, ChoiceViewHolder> adapter;
     FirebaseRecyclerOptions<Choice> options;
@@ -91,7 +94,18 @@ public class ActivityPollChoiceTest extends AppCompatActivity {
         firebaseUser = firebaseAuth.getCurrentUser();
         firebaseDatabase = FirebaseDatabase.getInstance();
         choicesRecyclerView = findViewById(R.id.rv);
-
+        pollQuestion = findViewById(R.id.poll_question);
+        pollTopic = getIntent().getStringExtra("pollQuestion");
+        pollQuestion.setText(pollTopic);
+        btn_done = findViewById(R.id.btn_done_poll_choice);
+        btn_done.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent myIntent = new Intent(getApplicationContext(), InHomeActivity.class);
+                myIntent.putExtra("fragment", "group");
+                startActivity(myIntent);
+            }
+        });
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setStackFromEnd(true);
 
