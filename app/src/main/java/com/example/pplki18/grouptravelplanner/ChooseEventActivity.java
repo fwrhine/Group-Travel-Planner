@@ -1,6 +1,9 @@
 package com.example.pplki18.grouptravelplanner;
 
+import android.app.FragmentManager;
 import android.content.Intent;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
@@ -25,6 +28,8 @@ import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.maps.model.LatLng;
 
+import java.util.List;
+
 public class ChooseEventActivity extends AppCompatActivity {
 
     private Toolbar toolbar;
@@ -39,6 +44,8 @@ public class ChooseEventActivity extends AppCompatActivity {
 
     private LatLng regionCoor;
 
+    private boolean fromSuggestion;
+
     //
 //    if(ContextCompat.checkSelfPermission(mActivity,Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED){
 //        // Camera permission granted
@@ -46,6 +53,7 @@ public class ChooseEventActivity extends AppCompatActivity {
 
     private final int REGION_AUTOCOMPLETE_REQUEST_CODE = 1;
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,9 +102,11 @@ public class ChooseEventActivity extends AppCompatActivity {
         tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_restaurant));
         tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_sunny));
 
-        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_hotel));
-        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_airplane));
-        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_train));
+        if (!fromSuggestion) {
+            tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_hotel));
+            tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_airplane));
+            tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_train));
+        }
         tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_add_white));
 
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
@@ -198,5 +208,13 @@ public class ChooseEventActivity extends AppCompatActivity {
         sessionManager = new SessionManager(getApplicationContext());
         sessionManager.setCurrentRegion("Jakarta");
         plan_bundle = getIntent().getExtras();
+
+        String checkPrevFrag = getIntent().getStringExtra("prev_fragment");
+        fromSuggestion = false;
+        if (checkPrevFrag != null) {
+            if (checkPrevFrag.equals("Fragment_SuggestionList")) {
+                fromSuggestion = true;
+            }
+        }
     }
 }

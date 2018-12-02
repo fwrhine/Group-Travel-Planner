@@ -31,12 +31,14 @@ import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.example.pplki18.grouptravelplanner.old_stuff.DatabaseHelper;
 import com.example.pplki18.grouptravelplanner.data.Event;
-import com.example.pplki18.grouptravelplanner.utils.PaginationScrollListener;
+import com.example.pplki18.grouptravelplanner.data.Group;
 import com.example.pplki18.grouptravelplanner.data.Place;
+import com.example.pplki18.grouptravelplanner.old_stuff.DatabaseHelper;
+import com.example.pplki18.grouptravelplanner.utils.PaginationScrollListener;
 import com.example.pplki18.grouptravelplanner.utils.RVAdapter_Place;
 import com.example.pplki18.grouptravelplanner.utils.SessionManager;
+import com.example.pplki18.grouptravelplanner.utils.Suggestion;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -63,6 +65,7 @@ public class Fragment_PlaceList extends Fragment {
     FirebaseUser firebaseUser;
     DatabaseReference planRef;
     DatabaseReference eventRef;
+    DatabaseReference suggestionRef;
     StorageReference storageReference;
 
     private RecyclerView recyclerViewPlace;
@@ -90,6 +93,8 @@ public class Fragment_PlaceList extends Fragment {
 
     private boolean isLoading = false;
     private boolean isLastPage = false;
+
+    private Group group;
 
     @Nullable
     @Override
@@ -135,6 +140,7 @@ public class Fragment_PlaceList extends Fragment {
         firebaseUser = firebaseAuth.getCurrentUser();
 
         eventRef = firebaseDatabase.getReference().child("events");
+        suggestionRef = firebaseDatabase.getReference().child("suggestions");
         storageReference = FirebaseStorage.getInstance().getReference();
 
         init();
@@ -328,6 +334,7 @@ public class Fragment_PlaceList extends Fragment {
 
             @Override public void addImageOnClick(View v, int position) {
                 setTime(adapter.getAll().get(position));
+
             }
         };
 
@@ -366,6 +373,9 @@ public class Fragment_PlaceList extends Fragment {
                             intent.putExtra("ACTIVITY", "Fragment_PlaceList");
                             Log.d("prev activity", "createnewplan");
                             getActivity().setResult(RESULT_OK, intent);
+                            getActivity().finish();
+                        } else if (prevActivity.equals("Fragment_SuggestionList")) {
+                            saveEventToSuggestion(place, start_time, end_time);
                             getActivity().finish();
                         } else {
                             saveEventToPlan(place, start_time, end_time);
@@ -408,14 +418,16 @@ public class Fragment_PlaceList extends Fragment {
 //        contentValues.put(EventContract.EventEntry.COL_LOCATION, place.getAddress());
 //        contentValues.put(EventContract.EventEntry.COL_WEBSITE, place.getWebsite());
 //        contentValues.put(EventContract.EventEntry.COL_DATE, event_date);
-//        //TODO ERROR PLACES GADA ADDRESS DLL ??!!
+//
 //        contentValues.put(EventContract.EventEntry.COL_TIME_START, start_time);
 //        contentValues.put(EventContract.EventEntry.COL_TIME_END, end_time);
 //        contentValues.put(EventContract.EventEntry.COL_PHONE, place.getPhone_number());
 //        contentValues.put(EventContract.EventEntry.COL_TYPE, type);
 //        contentValues.put(EventContract.EventEntry.COL_RATING, place.getRating());
 //        long event_id = db.insert(EventContract.EventEntry.TABLE_NAME, null, contentValues);
+
         Event anEvent = new Event(place.getName(), event_date, start_time, end_time, type);
+
         anEvent.setQuery_id(place.getPlace_id());
         anEvent.setLocation(place.getAddress());
         anEvent.setWebsite(place.getWebsite());
@@ -429,6 +441,58 @@ public class Fragment_PlaceList extends Fragment {
         eventRef.child(eventId).setValue(anEvent);
 
         planRef = firebaseDatabase.getReference().child("plans").child(plan_id).child("events");
+
+        getAllEventIDs(new EventIdCallback() {
+            @Override
+            public void onCallback(List<String> list) {
+                eventIDs = list;
+                eventIDs.add(eventId);
+
+                planRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        planRef.setValue(eventIDs);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+            }
+        });
+    }
+
+    private void saveEventToSuggestion(Place place, String start_time, String end_time) {
+        Suggestion aSuggestion = new Suggestion(place.getName(), start_time, end_time, type);
+
+        aSuggestion.setQuery_id(place.getPlace_id());
+        aSuggestion.setLocation(place.getAddress());
+        aSuggestion.setWebsite(place.getWebsite());
+        aSuggestion.setPhone(place.getPhone_number());
+        aSuggestion.setRating(place.getRating());
+
+        String groupId = getActivity().getIntent().getStringExtra("group_id");
+
+        String planSuggestId = getActivity().getIntent().getStringExtra("suggest_to_plan_id");
+        String planSuggestName = getActivity().getIntent().getStringExtra("suggest_to_plan_name");  //TODO: Its null?
+        String planSuggestDate = getActivity().getIntent().getStringExtra("suggest_to_plan_date");  //TODO: Its null?
+
+        String suggestDesc = "For Plan '"+ planSuggestName +"' on "+ planSuggestDate;
+
+        final String eventId = suggestionRef.push().getKey();
+        aSuggestion.setSuggestion_id(eventId);
+        aSuggestion.setDescription(suggestDesc);
+        aSuggestion.setGroup_id(groupId);
+        aSuggestion.setCreator_id(firebaseUser.getUid());
+        aSuggestion.setPlan_id(planSuggestId);
+        aSuggestion.setPlan_name(planSuggestName);
+        aSuggestion.setPlan_date(planSuggestDate);
+
+        suggestionRef.child(eventId).setValue(aSuggestion);
+
+        planRef = firebaseDatabase.getReference().child("groups").child(groupId).child("suggestion");
+
         getAllEventIDs(new EventIdCallback() {
             @Override
             public void onCallback(List<String> list) {
@@ -494,7 +558,14 @@ public class Fragment_PlaceList extends Fragment {
         databaseHelper = new DatabaseHelper(getActivity());
         prevActivity = getActivity().getIntent().getStringExtra("ACTIVITY");
         queue = Volley.newRequestQueue(getActivity());
-        if (prevActivity.equals("CreateNewPlanActivity")) {
+
+        if (prevActivity == null) {
+            prevActivity = getActivity().getIntent().getStringExtra("prev_fragment");
+        }
+
+        Log.d("Prev Frag", prevActivity);
+
+        if (prevActivity.equals("Fragment_SuggestionList") | prevActivity.equals("CreateNewPlanActivity")) {
             events = getActivity().getIntent().getParcelableArrayListExtra("events");
         }
     }

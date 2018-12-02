@@ -6,13 +6,13 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.constraint.ConstraintLayout;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -49,8 +49,7 @@ import com.example.pplki18.grouptravelplanner.utils.VolleyUtils;
 import com.android.volley.toolbox.Volley;
 import com.example.pplki18.grouptravelplanner.data.Group;
 import com.example.pplki18.grouptravelplanner.old_stuff.DatabaseHelper;
-import com.example.pplki18.grouptravelplanner.data.Event;
-import com.example.pplki18.grouptravelplanner.data.Place;
+import com.example.pplki18.grouptravelplanner.utils.Suggestion;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -83,6 +82,7 @@ public class PlaceActivity extends AppCompatActivity {
     FirebaseUser firebaseUser;
     DatabaseReference planRef;
     DatabaseReference eventRef;
+    DatabaseReference suggestRef;
     StorageReference storageReference;
 
     private DatabaseHelper databaseHelper;
@@ -140,6 +140,7 @@ public class PlaceActivity extends AppCompatActivity {
         firebaseUser = firebaseAuth.getCurrentUser();
 
         eventRef = firebaseDatabase.getReference().child("events");
+        suggestRef = firebaseDatabase.getReference().child("suggestions");
         storageReference = FirebaseStorage.getInstance().getReference();
 
         init();
@@ -482,8 +483,13 @@ public class PlaceActivity extends AppCompatActivity {
                         String start_time = startTime.getCurrentHour() + ":" + startTime.getCurrentMinute();
                         String end_time = endTime.getCurrentHour() + ":" + endTime.getCurrentMinute();
                         String prevActivity = getIntent().getStringExtra("ACTIVITY");
+                        String prevFrag = getIntent().getStringExtra("prev_fragment");
+
+                        //Log.d("PREVVV", prevActivity);
                         if (prevActivity != null) {
+                            Log.d("NOT-EDIT", "ONE");
                             if (prevActivity.equals("CreateNewPlanActivity")) {
+                                Log.d("NOT-EDIT", "TWO");
                                 List<Event> events = getIntent().getParcelableArrayListExtra("events");
                                 // TODO SALAH KAPRAH
                                 if (prevFragment != null && prevFragment.equals("HotelFragment")) {
@@ -503,11 +509,19 @@ public class PlaceActivity extends AppCompatActivity {
 
                                 setResult(RESULT_OK, intent);
                                 finish();
-
-
                             } else {
                                 saveEventToPlan(start_time, end_time);
 
+                                Intent intent = new Intent(PlaceActivity.this, Fragment_PlaceList.class);
+                                intent.putExtra("ACTIVITY", "EditPlanActivity");
+                                setResult(RESULT_OK, intent);
+                                finish();
+                            }
+                        } else if (prevFrag != null) {
+                            Log.d("NOT-EDIT", "FOUR");
+                            if (prevFrag.equals("Fragment_SuggestionList")) {
+                                Log.d("CHECK-EDIT", (prevFrag != null)+"");
+                                saveEventToSuggestion(start_time, end_time);
                                 Intent intent = new Intent(PlaceActivity.this, Fragment_PlaceList.class);
                                 intent.putExtra("ACTIVITY", "EditPlanActivity");
                                 setResult(RESULT_OK, intent);
@@ -657,6 +671,59 @@ public class PlaceActivity extends AppCompatActivity {
         });
     }
 
+    private void saveEventToSuggestion(String start_time, String end_time) {
+        String type = getIntent().getStringExtra("type");
+
+        Suggestion aSuggestion = new Suggestion(title.getText().toString(), start_time, end_time, type);
+
+        aSuggestion.setQuery_id(place_id);
+        aSuggestion.setLocation(address.getText().toString());
+        aSuggestion.setWebsite(website.getText().toString());
+        aSuggestion.setPhone(phone.getText().toString());
+        aSuggestion.setRating(rating_num.getText().toString());
+
+        String groupId = getIntent().getStringExtra("group_id");
+
+        String planSuggestId = getIntent().getStringExtra("suggest_to_plan_id");
+        String planSuggestName = getIntent().getStringExtra("suggest_to_plan_name");
+        String planSuggestDate = getIntent().getStringExtra("suggest_to_plan_date");
+
+        String suggestDesc = "For Plan '"+ planSuggestName +"' on "+ planSuggestDate;
+
+        final String eventId = suggestRef.push().getKey();
+        aSuggestion.setSuggestion_id(eventId);
+        aSuggestion.setDescription(suggestDesc);
+        aSuggestion.setGroup_id(groupId);
+        aSuggestion.setCreator_id(firebaseUser.getUid());
+        aSuggestion.setPlan_id(planSuggestId);
+        aSuggestion.setPlan_name(planSuggestName);
+        aSuggestion.setPlan_date(planSuggestDate);
+
+        suggestRef.child(eventId).setValue(aSuggestion);
+
+        planRef = firebaseDatabase.getReference().child("groups").child(groupId).child("suggestion");
+
+        getAllEventIDs(new EventIdCallback() {
+            @Override
+            public void onCallback(List<String> list) {
+                eventIDs = list;
+                eventIDs.add(eventId);
+
+                planRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        planRef.setValue(eventIDs);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+            }
+        });
+    }
+
     private void getAllEventIDs(final EventIdCallback userIdCallback){
         planRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -773,6 +840,9 @@ public class PlaceActivity extends AppCompatActivity {
         open_hours = findViewById(R.id.open_hours);
         ic_add = findViewById(R.id.ic_add);
 //        google_button = (Button) findViewById(R.id.google_button);
+        progressBar = findViewById(R.id.main_progress);
+        //queue = Volley.newRequestQueue(this);
+        databaseHelper = new DatabaseHelper(this);
 
         //hotel
         hotel_price = findViewById(R.id.hotel_price);
@@ -803,12 +873,12 @@ public class PlaceActivity extends AppCompatActivity {
         plan_id = getIntent().getStringExtra("plan_id");
         type = getIntent().getStringExtra("type");
 
-        eventDate = (TextView) findViewById(R.id.event_detail_date);
-        eventTime = (TextView) findViewById(R.id.event_detail_time);
-        eventDuration = (TextView) findViewById(R.id.event_detail_duration);
-        eventDescription = (TextView) findViewById(R.id.event_detail_desc);
-        detailLayout = (RelativeLayout) findViewById(R.id.detail_layout);
-        editEvent = (ImageButton) findViewById(R.id.edit_event);
+        eventDate = findViewById(R.id.event_detail_date);
+        eventTime = findViewById(R.id.event_detail_time);
+        eventDuration = findViewById(R.id.event_detail_duration);
+        eventDescription = findViewById(R.id.event_detail_desc);
+        detailLayout = findViewById(R.id.detail_layout);
+        editEvent = findViewById(R.id.edit_event);
 
         bundle = getIntent().getBundleExtra("bundle");
 

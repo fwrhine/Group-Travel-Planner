@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="10dp"
+    android:layout_marginRight="10dp">
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/cv_suggest"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="15dp"
+        android:layout_marginLeft="10dp"
+        android:layout_gravity="center_vertical"
+        android:backgroundTint="@color/colorPrimary"
+        app:cardCornerRadius="10dp"
+        app:cardElevation="1dp"
+        app:contentPadding="5dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="This is title"
+                android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                android:id="@+id/item_title"/>
+
+            <TextView
+                android:gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="event description"
+                android:textStyle="italic"
+                android:id="@+id/item_desc_detail"
+                android:layout_below="@id/item_title"/>
+
+            <View
+                android:id="@+id/item_line"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:layout_below="@+id/item_desc_detail"
+                android:background="@color/colorBlack"
+                android:elevation="20dp"/>
+
+            <TextView
+                android:gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="See Details"
+                android:textColor="@color/colorWhite"
+                android:layout_below="@id/item_line"
+                android:textStyle="bold"
+                android:id="@+id/item_detail"/>
+
+        </RelativeLayout>
+
+    </android.support.v7.widget.CardView>
+
+</LinearLayout>

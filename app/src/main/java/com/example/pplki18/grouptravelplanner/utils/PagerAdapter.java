@@ -31,8 +31,11 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
     @Override
     public Fragment getItem(int position) {
         Bundle args = new Bundle();
+
         int plan_id = bundle.getInt("plan_id");
         args.putInt("plan_id", plan_id);
+
+        String prevFrag = bundle.getString("prev_fragment");
 
         switch (position) {
 
@@ -41,9 +44,22 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
             case 1:
                 return newPlaceListInstance("attractions");
             case 2:
-                BookHotelFragment tab3 = new BookHotelFragment();
-                tab3.setArguments(bundle);
-                return tab3;
+                boolean fromSuggestion = false;
+                if (prevFrag != null) {
+                    if (prevFrag.equals("Fragment_SuggestionList")) {
+                        fromSuggestion = true;
+                    }
+                }
+
+                if (!fromSuggestion) {
+                    BookHotelFragment tab3 = new BookHotelFragment();
+                    tab3.setArguments(bundle);
+                    return tab3;
+                } else {
+                    Fragment_CustomEvent tab3 = new Fragment_CustomEvent();
+                    tab3.setArguments(bundle);
+                    return tab3;
+                }
             case 3:
                 BookPlaneFragment tab4 = new BookPlaneFragment();
                 tab4.setArguments(bundle);

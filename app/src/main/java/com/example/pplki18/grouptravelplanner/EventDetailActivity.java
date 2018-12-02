@@ -15,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.pplki18.grouptravelplanner.data.Event;
+import com.example.pplki18.grouptravelplanner.utils.Suggestion;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -34,6 +35,7 @@ public class EventDetailActivity extends AppCompatActivity {
     private RelativeLayout constraintLayout;
     private FloatingActionButton ic_event;
     private Event event;
+    private Suggestion suggest;
     private Intent intent;
     private String type;
     private SimpleDateFormat dateFormatter2, dateFormatter3;
@@ -84,8 +86,16 @@ public class EventDetailActivity extends AppCompatActivity {
     public void init() {
         findViewById();
         intent = getIntent();
-        event = intent.getParcelableExtra("event");
-        type = event.getType();
+
+        String prevFrag = getIntent().getStringExtra("prev_fragment");
+
+        if (prevFrag != null && (prevFrag.equals("Fragment_SuggestionList"))) {
+            suggest = intent.getParcelableExtra("event");
+            type = suggest.getType();
+        } else {
+            event = intent.getParcelableExtra("event");
+            type = event.getType();
+        }
 
         prevActivity = getIntent().getStringExtra("PREV_ACTIVITY");
         if (prevActivity != null && (prevActivity.equals("CreateNewPlanActivity"))) {
@@ -98,6 +108,8 @@ public class EventDetailActivity extends AppCompatActivity {
         try {
             if (prevActivity != null && prevActivity.equals("CreateNewPlanActivity")) {
                 date = event.getDate();
+            } else if (prevFrag != null && (prevFrag.equals("Fragment_SuggestionList"))) {
+                date = suggest.getPlan_date();
             } else {
                 date = dateFormatter2.format(dateFormatter3.parse(event.getDate()));
             }
@@ -105,21 +117,38 @@ public class EventDetailActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        String start = event.getTime_start();
-        String end = event.getTime_end();
-        String duration = event.getTotal_time();
+        String start;
+        String end;
+        String duration;
+        if (prevFrag != null && (prevFrag.equals("Fragment_SuggestionList"))) {
+            start = suggest.getTime_start();
+            end = suggest.getTime_end();
+            duration = suggest.getTotal_time();
+
+            title.setText(suggest.getTitle());
+            eventDescription.setText(suggest.getDescription());
+            transport.setText(suggest.getTransport_number());
+            origin.setText(suggest.getOrigin());
+            destination.setText(suggest.getDestination());
+            money.setText(suggest.getPrice());
+        } else {
+            start = event.getTime_start();
+            end = event.getTime_end();
+            duration = event.getTotal_time();
+
+            title.setText(event.getTitle());
+            eventDescription.setText(event.getDescription());
+            transport.setText(event.getTransport_number());
+            origin.setText(event.getOrigin());
+            destination.setText(event.getDestination());
+            money.setText(event.getPrice());
+        }
 
         String timeStr = start + " - " + end;
 
-        title.setText(event.getTitle());
         eventDate.setText(date);
         eventTime.setText(timeStr);
         eventDuration.setText(duration);
-        eventDescription.setText(event.getDescription());
-        transport.setText(event.getTransport_number());
-        origin.setText(event.getOrigin());
-        destination.setText(event.getDestination());
-        money.setText(event.getPrice());
 
         if (type.equals("flights")) {
             initFlight();
@@ -127,10 +156,13 @@ public class EventDetailActivity extends AppCompatActivity {
             initTrain();
         } else if (type.equals("custom")) {
             initCustom();
-
         }
 
-        setEditEventButton();
+        if (prevFrag != null && (prevFrag.equals("Fragment_SuggestionList"))) {
+            setEditSuggestButton();
+        } else {
+            setEditEventButton();
+        }
     }
 
     public void initFlight() {
@@ -171,6 +203,26 @@ public class EventDetailActivity extends AppCompatActivity {
                 }
 
                 Toast.makeText(EventDetailActivity.this, "edit event", Toast.LENGTH_SHORT).show();
+                startActivityForResult(intent, REQUEST_CODE_EDIT_EVENT);
+            }
+        });
+    }
+
+    public void setEditSuggestButton() {
+        editEvent.setColorFilter(R.color.colorRipple);
+        editEvent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(EventDetailActivity.this, EditEventActivity.class);
+                intent.putExtra("event", suggest);
+                intent.putExtra("type", suggest.getType());
+
+                Date date_start = (Date) getIntent().getExtras().get("start_date");
+                Date date_end = (Date) getIntent().getExtras().get("end_date");
+                intent.putExtra("start_date", date_start);
+                intent.putExtra("end_date", date_end);
+
+                Toast.makeText(EventDetailActivity.this, "edit suggest", Toast.LENGTH_SHORT).show();
                 startActivityForResult(intent, REQUEST_CODE_EDIT_EVENT);
             }
         });
