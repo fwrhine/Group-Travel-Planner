@@ -471,9 +471,9 @@ public class Fragment_PlaceList extends Fragment {
 
         String groupId = getActivity().getIntent().getStringExtra("group_id");
 
-        String planSuggestId = getArguments().getString("suggest_to_plan_id");
-        String planSuggestName = getArguments().getString("suggest_to_plan_name");
-        String planSuggestDate = getArguments().getString("suggest_to_plan_date");
+        String planSuggestId = getActivity().getIntent().getStringExtra("suggest_to_plan_id");
+        String planSuggestName = getActivity().getIntent().getStringExtra("suggest_to_plan_name");  //TODO: Its null?
+        String planSuggestDate = getActivity().getIntent().getStringExtra("suggest_to_plan_date");  //TODO: Its null?
 
         String suggestDesc = "For Plan '"+ planSuggestName +"' on "+ planSuggestDate;
 

@@ -66,6 +66,7 @@ public class PlaceActivity extends AppCompatActivity {
     FirebaseUser firebaseUser;
     DatabaseReference planRef;
     DatabaseReference eventRef;
+    DatabaseReference suggestRef;
     StorageReference storageReference;
 
     private DatabaseHelper databaseHelper;
@@ -108,6 +109,7 @@ public class PlaceActivity extends AppCompatActivity {
         firebaseUser = firebaseAuth.getCurrentUser();
 
         eventRef = firebaseDatabase.getReference().child("events");
+        suggestRef = firebaseDatabase.getReference().child("suggestions");
         storageReference = FirebaseStorage.getInstance().getReference();
 
         init();
@@ -119,17 +121,6 @@ public class PlaceActivity extends AppCompatActivity {
         ic_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String prevFrag = getIntent().getStringExtra("prev_fragment");
-
-                if(prevFrag == null) {
-                    setTime();
-                }
-                else {
-                    if (prevFrag.equals("Fragment_SuggestionList")) {
-                        saveEventToSuggestion();
-                        finish();
-                    }
-                }
                 setTime();
             }
         });
@@ -348,6 +339,8 @@ public class PlaceActivity extends AppCompatActivity {
         builder.setTitle("Set time");
         builder.setView(dialogLayout);
 
+        final String prevFrag = getIntent().getStringExtra("prev_fragment");
+
         builder.setPositiveButton("OK",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
@@ -369,11 +362,19 @@ public class PlaceActivity extends AppCompatActivity {
 
                                 setResult(RESULT_OK, intent);
                                 finish();
-                            } else {
+                            }
+
+                            else {
+
                                 saveEventToPlan(start_time, end_time);
                                 Intent intent = new Intent(PlaceActivity.this, Fragment_PlaceList.class);
                                 intent.putExtra("ACTIVITY", "EditPlanActivity");
                                 setResult(RESULT_OK, intent);
+                                finish();
+                            }
+                        } else if (prevFrag != null) {
+                            if (prevFrag.equals("Fragment_SuggestionList")) {
+                                saveEventToSuggestion(start_time, end_time);
                                 finish();
                             }
                         }
@@ -458,10 +459,10 @@ public class PlaceActivity extends AppCompatActivity {
         });
     }
 
-    private void saveEventToSuggestion() {
+    private void saveEventToSuggestion(String start_time, String end_time) {
         String type = getIntent().getStringExtra("type");
 
-        Suggestion aSuggestion = new Suggestion(title.getText().toString(), type);
+        Suggestion aSuggestion = new Suggestion(title.getText().toString(), start_time, end_time, type);
 
         aSuggestion.setQuery_id(place_id);
         aSuggestion.setLocation(address.getText().toString());
@@ -477,7 +478,7 @@ public class PlaceActivity extends AppCompatActivity {
 
         String suggestDesc = "For Plan '"+ planSuggestName +"' on "+ planSuggestDate;
 
-        final String eventId = eventRef.push().getKey();
+        final String eventId = suggestRef.push().getKey();
         aSuggestion.setSuggestion_id(eventId);
         aSuggestion.setDescription(suggestDesc);
         aSuggestion.setGroup_id(groupId);
@@ -486,7 +487,7 @@ public class PlaceActivity extends AppCompatActivity {
         aSuggestion.setPlan_name(planSuggestName);
         aSuggestion.setPlan_date(planSuggestDate);
 
-        eventRef.child(eventId).setValue(aSuggestion);
+        suggestRef.child(eventId).setValue(aSuggestion);
 
         planRef = firebaseDatabase.getReference().child("groups").child(groupId).child("suggestion");
 
@@ -610,20 +611,20 @@ public class PlaceActivity extends AppCompatActivity {
     }
 
     private void init() {
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         place_id = getIntent().getStringExtra("PLACE_ID");
-        title = (TextView) findViewById(R.id.title);
-        rating_num = (TextView) findViewById(R.id.rating_num);
-        rating = (RatingBar) findViewById(R.id.rating);
-        address = (TextView) findViewById(R.id.address);
-        phone = (TextView) findViewById(R.id.phone);
-        website = (TextView) findViewById(R.id.website);
-        image = (ImageView) findViewById(R.id.image);
-        open_now = (TextView) findViewById(R.id.open_now);
-        open_hours = (TextView) findViewById(R.id.open_hours);
-        ic_add = (FloatingActionButton) findViewById(R.id.ic_add);
+        title = findViewById(R.id.title);
+        rating_num = findViewById(R.id.rating_num);
+        rating = findViewById(R.id.rating);
+        address = findViewById(R.id.address);
+        phone = findViewById(R.id.phone);
+        website = findViewById(R.id.website);
+        image = findViewById(R.id.image);
+        open_now = findViewById(R.id.open_now);
+        open_hours = findViewById(R.id.open_hours);
+        ic_add = findViewById(R.id.ic_add);
 //        google_button = (Button) findViewById(R.id.google_button);
-        progressBar = (ProgressBar) findViewById(R.id.main_progress);
+        progressBar = findViewById(R.id.main_progress);
         queue = Volley.newRequestQueue(this);
         databaseHelper = new DatabaseHelper(this);
 
@@ -631,12 +632,12 @@ public class PlaceActivity extends AppCompatActivity {
         String prevActivity2 = getIntent().getStringExtra("PREV_ACTIVITY");
         plan_id = getIntent().getStringExtra("plan_id");
 
-        eventDate = (TextView) findViewById(R.id.event_detail_date);
-        eventTime = (TextView) findViewById(R.id.event_detail_time);
-        eventDuration = (TextView) findViewById(R.id.event_detail_duration);
-        eventDescription = (TextView) findViewById(R.id.event_detail_desc);
-        detailLayout = (RelativeLayout) findViewById(R.id.detail_layout);
-        editEvent = (ImageButton) findViewById(R.id.edit_event);
+        eventDate = findViewById(R.id.event_detail_date);
+        eventTime = findViewById(R.id.event_detail_time);
+        eventDuration = findViewById(R.id.event_detail_duration);
+        eventDescription = findViewById(R.id.event_detail_desc);
+        detailLayout = findViewById(R.id.detail_layout);
+        editEvent = findViewById(R.id.edit_event);
 
         bundle = getIntent().getBundleExtra("bundle");
 

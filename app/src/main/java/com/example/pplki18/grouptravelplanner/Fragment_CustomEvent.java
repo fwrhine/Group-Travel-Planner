@@ -39,6 +39,7 @@ public class Fragment_CustomEvent extends Fragment {
     FirebaseUser firebaseUser;
     DatabaseReference planRef;
     DatabaseReference eventRef;
+    DatabaseReference suggestRef;
     StorageReference storageReference;
 
     private Button add_button;
@@ -70,12 +71,8 @@ public class Fragment_CustomEvent extends Fragment {
 
         init();
 
-        if (prevActivity.equals("Fragment_SuggestionList")) {
-            eventRef = firebaseDatabase.getReference().child("suggestions");
-        }
-        else {
-            eventRef = firebaseDatabase.getReference().child("events");
-        }
+        suggestRef = firebaseDatabase.getReference().child("suggestions");
+        eventRef = firebaseDatabase.getReference().child("events");
 
         storageReference = FirebaseStorage.getInstance().getReference();
 
@@ -161,13 +158,13 @@ public class Fragment_CustomEvent extends Fragment {
     private void saveEventToSuggestion(Suggestion aSuggestion) {
         String groupId = getActivity().getIntent().getStringExtra("group_id");
 
-        String planSuggestId = getArguments().getString("suggest_to_plan_id");
-        String planSuggestName = getArguments().getString("suggest_to_plan_name");
-        String planSuggestDate = getArguments().getString("suggest_to_plan_date");
+        String planSuggestId = getActivity().getIntent().getStringExtra("suggest_to_plan_id");
+        String planSuggestName = getActivity().getIntent().getStringExtra("suggest_to_plan_name");
+        String planSuggestDate = getActivity().getIntent().getStringExtra("suggest_to_plan_date");
 
         String suggestDesc = "For Plan '"+ planSuggestName +"' on "+ planSuggestDate;
 
-        final String eventId = eventRef.push().getKey();
+        final String eventId = suggestRef.push().getKey();
         aSuggestion.setSuggestion_id(eventId);
         aSuggestion.setDescription(suggestDesc);
         aSuggestion.setGroup_id(groupId);
@@ -176,7 +173,7 @@ public class Fragment_CustomEvent extends Fragment {
         aSuggestion.setPlan_name(planSuggestName);
         aSuggestion.setPlan_date(planSuggestDate);
 
-        eventRef.child(eventId).setValue(aSuggestion);
+        suggestRef.child(eventId).setValue(aSuggestion);
 
         planRef = firebaseDatabase.getReference().child("groups").child(groupId).child("suggestion");
         getAllEventIDs(new EventIdCallback() {
