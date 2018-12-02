@@ -14,10 +14,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.pplki18.grouptravelplanner.EventDetailActivity;
 import com.example.pplki18.grouptravelplanner.PlaceActivity;
 import com.example.pplki18.grouptravelplanner.R;
+import com.example.pplki18.grouptravelplanner.data.Event;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -26,6 +28,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -35,6 +38,9 @@ public class RVAdapter_Suggest extends RecyclerView.Adapter<RVAdapter_Suggest.Su
 
     private List<Suggestion> suggestions;
     private Context context;
+
+    private DatabaseReference planRef;
+    private List<String> eventIDs = new ArrayList<>();
 
     private FirebaseDatabase firebaseDatabase;
     private FirebaseAuth firebaseAuth;
@@ -155,8 +161,8 @@ public class RVAdapter_Suggest extends RecyclerView.Adapter<RVAdapter_Suggest.Su
                                 box.show();
                                 break;
                             case R.id.add_suggest:
-                                //box = addConfirmation();
-                                //box.show();
+                                box = addConfirmation(position, title);
+                                box.show();
                         }
                         return false;
                     }
@@ -219,7 +225,7 @@ public class RVAdapter_Suggest extends RecyclerView.Adapter<RVAdapter_Suggest.Su
                         break;
                     }
                 }
-                final DatabaseReference eventRef = firebaseDatabase.getReference().child("events").child(event_id);
+                final DatabaseReference eventRef = firebaseDatabase.getReference().child("suggestions").child(event_id);
                 eventRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -232,6 +238,115 @@ public class RVAdapter_Suggest extends RecyclerView.Adapter<RVAdapter_Suggest.Su
 
                     }
                 });
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private AlertDialog addConfirmation(final int position, String title) {
+        return new AlertDialog.Builder(context)
+                //set message, title, and icon
+                .setTitle("Add")
+                .setMessage("Do you want to add " + title + " to your plan?")
+
+                .setPositiveButton("Add", new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        addSuggest(suggestions.get(position));
+                        //suggestions.remove(position);
+                        notifyDataSetChanged();
+                        dialog.dismiss();
+                    }
+
+                })
+
+                .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        dialog.dismiss();
+                    }
+                })
+                .create();
+    }
+
+    private void addSuggest(Suggestion suggestion) {
+        if (suggestion.getSuggestion_id() != null){
+            addHelper(suggestion, new AddSuggestionCallback() {
+                @Override
+                public void onCallback() {
+                    notifyDataSetChanged();
+                }
+            });
+        }
+    }
+
+    private void addHelper(final Suggestion suggestion, final AddSuggestionCallback callback){
+        String planId = suggestion.getPlan_id();
+
+        String placeName = suggestion.getTitle();
+        String eventDate = suggestion.getPlan_date();
+        String startTime = suggestion.getTime_start();
+        String endTime = suggestion.getTime_end();
+        String type = suggestion.getType();
+
+        Event anEvent = new Event(placeName, eventDate, startTime, endTime, type);
+
+        anEvent.setQuery_id(suggestion.getQuery_id());
+        anEvent.setLocation(suggestion.getLocation());
+        anEvent.setWebsite(suggestion.getWebsite());
+        anEvent.setPhone(suggestion.getPhone());
+        anEvent.setRating(suggestion.getRating());
+
+        final DatabaseReference eventRef = firebaseDatabase.getReference().child("events");
+
+        final String eventId = eventRef.push().getKey();    // TODO: Should it create new key?
+        anEvent.setEvent_id(eventId);
+        anEvent.setPlan_id(planId);
+        anEvent.setCreator_id(firebaseUser.getUid());
+        eventRef.child(eventId).setValue(anEvent);
+
+        planRef = firebaseDatabase.getReference().child("plans").child(planId).child("events");
+
+        getAllEventIDs(new EventIdCallback() {
+            @Override
+            public void onCallback(List<String> list) {
+                eventIDs = list;
+                eventIDs.add(eventId);
+
+                planRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        planRef.setValue(eventIDs);
+                        deleteSuggest(suggestion);
+
+                        callback.onCallback();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+            }
+        });
+        Toast.makeText(context, "Suggestion has been saved into a group plan!",
+                Toast.LENGTH_LONG).show();
+    }
+
+    private void getAllEventIDs(final EventIdCallback userIdCallback){
+        planRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                eventIDs.clear();
+                for (DataSnapshot postSnapshot: dataSnapshot.getChildren()){
+                    String eventId = postSnapshot.getValue(String.class); // String of groupID
+                    eventIDs.add(eventId);
+                }
+                userIdCallback.onCallback(eventIDs);
             }
 
             @Override
@@ -263,5 +378,13 @@ public class RVAdapter_Suggest extends RecyclerView.Adapter<RVAdapter_Suggest.Su
 
     private interface DeleteSuggestionCallback {
         void onCallback();
+    }
+
+    private interface AddSuggestionCallback {
+        void onCallback();
+    }
+
+    private interface EventIdCallback{
+        void onCallback(List<String> list);
     }
 }
