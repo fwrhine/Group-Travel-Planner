@@ -66,6 +66,8 @@ public class Fragment_SuggestionList extends Fragment {
     private List<String> planNames = new ArrayList<>();
     private List<String> dateList = new ArrayList<>();
 
+    private List<String> planIdTemps = new ArrayList<>();
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -236,7 +238,7 @@ public class Fragment_SuggestionList extends Fragment {
         groupPlanRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                suggestions.clear();
+                planIds.clear();
                 Log.d("REFERENCE", dataSnapshot.getRef().toString());
                 for (DataSnapshot postSnapshot: dataSnapshot.getChildren()){
                     String planId = postSnapshot.getValue(String.class);
@@ -255,8 +257,10 @@ public class Fragment_SuggestionList extends Fragment {
 
     private void CreateAlertDialogWithRadioButtonGroup(){
         planNames.clear();
+        planIdTemps.clear();
         for (int i = 0; i < plans.size(); i++) {
             planNames.add(plans.get(i).getPlan_name());
+            planIdTemps.add(plans.get(i).getPlan_id());
         }
 
         final CharSequence[] values = planNames.toArray(new CharSequence[planNames.size()]);
@@ -275,7 +279,8 @@ public class Fragment_SuggestionList extends Fragment {
                     switch(item)
                     {
                         default:
-                            myIntent.putExtra("suggest_to_plan_id", planIds.get(item));
+                            myIntent.putExtra("suggest_to_plan_id", planIdTemps.get(item));
+                            Log.d("PLAN-ID-TEMP", planIdTemps.get(item));
                             myIntent.putExtra("suggest_to_plan_name", values[item]);
                             selectDate(plans.get(item));
                             break;
