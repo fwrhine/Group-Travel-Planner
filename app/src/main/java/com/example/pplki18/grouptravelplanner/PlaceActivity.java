@@ -476,44 +476,12 @@ public class PlaceActivity extends AppCompatActivity {
         builder.setPositiveButton("OK",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        toastMessage("Start " + startTime.getCurrentHour() + ":" + startTime.getCurrentMinute()
-                                + " End " + endTime.getCurrentHour() + ":" + endTime.getCurrentMinute());
+                        toastMessage("Event Added");
 
                         String start_time = startTime.getCurrentHour() + ":" + startTime.getCurrentMinute();
                         String end_time = endTime.getCurrentHour() + ":" + endTime.getCurrentMinute();
-                        String prevActivity = getIntent().getStringExtra("ACTIVITY");
-                        if (prevActivity != null) {
-                            if (prevActivity.equals("CreateNewPlanActivity")) {
-                                List<Event> events = getIntent().getParcelableArrayListExtra("events");
-                                // TODO SALAH KAPRAH
-                                if (prevFragment != null && prevFragment.equals("HotelFragment")) {
-                                    Log.d("HotelFragment", checkInDate + checkOutDate);
-                                    Event anEvent = saveEventLocally(checkInDate, start_time, "");
-                                    events.add(anEvent);
-                                    anEvent = saveEventLocally(checkOutDate, end_time, "");
-                                    events.add(anEvent);
-                                } else {
-                                    Log.d("ElseFragment", checkInDate + checkOutDate);
-                                    Event anEvent = saveEventLocally("", start_time, end_time);
-                                    events.add(anEvent);
-                                }
 
-                                Intent intent = new Intent(PlaceActivity.this, Fragment_PlaceList.class);
-                                intent.putParcelableArrayListExtra("events", (ArrayList<? extends Parcelable>) events);
-
-                                setResult(RESULT_OK, intent);
-                                finish();
-
-
-                            } else {
-                                saveEventToPlan(start_time, end_time);
-
-                                Intent intent = new Intent(PlaceActivity.this, Fragment_PlaceList.class);
-                                intent.putExtra("ACTIVITY", "EditPlanActivity");
-                                setResult(RESULT_OK, intent);
-                                finish();
-                            }
-                        }
+                        saveEvent(start_time, end_time);
                     }
                 });
         builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
@@ -522,6 +490,42 @@ public class PlaceActivity extends AppCompatActivity {
             }
         });
         builder.show();
+    }
+
+    private void saveEvent(String start_time, String end_time) {
+        String prevActivity = getIntent().getStringExtra("ACTIVITY");
+        if (prevActivity != null) {
+            if (prevActivity.equals("CreateNewPlanActivity")) {
+                List<Event> events = getIntent().getParcelableArrayListExtra("events");
+                // TODO SALAH KAPRAH
+                if (prevFragment != null && prevFragment.equals("HotelFragment")) {
+                    Log.d("HotelFragment", checkInDate + checkOutDate);
+                    Event anEvent = saveEventLocally(checkInDate, start_time, "");
+                    events.add(anEvent);
+                    anEvent = saveEventLocally(checkOutDate, end_time, "");
+                    events.add(anEvent);
+                } else {
+                    Log.d("ElseFragment", checkInDate + checkOutDate);
+                    Event anEvent = saveEventLocally("", start_time, end_time);
+                    events.add(anEvent);
+                }
+
+                Intent intent = new Intent(PlaceActivity.this, Fragment_PlaceList.class);
+                intent.putParcelableArrayListExtra("events", (ArrayList<? extends Parcelable>) events);
+
+                setResult(RESULT_OK, intent);
+                finish();
+
+
+            } else {
+                sa(start_time, end_time);
+
+                Intent intent = new Intent(PlaceActivity.this, Fragment_PlaceList.class);
+                intent.putExtra("ACTIVITY", "EditPlanActivity");
+                setResult(RESULT_OK, intent);
+                finish();
+            }
+        }
     }
 
     private Event saveEventLocally(String date, String start_time, String end_time) {
@@ -548,7 +552,7 @@ public class PlaceActivity extends AppCompatActivity {
         return anEvent;
     }
 
-    private void saveEventToPlan(String start_time, final String end_time) {
+    private void saveEventCheckInToPlan(String start_time, final String end_time) {
 //        Log.d("SAVEVENT", "MASUK");
 //        SQLiteDatabase db = databaseHelper.getWritableDatabase();
 //
@@ -603,7 +607,7 @@ public class PlaceActivity extends AppCompatActivity {
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         planRef.setValue(eventIDs);
                         if (type.equals("hotel")) {
-                            saveEventToPlan2(end_time);
+                            saveEventCheckOutToPlan(end_time);
                         }
                     }
 
@@ -616,7 +620,7 @@ public class PlaceActivity extends AppCompatActivity {
         });
     }
 
-    private void saveEventToPlan2(String time) {
+    private void saveEventCheckOutToPlan(String time) {
         Event anEvent = new Event();
         anEvent.setQuery_id(place_id);
         anEvent.setTitle(title.getText().toString());
