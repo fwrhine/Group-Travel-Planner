@@ -46,7 +46,6 @@ import com.example.pplki18.grouptravelplanner.utils.VolleyResponseListener;
 import com.example.pplki18.grouptravelplanner.utils.VolleySingleton;
 import com.example.pplki18.grouptravelplanner.utils.VolleyUtils;
 
-import com.android.volley.toolbox.Volley;
 import com.example.pplki18.grouptravelplanner.data.Group;
 import com.example.pplki18.grouptravelplanner.old_stuff.DatabaseHelper;
 import com.example.pplki18.grouptravelplanner.utils.Suggestion;

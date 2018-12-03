@@ -43,7 +43,6 @@ public class RVAdapter_Suggest extends RecyclerView.Adapter<RVAdapter_Suggest.Su
     private List<String> eventIDs = new ArrayList<>();
 
     private FirebaseDatabase firebaseDatabase;
-    private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
     private Group group;
 
@@ -53,7 +52,7 @@ public class RVAdapter_Suggest extends RecyclerView.Adapter<RVAdapter_Suggest.Su
         this.context = context;
 
         firebaseDatabase = FirebaseDatabase.getInstance();
-        firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
     }
 
@@ -362,7 +361,7 @@ public class RVAdapter_Suggest extends RecyclerView.Adapter<RVAdapter_Suggest.Su
         super.onAttachedToRecyclerView(recyclerView);
     }
 
-    public static class SuggestionViewHolder extends RecyclerView.ViewHolder {
+    static class SuggestionViewHolder extends RecyclerView.ViewHolder {
         CardView cardView;
         TextView suggestName;
         TextView suggestDesc;
