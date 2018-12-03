@@ -541,6 +541,7 @@ public class PlaceActivity extends AppCompatActivity {
             Log.d("saveEventLocally", "HotelFragment");
             anEvent.setDate(date);
             anEvent.setTime_start(start_time);
+            anEvent.setTime_end(start_time);
         } else {
             Log.d("saveEventLocally", "ElseFragment");
             anEvent.setDate(getIntent().getStringExtra("date"));
@@ -589,6 +590,7 @@ public class PlaceActivity extends AppCompatActivity {
         if (type.equals("hotel")) {
             anEvent.setDate(checkInDate);
             anEvent.setTime_start(start_time);
+            anEvent.setTime_end(start_time);
         } else {
             anEvent.setDate(date);
             anEvent.setTime_start(start_time);
@@ -638,6 +640,7 @@ public class PlaceActivity extends AppCompatActivity {
 
         anEvent.setDate(checkOutDate);
         anEvent.setTime_start(time);
+        anEvent.setTime_end(time);
 
         final String eventId = eventRef.push().getKey();
         anEvent.setEvent_id(eventId);

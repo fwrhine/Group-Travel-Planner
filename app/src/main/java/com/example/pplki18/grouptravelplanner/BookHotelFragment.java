@@ -793,6 +793,7 @@ public class BookHotelFragment extends Fragment {
         anEvent.setWebsite(hotel.getWebsite());
         anEvent.setDate(date);
         anEvent.setTime_start(time);
+        anEvent.setTime_end(time);
         anEvent.setPhone(hotel.getPhone_number());
         anEvent.setType("hotel");
         anEvent.setRating(hotel.getRating());
@@ -808,6 +809,7 @@ public class BookHotelFragment extends Fragment {
         anEvent.setWebsite(hotel.getWebsite());
         anEvent.setDate(date);
         anEvent.setTime_start(time);
+        anEvent.setTime_end(time);
         anEvent.setPhone(hotel.getPhone_number());
         anEvent.setType("hotel");
 
@@ -849,6 +851,7 @@ public class BookHotelFragment extends Fragment {
         anEvent.setWebsite(hotel.getWebsite());
         anEvent.setDate(date);
         anEvent.setTime_start(time);
+        anEvent.setTime_end(time);
         anEvent.setPhone(hotel.getPhone_number());
         anEvent.setType("hotel");
 
