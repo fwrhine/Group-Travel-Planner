@@ -74,8 +74,6 @@ public class Fragment_PlaceList extends Fragment {
     private TextView textView;
     private RVAdapter_Place adapter;
     private ProgressBar progressBar;
-    private SessionManager sessionManager;
-    private DatabaseHelper databaseHelper;
 
     private String type;
     private String region;
@@ -321,14 +319,18 @@ public class Fragment_PlaceList extends Fragment {
                 intent.putExtra("date", event_date);
                 intent.putExtra("type", type);
                 intent.putParcelableArrayListExtra("events", (ArrayList<? extends Parcelable>) events);
-                if (prevActivity.equals("CreateNewPlanActivity")) {
-                    intent.putExtra("ACTIVITY", "CreateNewPlanActivity");
-                    startActivityForResult(intent, 3);
-                } else if (prevActivity.equals("EditPlanActivity")){
-                    intent.putExtra("ACTIVITY", "EditPlanActivity");
-                    startActivityForResult(intent, 3);
-                } else {
-                    startActivity(intent);
+                switch (prevActivity) {
+                    case "CreateNewPlanActivity":
+                        intent.putExtra("ACTIVITY", "CreateNewPlanActivity");
+                        startActivityForResult(intent, 3);
+                        break;
+                    case "EditPlanActivity":
+                        intent.putExtra("ACTIVITY", "EditPlanActivity");
+                        startActivityForResult(intent, 3);
+                        break;
+                    default:
+                        startActivity(intent);
+                        break;
                 }
             }
 
@@ -540,20 +542,20 @@ public class Fragment_PlaceList extends Fragment {
     }
 
     private void init() {
-        recyclerViewPlace = (RecyclerView) getView().findViewById(R.id.rv);
-        progressBar = (ProgressBar) getView().findViewById(R.id.main_progress);
-        searchView = (SearchView) getView().findViewById(R.id.search_place);
-        textView = (TextView) getView().findViewById(R.id.connection);
+        recyclerViewPlace = getView().findViewById(R.id.rv);
+        progressBar = getView().findViewById(R.id.main_progress);
+        searchView = getView().findViewById(R.id.search_place);
+        textView = getView().findViewById(R.id.connection);
         linearLayoutManager = new LinearLayoutManager(getActivity());
         type = getArguments().getString("QUERY");
-        sessionManager = new SessionManager(getActivity().getApplicationContext());
+        SessionManager sessionManager = new SessionManager(getActivity().getApplicationContext());
         region = sessionManager.getCurrentRegion();
         latitude = getArguments().getString("LATITUDE");
         longitude = getArguments().getString("LONGITUDE");
         adapter = new RVAdapter_Place(getContext());
         plan_id = getArguments().getString("plan_id");
         event_date = getArguments().getString("date");
-        databaseHelper = new DatabaseHelper(getActivity());
+        //DatabaseHelper databaseHelper = new DatabaseHelper(getActivity());
         prevActivity = getActivity().getIntent().getStringExtra("ACTIVITY");
         queue = Volley.newRequestQueue(getActivity());
 

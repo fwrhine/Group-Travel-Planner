@@ -4,8 +4,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
-import com.example.pplki18.grouptravelplanner.data.Event;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -52,7 +50,7 @@ public class Suggestion implements Parcelable, Comparable<Suggestion> {
         this.time_end = time_end;
     }
 
-    protected Suggestion(Parcel in) {
+    private Suggestion(Parcel in) {
         creator_id = in.readString();
         suggestion_id = in.readString();
         query_id = in.readString();

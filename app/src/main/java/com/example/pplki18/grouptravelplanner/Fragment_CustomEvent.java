@@ -221,12 +221,12 @@ public class Fragment_CustomEvent extends Fragment {
     }
 
     private void init() {
-        add_button = (Button) getView().findViewById(R.id.add_button);
+        add_button = getView().findViewById(R.id.add_button);
         databaseHelper = new DatabaseHelper(getActivity());
-        event_title = (EditText) getView().findViewById(R.id.event_title);
-        event_notes = (EditText) getView().findViewById(R.id.event_notes);
-        start_timepicker = (TimePicker) getView().findViewById(R.id.start_time);
-        end_timepicker = (TimePicker) getView().findViewById(R.id.end_time);
+        event_title = getView().findViewById(R.id.event_title);
+        event_notes = getView().findViewById(R.id.event_notes);
+        start_timepicker = getView().findViewById(R.id.start_time);
+        end_timepicker = getView().findViewById(R.id.end_time);
         plan_id = getArguments().getString("plan_id");
         event_date = getArguments().getString("date");
 
