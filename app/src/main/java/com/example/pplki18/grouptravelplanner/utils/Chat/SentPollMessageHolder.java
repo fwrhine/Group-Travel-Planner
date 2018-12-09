@@ -1,16 +1,13 @@
 package com.example.pplki18.grouptravelplanner.utils.Chat;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.support.constraint.ConstraintLayout;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.example.pplki18.grouptravelplanner.ActivityPollChoiceTest;
 import com.example.pplki18.grouptravelplanner.R;
 import com.example.pplki18.grouptravelplanner.data.Message;
@@ -20,10 +17,13 @@ import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 public class SentPollMessageHolder extends ChatViewHolder {
-    TextView messageText, messageTimeText, messageReadText;
-    ConstraintLayout cL;
-    Context context;
-    String groupID, pollID;
+    private final TextView messageText;
+    private final TextView messageTimeText;
+    private final TextView messageReadText;
+    private final ConstraintLayout cL;
+    private final Context context;
+    private final String groupID;
+    private String pollID;
 
     public SentPollMessageHolder(final View itemView, String groupID, final Context context) {
         super(itemView);
@@ -48,6 +48,7 @@ public class SentPollMessageHolder extends ChatViewHolder {
 //        });
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void bind(Message message) {
         Long hours = TimeUnit.MILLISECONDS.toHours(message.getTime());
@@ -61,7 +62,7 @@ public class SentPollMessageHolder extends ChatViewHolder {
         pollID = message.getPollID();
 
         // Set time
-        String time = String.format("%tT", message.getTime() - TimeZone.getDefault().getRawOffset());
+        @SuppressLint("DefaultLocale") String time = String.format("%tT", message.getTime() - TimeZone.getDefault().getRawOffset());
         messageTimeText.setText(time.substring(0, 5));
 
         // Set redirect

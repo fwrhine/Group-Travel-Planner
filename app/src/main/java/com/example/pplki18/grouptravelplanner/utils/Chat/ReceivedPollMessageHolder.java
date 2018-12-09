@@ -9,12 +9,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.pplki18.grouptravelplanner.ActivityPollChoiceTest;
-import com.example.pplki18.grouptravelplanner.InGroupActivity;
 import com.example.pplki18.grouptravelplanner.R;
 import com.example.pplki18.grouptravelplanner.data.Message;
 import com.example.pplki18.grouptravelplanner.data.User;
@@ -26,19 +24,24 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.Objects;
 import java.util.TimeZone;
 
 public class ReceivedPollMessageHolder extends ChatViewHolder {
-    String groupId;
-    TextView pollText, pollTimeText, fullName, pollID;
-    ImageView profileImage;
+    private final String groupId;
+    private final TextView pollText;
+    private final TextView pollTimeText;
+    private final TextView fullName;
+    private final TextView pollID;
+    private final ImageView profileImage;
 
-    FirebaseAuth firebaseAuth;
-    FirebaseUser firebaseUser;
-    FirebaseDatabase firebaseDatabase;
-    DatabaseReference userRef, readStampsRef;
-    ConstraintLayout cL;
-    Context context;
+    private final FirebaseAuth firebaseAuth;
+    private final FirebaseUser firebaseUser;
+    private final FirebaseDatabase firebaseDatabase;
+    private final DatabaseReference userRef;
+    private final DatabaseReference readStampsRef;
+    private final ConstraintLayout cL;
+    private Context context;
 
 
 
@@ -82,7 +85,7 @@ public class ReceivedPollMessageHolder extends ChatViewHolder {
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         User user = dataSnapshot.getValue(User.class);
 
-                        if (user.getPhotoUrl() != null && !user.getPhotoUrl().equals("none")) {
+                        if (Objects.requireNonNull(user).getPhotoUrl() != null && !user.getPhotoUrl().equals("none")) {
                             Uri uri = Uri.parse(user.getPhotoUrl());
                             Log.d("PHOTO_URL", user.getPhotoUrl());
                             Glide.with(profileImage.getContext())
