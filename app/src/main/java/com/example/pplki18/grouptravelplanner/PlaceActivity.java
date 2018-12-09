@@ -540,6 +540,7 @@ public class PlaceActivity extends AppCompatActivity {
             Log.d("saveEventLocally", "HotelFragment");
             anEvent.setDate(date);
             anEvent.setTime_start(start_time);
+            anEvent.setTime_end(start_time);
         } else {
             Log.d("saveEventLocally", "ElseFragment");
             anEvent.setDate(getIntent().getStringExtra("date"));
@@ -588,6 +589,7 @@ public class PlaceActivity extends AppCompatActivity {
         if (type.equals("hotel")) {
             anEvent.setDate(checkInDate);
             anEvent.setTime_start(start_time);
+            anEvent.setTime_end(start_time);
         } else {
             anEvent.setDate(date);
             anEvent.setTime_start(start_time);
@@ -637,6 +639,7 @@ public class PlaceActivity extends AppCompatActivity {
 
         anEvent.setDate(checkOutDate);
         anEvent.setTime_start(time);
+        anEvent.setTime_end(time);
 
         final String eventId = eventRef.push().getKey();
         anEvent.setEvent_id(eventId);
@@ -776,6 +779,9 @@ public class PlaceActivity extends AppCompatActivity {
             case "attractions":
                 ic_add.setImageResource(R.drawable.ic_sunny_black);
                 break;
+            case "hotel":
+                ic_add.setImageResource(R.drawable.ic_hotel_black);
+                break;
             default:
                 ic_add.setImageResource(R.drawable.ic_event_note_black);
                 break;
@@ -857,7 +863,6 @@ public class PlaceActivity extends AppCompatActivity {
         prevActivity = getIntent().getStringExtra("ACTIVITY");
         prevActivity2 = getIntent().getStringExtra("PREV_ACTIVITY");
         prevFragment = getIntent().getStringExtra("FRAGMENT");
-
 
         eventDate = findViewById(R.id.event_detail_date);
         eventTime = findViewById(R.id.event_detail_time);
