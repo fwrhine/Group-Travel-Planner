@@ -20,6 +20,15 @@
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Create Reminder"
+            android:textSize="20dp"
+            android:paddingTop="10dp"
+            android:paddingLeft="20dp"
+            android:textColor="#FFFFFF"/>
+
         <ImageButton
             android:id="@+id/btn_done_reminder"
             android:layout_width="wrap_content"
@@ -42,68 +51,94 @@
             android:id="@+id/button_pick_notification"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:paddingTop="15dp"
+            android:textSize="20sp"
+            android:shadowColor="#BABABA"
+            android:shadowDx="0"
+            android:shadowDy="0"
+            android:shadowRadius="5"
             android:layout_centerHorizontal="true"
             android:text="Pick a Notification" />
 
         <TextView
             android:id="@+id/text_resultYear"
-            android:layout_width="70dp"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:layout_below="@id/button_pick_notification"
             android:text="Year: "
-            android:paddingRight="20dp"/>
+            android:textSize="20dp"
+            android:paddingRight="20dp"
+            android:paddingLeft="15dp"
+            android:paddingTop="20dp"
+            />
 
         <TextView
             android:id="@+id/notifaction_resultYear"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textSize="20dp"
             android:layout_below="@id/button_pick_notification"
-            android:layout_toRightOf="@id/text_resultYear" />
+            android:layout_toRightOf="@id/text_resultYear"
+            android:paddingTop="20dp"
+            />
 
         <TextView
             android:id="@+id/text_resultMonth"
-            android:layout_width="70dp"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:layout_below="@id/text_resultYear"
             android:text="Month: "
-            android:paddingRight="20dp"/>
+            android:textSize="20dp"
+            android:paddingRight="20dp"
+            android:paddingLeft="15dp"
+            />
 
         <TextView
             android:id="@+id/notifaction_resultMonth"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textSize="20dp"
             android:layout_below="@id/notifaction_resultYear"
             android:layout_toRightOf="@id/text_resultMonth" />
 
         <TextView
             android:id="@+id/text_resultDay"
-            android:layout_width="70dp"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:layout_below="@id/text_resultMonth"
             android:text="Day : "
-            android:paddingRight="20dp"/>
+            android:textSize="20dp"
+            android:paddingRight="20dp"
+            android:paddingLeft="15dp"
+            />
 
         <TextView
             android:id="@+id/notifaction_resultDay"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textSize="20dp"
             android:layout_below="@id/notifaction_resultMonth"
             android:layout_toRightOf="@id/text_resultDay" />
 
         <TextView
             android:id="@+id/text_resultTime"
-            android:layout_width="70dp"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:layout_below="@id/text_resultDay"
             android:text="Time: "
-            android:paddingRight="20dp"/>
+            android:textSize="20dp"
+            android:paddingRight="20dp"
+            android:paddingLeft="15dp"
+            />
 
         <TextView
             android:id="@+id/notifaction_resultTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textSize="20dp"
             android:layout_below="@id/notifaction_resultDay"
-            android:layout_toRightOf="@id/text_resultDay" />
+            android:layout_toRightOf="@id/text_resultDay"
+            android:paddingBottom="20dp"/>
 
         <EditText
             android:id="@+id/notification_destination"
@@ -112,7 +147,13 @@
             android:layout_below="@id/notifaction_resultTime"
             android:layout_centerHorizontal="true"
             android:hint="event location"
-            android:textColorHint="#9E9E9E"/>
+            android:background="@drawable/rounded_textbox"
+            android:textColorHint="#9E9E9E"
+            android:paddingBottom="15dp"
+            android:paddingRight="10dp"
+            android:paddingLeft="10dp"
+            android:paddingTop="10dp"
+            />
 
         <Button
             android:id="@+id/button_create_notification"
@@ -120,24 +161,33 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/notification_destination"
             android:layout_centerHorizontal="true"
-            android:text="Make a Notification" />
+            android:text="Make a Notification"
+            android:paddingTop="15dp"
+            android:paddingBottom="5dp"
+            />
 
-        <Button
-            android:id="@+id/button_goto_cal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/button_create_notification"
-            android:layout_centerHorizontal="true"
-            android:text="Go To Calendar" />
 
         <Button
             android:id="@+id/button_del_event"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/button_goto_cal"
+            android:layout_below="@id/button_create_notification"
             android:layout_centerHorizontal="true"
             android:text="Cancel"
-            android:enabled="false"/>
+            android:enabled="false"
+            />
+
+        <Button
+            android:id="@+id/button_goto_cal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="GO TO CALANDER"
+            android:background="@null"
+            android:layout_below="@id/button_del_event"
+            android:drawableRight="@drawable/icon_calander"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/icon_calander"
+            android:paddingTop="10dp"/>
 
 
     </RelativeLayout>
