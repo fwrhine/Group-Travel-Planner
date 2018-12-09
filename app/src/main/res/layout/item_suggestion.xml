@@ -7,6 +7,18 @@
     android:layout_marginLeft="10dp"
     android:layout_marginRight="10dp">
 
+    <!--
+    <View
+        android:id="@+id/suggest_line"
+        android:layout_height="65dp"
+        android:layout_width="1dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:background="@color/colorBlack" />
+    -->
+
     <android.support.v7.widget.CardView
         android:id="@+id/cv_suggest"
         android:layout_width="wrap_content"
@@ -20,27 +32,47 @@
         app:cardElevation="1dp"
         app:contentPadding="5dp">
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <TextView
-                android:gravity="center"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="This is title"
-                android:textAppearance="@style/TextAppearance.AppCompat.Title"
-                android:id="@+id/item_title"/>
+                android:orientation="horizontal">
 
-            <TextView
-                android:gravity="center"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="event description"
-                android:textStyle="italic"
-                android:id="@+id/item_desc_detail"
-                android:layout_below="@id/item_title"/>
+                <ImageView
+                    android:id="@+id/suggestion_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:layout_margin="8dp"
+                    android:src="@drawable/ic_event_note_black"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" >
+
+                    <TextView
+                        android:gravity="center"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="This is title"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                        android:id="@+id/item_title"/>
+
+                    <TextView
+                        android:gravity="center"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="event description"
+                        android:textStyle="italic"
+                        android:id="@+id/item_desc_detail" />
+                </LinearLayout>
+
+            </LinearLayout>
 
             <View
                 android:id="@+id/item_line"
@@ -64,7 +96,7 @@
                 android:textStyle="bold"
                 android:id="@+id/item_detail"/>
 
-        </RelativeLayout>
+        </LinearLayout>
 
     </android.support.v7.widget.CardView>
 

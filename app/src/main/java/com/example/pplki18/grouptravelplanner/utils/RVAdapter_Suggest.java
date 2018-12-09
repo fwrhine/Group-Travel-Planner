@@ -5,15 +5,16 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.media.Image;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -73,6 +74,16 @@ public class RVAdapter_Suggest extends RecyclerView.Adapter<RVAdapter_Suggest.Su
     @Override
     public void onBindViewHolder(@NonNull SuggestionViewHolder holder, int position) {
         Suggestion suggestion = suggestions.get(position);
+
+        if(suggestion.getType() != null) {
+            if (suggestion.getType().equals("restaurants")) {
+                holder.suggestIcon.setImageResource(R.drawable.ic_restaurant_black);
+            } else if (suggestion.getType().equals("attractions")) {
+                holder.suggestIcon.setImageResource(R.drawable.ic_sunny_black);
+            } else if (suggestion.getType().equals("custom")) {
+                holder.suggestIcon.setImageResource(R.drawable.ic_event_note_black);
+            }
+        }
 
         holder.suggestName.setText(suggestion.getTitle());
         holder.suggestDesc.setVisibility(View.GONE);
@@ -364,6 +375,7 @@ public class RVAdapter_Suggest extends RecyclerView.Adapter<RVAdapter_Suggest.Su
 
     static class SuggestionViewHolder extends RecyclerView.ViewHolder {
         CardView cardView;
+        ImageView suggestIcon;
         TextView suggestName;
         TextView suggestDesc;
         TextView suggestDetail;   // TEXT BUTTON
@@ -371,6 +383,7 @@ public class RVAdapter_Suggest extends RecyclerView.Adapter<RVAdapter_Suggest.Su
         SuggestionViewHolder(View itemView) {
             super(itemView);
             cardView = itemView.findViewById(R.id.cv_suggest);
+            suggestIcon = itemView.findViewById(R.id.suggestion_icon);
             suggestName = itemView.findViewById(R.id.item_title);
             suggestDesc = itemView.findViewById(R.id.item_desc_detail);
             suggestDetail = itemView.findViewById(R.id.item_detail);
