@@ -779,6 +779,9 @@ public class PlaceActivity extends AppCompatActivity {
             case "attractions":
                 ic_add.setImageResource(R.drawable.ic_sunny_black);
                 break;
+            case "hotel":
+                ic_add.setImageResource(R.drawable.ic_hotel_black);
+                break;
             default:
                 ic_add.setImageResource(R.drawable.ic_event_note_black);
                 break;
@@ -860,7 +863,6 @@ public class PlaceActivity extends AppCompatActivity {
         prevActivity = getIntent().getStringExtra("ACTIVITY");
         prevActivity2 = getIntent().getStringExtra("PREV_ACTIVITY");
         prevFragment = getIntent().getStringExtra("FRAGMENT");
-
 
         eventDate = findViewById(R.id.event_detail_date);
         eventTime = findViewById(R.id.event_detail_time);

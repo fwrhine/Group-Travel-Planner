@@ -173,7 +173,7 @@ public class BookTrainFragment extends Fragment {
                             stationArrayList.add(availableStations.get(currentKey)+" | "+currentKey);
                         }
 
-                        ArrayAdapter<String> adapter1 = new ArrayAdapter<>(BookTrainFragment.this.getActivity(), R.layout.support_simple_spinner_dropdown_item, stationArrayList);
+                        ArrayAdapter<String> adapter1 = new ArrayAdapter<>(Objects.requireNonNull(BookTrainFragment.this.getActivity()), R.layout.support_simple_spinner_dropdown_item, stationArrayList);
                         origin.setAdapter(adapter1);
                         destination.setAdapter(adapter1);
 

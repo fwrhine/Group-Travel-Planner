@@ -103,7 +103,8 @@ public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.Ne
             timeString = time_start + " - " + event.getArrival_time() +
                     " (" + event.getTotal_time() + ")";
         } else if (event.getType().equals("hotel")) {
-            timeString = event.getTime_start();
+            time_start = event.getTime_start();
+            timeString = time_start;
         } else if (event.getType().equals("custom")) {
             time_start = event.getTime_start();
             timeString = time_start + " - " + event.getTime_end() +
@@ -149,7 +150,7 @@ public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.Ne
 
                 Event anEvent = events.get(position);
                 String type = anEvent.getType();
-                if (type.equals("restaurants") || type.equals("attractions")) {
+                if (type.equals("restaurants") || type.equals("attractions")|| type.equals("hotel")) {
                     setEventDetailOne(events, position);
                 } else {
                     setEventDetailTwo(events, position);
@@ -163,6 +164,11 @@ public class RVAdapter_NewPlan extends RecyclerView.Adapter<RVAdapter_NewPlan.Ne
         Intent intent =((Activity) mContext).getIntent();
         Event anEvent = events.get(pos);
         String prevActivity = intent.getStringExtra("ACTIVITY");
+
+        if (anEvent.getType().equals("hotel")) {
+            Log.d("SETEVENTDETAIL", "hotel");
+            myIntent.putExtra("FRAGMENT", "HotelFragment");
+        }
 
         if (prevActivity != null && prevActivity.equals("CreateNewPlanActivity")) {
             myIntent.putExtra("PREV_ACTIVITY", prevActivity);
