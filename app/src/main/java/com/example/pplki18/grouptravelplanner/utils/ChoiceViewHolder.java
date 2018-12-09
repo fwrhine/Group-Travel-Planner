@@ -20,15 +20,19 @@ import com.google.firebase.database.ValueEventListener;
 public class ChoiceViewHolder extends RecyclerView.ViewHolder {
 
     private String pollID;
-    private String userID;
+    private final String userID;
 
-    private TextView choiceName, voterNum;
-    private Button voteButton;
+    private final TextView choiceName;
+    private final TextView voterNum;
+    private final Button voteButton;
 
+    @SuppressWarnings("FieldCanBeLocal")
     private FirebaseAuth firebaseAuth;
+    @SuppressWarnings("FieldCanBeLocal")
     private FirebaseUser firebaseUser;
-    private FirebaseDatabase firebaseDatabase;
-    private DatabaseReference pollRef;
+    @SuppressWarnings("FieldCanBeLocal")
+    private final FirebaseDatabase firebaseDatabase;
+    private final DatabaseReference pollRef;
 
 
     public ChoiceViewHolder(View itemView, String pollID) {
@@ -64,7 +68,7 @@ public class ChoiceViewHolder extends RecyclerView.ViewHolder {
         });
     }
 
-    public void vote(final String choiceID) {
+    private void vote(final String choiceID) {
         pollRef.child("voters").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -85,7 +89,7 @@ public class ChoiceViewHolder extends RecyclerView.ViewHolder {
         });
     }
 
-    public void firstTimeVote(String choiceID) {
+    private void firstTimeVote(String choiceID) {
         final DatabaseReference choiceRef = pollRef.child("choiceList").child(choiceID).child("voters");
         choiceRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -100,7 +104,7 @@ public class ChoiceViewHolder extends RecyclerView.ViewHolder {
         });
     }
 
-    public void changeVote(final String choiceID) {
+    private void changeVote(final String choiceID) {
         pollRef.child("choiceList").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -108,7 +112,6 @@ public class ChoiceViewHolder extends RecyclerView.ViewHolder {
                     if (snapshot.child("voters").hasChild(userID)) {
                         // check if the user chooses the same choice
                         if(choiceID.equals(snapshot.getKey())) {
-                            continue;
                         } else {
                             snapshot.child("voters").child(userID).getRef().removeValue();
                             firstTimeVote(choiceID);

@@ -44,6 +44,7 @@ public class Activity_CreatePoll extends AppCompatActivity {
     private ArrayList<String> voters;
     //    private Group group;
     private String groupID;
+    private Integer choiceNum;
 
     private FirebaseDatabase firebaseDatabase;
     private FirebaseAuth firebaseAuth;
@@ -66,11 +67,18 @@ public class Activity_CreatePoll extends AppCompatActivity {
                     choiceNames.add(newChoice);
                     Choice choice = new Choice(choiceInput.getText().toString());
                     choiceList.add(choice);
-                    if (choiceText.equals("")){
-                        choices += newChoice;
+                    if (choiceNum < 10) {
+                        if (choiceText.equals("")) {
+                            choices += newChoice;
+                            choiceNum++;
+                        } else {
+                            choices += newChoice + "\n";
+                            choiceNum++;
+                        }
                     }
+
                     else {
-                        choices += "     " + newChoice;
+                        Toast.makeText(getApplicationContext(), "Max number of choices", Toast.LENGTH_SHORT).show();
                     }
                     choiceText.setText(choices);
                     choiceInput.setText("");
@@ -154,6 +162,7 @@ public class Activity_CreatePoll extends AppCompatActivity {
         choiceList = new ArrayList<>();
         choiceNames = new ArrayList<>();
         choices = "";
+        choiceNum = 0;
 
         Intent myIntent = getIntent();
         voters = myIntent.getStringArrayListExtra("voters");

@@ -173,7 +173,7 @@ public class Event implements Parcelable, Comparable<Event> {
     }
 
     public String getTotal_time() {
-        if (type.equals("hotel")) {
+        if (type != null && type.equals("hotel")) {
             return "";
         } else {
             SimpleDateFormat format = new SimpleDateFormat("HH:mm", Locale.US);
