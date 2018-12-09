@@ -106,7 +106,7 @@ public class EditEventActivity extends AppCompatActivity implements View.OnClick
         dateFormatter3 = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 
         assert type != null;
-        if (type.equals("restaurants") || type.equals("attractions")) {
+        if (type.equals("restaurants") || type.equals("attractions") || type.equals("hotel")) {
             transport_layout.setVisibility(View.GONE);
 
             event_id = bundle.getString("event_id");
@@ -126,6 +126,11 @@ public class EditEventActivity extends AppCompatActivity implements View.OnClick
                 type_icon.setImageDrawable(getDrawable(R.drawable.ic_restaurant_black));
             } else if (type.equals("attractions")) {
                 type_icon.setImageDrawable(getDrawable(R.drawable.ic_sunny_black));
+            } else if (type.equals("hotel")) {
+                event_date.setEnabled(false);
+                event_start_time.setEnabled(false);
+                event_end_time.setEnabled(false);
+                type_icon.setImageDrawable(getDrawable(R.drawable.ic_hotel_black));
             }
 
             event_address.setText(address);
@@ -134,7 +139,7 @@ public class EditEventActivity extends AppCompatActivity implements View.OnClick
             location_layout.setVisibility(View.GONE);
             Event event = bundle.getParcelable("event");
 
-            event_id = event.getEvent_id();
+            event_id = Objects.requireNonNull(event).getEvent_id();
             String title = event.getTitle();
             String transport_number = event.getTransport_number();
             String origin = event.getOrigin();
@@ -165,7 +170,7 @@ public class EditEventActivity extends AppCompatActivity implements View.OnClick
 
             Event event = bundle.getParcelable("event");
 
-            event_id = event.getEvent_id();
+            event_id = Objects.requireNonNull(event).getEvent_id();
             String title = event.getTitle();
             String description = event.getDescription();
             date = event.getDate();
