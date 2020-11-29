@@ -10,6 +10,18 @@ An Android application that allows a group of users to organize a trip collabora
 - An intuitive interface for choosing your destination's place of interest
 - Set reminders for your schedule during your trip
 
+<br>
+<p float="left">
+  <img src="https://raw.githubusercontent.com/fwrhine/Group-Travel-Planner/master/images/chat.png" height="430" />
+  <img src="https://raw.githubusercontent.com/fwrhine/Group-Travel-Planner/master/images/poll.png" height="430" />
+  <img src="https://raw.githubusercontent.com/fwrhine/Group-Travel-Planner/master/images/plan.png" height="430" />
+</p>
+<p float="left">
+  <img src="https://raw.githubusercontent.com/fwrhine/Group-Travel-Planner/master/images/event.png" height="430" />
+  <img src="https://raw.githubusercontent.com/fwrhine/Group-Travel-Planner/master/images/event_detail.png" height="430" />
+  <img src="https://raw.githubusercontent.com/fwrhine/Group-Travel-Planner/master/images/reminder.png" height="430" />
+</p>
+
 ## Dependencies
 ```
 com.android.support:appcompat-v7:26.1.0 (n)
